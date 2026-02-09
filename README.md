@@ -1,61 +1,177 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🐇 CuniApp — Rabbit Breeding Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> A web application for managing rabbit breeding activities (cuniculture) including reproduction tracking, births monitoring, and animal management.
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-10.x-red?logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.x-blue?logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-Database-orange?logo=mysql)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 About the Project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**CuniApp** is a farm management web application designed to help breeders efficiently monitor and organize rabbit reproduction cycles.
 
-## Learning Laravel
+Managing a rabbit farm manually is difficult:
+- forgetting mating dates
+- not knowing expected birth dates
+- poor tracking of newborn rabbits
+- confusion between males and females
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+This system digitizes the entire breeding workflow and provides a clear dashboard to track all activities.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ✨ Main Features
 
-## Laravel Sponsors
+### 🐰 Rabbit Management
+- Register male rabbits
+- Register female rabbits
+- Update health/status of animals
+- Track active/inactive animals
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### ❤️ Reproduction Tracking
+- Record mating (Saillie)
+- Automatic calculation of **expected birth date**
+- Reproductive history per female
 
-### Premium Partners
+### 🍼 Birth & Newborns
+- Record birth events (Mise bas)
+- Manage newborn rabbits (Lapereaux)
+- Track number of living/dead newborns
+- Birth history per female
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 📊 Dashboard
+- Overview of breeding activity
+- Upcoming births
+- Recent matings
+- Population monitoring
 
-## Contributing
+### 🗂️ Records & History
+- Complete reproduction logs
+- Traceability of all operations
+- Editable and deletable records
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🧠 System Workflow
+````
+Female Rabbit
+↓
+Mating (Saillie)
+↓
+Expected Birth Date (Auto Calculated)
+↓
+Birth (Mise bas)
+↓
+Newborn Rabbits (Lapereaux)
+↓
+Population Monitoring
+````
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🛠️ Built With
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Laravel** — Backend framework
+- **Blade** — Templating engine
+- **MySQL** — Database
+- **Vite** — Asset bundler
+- **Bootstrap** — UI styling
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## ⚙️ Installation
+
+### 1️⃣ Clone the project
+```bash
+git clone https://github.com/yamdev07/CuniApp.git
+cd CuniApp
+````
+2️⃣ Install dependencies
+````
+composer install
+npm install
+````
+3️⃣ Configure environment
+````
+Copy .env file:
+
+cp .env.example .env
+````
+
+Generate the application key:
+````
+php artisan key:generate
+````
+4️⃣ Configure database
+````
+Edit .env:
+
+DB_DATABASE=cuniapp
+DB_USERNAME=root
+DB_PASSWORD=
+
+````
+Create the database in MySQL, then run:
+````
+php artisan migrate
+php artisan db:seed
+````
+5️⃣ Run the project
+````
+npm run dev
+php artisan serve
+````
+
+Open in browser:
+````
+http://127.0.0.1:8000
+````
+## 🧪 Default Test Data
+
+- After seeding, the system contains:
+
+- sample male rabbits
+
+- sample female rabbits
+
+- reproduction history
+
+- birth records
+
+📁 Project Structure
+````
+app/
+database/
+ ├── migrations
+ ├── seeders
+resources/views/
+ ├── femelles
+ ├── males
+ ├── saillies
+ ├── mises_bas
+ └── naissances
+routes/web.php
+````
+## 🔐 Future Improvements
+
+- Notifications for upcoming births
+
+- Mobile responsive dashboard
+
+- Veterinary records
+
+- Vaccination tracking
+
+- Statistics and charts
+
+- Multi-user accounts
+
+## 👨‍💻 Author
+
+Yoann ADIGBONON
+Full-Stack Developer — Laravel | Flutter | Networks | Systems
+
+GitHub: https://github.com/yamdev07
