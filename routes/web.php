@@ -8,6 +8,7 @@ use App\Http\Controllers\SaillieController;
 use App\Http\Controllers\MiseBasController;
 use App\Http\Controllers\LapinController;
 use App\Http\Controllers\NaissanceController;
+use App\Http\Controllers\SettingsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,3 +44,15 @@ Route::post('/lapins', [LapinController::class, 'store'])->name('lapins.store');
 // Contrôleur Naissance 
 Route::resource('naissances', NaissanceController::class);
 
+
+// Routes pour les paramètres
+Route::prefix('parametres')->name('settings.')->group(function () {
+    Route::get('/', [SettingsController::class, 'index'])->name('index');
+    Route::post('/save', [SettingsController::class, 'save'])->name('save');
+    Route::post('/save-general', [SettingsController::class, 'saveGeneral'])->name('save.general');
+    Route::post('/save-elevage', [SettingsController::class, 'saveElevage'])->name('save.elevage');
+    Route::post('/save-notifications', [SettingsController::class, 'saveNotifications'])->name('save.notifications');
+    Route::post('/save-appearance', [SettingsController::class, 'saveAppearance'])->name('save.appearance');
+    Route::post('/export-data', [SettingsController::class, 'exportData'])->name('export');
+    Route::post('/reset-data', [SettingsController::class, 'resetData'])->name('reset');
+});

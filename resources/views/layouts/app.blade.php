@@ -68,6 +68,183 @@
             --shadow-2: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
+        /* =========================================== */
+        /* CORRECTIONS GÉNÉRALES POUR LE MODE CLAIR */
+        /* =========================================== */
+        
+        /* Texte principal en mode clair */
+        body.light-mode {
+            color: var(--light-text-primary) !important;
+        }
+        
+        /* Textes secondaires */
+        body.light-mode .text-muted {
+            color: var(--light-text-secondary) !important;
+        }
+        
+        /* Labels et titres */
+        body.light-mode .form-label,
+        body.light-mode .form-check-label,
+        body.light-mode label {
+            color: var(--light-text-primary) !important;
+        }
+        
+        /* Champs de formulaire */
+        body.light-mode .form-control,
+        body.light-mode .form-select,
+        body.light-mode .form-range {
+            background-color: var(--light-surface-1) !important;
+            border-color: rgba(0, 102, 255, 0.2) !important;
+            color: var(--light-text-primary) !important;
+        }
+        
+        body.light-mode .form-control::placeholder,
+        body.light-mode .form-select::placeholder {
+            color: var(--light-text-secondary) !important;
+        }
+        
+        body.light-mode .form-control:focus,
+        body.light-mode .form-select:focus {
+            border-color: var(--anyx-blue) !important;
+            box-shadow: 0 0 0 0.25rem rgba(0, 102, 255, 0.1) !important;
+        }
+        
+        /* Cartes */
+        body.light-mode .card {
+            background-color: var(--light-surface-1) !important;
+            border-color: rgba(0, 102, 255, 0.1) !important;
+        }
+        
+        body.light-mode .card-title {
+            color: var(--anyx-blue) !important;
+        }
+        
+        body.light-mode .card-text {
+            color: var(--light-text-primary) !important;
+        }
+        
+        /* Boutons */
+        body.light-mode .btn-outline-primary {
+            color: var(--anyx-blue) !important;
+            border-color: var(--anyx-blue) !important;
+        }
+        
+        body.light-mode .btn-outline-primary:hover {
+            background-color: var(--anyx-blue) !important;
+            color: white !important;
+        }
+        
+        body.light-mode .btn-outline-secondary {
+            color: var(--light-text-secondary) !important;
+            border-color: var(--light-text-secondary) !important;
+        }
+        
+        /* Checkboxes et radios */
+        body.light-mode .form-check-input {
+            border-color: var(--light-text-secondary) !important;
+            background-color: var(--light-surface-1) !important;
+        }
+        
+        body.light-mode .form-check-input:checked {
+            background-color: var(--anyx-blue) !important;
+            border-color: var(--anyx-blue) !important;
+        }
+        
+        /* Petits textes */
+        body.light-mode small,
+        body.light-mode .small {
+            color: var(--light-text-secondary) !important;
+        }
+        
+        /* Alertes */
+        body.light-mode .alert {
+            color: var(--light-text-primary) !important;
+        }
+        
+        body.light-mode .alert-info {
+            background-color: rgba(0, 102, 255, 0.08) !important;
+            border-color: rgba(0, 102, 255, 0.2) !important;
+        }
+        
+        body.light-mode .alert-success {
+            background-color: rgba(16, 185, 129, 0.08) !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
+        }
+        
+        body.light-mode .alert-warning {
+            background-color: rgba(245, 158, 11, 0.08) !important;
+            border-color: rgba(245, 158, 11, 0.2) !important;
+        }
+        
+        body.light-mode .alert-danger {
+            background-color: rgba(220, 53, 69, 0.08) !important;
+            border-color: rgba(220, 53, 69, 0.2) !important;
+        }
+        
+        /* Onglets */
+        body.light-mode .nav-pills .nav-link {
+            color: var(--light-text-secondary) !important;
+        }
+        
+        body.light-mode .nav-pills .nav-link.active {
+            background-color: rgba(0, 102, 255, 0.1) !important;
+            color: var(--anyx-blue) !important;
+        }
+        
+        /* Barre de progression */
+        body.light-mode .progress {
+            background-color: var(--light-surface-2) !important;
+        }
+        
+        body.light-mode .progress-bar {
+            background-color: var(--anyx-blue) !important;
+        }
+        
+        /* Titres */
+        body.light-mode h1,
+        body.light-mode h2,
+        body.light-mode h3,
+        body.light-mode h4,
+        body.light-mode h5,
+        body.light-mode h6 {
+            color: var(--light-text-primary) !important;
+        }
+        
+        /* Exception pour les titres avec gradient */
+        body.light-mode .brand-title,
+        body.light-mode .footer-title {
+            background: linear-gradient(135deg, var(--anyx-blue), #4f46e5) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        
+        /* Tableaux */
+        body.light-mode .table {
+            color: var(--light-text-primary) !important;
+        }
+        
+        body.light-mode .table th {
+            color: var(--light-text-secondary) !important;
+            border-color: rgba(0, 102, 255, 0.1) !important;
+        }
+        
+        body.light-mode .table td {
+            border-color: rgba(0, 102, 255, 0.05) !important;
+        }
+        
+        body.light-mode .table-hover tbody tr:hover {
+            background-color: var(--light-surface-2) !important;
+        }
+        
+        /* Badges */
+        body.light-mode .badge {
+            color: white !important;
+        }
+        
+        /* =========================================== */
+        /* STYLES EXISTANTS */
+        /* =========================================== */
+        
         /* Mode clair pour la navbar */
         body.light-mode .anyxtech-navbar {
             background: var(--surface-1);
@@ -845,6 +1022,56 @@
         .animate-in {
             animation: fadeIn 0.6s ease-out forwards;
         }
+        
+        /* =========================================== */
+        /* CORRECTIONS SPÉCIFIQUES POUR LA PAGE PARAMÈTRES */
+        /* =========================================== */
+        
+        /* Assurer que tous les textes dans les paramètres sont visibles */
+        .settings-page,
+        .settings-page * {
+            color: inherit;
+        }
+        
+        /* Correction spécifique pour les textes secondaires */
+        .settings-text-secondary {
+            color: var(--text-secondary);
+        }
+        
+        body.light-mode .settings-text-secondary {
+            color: var(--light-text-secondary) !important;
+        }
+        
+        /* Correction pour les titres de carte */
+        .settings-page .card-title {
+            color: var(--anyx-cyan);
+        }
+        
+        body.light-mode .settings-page .card-title {
+            color: var(--anyx-blue) !important;
+        }
+        
+        /* Correction pour les groupes d'entrée */
+        body.light-mode .input-group-text {
+            background-color: var(--light-surface-2) !important;
+            border-color: rgba(0, 102, 255, 0.2) !important;
+            color: var(--light-text-primary) !important;
+        }
+        
+        /* Correction pour les options de couleur */
+        .color-option {
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .color-option.selected {
+            border-color: var(--anyx-cyan) !important;
+            transform: scale(1.1);
+        }
+        
+        body.light-mode .color-option.selected {
+            border-color: var(--anyx-blue) !important;
+        }
     </style>
 </head>
 <body>
@@ -924,7 +1151,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('settings.index') }}" class="nav-link">
                             <i class="bi bi-gear"></i>
                             <span>Paramètres</span>
                         </a>
@@ -1241,6 +1468,38 @@
                     body.classList.add('light-mode');
                 }
             }
+        });
+        
+        // Gestion des options de couleur dans les paramètres
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Retirer la sélection de toutes les options
+                    document.querySelectorAll('.color-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Ajouter la sélection à l'option cliquée
+                    this.classList.add('selected');
+                    
+                    // Mettre à jour la valeur cachée
+                    const hiddenInput = document.querySelector('input[name="appearance[accent_color]"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = this.dataset.color;
+                    }
+                    
+                    // Appliquer immédiatement la couleur
+                    document.documentElement.style.setProperty('--anyx-cyan', this.dataset.color);
+                });
+            });
+            
+            // Sélectionner l'option de couleur par défaut au chargement
+            const defaultColor = document.querySelector('input[name="appearance[accent_color]"]')?.value || '#00D9FF';
+            document.querySelectorAll('.color-option').forEach(option => {
+                if (option.dataset.color === defaultColor) {
+                    option.classList.add('selected');
+                }
+            });
         });
     </script>
 
