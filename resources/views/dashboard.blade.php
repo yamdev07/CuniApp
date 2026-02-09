@@ -1,57 +1,96 @@
 @extends('layouts.app')
 
-@section('title', 'Tableau de Bord Élevage')
+@section('title', 'Tableau de Bord Élevage - AnyxTech')
 
 @section('content')
-<div class="dashboard-container">
+<div class="anyxtech-dashboard">
     <!-- Header Section -->
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="brand-section">
-                <div class="logo">A</div>
-                <div class="header-text">
-                    <h1>Tableau de Bord Élevage</h1>
-                    <p class="header-subtitle">Gestion professionnelle de votre cheptel</p>
+    <header class="dash-header">
+        <div class="header-wrapper">
+            <div class="brand-identity">
+                <div class="anyxtech-logo">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="url(#logoGrad)"/>
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="#0A1628"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="5" y1="5" x2="35" y2="35">
+                                <stop offset="0%" stop-color="#00D9FF"/>
+                                <stop offset="100%" stop-color="#0066FF"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">AnyxTech <span class="subtitle-accent">Élevage</span></h1>
+                    <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
 
-            <div class="header-actions">
-                <button class="btn btn-outline">
-                    <i class="bi bi-download"></i>
+            <div class="header-controls">
+                <button class="ctrl-btn secondary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
                     Export
                 </button>
-                <a href="{{ route('lapin.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i>
+                <a href="{{ route('lapin.create') }}" class="ctrl-btn primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
                     Nouvelle entrée
                 </a>
             </div>
         </div>
 
-        <div class="stats-overview">
+        <div class="metrics-grid">
             @php
-                $statsData = [
-                    ['icon' => 'bi-diagram-3', 'value' => $nbMales + $nbFemelles, 'label' => 'Total Lapins', 'type' => 'total', 'change' => '+8.2%', 'trend' => 'positive'],
-                    ['icon' => 'bi-gender-male', 'value' => $nbMales, 'label' => 'Mâles', 'type' => 'male', 'change' => '+5.1%', 'trend' => 'positive'],
-                    ['icon' => 'bi-gender-female', 'value' => $nbFemelles, 'label' => 'Femelles', 'type' => 'female', 'change' => '+12%', 'trend' => 'positive'],
-                    ['icon' => 'bi-heart-pulse', 'value' => $nbSaillies, 'label' => 'Saillies', 'type' => 'breeding', 'change' => '-3.1%', 'trend' => 'negative'],
-                    ['icon' => 'bi-stars', 'value' => $nbMisesBas, 'label' => 'Portées', 'type' => 'births', 'change' => '+15%', 'trend' => 'positive'],
-                    ['icon' => 'bi-bell', 'value' => 3, 'label' => 'Alertes', 'type' => 'alerts', 'change' => '0%', 'trend' => 'neutral']
+                $metricsData = [
+                    ['icon' => 'total', 'value' => $nbMales + $nbFemelles, 'label' => 'Total Lapins', 'type' => 'primary', 'change' => '+8.2%', 'trend' => 'up'],
+                    ['icon' => 'male', 'value' => $nbMales, 'label' => 'Mâles', 'type' => 'blue', 'change' => '+5.1%', 'trend' => 'up'],
+                    ['icon' => 'female', 'value' => $nbFemelles, 'label' => 'Femelles', 'type' => 'pink', 'change' => '+12%', 'trend' => 'up'],
+                    ['icon' => 'breed', 'value' => $nbSaillies, 'label' => 'Saillies', 'type' => 'purple', 'change' => '-3.1%', 'trend' => 'down'],
+                    ['icon' => 'birth', 'value' => $nbMisesBas, 'label' => 'Portées', 'type' => 'green', 'change' => '+15%', 'trend' => 'up'],
+                    ['icon' => 'alert', 'value' => 3, 'label' => 'Alertes', 'type' => 'orange', 'change' => '0%', 'trend' => 'neutral']
                 ];
             @endphp
 
-            @foreach($statsData as $stat)
-            <div class="stat-item {{ $stat['type'] }}">
-                <div class="stat-content">
-                    <div class="stat-icon {{ $stat['type'] }}">
-                        <i class="bi {{ $stat['icon'] }}"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value">{{ $stat['value'] }}</div>
-                        <div class="stat-label">{{ $stat['label'] }}</div>
-                        <div class="stat-change {{ $stat['trend'] }}">
-                            <i class="bi bi-arrow-{{ $stat['trend'] === 'positive' ? 'up' : ($stat['trend'] === 'negative' ? 'down' : 'right') }}-short"></i>
-                            {{ $stat['change'] }}
-                        </div>
+            @foreach($metricsData as $metric)
+            <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
+                <div class="metric-icon">
+                    @if($metric['icon'] === 'total')
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                            <circle cx="17" cy="7" r="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        </svg>
+                    @elseif($metric['icon'] === 'male')
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                        </svg>
+                    @elseif($metric['icon'] === 'female')
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                        </svg>
+                    @elseif($metric['icon'] === 'breed')
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                    @elseif($metric['icon'] === 'birth')
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    @else
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    @endif
+                </div>
+                <div class="metric-data">
+                    <div class="metric-value">{{ $metric['value'] }}</div>
+                    <div class="metric-label">{{ $metric['label'] }}</div>
+                    <div class="metric-trend {{ $metric['trend'] }}">
+                        <span class="trend-arrow">{{ $metric['trend'] === 'up' ? '↗' : ($metric['trend'] === 'down' ? '↘' : '→') }}</span>
+                        {{ $metric['change'] }}
                     </div>
                 </div>
             </div>
@@ -59,151 +98,172 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="dashboard-content">
+    <!-- Main Grid -->
+    <div class="main-grid">
         <!-- Left Column -->
-        <div class="main-column">
-            <!-- Performance Cards -->
-            <div class="performance-cards">
-                @php
-                    $performanceData = [
-                        ['type' => 'male', 'icon' => 'bi-gender-male', 'value' => $nbMales, 'title' => 'Mâles Reproducteurs', 'progress' => 75, 'trend' => '+12%', 'trendType' => 'positive'],
-                        ['type' => 'female', 'icon' => 'bi-gender-female', 'value' => $nbFemelles, 'title' => 'Femelles Reproductrices', 'progress' => 85, 'trend' => '+8%', 'trendType' => 'positive'],
-                        ['type' => 'breeding', 'icon' => 'bi-heart-pulse', 'value' => $nbSaillies, 'title' => 'Saillies en Cours', 'progress' => 60, 'trend' => '-3%', 'trendType' => 'negative'],
-                        ['type' => 'births', 'icon' => 'bi-stars', 'value' => $nbMisesBas, 'title' => 'Mises Bas Récentes', 'progress' => 90, 'trend' => '+15%', 'trendType' => 'positive']
-                    ];
-                @endphp
-
-                @foreach($performanceData as $card)
-                <div class="performance-card">
-                    <div class="card-header">
-                        <div class="card-title">{{ $card['title'] }}</div>
-                        <div class="card-icon {{ $card['type'] }}">
-                            <i class="bi {{ $card['icon'] }}"></i>
-                        </div>
-                    </div>
-                    <div class="card-value">{{ $card['value'] }}</div>
-                    <div class="card-progress">
-                        <div class="progress-info">
-                            <span>Progression</span>
-                            <span>{{ $card['progress'] }}%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill {{ $card['type'] }}" style="width: {{ $card['progress'] }}%"></div>
-                        </div>
-                    </div>
-                    <div class="card-trend {{ $card['trendType'] }}">
-                        <i class="bi bi-arrow-{{ $card['trendType'] === 'positive' ? 'up' : 'down' }}-short"></i>
-                        {{ $card['trend'] }} ce mois
-                    </div>
+        <div class="primary-col">
+            <!-- Performance Overview -->
+            <div class="section-block">
+                <div class="section-title">
+                    <h2>Performance</h2>
+                    <span class="title-accent"></span>
                 </div>
-                @endforeach
+                
+                <div class="performance-grid">
+                    @php
+                        $perfCards = [
+                            ['type' => 'blue', 'icon' => 'male', 'value' => $nbMales, 'title' => 'Mâles Reproducteurs', 'progress' => 75, 'trend' => '+12%'],
+                            ['type' => 'pink', 'icon' => 'female', 'value' => $nbFemelles, 'title' => 'Femelles Reproductrices', 'progress' => 85, 'trend' => '+8%'],
+                            ['type' => 'purple', 'icon' => 'breed', 'value' => $nbSaillies, 'title' => 'Saillies en Cours', 'progress' => 60, 'trend' => '-3%'],
+                            ['type' => 'green', 'icon' => 'birth', 'value' => $nbMisesBas, 'title' => 'Mises Bas Récentes', 'progress' => 90, 'trend' => '+15%']
+                        ];
+                    @endphp
+
+                    @foreach($perfCards as $card)
+                    <div class="perf-card {{ $card['type'] }}">
+                        <div class="card-top">
+                            <span class="card-label">{{ $card['title'] }}</span>
+                            <div class="card-badge {{ $card['type'] }}">
+                                @if($card['icon'] === 'male')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                                    </svg>
+                                @elseif($card['icon'] === 'female')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                                    </svg>
+                                @elseif($card['icon'] === 'breed')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                    </svg>
+                                @else
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="card-number">{{ $card['value'] }}</div>
+                        <div class="progress-track">
+                            <div class="progress-bar {{ $card['type'] }}" style="width: {{ $card['progress'] }}%"></div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="progress-label">{{ $card['progress'] }}% objectif</span>
+                            <span class="trend-badge">{{ $card['trend'] }}</span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions-section">
-                <div class="section-header">
-                    <h3>Actions Rapides</h3>
-                    <button class="btn btn-outline">Personnaliser</button>
+            <div class="section-block">
+                <div class="section-title">
+                    <h2>Actions Rapides</h2>
+                    <span class="title-accent"></span>
                 </div>
-                <div class="quick-actions-grid">
-                   @foreach([
-                        ['url' => '/males', 'icon' => 'bi-gender-male', 'title' => 'Gérer les Mâles', 'desc' => 'Ajouter, modifier ou consulter', 'type' => 'male'],
-                        ['url' => '/femelles', 'icon' => 'bi-gender-female', 'title' => 'Gérer les Femelles', 'desc' => 'Suivi reproduction', 'type' => 'female'],
-                        ['url' => '/saillies', 'icon' => 'bi-heart-pulse', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'type' => 'breeding'],
-                        ['url' => route('naissances.index'), 'icon' => 'bi-calendar-plus', 'title' => 'Enregistrer Naissance', 'desc' => 'Nouvelle portée', 'type' => 'births']
-                        ] as $action)
-                        <a href="{{ $action['url'] }}" class="action-card">
-                           <div class="action-icon">
-                               <i class="bi {{ $action['icon'] }}"></i>
-                            </div>
-                            <h4>{{ $action['title'] }}</h4>
-                            <p>{{ $action['desc'] }}</p>
-                        </a>
+                
+                <div class="actions-grid">
+                    @foreach([
+                        ['url' => '/males', 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'],
+                        ['url' => '/femelles', 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'],
+                        ['url' => '/saillies', 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple'],
+                        ['url' => route('naissances.index'), 'icon' => 'birth', 'title' => 'Naissance', 'desc' => 'Enregistrer portée', 'color' => 'green']
+                    ] as $action)
+                    <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
+                        <div class="tile-icon">
+                            @if($action['icon'] === 'male')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                                </svg>
+                            @elseif($action['icon'] === 'female')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                                </svg>
+                            @elseif($action['icon'] === 'breed')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
+                            @else
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            @endif
+                        </div>
+                        <h3>{{ $action['title'] }}</h3>
+                        <p>{{ $action['desc'] }}</p>
+                        <div class="tile-arrow">→</div>
+                    </a>
                     @endforeach
-
                 </div>
             </div>
         </div>
 
         <!-- Right Column -->
-        <div class="sidebar-column">
-            <!-- Calendar Widget -->
+        <div class="sidebar-col">
+            <!-- Calendar -->
             <div class="widget calendar-widget">
-                <div class="widget-header">
+                <div class="widget-head">
                     <h3>Calendrier</h3>
-                    <div class="calendar-nav">
-                        <button class="nav-btn" id="prevMonth">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <span class="current-month" id="currentMonth">Août 2025</span>
-                        <button class="nav-btn" id="nextMonth">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
+                    <div class="calendar-controls">
+                        <button class="cal-btn" id="prevMonth">‹</button>
+                        <span class="cal-month" id="currentMonth">Février 2026</span>
+                        <button class="cal-btn" id="nextMonth">›</button>
                     </div>
                 </div>
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar will be generated by JavaScript -->
-                </div>
+                <div class="calendar-body" id="calendarGrid"></div>
                 <div class="calendar-legend">
-                    <div class="legend-item">
-                        <div class="legend-color breeding"></div>
-                        <span>Saillies prévues</span>
+                    <div class="legend-row">
+                        <span class="legend-dot purple"></span>
+                        <span>Saillies</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color births"></div>
-                        <span>Naissances attendues</span>
+                    <div class="legend-row">
+                        <span class="legend-dot green"></span>
+                        <span>Naissances</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Activity Feed -->
+            <!-- Activity Timeline -->
             <div class="widget activity-widget">
-                <div class="widget-header">
-                    <h3>Activité Récente</h3>
-                    <button class="btn btn-outline">Voir tout</button>
+                <div class="widget-head">
+                    <h3>Activité</h3>
+                    <button class="text-link">Tout voir</button>
                 </div>
-                <div class="activity-feed">
+                <div class="timeline">
                     @foreach([
-                        ['type' => 'success', 'icon' => 'bi-check-circle-fill', 'title' => 'Mise bas enregistrée', 'desc' => 'Femelle #245 - 6 lapereaux', 'time' => 'Il y a 2 heures'],
-                        ['type' => 'breeding', 'icon' => 'bi-heart-fill', 'title' => 'Saillie programmée', 'desc' => 'F#245 × M#112 - Prévue demain', 'time' => 'Hier, 15:30'],
-                        ['type' => 'warning', 'icon' => 'bi-exclamation-triangle-fill', 'title' => 'Vaccination requise', 'desc' => '3 lapins nécessitent une vaccination', 'time' => '23 août 2025'],
-                        ['type' => 'info', 'icon' => 'bi-info-circle-fill', 'title' => 'Rapport généré', 'desc' => 'Rapport mensuel disponible', 'time' => '20 août 2025']
-                    ] as $activity)
-                    <div class="activity-item">
-                        <div class="activity-icon {{ $activity['type'] }}">
-                            <i class="bi {{ $activity['icon'] }}"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">{{ $activity['title'] }}</div>
-                            <div class="activity-description">{{ $activity['desc'] }}</div>
-                            <div class="activity-time">
-                                <i class="bi bi-clock"></i>
-                                {{ $activity['time'] }}
-                            </div>
+                        ['type' => 'green', 'title' => 'Mise bas enregistrée', 'desc' => 'Femelle #245 - 6 lapereaux', 'time' => 'Il y a 2h'],
+                        ['type' => 'purple', 'title' => 'Saillie programmée', 'desc' => 'F#245 × M#112', 'time' => 'Hier 15:30'],
+                        ['type' => 'orange', 'title' => 'Vaccination requise', 'desc' => '3 lapins concernés', 'time' => '23 août'],
+                        ['type' => 'blue', 'title' => 'Rapport généré', 'desc' => 'Stats mensuelles', 'time' => '20 août']
+                    ] as $item)
+                    <div class="timeline-item">
+                        <div class="timeline-dot {{ $item['type'] }}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">{{ $item['title'] }}</div>
+                            <div class="timeline-desc">{{ $item['desc'] }}</div>
+                            <div class="timeline-time">{{ $item['time'] }}</div>
                         </div>
                     </div>
                     @endforeach
                 </div>
             </div>
 
-            <!-- Alerts Widget -->
+            <!-- Alerts -->
             <div class="widget alerts-widget">
-                <div class="widget-header">
-                    <h3>Alertes & Notifications</h3>
-                    <span class="alert-count">3</span>
+                <div class="widget-head">
+                    <h3>Alertes</h3>
+                    <span class="alert-badge">3</span>
                 </div>
                 <div class="alerts-list">
                     @foreach([
-                        ['level' => 'high', 'icon' => 'bi-exclamation-triangle-fill', 'title' => 'Vaccination urgente', 'time' => 'Dans 2 jours'],
-                        ['level' => 'medium', 'icon' => 'bi-calendar-event', 'title' => 'Saillie à confirmer', 'time' => 'Demain'],
-                        ['level' => 'low', 'icon' => 'bi-clipboard-data', 'title' => 'Rapport mensuel', 'time' => 'Fin de semaine']
+                        ['priority' => 'high', 'title' => 'Vaccination urgente', 'time' => 'Dans 2 jours'],
+                        ['priority' => 'medium', 'title' => 'Saillie à confirmer', 'time' => 'Demain'],
+                        ['priority' => 'low', 'title' => 'Rapport mensuel', 'time' => 'Fin semaine']
                     ] as $alert)
-                    <div class="alert-item {{ $alert['level'] }}">
-                        <div class="alert-icon">
-                            <i class="bi {{ $alert['icon'] }}"></i>
-                        </div>
-                        <div class="alert-content">
+                    <div class="alert-row {{ $alert['priority'] }}">
+                        <div class="alert-indicator"></div>
+                        <div class="alert-text">
                             <div class="alert-title">{{ $alert['title'] }}</div>
                             <div class="alert-time">{{ $alert['time'] }}</div>
                         </div>
@@ -212,599 +272,777 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </div>
 
 <style>
-.dashboard-container {
-    max-width: 1600px;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+    /* AnyxTech Color Palette */
+    --anyx-dark: #0A1628;
+    --anyx-darker: #050B14;
+    --anyx-navy: #162B4D;
+    --anyx-blue: #0066FF;
+    --anyx-cyan: #00D9FF;
+    --anyx-purple: #8B5CF6;
+    --anyx-pink: #EC4899;
+    --anyx-green: #10B981;
+    --anyx-orange: #F59E0B;
+    
+    /* Gradients */
+    --grad-primary: linear-gradient(135deg, #00D9FF 0%, #0066FF 100%);
+    --grad-accent: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+    --grad-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    
+    /* Surfaces */
+    --surface-1: #0F1C2E;
+    --surface-2: #1A2942;
+    --surface-3: #253A5C;
+    
+    /* Text */
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --text-tertiary: #6B7280;
+    
+    /* Effects */
+    --glow-blue: 0 0 20px rgba(0, 102, 255, 0.3);
+    --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.3);
+    --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-2: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Space Mono', monospace;
+    background: var(--anyx-darker);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.anyxtech-dashboard {
+    max-width: 1800px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 32px;
+    animation: fadeIn 0.6s ease;
 }
 
-/* Header Styles */
-.dashboard-header {
-    background: white;
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
-    margin-bottom: 32px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.dash-header {
+    background: var(--surface-1);
+    border-radius: 24px;
     overflow: hidden;
+    margin-bottom: 32px;
+    border: 1px solid rgba(0, 217, 255, 0.1);
+    position: relative;
 }
 
-.header-content {
+.dash-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--grad-primary);
+}
+
+.header-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 32px;
-    border-bottom: 1px solid var(--gray-200);
+    padding: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.brand-section {
+.brand-identity {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
 }
 
-.logo {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
+.anyxtech-logo {
+    width: 56px;
+    height: 56px;
+    animation: rotate 20s linear infinite;
 }
 
-.header-text h1 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--gray-900);
-    margin-bottom: 4px;
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-.header-subtitle {
-    font-size: 14px;
-    color: var(--gray-500);
+.anyxtech-logo svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(var(--glow-cyan));
 }
 
-.header-actions {
+.brand-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    background: var(--grad-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+}
+
+.subtitle-accent {
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.brand-tagline {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
+.header-controls {
     display: flex;
     gap: 12px;
 }
 
-.btn {
+.ctrl-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    font-weight: 600;
+    gap: 10px;
+    padding: 12px 24px;
+    font-family: 'Space Mono', monospace;
     font-size: 14px;
-    border-radius: var(--border-radius);
-    text-decoration: none;
+    font-weight: 700;
     border: none;
+    border-radius: 12px;
     cursor: pointer;
-    transition: var(--transition);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.btn-primary {
-    background: var(--primary);
+.ctrl-btn.primary {
+    background: var(--grad-primary);
     color: white;
+    box-shadow: var(--glow-blue);
 }
 
-.btn-primary:hover {
-    background: var(--primary-dark);
+.ctrl-btn.primary:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 0 30px rgba(0, 102, 255, 0.5);
 }
 
-.btn-outline {
-    background: white;
-    color: var(--gray-700);
-    border: 1px solid var(--gray-300);
+.ctrl-btn.secondary {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border: 1px solid rgba(0, 217, 255, 0.2);
 }
 
-.btn-outline:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+.ctrl-btn.secondary:hover {
+    border-color: var(--anyx-cyan);
+    background: var(--surface-3);
 }
 
-/* Stats Overview */
-.stats-overview {
+.ctrl-btn svg {
+    stroke-width: 2.5;
+}
+
+/* Metrics Grid */
+.metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 24px 32px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 32px;
 }
 
-.stat-item {
-    background: white;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    border-left: 4px solid var(--primary);
-    transition: var(--transition);
-}
-
-.stat-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-}
-
-.stat-item.male { border-left-color: #3b82f6; }
-.stat-item.female { border-left-color: #ec4899; }
-.stat-item.breeding { border-left-color: var(--accent); }
-.stat-item.births { border-left-color: var(--success); }
-.stat-item.alerts { border-left-color: var(--danger); }
-
-.stat-content {
+.metric-card {
+    background: var(--surface-2);
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-.stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.metric-card.primary::before { background: var(--grad-primary); }
+.metric-card.blue::before { background: var(--anyx-blue); }
+.metric-card.pink::before { background: var(--anyx-pink); }
+.metric-card.purple::before { background: var(--anyx-purple); }
+.metric-card.green::before { background: var(--anyx-green); }
+.metric-card.orange::before { background: var(--anyx-orange); }
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 217, 255, 0.3);
+}
+
+.metric-card:hover::before {
+    opacity: 1;
+}
+
+.metric-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: white;
+    flex-shrink: 0;
 }
 
-.stat-icon.total { background: var(--primary); }
-.stat-icon.male { background: #3b82f6; }
-.stat-icon.female { background: #ec4899; }
-.stat-icon.breeding { background: var(--accent); }
-.stat-icon.births { background: var(--success); }
-.stat-icon.alerts { background: var(--danger); }
+.metric-card.primary .metric-icon { background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(0, 102, 255, 0.15)); }
+.metric-card.blue .metric-icon { background: rgba(0, 102, 255, 0.15); }
+.metric-card.pink .metric-icon { background: rgba(236, 72, 153, 0.15); }
+.metric-card.purple .metric-icon { background: rgba(139, 92, 246, 0.15); }
+.metric-card.green .metric-icon { background: rgba(16, 185, 129, 0.15); }
+.metric-card.orange .metric-icon { background: rgba(245, 158, 11, 0.15); }
 
-.stat-value {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--gray-900);
+.metric-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2.5;
+}
+
+.metric-card.primary .metric-icon svg { stroke: var(--anyx-cyan); }
+.metric-card.blue .metric-icon svg { stroke: var(--anyx-blue); }
+.metric-card.pink .metric-icon svg { stroke: var(--anyx-pink); }
+.metric-card.purple .metric-icon svg { stroke: var(--anyx-purple); }
+.metric-card.green .metric-icon svg { stroke: var(--anyx-green); }
+.metric-card.orange .metric-icon svg { stroke: var(--anyx-orange); }
+
+.metric-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
     line-height: 1;
     margin-bottom: 4px;
 }
 
-.stat-label {
-    font-size: 14px;
-    color: var(--gray-600);
-    font-weight: 500;
+.metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
-.stat-change {
+.metric-trend {
     margin-top: 8px;
     font-size: 12px;
     display: flex;
     align-items: center;
     gap: 4px;
+    font-weight: 700;
 }
 
-.positive { color: var(--success); }
-.negative { color: var(--danger); }
-.neutral { color: var(--gray-500); }
+.metric-trend.up { color: var(--anyx-green); }
+.metric-trend.down { color: var(--anyx-orange); }
+.metric-trend.neutral { color: var(--text-tertiary); }
 
-/* Main Content Layout */
-.dashboard-content {
+.trend-arrow {
+    font-size: 16px;
+}
+
+/* Main Grid */
+.main-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
+    grid-template-columns: 1fr 400px;
+    gap: 32px;
 }
 
-/* Performance Cards */
-.performance-cards {
+/* Section Blocks */
+.section-block {
+    background: var(--surface-1);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.section-title h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.title-accent {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, var(--anyx-cyan) 0%, transparent 100%);
+}
+
+/* Performance Grid */
+.performance-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-    margin-bottom: 24px;
 }
 
-.performance-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    padding: 20px;
-    transition: var(--transition);
+.perf-card {
+    background: var(--surface-2);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
-.performance-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+.perf-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.1;
+    transition: opacity 0.4s;
 }
 
-.card-header {
+.perf-card.blue::after { background: var(--anyx-blue); }
+.perf-card.pink::after { background: var(--anyx-pink); }
+.perf-card.purple::after { background: var(--anyx-purple); }
+.perf-card.green::after { background: var(--anyx-green); }
+
+.perf-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0, 217, 255, 0.3);
+}
+
+.perf-card:hover::after {
+    opacity: 0.2;
+}
+
+.card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
-.card-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--gray-700);
+.card-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
-.card-icon {
+.card-badge {
     width: 40px;
     height: 40px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    color: white;
 }
 
-.card-icon.male { background: #3b82f6; }
-.card-icon.female { background: #ec4899; }
-.card-icon.breeding { background: var(--accent); }
-.card-icon.births { background: var(--success); }
+.card-badge.blue { background: rgba(0, 102, 255, 0.15); }
+.card-badge.pink { background: rgba(236, 72, 153, 0.15); }
+.card-badge.purple { background: rgba(139, 92, 246, 0.15); }
+.card-badge.green { background: rgba(16, 185, 129, 0.15); }
 
-.card-value {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--gray-900);
-    margin-bottom: 8px;
+.card-badge svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
 }
 
-.card-progress {
+.card-badge.blue svg { stroke: var(--anyx-blue); }
+.card-badge.pink svg { stroke: var(--anyx-pink); }
+.card-badge.purple svg { stroke: var(--anyx-purple); }
+.card-badge.green svg { stroke: var(--anyx-green); }
+
+.card-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 40px;
+    font-weight: 900;
     margin-bottom: 16px;
 }
 
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: var(--gray-600);
+.progress-track {
+    height: 6px;
+    background: var(--surface-1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 16px;
 }
 
 .progress-bar {
-    height: 8px;
-    background: var(--gray-200);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.progress-fill {
     height: 100%;
-    border-radius: 4px;
-    transition: width 1s ease;
+    border-radius: 3px;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: pulse 2s ease-in-out infinite;
 }
 
-.progress-fill.male { background: #3b82f6; }
-.progress-fill.female { background: #ec4899; }
-.progress-fill.breeding { background: var(--accent); }
-.progress-fill.births { background: var(--success); }
-
-.card-trend {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 500;
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
 }
 
-/* Quick Actions */
-.quick-actions-section {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-    padding: 24px;
-    margin-bottom: 24px;
-}
+.progress-bar.blue { background: var(--anyx-blue); box-shadow: 0 0 10px var(--anyx-blue); }
+.progress-bar.pink { background: var(--anyx-pink); box-shadow: 0 0 10px var(--anyx-pink); }
+.progress-bar.purple { background: var(--anyx-purple); box-shadow: 0 0 10px var(--anyx-purple); }
+.progress-bar.green { background: var(--anyx-green); box-shadow: 0 0 10px var(--anyx-green); }
 
-.section-header {
+.card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 }
 
-.section-header h3 {
-    font-size: 18px;
+.progress-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.trend-badge {
+    font-size: 12px;
     font-weight: 700;
-    color: var(--gray-900);
+    color: var(--anyx-green);
 }
 
-.quick-actions-grid {
+/* Actions Grid */
+.actions-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
 }
 
-.action-card {
+.action-tile {
+    background: var(--surface-2);
+    border-radius: 16px;
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: var(--gray-50);
-    border-radius: var(--border-radius);
-    text-decoration: none;
-    color: inherit;
-    transition: var(--transition);
-    text-align: center;
 }
 
-.action-card:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+.action-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.action-icon {
+.action-tile.blue::before { background: var(--anyx-blue); }
+.action-tile.pink::before { background: var(--anyx-pink); }
+.action-tile.purple::before { background: var(--anyx-purple); }
+.action-tile.green::before { background: var(--anyx-green); }
+
+.action-tile:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0, 217, 255, 0.3);
+}
+
+.action-tile:hover::before {
+    opacity: 1;
+}
+
+.tile-icon {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    margin-bottom: 12px;
-    background: white;
-    color: var(--primary);
+    margin-bottom: 16px;
 }
 
-.action-card:hover .action-icon {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+.action-tile.blue .tile-icon { background: rgba(0, 102, 255, 0.15); }
+.action-tile.pink .tile-icon { background: rgba(236, 72, 153, 0.15); }
+.action-tile.purple .tile-icon { background: rgba(139, 92, 246, 0.15); }
+.action-tile.green .tile-icon { background: rgba(16, 185, 129, 0.15); }
+
+.tile-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
 }
 
-.action-card h4 {
+.action-tile.blue .tile-icon svg { stroke: var(--anyx-blue); }
+.action-tile.pink .tile-icon svg { stroke: var(--anyx-pink); }
+.action-tile.purple .tile-icon svg { stroke: var(--anyx-purple); }
+.action-tile.green .tile-icon svg { stroke: var(--anyx-green); }
+
+.action-tile h3 {
+    font-family: 'Orbitron', sans-serif;
     font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
-.action-card p {
-    font-size: 14px;
-    color: var(--gray-600);
+.action-tile p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
 }
 
-.action-card:hover p {
-    color: rgba(255, 255, 255, 0.9);
+.tile-arrow {
+    margin-top: auto;
+    font-size: 20px;
+    color: var(--anyx-cyan);
+    transition: transform 0.3s;
 }
 
-/* Sidebar Widgets */
+.action-tile:hover .tile-arrow {
+    transform: translateX(6px);
+}
+
+/* Widgets */
 .widget {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
+    background: var(--surface-1);
+    border-radius: 20px;
     padding: 24px;
     margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.widget-header {
+.widget-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.widget-header h3 {
-    font-size: 18px;
+.widget-head h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
     font-weight: 700;
-    color: var(--gray-900);
 }
 
-/* Calendar Widget */
-.calendar-nav {
+.text-link {
+    background: none;
+    border: none;
+    color: var(--anyx-cyan);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.text-link:hover {
+    color: var(--anyx-blue);
+}
+
+/* Calendar */
+.calendar-controls {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.nav-btn {
+.cal-btn {
     width: 32px;
     height: 32px;
     border: none;
-    background: var(--gray-100);
-    color: var(--gray-600);
-    border-radius: var(--border-radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--surface-2);
+    color: var(--anyx-cyan);
+    border-radius: 8px;
+    font-size: 18px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
 }
 
-.nav-btn:hover {
-    background: var(--primary);
-    color: white;
+.cal-btn:hover {
+    background: var(--anyx-cyan);
+    color: var(--anyx-dark);
 }
 
-.current-month {
+.cal-month {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--gray-800);
     min-width: 120px;
     text-align: center;
 }
 
-.calendar-grid {
+.calendar-body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin-bottom: 20px;
 }
 
-.calendar-day {
-    height: 36px;
+.cal-day {
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    color: var(--gray-600);
-    border-radius: var(--border-radius-sm);
-    position: relative;
+    font-size: 13px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s;
+    position: relative;
+    font-weight: 700;
 }
 
-.calendar-day.header {
-    font-weight: 600;
-    color: var(--gray-800);
-    background: var(--gray-100);
+.cal-day.header {
+    color: var(--text-secondary);
+    font-size: 11px;
     cursor: default;
 }
 
-.calendar-day:hover:not(.header) {
-    background: var(--gray-100);
+.cal-day:not(.header):hover {
+    background: var(--surface-2);
 }
 
-.calendar-day.today {
-    background: var(--primary);
+.cal-day.today {
+    background: var(--grad-primary);
     color: white;
-    font-weight: 600;
+    box-shadow: var(--glow-blue);
 }
 
-.calendar-day.event {
-    font-weight: 600;
-}
-
-.calendar-day.event::after {
+.cal-day.event::after {
     content: '';
     position: absolute;
     bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--primary);
 }
 
-.calendar-day.event.breeding::after {
-    background: var(--accent);
+.cal-day.event.purple::after {
+    background: var(--anyx-purple);
 }
 
-.calendar-day.event.births::after {
-    background: var(--success);
+.cal-day.event.green::after {
+    background: var(--anyx-green);
 }
 
 .calendar-legend {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.legend-item {
+.legend-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--gray-600);
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
 }
 
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
 }
 
-.legend-color.breeding {
-    background: var(--accent);
-}
+.legend-dot.purple { background: var(--anyx-purple); }
+.legend-dot.green { background: var(--anyx-green); }
 
-.legend-color.births {
-    background: var(--success);
-}
-
-/* Activity Feed */
-.activity-feed {
+/* Timeline */
+.timeline {
     display: flex;
     flex-direction: column;
+    gap: 20px;
+}
+
+.timeline-item {
+    display: flex;
     gap: 16px;
+    position: relative;
 }
 
-.activity-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 12px;
-    background: var(--gray-50);
-    border-radius: var(--border-radius);
-    transition: var(--transition);
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 24px;
+    width: 2px;
+    height: calc(100% + 8px);
+    background: var(--surface-2);
 }
 
-.activity-item:hover {
-    background: var(--gray-100);
-}
-
-.activity-icon {
-    width: 36px;
-    height: 36px;
+.timeline-dot {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: white;
     flex-shrink: 0;
+    margin-top: 6px;
+    box-shadow: 0 0 10px currentColor;
 }
 
-.activity-icon.success {
-    background: var(--success);
-}
+.timeline-dot.green { background: var(--anyx-green); }
+.timeline-dot.purple { background: var(--anyx-purple); }
+.timeline-dot.orange { background: var(--anyx-orange); }
+.timeline-dot.blue { background: var(--anyx-blue); }
 
-.activity-icon.breeding {
-    background: var(--accent);
-}
-
-.activity-icon.warning {
-    background: var(--warning);
-}
-
-.activity-icon.info {
-    background: var(--info);
-}
-
-.activity-content {
-    flex: 1;
-}
-
-.activity-title {
+.timeline-title {
     font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-900);
-    margin-bottom: 2px;
-}
-
-.activity-description {
-    font-size: 13px;
-    color: var(--gray-600);
+    font-weight: 700;
     margin-bottom: 4px;
 }
 
-.activity-time {
-    font-size: 12px;
-    color: var(--gray-500);
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.timeline-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
 
-/* Alerts Widget */
-.alert-count {
-    background: var(--danger);
+.timeline-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+/* Alerts */
+.alert-badge {
+    background: var(--anyx-orange);
     color: white;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
     border-radius: 12px;
-    min-width: 24px;
-    text-align: center;
+    font-family: 'Orbitron', sans-serif;
 }
 
 .alerts-list {
@@ -813,133 +1051,111 @@
     gap: 12px;
 }
 
-.alert-item {
+.alert-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    border-radius: var(--border-radius);
-    background: var(--gray-50);
-    transition: var(--transition);
+    padding: 14px;
+    background: var(--surface-2);
+    border-radius: 12px;
+    border-left: 3px solid;
+    transition: all 0.3s;
 }
 
-.alert-item:hover {
-    background: var(--gray-100);
+.alert-row.high { border-left-color: var(--anyx-orange); }
+.alert-row.medium { border-left-color: var(--anyx-cyan); }
+.alert-row.low { border-left-color: var(--anyx-blue); }
+
+.alert-row:hover {
+    transform: translateX(4px);
+    background: var(--surface-3);
 }
 
-.alert-item.high {
-    border-left: 4px solid var(--danger);
-}
-
-.alert-item.medium {
-    border-left: 4px solid var(--warning);
-}
-
-.alert-item.low {
-    border-left: 4px solid var(--info);
-}
-
-.alert-icon {
-    width: 32px;
-    height: 32px;
+.alert-indicator {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
     flex-shrink: 0;
-    color: white;
+    animation: blink 2s ease-in-out infinite;
 }
 
-.alert-item.high .alert-icon {
-    background: var(--danger);
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
-.alert-item.medium .alert-icon {
-    background: var(--warning);
-}
-
-.alert-item.low .alert-icon {
-    background: var(--info);
-}
-
-.alert-content {
-    flex: 1;
-}
+.alert-row.high .alert-indicator { background: var(--anyx-orange); box-shadow: 0 0 8px var(--anyx-orange); }
+.alert-row.medium .alert-indicator { background: var(--anyx-cyan); box-shadow: 0 0 8px var(--anyx-cyan); }
+.alert-row.low .alert-indicator { background: var(--anyx-blue); box-shadow: 0 0 8px var(--anyx-blue); }
 
 .alert-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--gray-900);
+    font-size: 13px;
+    font-weight: 700;
     margin-bottom: 2px;
 }
 
 .alert-time {
-    font-size: 12px;
-    color: var(--gray-500);
+    font-size: 11px;
+    color: var(--text-tertiary);
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .dashboard-content {
+/* Responsive */
+@media (max-width: 1400px) {
+    .main-grid {
         grid-template-columns: 1fr;
     }
     
-    .performance-cards {
+    .sidebar-col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 24px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .performance-grid,
+    .actions-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
-    .dashboard-container {
-        padding: 16px;
+    .anyxtech-dashboard {
+        padding: 20px;
     }
     
-    .header-content {
+    .header-wrapper {
         flex-direction: column;
         align-items: flex-start;
-        gap: 16px;
-        padding: 20px;
+        gap: 20px;
     }
     
-    .header-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .stats-overview {
+    .metrics-grid {
         grid-template-columns: 1fr;
-        padding: 20px;
     }
     
-    .quick-actions-grid {
+    .sidebar-col {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 480px) {
-    .header-text h1 {
-        font-size: 20px;
+    .brand-title {
+        font-size: 22px;
     }
     
-    .stat-value {
-        font-size: 24px;
-    }
-    
-    .card-value {
+    .metric-value {
         font-size: 28px;
     }
     
-    .btn {
-        padding: 8px 16px;
-        font-size: 13px;
+    .card-number {
+        font-size: 32px;
     }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Calendar functionality
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthSpan = document.getElementById('currentMonth');
     const prevMonthBtn = document.getElementById('prevMonth');
@@ -950,17 +1166,16 @@ document.addEventListener('DOMContentLoaded', function() {
         'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
     ];
-    const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const weekdays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
     
     function renderCalendar(date) {
         calendarGrid.innerHTML = '';
         
-        // Add weekday headers
         weekdays.forEach(day => {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'calendar-day header';
-            dayElement.textContent = day;
-            calendarGrid.appendChild(dayElement);
+            const dayEl = document.createElement('div');
+            dayEl.className = 'cal-day header';
+            dayEl.textContent = day;
+            calendarGrid.appendChild(dayEl);
         });
         
         const year = date.getFullYear();
@@ -969,42 +1184,33 @@ document.addEventListener('DOMContentLoaded', function() {
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const today = new Date();
         
-        // Adjust for Monday as first day of week
         const startDay = firstDay === 0 ? 6 : firstDay - 1;
-        
-        // Set month and year title
         currentMonthSpan.textContent = `${months[month]} ${year}`;
 
-        // Add empty cells for days before first day of month
         for (let i = 0; i < startDay; i++) {
-            const emptyDay = document.createElement('div');
-            calendarGrid.appendChild(emptyDay);
+            calendarGrid.appendChild(document.createElement('div'));
         }
 
-        // Add days of month
         for (let day = 1; day <= daysInMonth; day++) {
-            const dayElement = document.createElement('div');
-            dayElement.className = 'calendar-day';
-            dayElement.textContent = day;
+            const dayEl = document.createElement('div');
+            dayEl.className = 'cal-day';
+            dayEl.textContent = day;
 
-            // Highlight today
             if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                dayElement.classList.add('today');
+                dayEl.classList.add('today');
             }
 
-            // Add event indicators
             if ([5, 12, 18].includes(day)) {
-                dayElement.classList.add('event', 'breeding');
+                dayEl.classList.add('event', 'purple');
             }
             if ([8, 15, 22].includes(day)) {
-                dayElement.classList.add('event', 'births');
+                dayEl.classList.add('event', 'green');
             }
 
-            calendarGrid.appendChild(dayElement);
+            calendarGrid.appendChild(dayEl);
         }
     }
 
-    // Event listeners for month navigation
     prevMonthBtn.addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar(currentDate);
@@ -1015,12 +1221,11 @@ document.addEventListener('DOMContentLoaded', function() {
         renderCalendar(currentDate);
     });
 
-    // Initial render
     renderCalendar(currentDate);
 
-    // Animate progress bars on load
+    // Animate progress bars
     setTimeout(() => {
-        document.querySelectorAll('.progress-fill').forEach(bar => {
+        document.querySelectorAll('.progress-bar').forEach(bar => {
             const width = bar.style.width;
             bar.style.width = '0%';
             setTimeout(() => {
@@ -1029,15 +1234,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 500);
 
-    // Add hover animations to cards
-    document.querySelectorAll('.stat-item, .performance-card, .action-card').forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-4px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
+    // Add staggered fade-in animation
+    const elements = document.querySelectorAll('.metric-card, .perf-card, .action-tile, .widget');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 50);
     });
 });
 </script>
