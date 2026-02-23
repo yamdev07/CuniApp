@@ -106,7 +106,7 @@ Generate the application key:
 php artisan key:generate
 ````
 4️⃣ Configure database
-````
+````3000
 Edit .env:
 
 DB_DATABASE=cuniapp
