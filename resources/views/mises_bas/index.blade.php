@@ -1,108 +1,107 @@
-@extends('layouts.cuniapp')
+@extends('layouts.cuniapp') 
+@section('title', 'Mises Bas - CuniApp Élevage') 
+@section('content') 
+<div class="page-header"> 
+    <div> 
+        <h2 class="page-title"> 
+            <i class="bi bi-egg"></i> Gestion des Mises Bas 
+        </h2> 
+        <div class="breadcrumb"> 
+            <a href="{{ route('dashboard') }}">Tableau de bord</a> 
+            <span>/</span> 
+            <span>Mises Bas</span> 
+        </div> 
+    </div> 
+    <a href="{{ route('mises-bas.create') }}" class="btn-cuni primary"> 
+        <i class="bi bi-plus-lg"></i> Ajouter une mise bas 
+    </a> 
+</div> 
 
-@section('title', 'Mises Bas - CuniApp Élevage')
-
-@section('content')
-<div class="page-header">
-    <div>
-        <h2 class="page-title">
-            <i class="bi bi-egg"></i>
-            Gestion des Mises Bas
-        </h2>
-        <div class="breadcrumb">
-            <a href="{{ route('dashboard') }}">Tableau de bord</a>
-            <span>/</span>
-            <span>Mises Bas</span>
-        </div>
-    </div>
-    <a href="{{ route('mises-bas.create') }}" class="btn-cuni primary">
-        <i class="bi bi-plus-lg"></i>
-        Ajouter une mise bas
-    </a>
-</div>
-
-<div class="cuni-card">
-    <div class="card-header-custom">
-        <h3 class="card-title">
-            <i class="bi bi-list-ul"></i>
-            Liste des Mises Bas
-        </h3>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4 text-uppercase text-muted fw-semibold small">Femelle</th>
-                        <th class="text-uppercase text-muted fw-semibold small">Date</th>
-                        <th class="text-uppercase text-muted fw-semibold small">Jeunes Vivants</th>
-                        <th class="text-uppercase text-muted fw-semibold small">Morts-nés</th>
-                        <th class="text-uppercase text-muted fw-semibold small">Sevrage</th>
-                        <th class="pe-4 text-end text-uppercase text-muted fw-semibold small">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-    @forelse($misesBas as $miseBas)
-        <tr class="border-bottom border-light">
-            <td class="ps-4 fw-semibold text-dark">{{ $miseBas->code }}</td>
-            <td>{{ $miseBas->nom }}</td>
-            <td>
-                <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
-                    {{ $miseBas->race ?? '-' }}
-                </span>
-            </td>
-            <td class="text-muted">{{ $miseBas->origine }}</td>
-            <td class="text-muted">{{ date('d/m/Y', strtotime($m->date_naissance)) }}</td>
-            <td>
-                <form action="{{ route('mises-bas.toggleEtat', $m->id) }}" method="POST">
-                    @csrf @method('PATCH')
-                    <button type="submit" class="badge border-0 status-{{ strtolower($m->etat) }}">
-                        {{ $miseBas->etat }}
-                    </button>
-                </form>
-            </td>
-            <td class="pe-4">
-                <div class="action-buttons">
-                    <a href="{{ route('mises-bas.edit', $m->id) }}" class="btn-cuni sm secondary" title="Modifier">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <form action="{{ route('mises-bas.destroy', $m->id) }}" method="POST" style="display:inline;">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn-cuni sm danger" title="Supprimer" 
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ?')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="7">
-                <div class="table-empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <p>Aucune mise bas enregistré pour le moment</p>
-                    <a href="{{ route('mises-bas.create') }}" class="btn-cuni primary">
-                        <i class="bi bi-plus-lg"></i> Ajouter une mise bas
-                    </a>
-                </div>
-            </td>
-        </tr>
-    @endforelse
-</tbody>
-            </table>
-        </div>
-
-        @if($misesBas->hasPages())
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
-            <div class="text-muted" style="font-size: 13px;">
-                Affichage de <strong>{{ $misesBas->firstItem() }}</strong> à <strong>{{ $misesBas->lastItem() }}</strong> sur <strong>{{ $misesBas->total() }}</strong> mises bas
-            </div>
-            <nav>
-                {{ $misesBas->links('vendor.pagination.bootstrap-5-sm') }}
-            </nav>
-        </div>
-        @endif
-    </div>
-</div>
+<div class="cuni-card"> 
+    <div class="card-header-custom"> 
+        <h3 class="card-title"> 
+            <i class="bi bi-list-ul"></i> Liste des Mises Bas 
+        </h3> 
+    </div> 
+    <div class="card-body"> 
+        <div class="table-responsive"> 
+            <table class="table table-hover align-middle mb-0"> 
+                <thead class="bg-light"> 
+                    <tr> 
+                        <th class="ps-4 text-uppercase text-muted fw-semibold small">Femelle</th> 
+                        <th class="text-uppercase text-muted fw-semibold small">Date Mise Bas</th> 
+                        <th class="text-uppercase text-muted fw-semibold small">Jeunes Vivants</th> 
+                        <th class="text-uppercase text-muted fw-semibold small">Morts-nés</th> 
+                        <th class="text-uppercase text-muted fw-semibold small">Total</th> 
+                        <th class="text-uppercase text-muted fw-semibold small">Sevrage</th> 
+                        <th class="pe-4 text-end text-uppercase text-muted fw-semibold small">Actions</th> 
+                    </tr> 
+                </thead> 
+                <tbody> 
+                    @forelse($misesBas as $miseBas) 
+                    <tr class="border-bottom border-light"> 
+                        <td class="ps-4 fw-semibold text-dark">
+                            {{ $miseBas->femelle->nom ?? 'N/A' }} 
+                            <small class="text-muted">({{ $miseBas->femelle->code ?? '-' }})</small>
+                        </td> 
+                        <td class="text-muted">
+                            {{ date('d/m/Y', strtotime($miseBas->date_mise_bas)) }}
+                        </td> 
+                        <td> 
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;"> 
+                                {{ $miseBas->nb_vivant }}
+                            </span> 
+                        </td> 
+                        <td class="text-muted">
+                            {{ $miseBas->nb_mort_ne ?? 0 }}
+                        </td> 
+                        <td class="fw-semibold">
+                            {{ ($miseBas->nb_vivant ?? 0) + ($miseBas->nb_mort_ne ?? 0) }}
+                        </td> 
+                        <td class="text-muted">
+                            {{ $miseBas->date_sevrage ? date('d/m/Y', strtotime($miseBas->date_sevrage)) : '-' }}
+                        </td> 
+                        <td class="pe-4"> 
+                            <div class="action-buttons"> 
+                                <a href="{{ route('mises-bas.edit', $miseBas->id) }}" class="btn-cuni sm secondary" title="Modifier"> 
+                                    <i class="bi bi-pencil"></i> 
+                                </a> 
+                                <form action="{{ route('mises-bas.destroy', $miseBas->id) }}" method="POST" style="display:inline;"> 
+                                    @csrf 
+                                    @method('DELETE') 
+                                    <button type="submit" class="btn-cuni sm danger" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette mise bas ?')"> 
+                                        <i class="bi bi-trash"></i> 
+                                    </button> 
+                                </form> 
+                            </div> 
+                        </td> 
+                    </tr> 
+                    @empty 
+                    <tr> 
+                        <td colspan="7"> 
+                            <div class="table-empty-state"> 
+                                <i class="bi bi-inbox"></i> 
+                                <p>Aucune mise bas enregistrée pour le moment</p> 
+                                <a href="{{ route('mises-bas.create') }}" class="btn-cuni primary"> 
+                                    <i class="bi bi-plus-lg"></i> Ajouter une mise bas 
+                                </a> 
+                            </div> 
+                        </td> 
+                    </tr> 
+                    @endforelse 
+                </tbody> 
+            </table> 
+        </div> 
+        @if($misesBas->hasPages()) 
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);"> 
+            <div class="text-muted" style="font-size: 13px;"> 
+                Affichage de <strong>{{ $misesBas->firstItem() }}</strong> à <strong>{{ $misesBas->lastItem() }}</strong> sur <strong>{{ $misesBas->total() }}</strong> mises bas 
+            </div> 
+            <nav> 
+                {{ $misesBas->links('vendor.pagination.bootstrap-5-sm') }} 
+            </nav> 
+        </div> 
+        @endif 
+    </div> 
+</div> 
 @endsection
