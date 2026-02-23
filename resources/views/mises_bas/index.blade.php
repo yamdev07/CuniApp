@@ -21,13 +21,6 @@
     </a>
 </div>
 
-@if(session('success'))
-<div class="alert-cuni success">
-    <i class="bi bi-check-circle-fill"></i>
-    <div>{{ session('success') }}</div>
-</div>
-@endif
-
 <div class="cuni-card">
     <div class="card-header-custom">
         <h3 class="card-title">
@@ -49,46 +42,54 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($misesBas as $mb)
-                    <tr class="border-bottom border-light">
-                        <td class="ps-4 fw-semibold text-dark">{{ $mb->femelle->nom ?? '-' }}</td>
-                        <td class="text-muted">{{ date('d/m/Y', strtotime($mb->date_mise_bas)) }}</td>
-                        <td>
-                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
-                                {{ $mb->nb_vivant }}
-                            </span>
-                        </td>
-                        <td class="text-muted">{{ $mb->nb_mort_ne }}</td>
-                        <td class="text-muted">{{ $mb->date_sevrage ? date('d/m/Y', strtotime($mb->date_sevrage)) : '-' }}</td>
-                        <td class="pe-4">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('mises-bas.edit', $mb->id) }}" 
-                                   class="btn-cuni sm secondary" 
-                                   title="Modifier">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form action="{{ route('mises-bas.destroy', $mb->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="btn-cuni sm danger" 
-                                            title="Supprimer"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette mise bas ?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                            <p class="mt-2">Aucune mise bas enregistrée</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
+    @forelse($misesBas as $miseBas)
+        <tr class="border-bottom border-light">
+            <td class="ps-4 fw-semibold text-dark">{{ $miseBas->code }}</td>
+            <td>{{ $miseBas->nom }}</td>
+            <td>
+                <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                    {{ $miseBas->race ?? '-' }}
+                </span>
+            </td>
+            <td class="text-muted">{{ $miseBas->origine }}</td>
+            <td class="text-muted">{{ date('d/m/Y', strtotime($m->date_naissance)) }}</td>
+            <td>
+                <form action="{{ route('mises-bas.toggleEtat', $m->id) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <button type="submit" class="badge border-0 status-{{ strtolower($m->etat) }}">
+                        {{ $miseBas->etat }}
+                    </button>
+                </form>
+            </td>
+            <td class="pe-4">
+                <div class="action-buttons">
+                    <a href="{{ route('mises-bas.edit', $m->id) }}" class="btn-cuni sm secondary" title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="{{ route('mises-bas.destroy', $m->id) }}" method="POST" style="display:inline;">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn-cuni sm danger" title="Supprimer" 
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ?')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="7">
+                <div class="table-empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p>Aucune mise bas enregistré pour le moment</p>
+                    <a href="{{ route('mises-bas.create') }}" class="btn-cuni primary">
+                        <i class="bi bi-plus-lg"></i> Ajouter une mise bas
+                    </a>
+                </div>
+            </td>
+        </tr>
+    @endforelse
+</tbody>
             </table>
         </div>
 
