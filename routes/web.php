@@ -6,6 +6,7 @@ use App\Http\Controllers\FemelleController;
 use App\Http\Controllers\SaillieController;
 use App\Http\Controllers\MiseBasController;
 use App\Http\Controllers\NaissanceController;
+use App\Http\Controllers\LapinController; // ← Add this
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -15,32 +16,45 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Males (Reproducteurs Mâles)
-    Route::resource('males', MaleController::class);
-    Route::patch('males/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('males.toggleEtat');
+    // Lapins (generic entry point)
+    Route::get('/lapins/create', [LapinController::class, 'create'])->name('lapins.create');
+    Route::post('/lapins', [LapinController::class, 'store'])->name('lapins.store');
     
-    // Femelles (Reproductrices Femelles)
-    Route::resource('femelles', FemelleController::class);
-    Route::patch('femelles/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('femelles.toggleEtat');
+    // Mâles
+    Route::get('/males', [MaleController::class, 'index'])->name('males.index');
+    Route::get('/males/create', [MaleController::class, 'create'])->name('males.create');
+    Route::post('/males', [MaleController::class, 'store'])->name('males.store');
+    Route::get('/males/{male}/edit', [MaleController::class, 'edit'])->name('males.edit');
+    Route::put('/males/{male}', [MaleController::class, 'update'])->name('males.update');
+    Route::delete('/males/{male}', [MaleController::class, 'destroy'])->name('males.destroy');
+    Route::patch('/males/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('males.toggleEtat');
     
-    // Saillies (Breeding)
+    // Femelles
+    Route::get('/femelles', [FemelleController::class, 'index'])->name('femelles.index');
+    Route::get('/femelles/create', [FemelleController::class, 'create'])->name('femelles.create');
+    Route::post('/femelles', [FemelleController::class, 'store'])->name('femelles.store');
+    Route::get('/femelles/{femelle}/edit', [FemelleController::class, 'edit'])->name('femelles.edit');
+    Route::put('/femelles/{femelle}', [FemelleController::class, 'update'])->name('femelles.update');
+    Route::delete('/femelles/{femelle}', [FemelleController::class, 'destroy'])->name('femelles.destroy');
+    Route::patch('/femelles/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('femelles.toggleEtat');
+    
+    // Saillies
     Route::resource('saillies', SaillieController::class);
     
-    // Mises Bas (Births)
+    // Mises Bas
     Route::resource('mises-bas', MiseBasController::class);
     
-    // Naissances (Newborns)
+    // Naissances
     Route::resource('naissances', NaissanceController::class);
     
     // Settings
-    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
-    Route::post('settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
-    Route::get('settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
-    Route::post('settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
+    Route::get('/settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
+    Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
