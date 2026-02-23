@@ -1,17 +1,27 @@
-@extends('layouts.app')
-
-@section('title', 'Tableau de Bord Élevage - CuniApp')
-
-@section('content')
-<div class="anyxtech-dashboard">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Tableau de Bord Élevage - CuniApp')</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body>
+<div class="cuniapp-dashboard">
     <!-- Header Section -->
     <header class="dash-header">
         <div class="header-wrapper">
             <div class="brand-identity">
-                <div class="anyxtech-logo">
+                <div class="cuniapp-logo">
                     <svg viewBox="0 0 40 40" fill="none">
                         <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="url(#logoGrad)"/>
-                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="#0A1628"/>
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="#FFFFFF"/>
                         <defs>
                             <linearGradient id="logoGrad" x1="5" y1="5" x2="35" y2="35">
                                 <stop offset="0%" stop-color="#00D9FF"/>
@@ -25,11 +35,11 @@
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
-
             <div class="header-controls">
                 <a href="{{ route('settings.index') }}" class="ctrl-btn secondary">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M12 15v-3m0 0V9m0 3h3m-3 0H9m9-9a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                     </svg>
                     Paramètres
                 </a>
@@ -41,48 +51,48 @@
                 </a>
             </div>
         </div>
-
+        
+        <!-- Metrics Grid -->
         <div class="metrics-grid">
             @php
-                $metricsData = [
-                    ['icon' => 'total', 'value' => $nbMales + $nbFemelles, 'label' => 'Total Lapins', 'type' => 'primary', 'change' => '+8.2%', 'trend' => 'up'],
-                    ['icon' => 'male', 'value' => $nbMales, 'label' => 'Mâles', 'type' => 'blue', 'change' => '+5.1%', 'trend' => 'up'],
-                    ['icon' => 'female', 'value' => $nbFemelles, 'label' => 'Femelles', 'type' => 'pink', 'change' => '+12%', 'trend' => 'up'],
-                    ['icon' => 'breed', 'value' => $nbSaillies, 'label' => 'Saillies', 'type' => 'purple', 'change' => '-3.1%', 'trend' => 'down'],
-                    ['icon' => 'birth', 'value' => $nbMisesBas, 'label' => 'Portées', 'type' => 'green', 'change' => '+15%', 'trend' => 'up'],
-                    ['icon' => 'alert', 'value' => 3, 'label' => 'Alertes', 'type' => 'orange', 'change' => '0%', 'trend' => 'neutral']
-                ];
+            $metricsData = [
+                ['icon' => 'total', 'value' => $nbMales + $nbFemelles, 'label' => 'Total Lapins', 'type' => 'primary', 'change' => '+8.2%', 'trend' => 'up'],
+                ['icon' => 'male', 'value' => $nbMales, 'label' => 'Mâles', 'type' => 'blue', 'change' => '+5.1%', 'trend' => 'up'],
+                ['icon' => 'female', 'value' => $nbFemelles, 'label' => 'Femelles', 'type' => 'pink', 'change' => '+12%', 'trend' => 'up'],
+                ['icon' => 'breed', 'value' => $nbSaillies, 'label' => 'Saillies', 'type' => 'purple', 'change' => '-3.1%', 'trend' => 'down'],
+                ['icon' => 'birth', 'value' => $nbMisesBas, 'label' => 'Portées', 'type' => 'green', 'change' => '+15%', 'trend' => 'up'],
+                ['icon' => 'alert', 'value' => 3, 'label' => 'Alertes', 'type' => 'orange', 'change' => '0%', 'trend' => 'neutral']
+            ];
             @endphp
-
             @foreach($metricsData as $metric)
             <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
                 <div class="metric-icon">
                     @if($metric['icon'] === 'total')
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-                            <circle cx="17" cy="7" r="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                        <circle cx="17" cy="7" r="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    </svg>
                     @elseif($metric['icon'] === 'male')
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                    </svg>
                     @elseif($metric['icon'] === 'female')
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                    </svg>
                     @elseif($metric['icon'] === 'breed')
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
                     @elseif($metric['icon'] === 'birth')
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
                     @else
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
                     @endif
                 </div>
                 <div class="metric-data">
@@ -108,38 +118,36 @@
                     <h2>Performance</h2>
                     <span class="title-accent"></span>
                 </div>
-                
                 <div class="performance-grid">
                     @php
-                        $perfCards = [
-                            ['type' => 'blue', 'icon' => 'male', 'value' => $nbMales, 'title' => 'Mâles Reproducteurs', 'progress' => 75, 'trend' => '+12%'],
-                            ['type' => 'pink', 'icon' => 'female', 'value' => $nbFemelles, 'title' => 'Femelles Reproductrices', 'progress' => 85, 'trend' => '+8%'],
-                            ['type' => 'purple', 'icon' => 'breed', 'value' => $nbSaillies, 'title' => 'Saillies en Cours', 'progress' => 60, 'trend' => '-3%'],
-                            ['type' => 'green', 'icon' => 'birth', 'value' => $nbMisesBas, 'title' => 'Mises Bas Récentes', 'progress' => 90, 'trend' => '+15%']
-                        ];
+                    $perfCards = [
+                        ['type' => 'blue', 'icon' => 'male', 'value' => $nbMales, 'title' => 'Mâles Reproducteurs', 'progress' => 75, 'trend' => '+12%'],
+                        ['type' => 'pink', 'icon' => 'female', 'value' => $nbFemelles, 'title' => 'Femelles Reproductrices', 'progress' => 85, 'trend' => '+8%'],
+                        ['type' => 'purple', 'icon' => 'breed', 'value' => $nbSaillies, 'title' => 'Saillies en Cours', 'progress' => 60, 'trend' => '-3%'],
+                        ['type' => 'green', 'icon' => 'birth', 'value' => $nbMisesBas, 'title' => 'Mises Bas Récentes', 'progress' => 90, 'trend' => '+15%']
+                    ];
                     @endphp
-
                     @foreach($perfCards as $card)
                     <div class="perf-card {{ $card['type'] }}">
                         <div class="card-top">
                             <span class="card-label">{{ $card['title'] }}</span>
                             <div class="card-badge {{ $card['type'] }}">
                                 @if($card['icon'] === 'male')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
-                                    </svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                                </svg>
                                 @elseif($card['icon'] === 'female')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
-                                    </svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                                </svg>
                                 @elseif($card['icon'] === 'breed')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                    </svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
                                 @else
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                    </svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
                                 @endif
                             </div>
                         </div>
@@ -162,7 +170,6 @@
                     <h2>Actions Rapides</h2>
                     <span class="title-accent"></span>
                 </div>
-                
                 <div class="actions-grid">
                     @foreach([
                         ['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'],
@@ -173,21 +180,21 @@
                     <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
                         <div class="tile-icon">
                             @if($action['icon'] === 'male')
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
-                                </svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="10" cy="14" r="6"/><path d="M16 8h6V2M22 2l-8.5 8.5"/>
+                            </svg>
                             @elseif($action['icon'] === 'female')
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
-                                </svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="8" r="6"/><path d="M12 14v8M9 19h6"/>
+                            </svg>
                             @elseif($action['icon'] === 'breed')
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                </svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
                             @else
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                </svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
                             @endif
                         </div>
                         <h3>{{ $action['title'] }}</h3>
@@ -273,43 +280,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="dash-footer">
+        <div class="footer-content">
+            <p>&copy; {{ date('Y') }} CuniApp Élevage - Tous droits réservés</p>
+            <div class="footer-links">
+                <a href="#">Documentation</a>
+                <a href="#">Support</a>
+                <a href="#">Confidentialité</a>
+            </div>
+        </div>
+    </footer>
 </div>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
-    /* CuniApp Color Palette */
-    --anyx-dark: #0A1628;
-    --anyx-darker: #050B14;
-    --anyx-navy: #162B4D;
-    --anyx-blue: #0066FF;
-    --anyx-cyan: #00D9FF;
-    --anyx-purple: #8B5CF6;
-    --anyx-pink: #EC4899;
-    --anyx-green: #10B981;
-    --anyx-orange: #F59E0B;
-    
+    /* CuniApp Light Color Palette */
+    --cuni-light: #FFFFFF;
+    --cuni-lighter: #F8FAFC;
+    --cuni-gray: #F1F5F9;
+    --cuni-blue: #0066FF;
+    --cuni-cyan: #00D9FF;
+    --cuni-purple: #8B5CF6;
+    --cuni-pink: #EC4899;
+    --cuni-green: #10B981;
+    --cuni-orange: #F59E0B;
+
     /* Gradients */
     --grad-primary: linear-gradient(135deg, #00D9FF 0%, #0066FF 100%);
     --grad-accent: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
     --grad-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    
-    /* Surfaces */
-    --surface-1: #0F1C2E;
-    --surface-2: #1A2942;
-    --surface-3: #253A5C;
-    
-    /* Text */
-    --text-primary: #F9FAFB;
-    --text-secondary: #9CA3AF;
-    --text-tertiary: #6B7280;
-    
+
+    /* Surfaces - Light Theme */
+    --surface-1: #FFFFFF;
+    --surface-2: #F8FAFC;
+    --surface-3: #F1F5F9;
+
+    /* Text - Light Theme */
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-tertiary: #94A3B8;
+
     /* Effects */
-    --glow-blue: 0 0 20px rgba(0, 102, 255, 0.3);
-    --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.3);
-    --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --shadow-2: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --glow-blue: 0 0 20px rgba(0, 102, 255, 0.2);
+    --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.2);
+    --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-2: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --border-light: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -320,12 +338,12 @@
 
 body {
     font-family: 'Space Mono', monospace;
-    background: var(--anyx-darker);
+    background: var(--cuni-gray);
     color: var(--text-primary);
     line-height: 1.6;
 }
 
-.anyxtech-dashboard {
+.cuniapp-dashboard {
     max-width: 1800px;
     margin: 0 auto;
     padding: 32px;
@@ -343,8 +361,9 @@ body {
     border-radius: 24px;
     overflow: hidden;
     margin-bottom: 32px;
-    border: 1px solid rgba(0, 217, 255, 0.1);
+    border: var(--border-light);
     position: relative;
+    box-shadow: var(--shadow-1);
 }
 
 .dash-header::before {
@@ -362,7 +381,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 32px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: var(--border-light);
 }
 
 .brand-identity {
@@ -371,7 +390,7 @@ body {
     gap: 20px;
 }
 
-.anyxtech-logo {
+.cuniapp-logo {
     width: 56px;
     height: 56px;
     animation: rotate 20s linear infinite;
@@ -382,7 +401,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-.anyxtech-logo svg {
+.cuniapp-logo svg {
     width: 100%;
     height: 100%;
     filter: drop-shadow(var(--glow-cyan));
@@ -441,17 +460,17 @@ body {
 
 .ctrl-btn.primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(0, 102, 255, 0.5);
+    box-shadow: 0 0 30px rgba(0, 102, 255, 0.4);
 }
 
 .ctrl-btn.secondary {
     background: var(--surface-2);
     color: var(--text-primary);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: var(--border-light);
 }
 
 .ctrl-btn.secondary:hover {
-    border-color: var(--anyx-cyan);
+    border-color: var(--cuni-cyan);
     background: var(--surface-3);
 }
 
@@ -468,16 +487,17 @@ body {
 }
 
 .metric-card {
-    background: var(--surface-2);
+    background: var(--surface-1);
     border-radius: 16px;
     padding: 24px;
     display: flex;
     align-items: center;
     gap: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--border-light);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-1);
 }
 
 .metric-card::before {
@@ -492,15 +512,16 @@ body {
 }
 
 .metric-card.primary::before { background: var(--grad-primary); }
-.metric-card.blue::before { background: var(--anyx-blue); }
-.metric-card.pink::before { background: var(--anyx-pink); }
-.metric-card.purple::before { background: var(--anyx-purple); }
-.metric-card.green::before { background: var(--anyx-green); }
-.metric-card.orange::before { background: var(--anyx-orange); }
+.metric-card.blue::before { background: var(--cuni-blue); }
+.metric-card.pink::before { background: var(--cuni-pink); }
+.metric-card.purple::before { background: var(--cuni-purple); }
+.metric-card.green::before { background: var(--cuni-green); }
+.metric-card.orange::before { background: var(--cuni-orange); }
 
 .metric-card:hover {
     transform: translateY(-4px);
-    border-color: rgba(0, 217, 255, 0.3);
+    border-color: rgba(0, 217, 255, 0.4);
+    box-shadow: var(--shadow-2);
 }
 
 .metric-card:hover::before {
@@ -530,12 +551,12 @@ body {
     stroke-width: 2.5;
 }
 
-.metric-card.primary .metric-icon svg { stroke: var(--anyx-cyan); }
-.metric-card.blue .metric-icon svg { stroke: var(--anyx-blue); }
-.metric-card.pink .metric-icon svg { stroke: var(--anyx-pink); }
-.metric-card.purple .metric-icon svg { stroke: var(--anyx-purple); }
-.metric-card.green .metric-icon svg { stroke: var(--anyx-green); }
-.metric-card.orange .metric-icon svg { stroke: var(--anyx-orange); }
+.metric-card.primary .metric-icon svg { stroke: var(--cuni-cyan); }
+.metric-card.blue .metric-icon svg { stroke: var(--cuni-blue); }
+.metric-card.pink .metric-icon svg { stroke: var(--cuni-pink); }
+.metric-card.purple .metric-icon svg { stroke: var(--cuni-purple); }
+.metric-card.green .metric-icon svg { stroke: var(--cuni-green); }
+.metric-card.orange .metric-icon svg { stroke: var(--cuni-orange); }
 
 .metric-value {
     font-family: 'Orbitron', sans-serif;
@@ -543,6 +564,7 @@ body {
     font-weight: 900;
     line-height: 1;
     margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
 .metric-label {
@@ -560,8 +582,8 @@ body {
     font-weight: 700;
 }
 
-.metric-trend.up { color: var(--anyx-green); }
-.metric-trend.down { color: var(--anyx-orange); }
+.metric-trend.up { color: var(--cuni-green); }
+.metric-trend.down { color: var(--cuni-orange); }
 .metric-trend.neutral { color: var(--text-tertiary); }
 
 .trend-arrow {
@@ -581,7 +603,8 @@ body {
     border-radius: 20px;
     padding: 32px;
     margin-bottom: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--border-light);
+    box-shadow: var(--shadow-1);
 }
 
 .section-title {
@@ -601,7 +624,7 @@ body {
 .title-accent {
     flex: 1;
     height: 2px;
-    background: linear-gradient(90deg, var(--anyx-cyan) 0%, transparent 100%);
+    background: linear-gradient(90deg, var(--cuni-cyan) 0%, transparent 100%);
 }
 
 /* Performance Grid */
@@ -615,7 +638,7 @@ body {
     background: var(--surface-2);
     border-radius: 16px;
     padding: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--border-light);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -634,14 +657,15 @@ body {
     transition: opacity 0.4s;
 }
 
-.perf-card.blue::after { background: var(--anyx-blue); }
-.perf-card.pink::after { background: var(--anyx-pink); }
-.perf-card.purple::after { background: var(--anyx-purple); }
-.perf-card.green::after { background: var(--anyx-green); }
+.perf-card.blue::after { background: var(--cuni-blue); }
+.perf-card.pink::after { background: var(--cuni-pink); }
+.perf-card.purple::after { background: var(--cuni-purple); }
+.perf-card.green::after { background: var(--cuni-green); }
 
 .perf-card:hover {
     transform: translateY(-6px);
-    border-color: rgba(0, 217, 255, 0.3);
+    border-color: rgba(0, 217, 255, 0.4);
+    box-shadow: var(--shadow-2);
 }
 
 .perf-card:hover::after {
@@ -681,21 +705,22 @@ body {
     stroke-width: 2.5;
 }
 
-.card-badge.blue svg { stroke: var(--anyx-blue); }
-.card-badge.pink svg { stroke: var(--anyx-pink); }
-.card-badge.purple svg { stroke: var(--anyx-purple); }
-.card-badge.green svg { stroke: var(--anyx-green); }
+.card-badge.blue svg { stroke: var(--cuni-blue); }
+.card-badge.pink svg { stroke: var(--cuni-pink); }
+.card-badge.purple svg { stroke: var(--cuni-purple); }
+.card-badge.green svg { stroke: var(--cuni-green); }
 
 .card-number {
     font-family: 'Orbitron', sans-serif;
     font-size: 40px;
     font-weight: 900;
     margin-bottom: 16px;
+    color: var(--text-primary);
 }
 
 .progress-track {
     height: 6px;
-    background: var(--surface-1);
+    background: var(--surface-3);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 16px;
@@ -713,10 +738,10 @@ body {
     50% { opacity: 0.8; }
 }
 
-.progress-bar.blue { background: var(--anyx-blue); box-shadow: 0 0 10px var(--anyx-blue); }
-.progress-bar.pink { background: var(--anyx-pink); box-shadow: 0 0 10px var(--anyx-pink); }
-.progress-bar.purple { background: var(--anyx-purple); box-shadow: 0 0 10px var(--anyx-purple); }
-.progress-bar.green { background: var(--anyx-green); box-shadow: 0 0 10px var(--anyx-green); }
+.progress-bar.blue { background: var(--cuni-blue); box-shadow: 0 0 10px var(--cuni-blue); }
+.progress-bar.pink { background: var(--cuni-pink); box-shadow: 0 0 10px var(--cuni-pink); }
+.progress-bar.purple { background: var(--cuni-purple); box-shadow: 0 0 10px var(--cuni-purple); }
+.progress-bar.green { background: var(--cuni-green); box-shadow: 0 0 10px var(--cuni-green); }
 
 .card-footer {
     display: flex;
@@ -732,7 +757,7 @@ body {
 .trend-badge {
     font-size: 12px;
     font-weight: 700;
-    color: var(--anyx-green);
+    color: var(--cuni-green);
 }
 
 /* Actions Grid */
@@ -748,7 +773,7 @@ body {
     padding: 24px;
     text-decoration: none;
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--border-light);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -767,14 +792,15 @@ body {
     transition: opacity 0.3s;
 }
 
-.action-tile.blue::before { background: var(--anyx-blue); }
-.action-tile.pink::before { background: var(--anyx-pink); }
-.action-tile.purple::before { background: var(--anyx-purple); }
-.action-tile.green::before { background: var(--anyx-green); }
+.action-tile.blue::before { background: var(--cuni-blue); }
+.action-tile.pink::before { background: var(--cuni-pink); }
+.action-tile.purple::before { background: var(--cuni-purple); }
+.action-tile.green::before { background: var(--cuni-green); }
 
 .action-tile:hover {
     transform: translateY(-6px);
-    border-color: rgba(0, 217, 255, 0.3);
+    border-color: rgba(0, 217, 255, 0.4);
+    box-shadow: var(--shadow-2);
 }
 
 .action-tile:hover::before {
@@ -802,10 +828,10 @@ body {
     stroke-width: 2.5;
 }
 
-.action-tile.blue .tile-icon svg { stroke: var(--anyx-blue); }
-.action-tile.pink .tile-icon svg { stroke: var(--anyx-pink); }
-.action-tile.purple .tile-icon svg { stroke: var(--anyx-purple); }
-.action-tile.green .tile-icon svg { stroke: var(--anyx-green); }
+.action-tile.blue .tile-icon svg { stroke: var(--cuni-blue); }
+.action-tile.pink .tile-icon svg { stroke: var(--cuni-pink); }
+.action-tile.purple .tile-icon svg { stroke: var(--cuni-purple); }
+.action-tile.green .tile-icon svg { stroke: var(--cuni-green); }
 
 .action-tile h3 {
     font-family: 'Orbitron', sans-serif;
@@ -823,7 +849,7 @@ body {
 .tile-arrow {
     margin-top: auto;
     font-size: 20px;
-    color: var(--anyx-cyan);
+    color: var(--cuni-cyan);
     transition: transform 0.3s;
 }
 
@@ -837,7 +863,8 @@ body {
     border-radius: 20px;
     padding: 24px;
     margin-bottom: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: var(--border-light);
+    box-shadow: var(--shadow-1);
 }
 
 .widget-head {
@@ -846,19 +873,20 @@ body {
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: var(--border-light);
 }
 
 .widget-head h3 {
     font-family: 'Orbitron', sans-serif;
     font-size: 16px;
     font-weight: 700;
+    color: var(--text-primary);
 }
 
 .text-link {
     background: none;
     border: none;
-    color: var(--anyx-cyan);
+    color: var(--cuni-cyan);
     font-size: 12px;
     cursor: pointer;
     font-family: 'Space Mono', monospace;
@@ -867,7 +895,7 @@ body {
 }
 
 .text-link:hover {
-    color: var(--anyx-blue);
+    color: var(--cuni-blue);
 }
 
 /* Calendar */
@@ -880,9 +908,9 @@ body {
 .cal-btn {
     width: 32px;
     height: 32px;
-    border: none;
+    border: var(--border-light);
     background: var(--surface-2);
-    color: var(--anyx-cyan);
+    color: var(--cuni-cyan);
     border-radius: 8px;
     font-size: 18px;
     cursor: pointer;
@@ -892,8 +920,8 @@ body {
 }
 
 .cal-btn:hover {
-    background: var(--anyx-cyan);
-    color: var(--anyx-dark);
+    background: var(--cuni-cyan);
+    color: var(--cuni-light);
 }
 
 .cal-month {
@@ -902,6 +930,7 @@ body {
     font-weight: 600;
     min-width: 120px;
     text-align: center;
+    color: var(--text-primary);
 }
 
 .calendar-body {
@@ -922,6 +951,7 @@ body {
     transition: all 0.3s;
     position: relative;
     font-weight: 700;
+    color: var(--text-primary);
 }
 
 .cal-day.header {
@@ -931,7 +961,7 @@ body {
 }
 
 .cal-day:not(.header):hover {
-    background: var(--surface-2);
+    background: var(--surface-3);
 }
 
 .cal-day.today {
@@ -950,11 +980,11 @@ body {
 }
 
 .cal-day.event.purple::after {
-    background: var(--anyx-purple);
+    background: var(--cuni-purple);
 }
 
 .cal-day.event.green::after {
-    background: var(--anyx-green);
+    background: var(--cuni-green);
 }
 
 .calendar-legend {
@@ -977,8 +1007,8 @@ body {
     border-radius: 50%;
 }
 
-.legend-dot.purple { background: var(--anyx-purple); }
-.legend-dot.green { background: var(--anyx-green); }
+.legend-dot.purple { background: var(--cuni-purple); }
+.legend-dot.green { background: var(--cuni-green); }
 
 /* Timeline */
 .timeline {
@@ -1000,7 +1030,7 @@ body {
     top: 24px;
     width: 2px;
     height: calc(100% + 8px);
-    background: var(--surface-2);
+    background: var(--surface-3);
 }
 
 .timeline-dot {
@@ -1012,15 +1042,16 @@ body {
     box-shadow: 0 0 10px currentColor;
 }
 
-.timeline-dot.green { background: var(--anyx-green); }
-.timeline-dot.purple { background: var(--anyx-purple); }
-.timeline-dot.orange { background: var(--anyx-orange); }
-.timeline-dot.blue { background: var(--anyx-blue); }
+.timeline-dot.green { background: var(--cuni-green); }
+.timeline-dot.purple { background: var(--cuni-purple); }
+.timeline-dot.orange { background: var(--cuni-orange); }
+.timeline-dot.blue { background: var(--cuni-blue); }
 
 .timeline-title {
     font-size: 14px;
     font-weight: 700;
     margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
 .timeline-desc {
@@ -1036,7 +1067,7 @@ body {
 
 /* Alerts */
 .alert-badge {
-    background: var(--anyx-orange);
+    background: var(--cuni-orange);
     color: white;
     font-size: 11px;
     font-weight: 700;
@@ -1062,9 +1093,9 @@ body {
     transition: all 0.3s;
 }
 
-.alert-row.high { border-left-color: var(--anyx-orange); }
-.alert-row.medium { border-left-color: var(--anyx-cyan); }
-.alert-row.low { border-left-color: var(--anyx-blue); }
+.alert-row.high { border-left-color: var(--cuni-orange); }
+.alert-row.medium { border-left-color: var(--cuni-cyan); }
+.alert-row.low { border-left-color: var(--cuni-blue); }
 
 .alert-row:hover {
     transform: translateX(4px);
@@ -1084,14 +1115,15 @@ body {
     50% { opacity: 0.3; }
 }
 
-.alert-row.high .alert-indicator { background: var(--anyx-orange); box-shadow: 0 0 8px var(--anyx-orange); }
-.alert-row.medium .alert-indicator { background: var(--anyx-cyan); box-shadow: 0 0 8px var(--anyx-cyan); }
-.alert-row.low .alert-indicator { background: var(--anyx-blue); box-shadow: 0 0 8px var(--anyx-blue); }
+.alert-row.high .alert-indicator { background: var(--cuni-orange); box-shadow: 0 0 8px var(--cuni-orange); }
+.alert-row.medium .alert-indicator { background: var(--cuni-cyan); box-shadow: 0 0 8px var(--cuni-cyan); }
+.alert-row.low .alert-indicator { background: var(--cuni-blue); box-shadow: 0 0 8px var(--cuni-blue); }
 
 .alert-title {
     font-size: 13px;
     font-weight: 700;
     margin-bottom: 2px;
+    color: var(--text-primary);
 }
 
 .alert-time {
@@ -1099,12 +1131,50 @@ body {
     color: var(--text-tertiary);
 }
 
+/* Footer */
+.dash-footer {
+    background: var(--surface-1);
+    border-radius: 20px;
+    padding: 24px 32px;
+    margin-top: 32px;
+    border: var(--border-light);
+    box-shadow: var(--shadow-1);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.footer-content p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: var(--cuni-blue);
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .main-grid {
         grid-template-columns: 1fr;
     }
-    
     .sidebar-col {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1120,22 +1190,23 @@ body {
 }
 
 @media (max-width: 768px) {
-    .anyxtech-dashboard {
+    .cuniapp-dashboard {
         padding: 20px;
     }
-    
     .header-wrapper {
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
     }
-    
     .metrics-grid {
         grid-template-columns: 1fr;
     }
-    
     .sidebar-col {
         grid-template-columns: 1fr;
+    }
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
     }
 }
 
@@ -1143,11 +1214,9 @@ body {
     .brand-title {
         font-size: 22px;
     }
-    
     .metric-value {
         font-size: 28px;
     }
-    
     .card-number {
         font-size: 32px;
     }
@@ -1160,31 +1229,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentMonthSpan = document.getElementById('currentMonth');
     const prevMonthBtn = document.getElementById('prevMonth');
     const nextMonthBtn = document.getElementById('nextMonth');
-    
     let currentDate = new Date();
     const months = [
         'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
     ];
     const weekdays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-    
+
     function renderCalendar(date) {
         calendarGrid.innerHTML = '';
-        
         weekdays.forEach(day => {
             const dayEl = document.createElement('div');
             dayEl.className = 'cal-day header';
             dayEl.textContent = day;
             calendarGrid.appendChild(dayEl);
         });
-        
+
         const year = date.getFullYear();
         const month = date.getMonth();
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const today = new Date();
-        
         const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
         currentMonthSpan.textContent = `${months[month]} ${year}`;
 
         for (let i = 0; i < startDay; i++) {
@@ -1203,6 +1270,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if ([5, 12, 18].includes(day)) {
                 dayEl.classList.add('event', 'purple');
             }
+
             if ([8, 15, 22].includes(day)) {
                 dayEl.classList.add('event', 'green');
             }
@@ -1247,4 +1315,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+</body>
+</html>
