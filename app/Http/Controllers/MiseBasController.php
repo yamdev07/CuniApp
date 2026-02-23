@@ -34,7 +34,10 @@ class MiseBasController extends Controller
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'date_mise_bas' => 'required|date',
-            'nombre_jeunes' => 'required|integer|min:1',
+            'nb_vivant' => 'required|integer|min:1',  // Changed from nombre_jeunes
+            'nb_mort_ne' => 'nullable|integer|min:0',
+            'date_sevrage' => 'nullable|date',
+            'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
 
         MiseBas::create($request->all());
@@ -68,7 +71,10 @@ class MiseBasController extends Controller
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'date_mise_bas' => 'required|date',
-            'nombre_jeunes' => 'required|integer|min:1',
+            'nb_vivant' => 'required|integer|min:1',  // Changed from nombre_jeunes
+            'nb_mort_ne' => 'nullable|integer|min:0',
+            'date_sevrage' => 'nullable|date',
+            'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
 
         $miseBas->update($request->all());

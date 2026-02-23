@@ -575,6 +575,173 @@
                 gap: 8px;
             }
         }
+
+        /* ==================== ENHANCED TABLES ==================== */
+.table-responsive {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--surface-border);
+}
+
+.table {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.table thead {
+    background: var(--surface-alt);
+    border-bottom: 2px solid var(--surface-border);
+}
+
+.table thead th {
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border: none;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--surface-border);
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: var(--primary-subtle);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+/* Empty State */
+.table-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--surface-alt);
+}
+
+.table-empty-state i {
+    font-size: 3rem;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+    display: block;
+}
+
+.table-empty-state p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.table-empty-state .btn-cuni {
+    margin-top: 8px;
+}
+
+/* Badge Improvements */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Status Colors */
+.status-active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
+}
+
+.status-gestante {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+}
+
+.status-allaitante {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+}
+
+.status-vide {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6B7280;
+}
+
+.status-inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6B7280;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.action-buttons .btn-cuni {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+    padding: 8px 14px;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    background: var(--white);
+    transition: all 0.2s ease;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+.pagination .page-item:hover .page-link {
+    background: var(--primary-subtle);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        min-width: 800px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
     </style>
 </head>
 <body>
