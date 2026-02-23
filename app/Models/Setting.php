@@ -1,4 +1,3 @@
-// app/Models/Setting.php
 <?php
 
 namespace App\Models;
