@@ -54,21 +54,21 @@
                 </span>
             </td>
             <td class="text-muted">{{ $femelle->origine }}</td>
-            <td class="text-muted">{{ date('d/m/Y', strtotime($m->date_naissance)) }}</td>
+            <td class="text-muted">{{ date('d/m/Y', strtotime($femelle->date_naissance)) }}</td>
             <td>
-                <form action="{{ route('femelles.toggleEtat', $m->id) }}" method="POST">
+                <form action="{{ route('femelles.toggleEtat', $femelle->id) }}" method="POST">
                     @csrf @method('PATCH')
-                    <button type="submit" class="badge border-0 status-{{ strtolower($m->etat) }}">
+                    <button type="submit" class="badge border-0 status-{{ strtolower($femelle->etat) }}">
                         {{ $femelle->etat }}
                     </button>
                 </form>
             </td>
             <td class="pe-4">
                 <div class="action-buttons">
-                    <a href="{{ route('femelles.edit', $m->id) }}" class="btn-cuni sm secondary" title="Modifier">
+                    <a href="{{ route('femelles.edit', $femelle->id) }}" class="btn-cuni sm secondary" title="Modifier">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <form action="{{ route('femelles.destroy', $m->id) }}" method="POST" style="display:inline;">
+                    <form action="{{ route('femelles.destroy', $femelle->id) }}" method="POST" style="display:inline;">
                         @csrf @method('DELETE')
                         <button type="submit" class="btn-cuni sm danger" title="Supprimer" 
                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ?')">

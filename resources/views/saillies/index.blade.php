@@ -21,12 +21,6 @@
     </a>
 </div>
 
-@if(session('success'))
-<div class="alert-cuni success">
-    <i class="bi bi-check-circle-fill"></i>
-    <div>{{ session('success') }}</div>
-</div>
-@endif
 
 <div class="cuni-card">
     <div class="card-header-custom">
