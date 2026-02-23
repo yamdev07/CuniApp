@@ -23,14 +23,13 @@ class MaleController extends Controller
         $request->validate([
             'code' => 'required|unique:males,code',
             'nom' => 'required|string|max:255',
-            'race' => 'required|string|max:255',
-            'origine' => 'nullable|string|max:255',
+            'race' => 'nullable|string|max:255',  // Changed from required
+            'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive',
+            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
         ]);
 
         Male::create($request->all());
-
         return redirect()->route('males.index')->with('success', 'Mâle ajouté avec succès.');
     }
 
@@ -43,18 +42,16 @@ class MaleController extends Controller
     public function update(Request $request, string $id)
     {
         $male = Male::findOrFail($id);
-
         $request->validate([
             'code' => 'required|unique:males,code,' . $male->id,
             'nom' => 'required|string|max:255',
-            'race' => 'required|string|max:255',
-            'origine' => 'nullable|string|max:255',
+            'race' => 'nullable|string|max:255',  // Changed from required
+            'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive',
+            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
         ]);
 
         $male->update($request->all());
-
         return redirect()->route('males.index')->with('success', 'Mâle modifié avec succès.');
     }
 
