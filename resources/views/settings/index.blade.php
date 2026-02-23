@@ -50,18 +50,6 @@
                             <i class="bi bi-bell me-3"></i>
                             <span>Notifications</span>
                         </button>
-                        <button class="nav-link d-flex align-items-center mb-2 settings-nav-link" id="users-tab" data-bs-toggle="pill" data-bs-target="#users">
-                            <i class="bi bi-people me-3"></i>
-                            <span>Utilisateurs</span>
-                        </button>
-                        <button class="nav-link d-flex align-items-center mb-2 settings-nav-link" id="backup-tab" data-bs-toggle="pill" data-bs-target="#backup">
-                            <i class="bi bi-cloud-arrow-up me-3"></i>
-                            <span>Sauvegarde</span>
-                        </button>
-                        <button class="nav-link d-flex align-items-center mb-2 settings-nav-link" id="api-tab" data-bs-toggle="pill" data-bs-target="#api">
-                            <i class="bi bi-code-slash me-3"></i>
-                            <span>API & Intégrations</span>
-                        </button>
                         <button class="nav-link d-flex align-items-center mb-2 settings-nav-link" id="appearance-tab" data-bs-toggle="pill" data-bs-target="#appearance">
                             <i class="bi bi-palette me-3"></i>
                             <span>Apparence</span>
@@ -225,20 +213,39 @@
                                 <div class="mb-4">
                                     <h6 class="mb-3 settings-subsection-title">Notifications par email</h6>
                                     <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input settings-switch" type="checkbox" id="notif-saillies" checked>
+                                        <input class="form-check-input settings-switch" type="checkbox" 
+                                               name="notifications[saillies_reminder]" 
+                                               id="notif-saillies"
+                                               {{ ($settings['notifications']['saillies_reminder'] ?? true) ? 'checked' : '' }}>
                                         <label class="form-check-label settings-switch-label" for="notif-saillies">Rappels de saillies</label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input settings-switch" type="checkbox" id="notif-mises-bas" checked>
+                                        <input class="form-check-input settings-switch" type="checkbox" 
+                                               name="notifications[birth_alerts]" 
+                                               id="notif-mises-bas"
+                                               {{ ($settings['notifications']['birth_alerts'] ?? true) ? 'checked' : '' }}>
                                         <label class="form-check-label settings-switch-label" for="notif-mises-bas">Alertes de mises bas</label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input settings-switch" type="checkbox" id="notif-vaccins" checked>
+                                        <input class="form-check-input settings-switch" type="checkbox" 
+                                               name="notifications[vaccine_reminders]" 
+                                               id="notif-vaccins"
+                                               {{ ($settings['notifications']['vaccine_reminders'] ?? true) ? 'checked' : '' }}>
                                         <label class="form-check-label settings-switch-label" for="notif-vaccins">Rappels de vaccins</label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
-                                        <input class="form-check-input settings-switch" type="checkbox" id="notif-sante">
+                                        <input class="form-check-input settings-switch" type="checkbox" 
+                                               name="notifications[health_alerts]" 
+                                               id="notif-sante"
+                                               {{ ($settings['notifications']['health_alerts'] ?? false) ? 'checked' : '' }}>
                                         <label class="form-check-label settings-switch-label" for="notif-sante">Alertes santé</label>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input settings-switch" type="checkbox" 
+                                               name="notifications[email_enabled]" 
+                                               id="notif-email"
+                                               {{ ($settings['notifications']['email_enabled'] ?? true) ? 'checked' : '' }}>
+                                        <label class="form-check-label settings-switch-label" for="notif-email">Activer les notifications email</label>
                                     </div>
                                 </div>
                                 
@@ -292,6 +299,7 @@
                                         @endphp
                                         @foreach($colors as $color)
                                             <div class="color-option settings-color-option {{ $color == $accentColor ? 'selected' : '' }}" 
+                                                 style="background-color: {{ $color }};"
                                                  data-color="{{ $color }}" data-name="appearance[accent_color]"></div>
                                         @endforeach
                                     </div>
@@ -332,25 +340,27 @@
                                     <form method="POST" action="{{ route('settings.export') }}">
                                         @csrf
                                         <button type="submit" class="btn btn-danger settings-danger-btn me-3">
-                                            <i class="bi bi-file-earmark-excel me-2"></i>Exporter toutes les données (CSV)
+                                            <i class="bi bi-file-earmark-excel me-2"></i>Exporter toutes les données (JSON)
                                         </button>
+                                        <small class="text-muted">Télécharge un fichier JSON contenant tous vos paramètres.</small>
                                     </form>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <h6 class="mb-3 settings-subsection-title">Réinitialisation</h6>
-                                    <form method="POST" action="{{ route('settings.reset') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser les données de test ? Cette action est irréversible.')">
+                                    <h6 class="mb-3 settings-subsection-title">Réinitialisation des paramètres</h6>
+                                    <form method="POST" action="{{ route('settings.reset') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser tous les paramètres aux valeurs par défaut ? Cette action est irréversible.')">
                                         @csrf
                                         @method('DELETE')
                                         <div class="form-check mb-3">
                                             <input class="form-check-input settings-checkbox-danger" type="checkbox" id="confirm-reset" required>
                                             <label class="form-check-label settings-checkbox-label-danger" for="confirm-reset">
-                                                Je comprends que cette action supprimera toutes les données de test
+                                                Je comprends que cette action réinitialisera tous les paramètres aux valeurs par défaut
                                             </label>
                                         </div>
                                         <button type="submit" class="btn btn-danger settings-danger-btn">
-                                            <i class="bi bi-trash3 me-2"></i>Supprimer les données de test
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Réinitialiser aux paramètres par défaut
                                         </button>
+                                        <small class="text-muted d-block mt-2">Cela n'affecte pas vos données d'élevage (lapins, saillies, naissances).</small>
                                     </form>
                                 </div>
                             </div>
@@ -390,6 +400,12 @@
     .settings-save-btn {
         background: linear-gradient(135deg, var(--anyx-cyan), var(--anyx-blue));
         border: none;
+        transition: all 0.3s;
+    }
+    
+    .settings-save-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
     }
     
     /* Barre de progression */
@@ -397,10 +413,12 @@
         height: 6px;
         background: var(--surface-2);
         border-radius: 3px;
+        overflow: hidden;
     }
     
     .settings-progress-fill {
         background: linear-gradient(90deg, var(--anyx-cyan), var(--anyx-blue));
+        transition: width 0.5s ease;
     }
     
     /* Texte secondaire */
@@ -416,6 +434,13 @@
     .settings-card {
         background: var(--surface-1);
         border: 1px solid rgba(0, 217, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .settings-card:hover {
+        border-color: rgba(0, 217, 255, 0.3);
+        box-shadow: 0 5px 20px rgba(0, 217, 255, 0.1);
     }
     
     body.light-mode .settings-card {
@@ -423,24 +448,41 @@
         border: 1px solid rgba(0, 102, 255, 0.1);
     }
     
+    body.light-mode .settings-card:hover {
+        border-color: rgba(0, 102, 255, 0.3);
+        box-shadow: 0 5px 20px rgba(0, 102, 255, 0.1);
+    }
+    
     /* Titre de carte */
     .settings-card-title {
         color: var(--anyx-cyan);
+        border-bottom: 2px solid rgba(0, 217, 255, 0.2);
+        padding-bottom: 10px;
     }
     
     body.light-mode .settings-card-title {
         color: var(--anyx-blue);
+        border-bottom: 2px solid rgba(0, 102, 255, 0.2);
     }
     
     /* Liens de navigation */
     .settings-nav-link {
         color: var(--text-secondary);
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        transition: all 0.3s;
+        border: none;
+        background: transparent;
+        text-align: left;
+        width: 100%;
     }
     
     .settings-nav-link:hover,
     .settings-nav-link.active {
         color: var(--anyx-cyan);
         background: rgba(0, 217, 255, 0.1);
+        transform: translateX(5px);
     }
     
     body.light-mode .settings-nav-link:hover,
@@ -462,34 +504,44 @@
         color: #ef4444;
     }
     
+    .settings-danger-link:hover {
+        color: #dc2626;
+        background: rgba(239, 68, 68, 0.1);
+    }
+    
     .settings-card-danger {
         background: var(--surface-1);
-        border-color: #ef4444;
+        border: 2px solid #ef4444;
+        border-radius: 12px;
     }
     
     body.light-mode .settings-card-danger {
         background: var(--light-surface-1);
-        border-color: #dc2626;
+        border: 2px solid #dc2626;
     }
     
     .settings-card-title-danger {
         color: #ef4444;
+        border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+        padding-bottom: 10px;
     }
     
     body.light-mode .settings-card-title-danger {
         color: #dc2626;
+        border-bottom: 2px solid rgba(220, 38, 38, 0.3);
     }
     
     /* Alertes */
     .settings-alert-danger {
         background: rgba(239, 68, 68, 0.1);
-        border-color: rgba(239, 68, 68, 0.3);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
         color: var(--text-primary);
     }
     
     body.light-mode .settings-alert-danger {
         background: rgba(220, 38, 38, 0.08);
-        border-color: rgba(220, 38, 38, 0.2);
+        border: 1px solid rgba(220, 38, 38, 0.2);
         color: var(--light-text-primary);
     }
     
@@ -497,17 +549,29 @@
     .settings-danger-btn {
         background: #ef4444;
         border-color: #ef4444;
+        transition: all 0.3s;
     }
     
     .settings-danger-btn:hover {
         background: #dc2626;
         border-color: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
     }
     
     /* Checkboxes danger */
+    .settings-checkbox-danger {
+        border-color: var(--text-secondary);
+    }
+    
     .settings-checkbox-danger:checked {
         background-color: #ef4444;
         border-color: #ef4444;
+    }
+    
+    body.light-mode .settings-checkbox-danger:checked {
+        background-color: #dc2626;
+        border-color: #dc2626;
     }
     
     .settings-checkbox-label-danger {
@@ -522,45 +586,54 @@
     .settings-input,
     .settings-select {
         background: var(--surface-2);
-        border-color: rgba(0, 217, 255, 0.2);
+        border: 1px solid rgba(0, 217, 255, 0.2);
+        border-radius: 8px;
         color: var(--text-primary);
-    }
-    
-    body.light-mode .settings-input,
-    body.light-mode .settings-select {
-        background: var(--light-surface-1);
-        border-color: rgba(0, 102, 255, 0.2);
-        color: var(--light-text-primary);
+        padding: 10px 15px;
+        transition: all 0.3s;
     }
     
     .settings-input:focus,
     .settings-select:focus {
         border-color: var(--anyx-cyan);
         box-shadow: 0 0 0 0.2rem rgba(0, 217, 255, 0.25);
+        background: var(--surface-3);
+    }
+    
+    body.light-mode .settings-input,
+    body.light-mode .settings-select {
+        background: var(--light-surface-1);
+        border: 1px solid rgba(0, 102, 255, 0.2);
+        color: var(--light-text-primary);
     }
     
     body.light-mode .settings-input:focus,
     body.light-mode .settings-select:focus {
         border-color: var(--anyx-blue);
         box-shadow: 0 0 0 0.2rem rgba(0, 102, 255, 0.25);
+        background: var(--light-surface-2);
     }
     
     /* Input group */
     .settings-input-addon {
         background: var(--surface-3);
-        border-color: rgba(0, 217, 255, 0.2);
+        border: 1px solid rgba(0, 217, 255, 0.2);
         color: var(--text-secondary);
+        border-radius: 0 8px 8px 0;
     }
     
     body.light-mode .settings-input-addon {
         background: var(--light-surface-2);
-        border-color: rgba(0, 102, 255, 0.2);
+        border: 1px solid rgba(0, 102, 255, 0.2);
         color: var(--light-text-secondary);
     }
     
     /* Checkboxes */
     .settings-checkbox {
         border-color: var(--text-secondary);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
     }
     
     .settings-checkbox:checked {
@@ -575,6 +648,8 @@
     
     .settings-checkbox-label {
         color: var(--text-primary);
+        cursor: pointer;
+        padding-left: 5px;
     }
     
     body.light-mode .settings-checkbox-label {
@@ -584,6 +659,9 @@
     /* Radios */
     .settings-radio {
         border-color: var(--text-secondary);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
     }
     
     .settings-radio:checked {
@@ -598,6 +676,8 @@
     
     .settings-radio-label {
         color: var(--text-primary);
+        cursor: pointer;
+        padding-left: 5px;
     }
     
     body.light-mode .settings-radio-label {
@@ -607,6 +687,9 @@
     /* Switches */
     .settings-switch {
         border-color: var(--text-secondary);
+        width: 48px;
+        height: 24px;
+        cursor: pointer;
     }
     
     .settings-switch:checked {
@@ -621,6 +704,8 @@
     
     .settings-switch-label {
         color: var(--text-primary);
+        cursor: pointer;
+        padding-left: 10px;
     }
     
     body.light-mode .settings-switch-label {
@@ -630,10 +715,15 @@
     /* Sous-titres de section */
     .settings-subsection-title {
         color: var(--text-primary);
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(0, 217, 255, 0.1);
     }
     
     body.light-mode .settings-subsection-title {
         color: var(--light-text-primary);
+        border-bottom: 1px solid rgba(0, 102, 255, 0.1);
     }
     
     /* Options de couleur */
@@ -642,38 +732,54 @@
         height: 40px;
         border-radius: 8px;
         cursor: pointer;
-        border: 2px solid transparent;
+        border: 3px solid transparent;
         transition: all 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .settings-color-option:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
     
     .settings-color-option.selected {
         border-color: var(--anyx-cyan);
-        transform: scale(1.1);
+        transform: scale(1.15);
+        box-shadow: 0 0 15px var(--anyx-cyan);
     }
     
     body.light-mode .settings-color-option.selected {
         border-color: var(--anyx-blue);
+        box-shadow: 0 0 15px var(--anyx-blue);
     }
     
     /* Boutons de section */
     .settings-section-btn {
-        border-color: var(--anyx-cyan);
+        border: 2px solid var(--anyx-cyan);
         color: var(--anyx-cyan);
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s;
+        background: transparent;
     }
     
     .settings-section-btn:hover {
         background-color: var(--anyx-cyan);
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 217, 255, 0.3);
     }
     
     body.light-mode .settings-section-btn {
-        border-color: var(--anyx-blue);
+        border: 2px solid var(--anyx-blue);
         color: var(--anyx-blue);
     }
     
     body.light-mode .settings-section-btn:hover {
         background-color: var(--anyx-blue);
         color: white;
+        box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
     }
 </style>
 @endsection
@@ -699,66 +805,125 @@ $(document).ready(function() {
         
         // Appliquer immédiatement le changement de couleur
         document.documentElement.style.setProperty('--anyx-cyan', $(this).data('color'));
+        
+        // Si on est en mode clair, mettre à jour aussi
+        if (document.body.classList.contains('light-mode')) {
+            document.documentElement.style.setProperty('--anyx-blue', $(this).data('color'));
+        }
     });
 
     // Enregistrement par section
     $('.save-section-btn').click(function() {
         const section = $(this).data('section');
-        const formData = $('#settingsForm').serializeArray();
+        let url = '';
+        
+        // Déterminer l'URL en fonction de la section
+        switch(section) {
+            case 'general':
+                url = '{{ route("settings.save.general") }}';
+                break;
+            case 'elevage':
+                url = '{{ route("settings.save.elevage") }}';
+                break;
+            case 'appearance':
+                url = '{{ route("settings.save.appearance") }}';
+                break;
+            case 'notifications':
+                url = '{{ route("settings.save.notifications") }}';
+                break;
+            default:
+                url = '{{ route("settings.save") }}';
+        }
+        
+        // Préparer les données
+        const formData = new FormData();
         const sectionData = {};
         
-        // Filtrer les données de la section
-        formData.forEach(item => {
-            if (item.name.startsWith(section + '[')) {
-                sectionData[item.name] = item.value;
+        // Collecter les données de la section
+        $(`#${section} input, #${section} select, #${section} textarea`).each(function() {
+            if ($(this).attr('name')) {
+                const name = $(this).attr('name');
+                const value = $(this).is(':checkbox') ? $(this).is(':checked') : $(this).val();
+                
+                if ($(this).is(':checkbox') && $(this).attr('name').endsWith('[]')) {
+                    // Pour les checkboxes multiples
+                    if (!sectionData[name]) sectionData[name] = [];
+                    if ($(this).is(':checked')) {
+                        sectionData[name].push(value);
+                    }
+                } else {
+                    sectionData[name] = value;
+                }
             }
         });
         
+        // Ajouter le token CSRF
+        sectionData['_token'] = $('meta[name="csrf-token"]').attr('content');
+        
         // Envoyer via AJAX
         $.ajax({
-            url: '{{ route("settings.save") }}',
+            url: url,
             method: 'POST',
             data: sectionData,
+            dataType: 'json',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                showToast('success', 'Paramètres enregistrés', 'Les paramètres de la section ont été sauvegardés.');
+                showToast('success', '✅ Paramètres enregistrés', 'Les paramètres de la section ont été sauvegardés avec succès.');
                 updateProgress();
+                
+                // Recharger la page si c'est l'apparence pour appliquer les changements
+                if (section === 'appearance') {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                }
             },
             error: function(xhr) {
-                showToast('error', 'Erreur', 'Une erreur est survenue lors de l\'enregistrement.');
+                showToast('error', '❌ Erreur', 'Une erreur est survenue lors de l\'enregistrement.');
+                console.error('Erreur:', xhr.responseText);
             }
         });
     });
 
     // Enregistrement complet
     $('.save-all-btn').click(function() {
+        const formData = $('#settingsForm').serialize();
+        
         $.ajax({
             url: '{{ route("settings.save") }}',
             method: 'POST',
-            data: $('#settingsForm').serialize(),
+            data: formData,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                showToast('success', 'Tous les paramètres enregistrés', 'Vos modifications ont été sauvegardées.');
+                showToast('success', '✅ Tous les paramètres enregistrés', 'Vos modifications ont été sauvegardées avec succès.');
                 updateProgress();
+                
+                // Recharger la page pour appliquer les changements
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
             },
             error: function(xhr) {
-                showToast('error', 'Erreur', 'Une erreur est survenue lors de l\'enregistrement.');
+                showToast('error', '❌ Erreur', 'Une erreur est survenue lors de l\'enregistrement.');
+                console.error('Erreur:', xhr.responseText);
             }
         });
     });
 
     // Mettre à jour la barre de progression
     function updateProgress() {
-        const totalFields = $('input, select, textarea').not('[type="hidden"]').length;
+        const totalFields = $('input:not([type="hidden"]), select, textarea').not('[type="submit"]').length;
         let filledFields = 0;
         
-        $('input, select, textarea').not('[type="hidden"]').each(function() {
+        $('input:not([type="hidden"]), select, textarea').not('[type="submit"]').each(function() {
             if ($(this).is(':checkbox') || $(this).is(':radio')) {
                 if ($(this).is(':checked')) filledFields++;
+            } else if ($(this).is('select')) {
+                if ($(this).val() !== '') filledFields++;
             } else if ($(this).val().trim() !== '') {
                 filledFields++;
             }
@@ -788,7 +953,10 @@ $(document).ready(function() {
         $('#toastContainer').append(toast);
         
         // Afficher le toast
-        const bsToast = new bootstrap.Toast(toast[0]);
+        const bsToast = new bootstrap.Toast(toast[0], {
+            autohide: true,
+            delay: 5000
+        });
         bsToast.show();
         
         // Supprimer après fermeture
@@ -801,7 +969,18 @@ $(document).ready(function() {
     updateProgress();
     
     // Mettre à jour la progression lors des changements
-    $('input, select, textarea').on('change input', updateProgress);
+    $('input, select, textarea').on('change input', function() {
+        setTimeout(updateProgress, 100);
+    });
+    
+    // Gestion des checkboxes multiples (types de lapins)
+    $('input[name="elevage[rabbit_types][]"]').on('change', updateProgress);
+    
+    // Gestion des switches de notifications
+    $('input[type="checkbox"][name^="notifications"]').on('change', updateProgress);
+    
+    // Gestion des radios du thème
+    $('input[type="radio"][name="appearance[theme]"]').on('change', updateProgress);
 });
 </script>
 
