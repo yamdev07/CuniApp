@@ -3,33 +3,41 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // <- Important !
+use App\Models\Femelle;
 
 class FemellesSeeder extends Seeder
 {
-   public function run()
+    public function run(): void
     {
-        // Supprime toutes les anciennes données sans déclencher d'erreur FK
-        DB::table('femelles')->delete();
+        // Check if femelles already exist
+        if (Femelle::count() > 0) {
+            $this->command->info('⚠️  Femelles already exist. Skipping seeding.');
+            return;
+        }
 
-        DB::table('femelles')->insert([
+        $femellesData = [
             [
                 'code' => 'F001',
-                'nom' => 'Luna',
-                'race' => 'Néerlandaise',
+                'nom' => 'Bella',
+                'race' => 'Californienne',
                 'origine' => 'Interne',
-                'date_naissance' => '2023-01-10',
+                'date_naissance' => '2022-03-15',
                 'etat' => 'Active',
             ],
             [
                 'code' => 'F002',
-                'nom' => 'Bella',
-                'race' => 'Californienne',
+                'nom' => 'Luna',
+                'race' => 'Néerlandaise',
                 'origine' => 'Achat',
-                'date_naissance' => '2022-11-05',
-                'etat' => 'Gestante',
+                'date_naissance' => '2022-01-20',
+                'etat' => 'Active',
             ],
-        ]);
-    }
+        ];
 
+        foreach ($femellesData as $femelleData) {
+            Femelle::create($femelleData);
+        }
+
+        $this->command->info('✅ Femelles seeded successfully!');
+    }
 }
