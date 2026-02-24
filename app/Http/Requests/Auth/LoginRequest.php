@@ -11,19 +11,11 @@ use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -32,31 +24,22 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-
+            
+            // 🔧 FIXED: User-friendly French message instead of raw key
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => __('Ces identifiants ne correspondent pas à nos enregistrements. Veuillez vérifier votre email et mot de passe.'),
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
     }
 
-    /**
-     * Ensure the login request is not rate limited.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
@@ -66,18 +49,15 @@ class LoginRequest extends FormRequest
         event(new Lockout($this));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
-
+        
+        // 🔧 FIXED: User-friendly rate limit message
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+            'email' => __('Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.', [
+                'seconds' => $seconds
             ]),
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
