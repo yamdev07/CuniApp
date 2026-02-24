@@ -21,7 +21,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return view('welcome');
     }
 
     /**
@@ -46,20 +46,37 @@ class RegisteredUserController extends Controller
             'email_verified_at' => null, // Not verified yet
         ]);
 
-        // Generate verification code
+        // Generate 6-digit verification code
         $code = sprintf('%06d', mt_rand(0, 999999));
+        
+        // Store code in cache for 10 minutes
         Cache::put("verification_code_{$user->email}", $code, 600);
 
-        // Send verification email
-        Mail::raw("Bienvenue sur CuniApp !\n\nVotre code de vérification est : {$code}\n\nCe code expire dans 10 minutes.", function ($message) use ($user) {
+        // Generate verification URL for email
+        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(10),
+            ['email' => $user->email, 'code' => $code]
+        );
+
+        // Send verification email with HTML template
+        Mail::send('emails.verification-code', [
+            'code' => $code,
+            'email' => $user->email,
+            'verificationUrl' => $verificationUrl,
+        ], function ($message) use ($user) {
             $message->to($user->email)
-                    ->subject('Vérifiez votre email - CuniApp');
+                ->subject('🔐 Code de vérification - CuniApp Élevage')
+                ->from(config('mail.from.address'), config('mail.from.name'));
         });
 
-        // Store user ID in session for verification
-        session(['pending_verification_user_id' => $user->id]);
+        // Store session variables for verification modal
+        session([
+            'verification_pending' => true,
+            'verification_email' => $user->email,
+        ]);
 
-        // Return to welcome page with verification modal trigger
+        // Redirect to welcome page with verification modal trigger
         return redirect()->route('welcome')
             ->with('verification_pending', true)
             ->with('verification_email', $user->email);
