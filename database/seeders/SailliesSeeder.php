@@ -12,16 +12,22 @@ class SailliesSeeder extends Seeder
 {
     public function run(): void
     {
+        // Check if saillies already exist
+        if (Saillie::count() > 0) {
+            $this->command->info('⚠️  Saillies already exist. Skipping seeding.');
+            return;
+        }
+
         // Get existing femelles and males
         $femelles = Femelle::all();
         $males = Male::all();
-        
+
         // Skip if no femelles or males exist
         if ($femelles->isEmpty() || $males->isEmpty()) {
             $this->command->info('⚠️  No femelles or males found. Skipping saillies seeding.');
             return;
         }
-        
+
         $sailliesData = [
             [
                 'femelle_id' => $femelles->first()->id,
@@ -40,11 +46,11 @@ class SailliesSeeder extends Seeder
                 'date_mise_bas_theorique' => Carbon::parse('2025-07-05')->addDays(31),
             ],
         ];
-        
+
         foreach ($sailliesData as $saillieData) {
             Saillie::create($saillieData);
         }
-        
+
         $this->command->info('✅ Saillies seeded successfully!');
     }
 }
