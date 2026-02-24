@@ -1,6 +1,6 @@
 @extends('layouts.cuniapp')
 
-@section('title', 'Femelles - CuniApp Élevage')
+@section('title', 'Lapins - CuniApp Élevage')
 
 @section('content')
     <div class="page-header">
