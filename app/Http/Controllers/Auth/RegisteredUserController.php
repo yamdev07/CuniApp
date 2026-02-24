@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['accepted'],
         ]);
@@ -70,9 +70,10 @@ class RegisteredUserController extends Controller
             'verification_email' => $user->email,
         ]);
 
-        // Redirect to welcome page with verification modal trigger
-        return redirect()->route('welcome')
+        // Redirect to login page
+        return redirect()->route('login')
+            ->with('success', 'Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.')
             ->with('verification_pending', true)
             ->with('verification_email', $user->email);
     }
-}   
+}
