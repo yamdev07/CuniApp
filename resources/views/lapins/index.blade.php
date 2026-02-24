@@ -1,23 +1,23 @@
 @extends('layouts.cuniapp')
 
-@section('title', 'Mâles - CuniApp Élevage')
+@section('title', 'Femelles - CuniApp Élevage')
 
 @section('content')
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-arrow-up-right-square"></i>
-                Gestion des Mâles
+                <i class="bi bi-arrow-down-right-square"></i>
+                Gestion des Lapins
             </h2>
             <div class="breadcrumb">
                 <a href="{{ route('dashboard') }}">Tableau de bord</a>
                 <span>/</span>
-                <span>Mâles</span>
+                <span>Femelles et Mâles</span>
             </div>
         </div>
-        <a href="{{ route('males.create') }}" class="btn-cuni primary">
+        <a href="{{ route('lapins.create') }}" class="btn-cuni primary">
             <i class="bi bi-plus-lg"></i>
-            Ajouter un mâle
+            Ajouter un lapin
         </a>
     </div>
 
@@ -26,7 +26,7 @@
         <div class="card-header-custom">
             <h3 class="card-title">
                 <i class="bi bi-list-ul"></i>
-                Liste des Mâles
+                Liste des lapins
             </h3>
         </div>
         <div class="card-body">
@@ -44,6 +44,60 @@
                         </tr>
                     </thead>
                     <tbody>
+                      
+                        @forelse($femelles as $femelle)
+                            <tr class="border-bottom border-light">
+                                <td class="ps-4 fw-semibold text-dark">{{ $femelle->code }}</td>
+                                <td>{{ $femelle->nom }}</td>
+                                <td>
+                                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                                        {{ $femelle->race ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="text-muted">{{ $femelle->origine }}</td>
+                                <td class="text-muted">{{ date('d/m/Y', strtotime($femelle->date_naissance)) }}
+                                </td>
+                                <td>
+                                    <form action="{{ route('femelles.toggleEtat', $femelle->id) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <button type="submit"
+                                            class="badge border-0 status-{{ strtolower($femelle->etat) }}">
+                                            {{ $femelle->etat }}
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="pe-4">
+                                    <div class="action-buttons">
+                                        <a href="{{ route('femelles.edit', $femelle->id) }}" class="btn-cuni sm secondary"
+                                            title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="{{ route('femelles.destroy', $femelle->id) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn-cuni sm danger" title="Supprimer"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette femelle ?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7">
+                                    <div class="table-empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Aucune femelle enregistré pour le moment</p>
+                                        <a href="{{ route('femelles.create') }}" class="btn-cuni primary">
+                                            <i class="bi bi-plus-lg"></i> Ajouter une femelle
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+
+
                         @forelse($males as $m)
                             <tr class="border-bottom border-light">
                                 <td class="ps-4 fw-semibold text-dark">{{ $m->code }}</td>
@@ -93,20 +147,33 @@
                                 </td>
                             </tr>
                         @endforelse
+
+
+
                     </tbody>
                 </table>
             </div>
 
-            @if ($males->hasPages())
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
-                    <div class="text-muted" style="font-size: 13px;">
-                        Affichage de <strong>{{ $males->firstItem() }}</strong> à
-                        <strong>{{ $males->lastItem() }}</strong> sur <strong>{{ $males->total() }}</strong> mâles
+            @if ($femelles->hasPages())
+                <div class="pagination-wrapper mb-3">
+                    <div class="text-muted small">
+                        Femelles : <strong>{{ $femelles->firstItem() }}-{{ $femelles->lastItem() }}</strong> sur
+                        {{ $femelles->total() }}
                     </div>
-                    <nav>
-                        {{ $males->links('vendor.pagination.bootstrap-5-sm') }}
-                    </nav>
+                    {{ $femelles->appends(['males_page' => request('males_page')])->links('vendor.pagination.bootstrap-5-sm') }}
+                </div>
+            @endif
+
+            <hr class="my-3 opacity-25">
+
+            {{-- Pagination pour les Mâles --}}
+            @if ($males->hasPages())
+                <div class="pagination-wrapper">
+                    <div class="text-muted small">
+                        Mâles : <strong>{{ $males->firstItem() }}-{{ $males->lastItem() }}</strong> sur
+                        {{ $males->total() }}
+                    </div>
+                    {{ $males->appends(['femelles_page' => request('femelles_page')])->links('vendor.pagination.bootstrap-5-sm') }}
                 </div>
             @endif
         </div>
