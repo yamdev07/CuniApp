@@ -835,7 +835,7 @@
                             'type' => 'primary',
                             'change' => '+8.2%',
                             'trend' => 'up',
-                            'route' => '',
+                            'route' => 'lapins.index',
                         ],
                         [
                             'icon' => 'male',
