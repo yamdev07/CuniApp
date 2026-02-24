@@ -8,6 +8,8 @@ use App\Http\Controllers\SaillieController;
 use App\Http\Controllers\MiseBasController;
 use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationCodeController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,12 +19,51 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// ==================== GUEST ROUTES (No Auth Required) ====================
+
 // Welcome page (Login/Register)
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Dashboard (protected)
+// Registration Routes
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
+// Login Routes
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
+// Logout Route
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('logout');
+
+// ✅ Email Verification Code Routes (NO auth - verify BEFORE login)
+Route::post('/verification/send', [EmailVerificationCodeController::class, 'sendCode'])->name('verification.send');
+Route::post('/verification/verify', [EmailVerificationCodeController::class, 'verify'])->name('verification.verify');
+Route::post('/verification/resend', [EmailVerificationCodeController::class, 'resend'])->name('verification.resend');
+
+// Password Reset Routes (Breeze)
+Route::get('/forgot-password', [App\Http\Controllers\Auth\PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [App\Http\Controllers\Auth\PasswordResetLinkController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [App\Http\Controllers\Auth\NewPasswordController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [App\Http\Controllers\Auth\NewPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.store');
+
+// ==================== PROTECTED ROUTES (Auth Required) ====================
+
+// Dashboard (protected + verified)
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -32,13 +73,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-// Email Verification Code Routes
-Route::middleware('auth')->group(function () {
-    Route::post('/verification/send', [EmailVerificationCodeController::class, 'sendCode'])->name('verification.send');
-    Route::post('/verification/verify', [EmailVerificationCodeController::class, 'verify'])->name('verification.verify');
-    Route::post('/verification/resend', [EmailVerificationCodeController::class, 'resend'])->name('verification.resend');
 });
 
 // Males Management
@@ -103,5 +137,3 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
     Route::get('/export', [SettingsController::class, 'exportData'])->name('export');
     Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clear-cache');
 });
-// Auth Routes (Breeze)
-require __DIR__.'/auth.php';
