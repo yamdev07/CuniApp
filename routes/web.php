@@ -103,6 +103,5 @@ Route::middleware(['auth'])->prefix('settings')->name('settings.')->group(functi
     Route::get('/export', [SettingsController::class, 'exportData'])->name('export');
     Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clear-cache');
 });
-
 // Auth Routes (Breeze)
 require __DIR__.'/auth.php';
