@@ -8,6 +8,22 @@ use App\Models\Femelle;
 
 class LapinController extends Controller
 {
+
+
+    /**
+     * Affiche la liste des femelles et mâles.
+     */
+
+    public function index()
+    {
+        $femelles = Femelle::paginate(10, ['*'], 'femelles_page');
+        $males = Male::paginate(10, ['*'], 'males_page');
+
+        return view('lapins.index', compact('femelles', 'males'));
+    }
+
+
+
     // Affiche le formulaire
     public function create()
     {
