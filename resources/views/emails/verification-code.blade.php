@@ -49,10 +49,10 @@
         <!-- Body -->
         <div class="email-body">
             <p class="greeting">Bonjour,</p>
-            
             <p class="message">
                 Merci de vous être inscrit sur <strong>CuniApp Élevage</strong> ! 
-                Pour finaliser votre inscription et activer votre compte, veuillez utiliser le code de vérification ci-dessous.
+                Pour finaliser votre inscription et activer votre compte, veuillez utiliser 
+                le code de vérification ci-dessous.
             </p>
 
             <!-- Verification Code -->
@@ -65,19 +65,19 @@
             <!-- Info Box -->
             <div class="info-box">
                 <p>
-                    <strong>💡 Conseil :</strong> 
-                    Pour des raisons de sécurité, ne partagez jamais ce code avec qui que ce soit. 
-                    Notre équipe ne vous demandera jamais votre code de vérification.
+                    <strong>💡 Conseil :</strong> Pour des raisons de sécurité, ne partagez jamais 
+                    ce code avec qui que ce soit. Notre équipe ne vous demandera jamais votre 
+                    code de vérification.
                 </p>
             </div>
 
-            <!-- Alternative Action -->
+            <!-- Alternative Action - ✅ FIXED: Simple link to welcome page -->
             <div class="button-container">
                 <p style="color: #6b7280; font-size: 13px; margin-bottom: 16px;">
-                    Ou cliquez sur le bouton ci-dessous pour vérifier automatiquement
+                    Ou retournez sur la page d'accueil pour saisir votre code
                 </p>
-                <a href="{{ $verificationUrl ?? route('welcome') }}" class="cta-button">
-                    Vérifier mon email
+                <a href="{{ route('welcome') }}" class="cta-button">
+                    Retour à la vérification
                 </a>
             </div>
 

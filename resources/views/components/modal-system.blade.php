@@ -48,7 +48,7 @@
                 Un code de vérification a été envoyé à<br>
                 <strong id="verificationEmail" style="color: var(--primary);"></strong>
             </p>
-            <form id="verificationForm" method="POST" action="{{ route('verification.verify') }}">
+            <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
                 @csrf
                 <input type="hidden" name="email" id="verificationEmailInput">
                 <div class="verification-code-inputs">
@@ -392,9 +392,9 @@ function startResendTimer() {
 
 function resendVerificationCode(e) {
     e.preventDefault();
-    const email = document.getElementById('verificationEmailInput').value;
+    const email = document.getElementById('verificationEmailDisplay').textContent;
     
-    fetch('{{ route("verification.resend") }}', {
+    fetch('{{ route("verification.code.resend") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -405,14 +405,14 @@ function resendVerificationCode(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showModal('alert', 'Succès', 'Un nouveau code a été envoyé à votre adresse email.');
+            alert('Un nouveau code a été envoyé à votre adresse email.');
             startResendTimer();
         } else {
-            showModal('alert', 'Erreur', data.message || 'Une erreur est survenue.');
+            alert('Une erreur est survenue. Veuillez réessayer.');
         }
     })
     .catch(error => {
-        showModal('alert', 'Erreur', 'Une erreur est survenue. Veuillez réessayer.');
+        alert('Une erreur est survenue. Veuillez réessayer.');
     });
 }
 

@@ -42,28 +42,22 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'email_verified_at' => null, // Not verified yet
         ]);
 
         // Generate 6-digit verification code
         $code = sprintf('%06d', mt_rand(0, 999999));
-        
+
         // Store code in cache for 10 minutes
         Cache::put("verification_code_{$user->email}", $code, 600);
 
-        // Generate verification URL for email
-        $verificationUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(10),
-            ['email' => $user->email, 'code' => $code]
-        );
-
         // Send verification email with HTML template
+        // ✅ FIXED: Removed temporarySignedRoute - not needed for code-based verification
         Mail::send('emails.verification-code', [
             'code' => $code,
             'email' => $user->email,
-            'verificationUrl' => $verificationUrl,
+            // ✅ Removed 'verificationUrl' parameter - not used in code-based flow
         ], function ($message) use ($user) {
             $message->to($user->email)
                 ->subject('🔐 Code de vérification - CuniApp Élevage')
@@ -81,4 +75,4 @@ class RegisteredUserController extends Controller
             ->with('verification_pending', true)
             ->with('verification_email', $user->email);
     }
-}
+}   

@@ -1353,7 +1353,7 @@
                     <strong id="verificationEmailDisplay">{{ session('verification_email') }}</strong>
                 </p>
 
-                <form id="verificationForm" method="POST" action="{{ route('verification.verify') }}">
+                <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
                     @csrf
                     <input type="hidden" name="email" value="{{ session('verification_email') }}">
 
@@ -1703,7 +1703,7 @@
                 e.preventDefault();
                 const email = document.getElementById('verificationEmailDisplay').textContent;
 
-                fetch('{{ route("verification.resend") }}', {
+                fetch('{{ route('verification.code.resend') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
