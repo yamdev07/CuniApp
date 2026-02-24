@@ -23,14 +23,13 @@ class MaleController extends Controller
         $request->validate([
             'code' => 'required|unique:males,code',
             'nom' => 'required|string|max:255',
-            'race' => 'required|string|max:255',
-            'origine' => 'nullable|string|max:255',
+            'race' => 'nullable|string|max:255',  // Changed from required
+            'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive',
+            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
         ]);
 
         Male::create($request->all());
-
         return redirect()->route('males.index')->with('success', 'Mâle ajouté avec succès.');
     }
 
@@ -43,18 +42,16 @@ class MaleController extends Controller
     public function update(Request $request, string $id)
     {
         $male = Male::findOrFail($id);
-
         $request->validate([
             'code' => 'required|unique:males,code,' . $male->id,
             'nom' => 'required|string|max:255',
-            'race' => 'required|string|max:255',
-            'origine' => 'nullable|string|max:255',
+            'race' => 'nullable|string|max:255',  // Changed from required
+            'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive',
+            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
         ]);
 
         $male->update($request->all());
-
         return redirect()->route('males.index')->with('success', 'Mâle modifié avec succès.');
     }
 
@@ -64,5 +61,19 @@ class MaleController extends Controller
         $male->delete();
 
         return redirect()->route('males.index')->with('success', 'Mâle supprimé avec succès.');
+    }
+
+    /**
+     * Bascule l'état d'un mâle.
+     */
+    public function toggleEtat(Male $male)
+    {
+        $etats = ['Active', 'Inactive'];
+        $currentIndex = array_search($male->etat, $etats);
+        $nextIndex = ($currentIndex + 1) % count($etats);
+        $male->etat = $etats[$nextIndex];
+        $male->save();
+
+        return redirect()->back()->with('success', 'État mis à jour avec succès !');
     }
 }

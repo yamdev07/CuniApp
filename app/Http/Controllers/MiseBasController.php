@@ -34,10 +34,21 @@ class MiseBasController extends Controller
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'date_mise_bas' => 'required|date',
-            'nombre_jeunes' => 'required|integer|min:1',
+            'nb_vivant' => 'required|integer|min:1',
+            'nb_mort_ne' => 'nullable|integer|min:0',
+            'date_sevrage' => 'nullable|date',
+            'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
 
-        MiseBas::create($request->all());
+        // Create with femelle_id instead of relying on saillie_id
+        MiseBas::create([
+            'femelle_id' => $request->femelle_id,
+            'date_mise_bas' => $request->date_mise_bas,
+            'nb_vivant' => $request->nb_vivant,
+            'nb_mort_ne' => $request->nb_mort_ne ?? 0,
+            'date_sevrage' => $request->date_sevrage,
+            'poids_moyen_sevrage' => $request->poids_moyen_sevrage,
+        ]);
 
         return redirect()->route('mises-bas.index')
             ->with('success', 'Mise bas enregistrée avec succès.');
@@ -68,10 +79,20 @@ class MiseBasController extends Controller
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'date_mise_bas' => 'required|date',
-            'nombre_jeunes' => 'required|integer|min:1',
+            'nb_vivant' => 'required|integer|min:1',
+            'nb_mort_ne' => 'nullable|integer|min:0',
+            'date_sevrage' => 'nullable|date',
+            'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
 
-        $miseBas->update($request->all());
+        $miseBas->update([
+            'femelle_id' => $request->femelle_id,
+            'date_mise_bas' => $request->date_mise_bas,
+            'nb_vivant' => $request->nb_vivant,
+            'nb_mort_ne' => $request->nb_mort_ne ?? 0,
+            'date_sevrage' => $request->date_sevrage,
+            'poids_moyen_sevrage' => $request->poids_moyen_sevrage,
+        ]);
 
         return redirect()->route('mises-bas.index')
             ->with('success', 'Mise bas mise à jour avec succès.');
