@@ -1204,7 +1204,7 @@
                             <div class="form-group">
                                 <label class="form-label">Adresse email</label>
                                 <div class="form-input-wrapper">
-                                    <input type="email" name="email" class="form-input @error('email') error @enderror" placeholder="votre@email.com" required value="{{ old('email') }}" id="registerEmail">
+                                    <input type="email" name="email" class="form-input @error('email') error @enderror" placeholder="votre@email.com" required value="{{ old('email') }}" id="registerEmail" autocomplete="off">
                                     <i class="bi bi-envelope"></i>
                                 </div>
                                 @error('email')
@@ -1229,7 +1229,7 @@
                             <div class="form-group">
                                 <label class="form-label">Mot de passe</label>
                                 <div class="form-input-wrapper">
-                                    <input type="password" name="password" class="form-input @error('password') error @enderror" placeholder="••••••••" required id="registerPassword" minlength="8">
+                                    <input type="password" name="password" class="form-input @error('password') error @enderror" placeholder="••••••••" required id="registerPassword" minlength="8" autocomplete="new-password">
                                     <i class="bi bi-lock"></i>
                                 </div>
                                 <div class="password-strength-container">
@@ -1614,7 +1614,7 @@
                         this.classList.remove('error');
                         this.classList.add('success');
                     }
-                });
+                });                                    
             }
 
             validateEmail(loginEmail, loginEmailValidation);

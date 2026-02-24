@@ -23,7 +23,7 @@ class EmailVerificationCodeController extends Controller
 
         $email = $request->email;
         $code = sprintf('%06d', mt_rand(0, 999999));
-        
+
         // Store code in cache for 10 minutes
         Cache::put("verification_code_{$email}", $code, 600);
 
@@ -54,35 +54,28 @@ class EmailVerificationCodeController extends Controller
         $code = $request->code;
         $storedCode = Cache::get("verification_code_{$email}");
 
-        if (!$storedCode) {
-            return back()->withErrors(['code' => 'Code expiré ou invalide. Veuillez demander un nouveau code.']);
+        if (!$storedCode || $storedCode !== $code) {
+            return back()->withErrors(['code' => 'Code incorrect ou expiré. Veuillez demander un nouveau code.']);
         }
 
-        if ($storedCode !== $code) {
-            return back()->withErrors(['code' => 'Code incorrect. Veuillez vérifier et réessayer.']);
-        }
-
-        // Code is valid - mark email as verified
         $user = User::where('email', $email)->first();
-        
-        if ($user) {
-            $user->email_verified_at = now();
-            $user->save();
-
-            // Clear the verification code
-            Cache::forget("verification_code_{$email}");
-
-            // Fire verified event
-            event(new Verified($user));
-
-            // Log in the user
-            Auth::login($user);
-
-            return redirect()->route('dashboard')
-                ->with('success', 'Email vérifié avec succès ! Bienvenue sur CuniApp.');
+        if (!$user) {
+            return back()->withErrors(['email' => 'Utilisateur non trouvé.']);
         }
 
-        return back()->withErrors(['email' => 'Utilisateur non trouvé.']);
+        // ✅ Mark as verified
+        $user->email_verified_at = now();
+        $user->save();
+
+        Cache::forget("verification_code_{$email}");
+        event(new Verified($user));
+
+        // 🔑 LOG IN AFTER VERIFICATION (Standard UX - user expects this)
+        Auth::login($user, true); // Remember session
+
+        // ✅ REDIRECT TO DASHBOARD (Correct behavior after verification)
+        return redirect()->route('dashboard')
+            ->with('success', 'Email vérifié avec succès ! Bienvenue sur CuniApp.');
     }
 
     /**
@@ -96,7 +89,7 @@ class EmailVerificationCodeController extends Controller
 
         $email = $request->email;
         $code = sprintf('%06d', mt_rand(0, 999999));
-        
+
         Cache::put("verification_code_{$email}", $code, 600);
 
         Mail::send('emails.verification-code', [

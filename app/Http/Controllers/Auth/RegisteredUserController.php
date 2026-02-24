@@ -29,6 +29,8 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+    // app/Http/Controllers/Auth/RegisteredUserController.php
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -38,18 +40,19 @@ class RegisteredUserController extends Controller
             'terms' => ['accepted'],
         ]);
 
-        // 🔒 CORRECTION SÉCURITÉ : Hash obligatoire du mot de passe
+        // ✅ CREATE USER WITHOUT LOGGING IN
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), // ✅ HASHÉ
-            'email_verified_at' => null,
+            'password' => Hash::make($request->password),
+            'email_verified_at' => null, // Explicitly unverified
         ]);
 
-        // Générer et envoyer le code
+        // Generate verification code
         $code = sprintf('%06d', mt_rand(0, 999999));
         Cache::put("verification_code_{$user->email}", $code, 600);
 
+        // Send email
         Mail::send('emails.verification-code', [
             'code' => $code,
             'email' => $user->email,
@@ -59,12 +62,12 @@ class RegisteredUserController extends Controller
                 ->from(config('mail.from.address'), config('mail.from.name'));
         });
 
-        // 🔑 CORRECTION DÉCISIVE : Nettoyage COMPLET de la session
-        Auth::logout(); // Déconnexion explicite
-        $request->session()->flush(); // ⚠️ Supprime TOUTE la session existante
-        $request->session()->regenerate(); // Nouvelle session propre (guest state)
+        // 🔑 CRITICAL: COMPLETE SESSION CLEANUP (prevents auto-login)
+        Auth::logout();                     // Explicit logout
+        $request->session()->flush();      // Destroy ALL session data
+        $request->session()->regenerate(); // Create fresh guest session
 
-        // ✅ Session propre : on peut maintenant stocker les données de vérification
+        // Store verification state in NEW session
         session([
             'verification_pending' => true,
             'verification_email' => $user->email,
