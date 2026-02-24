@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Tableau de Bord Élevage - CuniApp')</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <style>
         :root {
             /* Primary Colors */
@@ -21,7 +24,7 @@
             --primary-light: #3B82F6;
             --primary-dark: #1D4ED8;
             --primary-subtle: #EFF6FF;
-            
+
             /* Accent Colors */
             --accent-cyan: #06B6D4;
             --accent-purple: #8B5CF6;
@@ -29,7 +32,7 @@
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
             --accent-red: #EF4444;
-            
+
             /* Neutral Colors */
             --white: #FFFFFF;
             --gray-50: #F9FAFB;
@@ -42,7 +45,7 @@
             --gray-700: #374151;
             --gray-800: #1F2937;
             --gray-900: #111827;
-            
+
             /* Semantic Colors */
             --surface: #FFFFFF;
             --surface-alt: #F9FAFB;
@@ -50,7 +53,7 @@
             --text-primary: #1F2937;
             --text-secondary: #6B7280;
             --text-tertiary: #9CA3AF;
-            
+
             /* Effects */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
@@ -577,173 +580,174 @@
         }
 
         /* ==================== ENHANCED TABLES ==================== */
-.table-responsive {
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--surface-border);
-}
+        .table-responsive {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--surface-border);
+        }
 
-.table {
-    margin-bottom: 0;
-    width: 100%;
-}
+        .table {
+            margin-bottom: 0;
+            width: 100%;
+        }
 
-.table thead {
-    background: var(--surface-alt);
-    border-bottom: 2px solid var(--surface-border);
-}
+        .table thead {
+            background: var(--surface-alt);
+            border-bottom: 2px solid var(--surface-border);
+        }
 
-.table thead th {
-    padding: 14px 16px;
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-secondary);
-    border: none;
-}
+        .table thead th {
+            padding: 14px 16px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border: none;
+        }
 
-.table tbody tr {
-    border-bottom: 1px solid var(--surface-border);
-    transition: all 0.2s ease;
-}
+        .table tbody tr {
+            border-bottom: 1px solid var(--surface-border);
+            transition: all 0.2s ease;
+        }
 
-.table tbody tr:hover {
-    background: var(--primary-subtle);
-}
+        .table tbody tr:hover {
+            background: var(--primary-subtle);
+        }
 
-.table tbody tr:last-child {
-    border-bottom: none;
-}
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
 
-.table tbody td {
-    padding: 14px 16px;
-    vertical-align: middle;
-    font-size: 14px;
-    color: var(--text-primary);
-}
+        .table tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
 
-/* Empty State */
-.table-empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--surface-alt);
-}
+        /* Empty State */
+        .table-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface-alt);
+        }
 
-.table-empty-state i {
-    font-size: 3rem;
-    color: var(--text-tertiary);
-    margin-bottom: 16px;
-    display: block;
-}
+        .table-empty-state i {
+            font-size: 3rem;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+            display: block;
+        }
 
-.table-empty-state p {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin-bottom: 20px;
-}
+        .table-empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
 
-.table-empty-state .btn-cuni {
-    margin-top: 8px;
-}
+        .table-empty-state .btn-cuni {
+            margin-top: 8px;
+        }
 
-/* Badge Improvements */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
+        /* Badge Improvements */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-/* Status Colors */
-.status-active {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10B981;
-}
+        /* Status Colors */
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
 
-.status-gestante {
-    background: rgba(245, 158, 11, 0.1);
-    color: #F59E0B;
-}
+        .status-gestante {
+            background: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
 
-.status-allaitante {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-}
+        .status-allaitante {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
 
-.status-vide {
-    background: rgba(107, 114, 128, 0.1);
-    color: #6B7280;
-}
+        .status-vide {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6B7280;
+        }
 
-.status-inactive {
-    background: rgba(107, 114, 128, 0.1);
-    color: #6B7280;
-}
+        .status-inactive {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6B7280;
+        }
 
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
 
-.action-buttons .btn-cuni {
-    padding: 6px 10px;
-    font-size: 12px;
-}
+        .action-buttons .btn-cuni {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
 
-/* Pagination */
-.pagination {
-    display: flex;
-    gap: 4px;
-    justify-content: center;
-    margin-top: 20px;
-}
+        /* Pagination */
+        .pagination {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
-.pagination .page-item .page-link {
-    padding: 8px 14px;
-    border: 1px solid var(--surface-border);
-    border-radius: var(--radius);
-    color: var(--text-secondary);
-    background: var(--white);
-    transition: all 0.2s ease;
-}
+        .pagination .page-item .page-link {
+            padding: 8px 14px;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            background: var(--white);
+            transition: all 0.2s ease;
+        }
 
-.pagination .page-item.active .page-link {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: var(--white);
-}
+        .pagination .page-item.active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+        }
 
-.pagination .page-item:hover .page-link {
-    background: var(--primary-subtle);
-    border-color: var(--primary);
-    color: var(--primary);
-}
+        .pagination .page-item:hover .page-link {
+            background: var(--primary-subtle);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
-/* Responsive Table */
-@media (max-width: 768px) {
-    .table-responsive {
-        overflow-x: auto;
-    }
-    
-    .table {
-        min-width: 800px;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        gap: 4px;
-    }
-}
+        /* Responsive Table */
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 800px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="cuni-header">
@@ -751,8 +755,8 @@
             <div class="brand-identity">
                 <a href="{{ route('dashboard') }}" class="cuniapp-logo">
                     <svg viewBox="0 0 40 40" fill="none">
-                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
-                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                     </svg>
                 </a>
                 <div>
@@ -760,29 +764,40 @@
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
-            
+
             <nav class="header-nav">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('males.index') }}" class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                <a href="{{ route('lapins.index') }}"
+                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                    <i class="bi-plus-lg"></i>
+                    <span>Total Lapins</span>
+                </a>
+                <a href="{{ route('males.index') }}"
+                    class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-up-right-square"></i>
                     <span>Mâles</span>
                 </a>
-                <a href="{{ route('femelles.index') }}" class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                <a href="{{ route('femelles.index') }}"
+                    class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-down-right-square"></i>
                     <span>Femelles</span>
                 </a>
-                <a href="{{ route('saillies.index') }}" class="nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                <a href="{{ route('saillies.index') }}"
+                    class="nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
                     <i class="bi bi-heart"></i>
                     <span>Saillies</span>
                 </a>
-                <a href="{{ route('mises-bas.index') }}" class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                <a href="{{ route('mises-bas.index') }}"
+                    class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
                     <i class="bi bi-egg"></i>
                     <span>Mises Bas</span>
                 </a>
-                <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <a href="{{ route('settings.index') }}"
+                    class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                     <i class="bi bi-gear"></i>
                     <span>Paramètres</span>
                 </a>
@@ -799,18 +814,18 @@
 
     <!-- Main Content -->
     <main class="cuni-main">
-        @if(session('success'))
-        <div class="alert-cuni success">
-            <i class="bi bi-check-circle-fill"></i>
-            <div>{{ session('success') }}</div>
-        </div>
+        @if (session('success'))
+            <div class="alert-cuni success">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>{{ session('success') }}</div>
+            </div>
         @endif
 
-        @if(session('error'))
-        <div class="alert-cuni error">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <div>{{ session('error') }}</div>
-        </div>
+        @if (session('error'))
+            <div class="alert-cuni error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>{{ session('error') }}</div>
+            </div>
         @endif
 
         @yield('content')
@@ -853,4 +868,5 @@
         });
     </script>
 </body>
+
 </html>
