@@ -642,7 +642,7 @@
             padding: 0 16px;
         }
 
-        /* Social Login */
+        /* Social Login - Google Only */
         .social-login {
             display: grid;
             grid-template-columns: 1fr;
@@ -877,7 +877,7 @@
 
         .modal-header {
             padding: 24px;
-            border-bottom: 1px solid var(--surface-border);
+            border-bottom: 1px solid var(--gray-200);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -887,6 +887,9 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .modal-close {
@@ -900,10 +903,12 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            color: var(--gray-600);
         }
 
         .modal-close:hover {
             background: var(--gray-200);
+            color: var(--gray-800);
         }
 
         .modal-body {
@@ -912,7 +917,7 @@
 
         .modal-footer {
             padding: 16px 24px;
-            border-top: 1px solid var(--surface-border);
+            border-top: 1px solid var(--gray-200);
             display: flex;
             gap: 12px;
             justify-content: flex-end;
@@ -945,15 +950,6 @@
 
         .modal-btn.secondary:hover {
             background: var(--gray-50);
-        }
-
-        .modal-btn.danger {
-            background: var(--accent-red);
-            color: var(--white);
-        }
-
-        .modal-btn.danger:hover {
-            background: #DC2626;
         }
 
         /* Verification Code Input */
@@ -1777,7 +1773,7 @@
                 
                 // Auto-submit if all fields filled
                 if (code.length === 6) {
-                    document.getElementById('verificationForm').dispatchEvent(new Event('submit'));
+                    // Optional: auto-submit
                 }
             }
 
@@ -1893,6 +1889,13 @@
             window.closeAlertModal = closeAlertModal;
             window.showConfirm = showConfirm;
             window.closeConfirmModal = closeConfirmModal;
+
+            // Check if verification is pending (after registration)
+            @if(session('verification_pending'))
+            setTimeout(() => {
+                openVerificationModal('{{ session('verification_email') }}');
+            }, 500);
+            @endif
         });
     </script>
 </body>

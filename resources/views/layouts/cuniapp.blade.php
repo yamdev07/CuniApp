@@ -852,5 +852,18 @@
             });
         });
     </script>
+
+    <!-- Global Modal System -->
+@include('components.modal-system')
+
+@if(session('verification_pending'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        openVerificationModal('{{ session('verification_email') }}');
+    }, 500);
+});
+</script>
+@endif
 </body>
 </html>

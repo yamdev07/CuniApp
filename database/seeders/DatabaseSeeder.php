@@ -6,14 +6,13 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $this->call([
             FemellesSeeder::class,
             MalesSeeder::class,
-            SailliesSeeder::class,
-            MisesBasSeeder::class,
-            LapereauxSeeder::class,
+            SailliesSeeder::class,  // Must be AFTER femelles and males
+            MisesBasSeeder::class,  // Must be AFTER saillies
         ]);
     }
 }
