@@ -1117,48 +1117,45 @@
             </div>
 
             <!-- Notifications Widget - FIXED: Real notifications from database -->
-            <div class="widget alerts-widget">
-                <div class="widget-head">
-                    <h3>Notifications</h3>
-                    <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
-                        Voir tout <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="alerts-list">
-                    @php
-                        $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
-                            ->where('is_read', false)
-                            ->orderBy('created_at', 'desc')
-                            ->limit(5)
-                            ->get();
-                    @endphp
-                    
-                    @forelse($recentNotifs as $notif)
-                    <div class="alert-row {{ $notif->type }}" onclick="window.location.href='{{ route('notifications.index') }}'">
-                        <div class="alert-indicator"></div>
-                        <div class="alert-text">
-                            <div class="alert-title flex items-center gap-2">
-                                <i class="bi {{ $notif->icon }} text-sm"></i>
-                                {{ $notif->title }}
-                            </div>
-                            <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
-                        </div>
-                        @if(!$notif->is_read)
-                        <div class="flex items-center">
-                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
-                                Nouveau
-                            </span>
-                        </div>
-                        @endif
-                    </div>
-                    @empty
-                    <div class="text-center py-4 text-gray-500">
-                        <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
-                        <p>Aucune notification non lue</p>
-                    </div>
-                    @endforelse
-                </div>
-            </div>
+            <!-- Replace the entire alerts-widget section with this -->
+<div class="widget alerts-widget">
+  <div class="widget-head">
+    <h3>Notifications</h3>
+    <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1"> 
+      Voir tout <i class="bi bi-arrow-right"></i> 
+    </a>
+  </div>
+  <div class="alerts-list">
+    @php 
+    $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
+      ->where('is_read', false)
+      ->orderBy('created_at', 'desc')
+      ->limit(5)
+      ->get(); 
+    @endphp
+    @forelse($recentNotifs as $notif)
+      <!-- FIXED: Clicking notification marks as read AND redirects -->
+      <a href="{{ route('notifications.read', $notif->id) }}" class="alert-row {{ $notif->type }}">
+        <div class="alert-indicator"></div>
+        <div class="alert-text">
+          <div class="alert-title flex items-center gap-2">
+            <i class="bi {{ $notif->icon }} text-sm"></i> 
+            {{ $notif->title }}
+          </div>
+          <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
+        </div>
+        @if(!$notif->is_read) 
+          <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;"> Nouveau </span>
+        @endif
+      </a>
+    @empty
+      <div class="text-center py-4 text-gray-500">
+        <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
+        <p>Aucune notification non lue</p>
+      </div>
+    @endforelse
+  </div>
+</div>
         </div>
     </div>
 </div>
