@@ -6,7 +6,7 @@ use App\Models\Male;
 use App\Models\Femelle;
 use App\Models\Saillie;
 use App\Models\MiseBas;
-use App\Models\Sale; // ✅ Ajouté pour les ventes
+use App\Models\Sale; // ✅ IMPORT OBLIGATOIRE POUR LES VENTES
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -26,7 +26,13 @@ class DashboardController extends Controller
         $nbFemelles = Femelle::count();
         $nbSaillies = Saillie::count();
         $nbMisesBas = MiseBas::count();
-        $totalRevenue = Sale::sum('total_amount'); // ✅ CA TOTAL DES VENTES
+        
+        // ✅ CALCUL DU CHIFFRE D'AFFAIRES (avec protection si table absente)
+        try {
+            $totalRevenue = Sale::sum('total_amount');
+        } catch (\Exception $e) {
+            $totalRevenue = 0; // Valeur par défaut si table non migrée
+        }
         
         // Comptage période précédente
         $oldMales = Male::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
@@ -49,7 +55,7 @@ class DashboardController extends Controller
             'nbMales', 'nbFemelles', 'nbSaillies', 'nbMisesBas',
             'malePercent', 'femalePercent', 'sailliePercent', 'miseBasPercent',
             'males', 'femelles',
-            'totalRevenue' // ✅ Passé à la vue
+            'totalRevenue' // ✅ VARIABLE PASSÉE À LA VUE
         ));
     }
 }
