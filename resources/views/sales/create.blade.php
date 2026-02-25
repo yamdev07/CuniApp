@@ -69,10 +69,10 @@
                         <input type="number" name="quantity" class="form-control" value="1" min="1" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Prix unitaire (€) *</label>
+                        <label class="form-label">Prix unitaire (F) *</label>
                         <div class="input-group">
                             <input type="number" step="0.01" name="unit_price" class="form-control" required min="0">
-                            <span class="input-group-text">€</span>
+                            <span class="input-group-text">F</span>
                         </div>
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-currency-euro"></i> Prix par animal ou par lot
@@ -82,7 +82,7 @@
                         <label class="form-label">Montant total</label>
                         <div class="input-group">
                             <input type="text" id="totalAmount" class="form-control" readonly style="background: var(--surface-alt); font-weight: 600;">
-                            <span class="input-group-text">€</span>
+                            <span class="input-group-text">F</span>
                         </div>
                     </div>
                 </div>
@@ -124,10 +124,10 @@
                         </select>
                     </div>
                     <div class="form-group" id="partialPaymentGroup">
-                        <label class="form-label">Montant versé (€)</label>
+                        <label class="form-label">Montant versé (F)</label>
                         <div class="input-group">
                             <input type="number" step="0.01" name="amount_paid" class="form-control" value="0" min="0">
-                            <span class="input-group-text">€</span>
+                            <span class="input-group-text">F</span>
                         </div>
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-info-circle"></i> Laissez à 0 pour "En attente"
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             partialPaymentGroup.style.display = 'none';
             amountPaidInput.required = false;
             if (this.value === 'paid') {
-                amountPaidInput.value = totalAmountDisplay.textContent.replace(' €', '').replace(/\s/g, '');
+                amountPaidInput.value = totalAmountDisplay.textContent.replace(' F', '').replace(/\s/g, '');
             } else {
                 amountPaidInput.value = '0';
             }
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const price = parseFloat(priceInput.value) || 0;
         const total = quantity * price;
         
-        totalAmountDisplay.value = total.toFixed(2).replace('.', ',') + ' €';
+        totalAmountDisplay.value = total.toFixed(2).replace('.', ',') + ' F';
         
         // Update amount paid if status is "paid"
         if (paymentStatus.value === 'paid') {

@@ -37,7 +37,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Chiffre d'affaires</p>
-                    <p class="text-2xl font-bold mt-1 text-gray-800">{{ number_format($stats['total_revenue'], 2, ',', ' ') }} €</p>
+                    <p class="text-2xl font-bold mt-1 text-gray-800">{{ number_format($stats['total_revenue'], 2, ',', ' ') }} FCFA</p>
                 </div>
                 <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: rgba(16, 185, 129, 0.1)">
                     <i class="bi bi-currency-euro text-green-500 text-lg"></i>
@@ -50,7 +50,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Ce mois-ci</p>
-                    <p class="text-2xl font-bold mt-1 text-gray-800">{{ number_format($stats['this_month'], 2, ',', ' ') }} €</p>
+                    <p class="text-2xl font-bold mt-1 text-gray-800">{{ number_format($stats['this_month'], 2, ',', ' ') }} FCFA</p>
                 </div>
                 <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: rgba(139, 92, 246, 0.1)">
                     <i class="bi bi-graph-up text-purple-500 text-lg"></i>
@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Paiements en attente</p>
-                    <p class="text-2xl font-bold mt-1 text-amber-600">{{ number_format($stats['pending_payments'], 2, ',', ' ') }} €</p>
+                    <p class="text-2xl font-bold mt-1 text-amber-600">{{ number_format($stats['pending_payments'], 2, ',', ' ') }} FCFA</p>
                 </div>
                 <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: rgba(245, 158, 11, 0.1)">
                     <i class="bi bi-hourglass-split text-amber-500 text-lg"></i>
@@ -104,7 +104,7 @@
                         </td>
                         <td class="fw-semibold">{{ $sale->quantity }}</td>
                         <td>{{ $sale->buyer_name }}</td>
-                        <td class="fw-bold text-primary">{{ number_format($sale->total_amount, 2, ',', ' ') }} €</td>
+                        <td class="fw-bold text-primary">{{ number_format($sale->total_amount, 2, ',', ' ') }} FCFA</td>
                         <td>
                             @if($sale->payment_status === 'paid')
                                 <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">Payé</span>
