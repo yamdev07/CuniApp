@@ -905,7 +905,7 @@
 
                 <!-- "More" Dropdown for Secondary Items -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="nav-link flex items-center gap-1 {{ request()->routeIs('saillies.*', 'mises-bas.*', 'settings.*', 'notifications.*') ? 'active' : '' }}" aria-label="Plus d'options">
+                    <button @click="open = !open" class="nav-link flex items-center gap-1 {{ request()->routeIs('saillies.*', 'mises-bas.*', 'settings.*') ? 'active' : '' }}" aria-label="Plus d'options">
                         <i class="bi bi-grid-3x3-gap"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down text-xs ml-1"></i>
