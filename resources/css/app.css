@@ -2,32 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DARK THEME OVERRIDE */
-.theme-dark {
-  --primary: #3B82F6;
-  --primary-light: #60A5FA;
-  --primary-dark: #2563EB;
-  --surface: #1F2937;
-  --surface-alt: #374151;
-  --surface-border: #4B5563;
-  --text-primary: #F9FAFB;
-  --text-secondary: #D1D5DB;
-  --text-tertiary: #9CA3AF;
-  --gray-50: #111827;
-  --gray-100: #1F2937;
-  --gray-200: #374151;
-  --gray-300: #4B5563;
-  --gray-400: #6B7280;
-  --gray-500: #9CA3AF;
-  --gray-600: #D1D5DB;
-  --gray-700: #E5E7EB;
-  --gray-800: #F3F4F6;
-  --gray-900: #F9FAFB;
-  background-color: var(--surface);
-  color: var(--text-primary);
-}
-
-/* LIGHT THEME (default - no override needed) */
-.theme-light {
-  /* Uses existing :root variables */
-}
