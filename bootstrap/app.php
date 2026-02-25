@@ -11,11 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Redirect guests to welcome page when trying to access protected routes
-        $middleware->redirectGuestsTo(fn () => route('welcome'));
+        // ✅ ADD THIS LINE
+        $middleware->alias([
+            'set.locale' => \App\Http\Middleware\SetLocale::class,
+        ]);
         
-        // Redirect authenticated users away from auth pages to dashboard
-        $middleware->redirectUsersTo(fn ($request) => route('dashboard'));
+        // Or add it to the web group:
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

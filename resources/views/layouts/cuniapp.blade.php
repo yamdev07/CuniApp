@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ $currentLocale ?? 'fr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -1340,6 +1340,22 @@
                 display: block;
             }
         }
+
+        /* Header - Fixed "Plus" dropdown */
+        .theme-dark .dropdown-menu-custom {
+            background: var(--surface-overlay);
+            border: 1px solid var(--surface-border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .theme-dark .dropdown-item-custom {
+            color: var(--text-primary);
+        }
+
+        .theme-dark .dropdown-item-custom:hover {
+            background: var(--hover-subtle);
+            color: var(--primary);
+        }
     </style>
 </head>
 
@@ -1582,10 +1598,10 @@
                         <p class="text-sm font-bold text-gray-800">${options.title}</p>
                         <p class="text-sm text-gray-700 mt-1">${options.message}</p>
                         ${options.action_url ? `
-                                            <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
-                                                Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                            </button>
-                                        ` : ''}
+                                                    <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
+                                                        Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                                    </button>
+                                                ` : ''}
                     </div>
                     <div class="flex flex-col items-end">
                         <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
