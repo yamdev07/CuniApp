@@ -1111,44 +1111,65 @@
       </div>
 
       <!-- Notifications Widget -->
-      <div class="widget alerts-widget">
-        <div class="widget-head">
-          <h3>Notifications</h3>
-          <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
+      <!-- REPLACE static alerts widget with dynamic notifications -->
+<div class="widget alerts-widget">
+    <div class="widget-head">
+        <h3>Notifications</h3>
+        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
             Voir tout <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-        <div class="alerts-list">
-          @php
-            $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
-              ->where('is_read', false)
-              ->orderBy('created_at', 'desc')
-              ->limit(5)
-              ->get();
-          @endphp
-
-          @forelse($recentNotifs as $notif)
-            <div class="alert-row {{ $notif->type }}" onclick="window.location.href='{{ route('notifications.index') }}'" style="cursor: pointer;">
-              <div class="alert-indicator"></div>
-              <div class="alert-text">
-                <div class="alert-title flex items-center gap-2">
-                  <i class="bi {{ $notif->icon }} text-sm"></i>
-                  {{ $notif->title }}
+        </a>
+    </div>
+    <div class="alerts-list">
+        @php
+            $unreadNotifs = \App\Models\Notification::where('user_id', auth()->id())
+                ->where('is_read', false)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+            $unreadCount = $unreadNotifs->count();
+        @endphp
+        
+        @if($unreadCount > 0)
+            @foreach($unreadNotifs as $notif)
+            <div class="alert-row {{ $notif->type }} clickable-row" 
+                 data-href="{{ route('notifications.index') }}">
+                <div class="alert-indicator"></div>
+                <div class="alert-text">
+                    <div class="alert-title flex items-center gap-2">
+                        <i class="bi {{ $notif->icon }} text-sm"></i>
+                        {{ $notif->title }}
+                    </div>
+                    <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
                 </div>
-                <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
-              </div>
-              <div class="flex items-center">
-                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">Nouveau</span>
-              </div>
+                @if(!$notif->is_read)
+                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
+                    Nouveau
+                </span>
+                @endif
             </div>
-          @empty
+            @endforeach
+        @else
             <div class="text-center py-4 text-gray-500">
-              <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
-              <p>Aucune notification récente</p>
+                <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
+                <p>Aucune notification non lue</p>
             </div>
-          @endforelse
-        </div>
-      </div>
+        @endif
+    </div>
+</div>
+
+<style>
+.clickable-row { cursor: pointer; transition: background 0.2s; }
+.clickable-row:hover { background: var(--gray-50) !important; }
+</style>
+
+<script>
+// Make entire row clickable
+document.querySelectorAll('.clickable-row').forEach(row => {
+    row.addEventListener('click', () => {
+        window.location.href = row.dataset.href;
+    });
+});
+</script>
     </div>
   </div>
 </div>
