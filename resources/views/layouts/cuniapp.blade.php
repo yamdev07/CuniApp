@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -794,6 +797,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -881,6 +885,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="cuni-header">
@@ -899,46 +904,65 @@
             </div>
 
             <!-- Mobile Menu Toggle -->
-            <button id="mobileMenuToggle" class="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none z-20">
+            <button id="mobileMenuToggle"
+                class="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none z-20">
                 <i class="bi bi-list text-2xl"></i>
             </button>
 
             <nav class="header-nav">
                 <!-- Primary Navigation (Always Visible) -->
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('lapins.index') }}" class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                <a href="{{ route('lapins.index') }}"
+                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
                     <i class="bi-plus-lg"></i>
                     <span>Total</span>
                 </a>
-                <a href="{{ route('males.index') }}" class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                <a href="{{ route('males.index') }}"
+                    class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-up-right-square"></i>
                     <span>Mâles</span>
                 </a>
-                <a href="{{ route('femelles.index') }}" class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                <a href="{{ route('femelles.index') }}"
+                    class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-down-right-square"></i>
                     <span>Femelles</span>
                 </a>
 
                 <!-- "More" Dropdown for Secondary Items -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="nav-link flex items-center gap-1 {{ request()->routeIs('saillies.*', 'mises-bas.*', 'settings.*') ? 'active' : '' }}" aria-label="Plus d'options">
+                    <button @click="open = !open"
+                        class="nav-link flex items-center gap-1 {{ request()->routeIs('saillies.*', 'mises-bas.*', 'settings.*') ? 'active' : '' }}"
+                        aria-label="Plus d'options">
                         <i class="bi bi-grid-3x3-gap"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down text-xs ml-1"></i>
                     </button>
-                    <div x-show="open" @click.outside="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
-                        <a href="{{ route('saillies.index') }}" class="dropdown-item-custom {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                    <div x-show="open" @click.outside="open = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+                        <a href="{{ route('saillies.index') }}"
+                            class="dropdown-item-custom {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
                             <i class="bi bi-heart text-primary"></i> Saillies
                         </a>
-                        <a href="{{ route('mises-bas.index') }}" class="dropdown-item-custom {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                        <a href="{{ route('mises-bas.index') }}"
+                            class="dropdown-item-custom {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
                             <i class="bi bi-egg text-primary"></i> Mises Bas
                         </a>
                         <hr class="my-1 border-gray-100">
-                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                        <a href="{{ route('settings.index') }}"
+                            class="dropdown-item-custom {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                             <i class="bi bi-gear text-primary"></i> Paramètres
+                        </a>
+                        <a href="{{ route('sales.index') }}"
+                            class="dropdown-item-custom {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+                            <i class="bi bi-cart text-primary"></i> Ventes
                         </a>
                     </div>
                 </div>
@@ -949,10 +973,13 @@
                         ->where('is_read', false)
                         ->count();
                 @endphp
-                <a href="{{ route('notifications.index') }}" class="nav-link flex items-center gap-1 relative {{ request()->routeIs('notifications.*') ? 'active' : '' }}" title="Notifications" aria-label="Notifications">
+                <a href="{{ route('notifications.index') }}"
+                    class="nav-link flex items-center gap-1 relative {{ request()->routeIs('notifications.*') ? 'active' : '' }}"
+                    title="Notifications" aria-label="Notifications">
                     <i class="bi bi-bell" style="font-size: 1.15rem;"></i>
-                    @if($unreadCount > 0)
-                        <span class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[0.65rem] font-bold text-white bg-red-500 rounded-full border-2 border-white">
+                    @if ($unreadCount > 0)
+                        <span
+                            class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[0.65rem] font-bold text-white bg-red-500 rounded-full border-2 border-white">
                             {{ $unreadCount > 9 ? '9+' : $unreadCount }}
                         </span>
                     @endif
@@ -964,7 +991,8 @@
                         <div class="user-avatar">
                             {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
                         </div>
-                        <span class="brand-title" style="font-size: 14px;">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
+                        <span class="brand-title"
+                            style="font-size: 14px;">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
                         <i class="bi bi-chevron-down" style="font-size: 12px; color: var(--text-secondary);"></i>
                     </div>
                     <div class="dropdown-menu-custom" id="dropdownMenu">
@@ -986,13 +1014,14 @@
     </header>
 
     <!-- Mobile Menu Overlay -->
-    <div id="mobileMenu" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-40 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+    <div id="mobileMenu"
+        class="fixed inset-0 bg-gray-900 bg-opacity-90 z-40 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
         <div class="flex justify-between items-center p-6 border-b border-gray-800">
             <div class="flex items-center gap-3">
                 <div class="cuniapp-logo" style="width:40px;height:40px">
                     <svg viewBox="0 0 40 40" fill="none">
-                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
-                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                     </svg>
                 </div>
                 <span class="text-white font-bold text-xl">CuniApp</span>
@@ -1004,37 +1033,47 @@
 
         <div class="mt-8 px-6 space-y-1">
             <!-- Mirror desktop nav items with mobile styling -->
-            <a href="{{ route('dashboard') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('dashboard') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('dashboard') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('dashboard') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-speedometer2 me-3"></i> Dashboard
             </a>
-            <a href="{{ route('lapins.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('lapins.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('lapins.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('lapins.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-plus-lg me-3"></i> Total Lapins
             </a>
-            <a href="{{ route('males.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('males.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('males.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('males.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-arrow-up-right-square me-3"></i> Mâles
             </a>
-            <a href="{{ route('femelles.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('femelles.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('femelles.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('femelles.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-arrow-down-right-square me-3"></i> Femelles
             </a>
-            <a href="{{ route('saillies.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('saillies.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('saillies.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('saillies.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-heart me-3"></i> Saillies
             </a>
-            <a href="{{ route('mises-bas.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('mises-bas.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('mises-bas.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('mises-bas.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-egg me-3"></i> Mises Bas
             </a>
-            <a href="{{ route('settings.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('settings.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('settings.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('settings.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-gear me-3"></i> Paramètres
             </a>
-            <a href="{{ route('notifications.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('notifications.*') ? 'bg-primary text-white' : '' }}">
+            <a href="{{ route('notifications.index') }}"
+                class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('notifications.*') ? 'bg-primary text-white' : '' }}">
                 <i class="bi bi-bell me-3"></i> Notifications
-                @if($unreadCount > 0)
-                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ml-2">{{ $unreadCount }}</span>
+                @if ($unreadCount > 0)
+                    <span
+                        class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ml-2">{{ $unreadCount }}</span>
                 @endif
             </a>
 
             <div class="border-t border-gray-800 mt-4 pt-4">
                 <div class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-lg">
-                    <div class="user-avatar" style="width:36px;height:36px">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
+                    <div class="user-avatar" style="width:36px;height:36px">
+                        {{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
                     <div>
                         <div class="font-medium text-white">{{ Auth::user()->name ?? 'Utilisateur' }}</div>
                         <div class="text-xs text-gray-400">{{ Auth::user()->email }}</div>
@@ -1042,7 +1081,8 @@
                 </div>
                 <form method="POST" action="{{ route('logout') }}" class="mt-3">
                     @csrf
-                    <button type="submit" class="w-full flex items-center gap-3 py-3 text-red-400 hover:bg-gray-800 rounded-lg px-4">
+                    <button type="submit"
+                        class="w-full flex items-center gap-3 py-3 text-red-400 hover:bg-gray-800 rounded-lg px-4">
                         <i class="bi bi-box-arrow-right"></i> Déconnexion
                     </button>
                 </form>
@@ -1051,42 +1091,44 @@
     </div>
 
     <!-- Real-Time Toast Notifications -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none">
+    </div>
 
     @push('scripts')
-    <script>
-        // Real-time Toast System
-        class ToastSystem {
-            constructor() {
-                this.container = document.getElementById('toast-container');
-                this.toasts = new Map();
-            }
+        <script>
+            // Real-time Toast System
+            class ToastSystem {
+                constructor() {
+                    this.container = document.getElementById('toast-container');
+                    this.toasts = new Map();
+                }
 
-            show(options) {
-                const id = options.id || Date.now().toString();
-                if (this.toasts.has(id)) return;
+                show(options) {
+                    const id = options.id || Date.now().toString();
+                    if (this.toasts.has(id)) return;
 
-                const toast = document.createElement('div');
-                toast.className = `pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in-up ${options.type === 'success' ? 'bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500' : options.type === 'warning' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500' : options.type === 'error' ? 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500' : 'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-600'}`;
-                toast.dataset.id = id;
+                    const toast = document.createElement('div');
+                    toast.className =
+                        `pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in-up ${options.type === 'success' ? 'bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500' : options.type === 'warning' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500' : options.type === 'error' ? 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500' : 'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-600'}`;
+                    toast.dataset.id = id;
 
-                const iconMap = {
-                    success: '<i class="bi bi-check-circle-fill text-green-500 text-xl"></i>',
-                    warning: '<i class="bi bi-exclamation-triangle-fill text-amber-500 text-xl"></i>',
-                    error: '<i class="bi bi-x-circle-fill text-red-500 text-xl"></i>',
-                    info: '<i class="bi bi-info-circle-fill text-blue-500 text-xl"></i>'
-                };
+                    const iconMap = {
+                        success: '<i class="bi bi-check-circle-fill text-green-500 text-xl"></i>',
+                        warning: '<i class="bi bi-exclamation-triangle-fill text-amber-500 text-xl"></i>',
+                        error: '<i class="bi bi-x-circle-fill text-red-500 text-xl"></i>',
+                        info: '<i class="bi bi-info-circle-fill text-blue-500 text-xl"></i>'
+                    };
 
-                toast.innerHTML = `
+                    toast.innerHTML = `
                     <div class="flex-shrink-0 mt-0.5">${iconMap[options.type] || iconMap.info}</div>
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-bold text-gray-800">${options.title}</p>
                         <p class="text-sm text-gray-700 mt-1">${options.message}</p>
                         ${options.action_url ? `
-                            <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
-                                Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                            </button>
-                        ` : ''}
+                                    <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
+                                        Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                    </button>
+                                ` : ''}
                     </div>
                     <div class="flex flex-col items-end">
                         <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
@@ -1099,86 +1141,86 @@
                     </div>
                 `;
 
-                this.container.appendChild(toast);
-                this.toasts.set(id, toast);
+                    this.container.appendChild(toast);
+                    this.toasts.set(id, toast);
 
-                // Auto-dismiss
-                const duration = options.duration || 5000;
-                const progressBar = toast.querySelector('div.h-full');
-                setTimeout(() => {
-                    if (progressBar) progressBar.style.width = '0%';
-                }, 100);
+                    // Auto-dismiss
+                    const duration = options.duration || 5000;
+                    const progressBar = toast.querySelector('div.h-full');
+                    setTimeout(() => {
+                        if (progressBar) progressBar.style.width = '0%';
+                    }, 100);
 
-                const dismissTimer = setTimeout(() => {
-                    this.dismiss(id);
-                }, duration);
-
-                // Manual dismiss
-                toast.querySelector('[data-dismiss-toast]').addEventListener('click', () => {
-                    clearTimeout(dismissTimer);
-                    this.dismiss(id);
-                });
-
-                // Action click
-                const actionBtn = toast.querySelector('[data-url]');
-                if (actionBtn) {
-                    actionBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        window.location.href = actionBtn.dataset.url;
+                    const dismissTimer = setTimeout(() => {
                         this.dismiss(id);
+                    }, duration);
+
+                    // Manual dismiss
+                    toast.querySelector('[data-dismiss-toast]').addEventListener('click', () => {
+                        clearTimeout(dismissTimer);
+                        this.dismiss(id);
+                    });
+
+                    // Action click
+                    const actionBtn = toast.querySelector('[data-url]');
+                    if (actionBtn) {
+                        actionBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            window.location.href = actionBtn.dataset.url;
+                            this.dismiss(id);
+                        });
+                    }
+
+                    // Hover pause
+                    toast.addEventListener('mouseenter', () => {
+                        if (progressBar) progressBar.style.transition = 'none';
+                    });
+
+                    toast.addEventListener('mouseleave', () => {
+                        if (progressBar) {
+                            const currentWidth = parseFloat(progressBar.style.width);
+                            progressBar.style.transition = `width ${currentWidth/100 * duration}ms linear`;
+                            progressBar.style.width = '0%';
+                        }
                     });
                 }
 
-                // Hover pause
-                toast.addEventListener('mouseenter', () => {
-                    if (progressBar) progressBar.style.transition = 'none';
+                dismiss(id) {
+                    const toast = this.toasts.get(id);
+                    if (!toast) return;
+                    toast.classList.add('animate-fade-out-down');
+                    setTimeout(() => {
+                        toast.remove();
+                        this.toasts.delete(id);
+                    }, 300);
+                }
+
+                timeAgo(timestamp) {
+                    const now = new Date();
+                    const diff = Math.floor((now - new Date(timestamp)) / 1000);
+                    if (diff < 60) return 'à l\'instant';
+                    if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+                    if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+                    return `${Math.floor(diff/86400)}j ago`;
+                }
+            }
+
+            // Initialize
+            const toastSystem = new ToastSystem();
+
+            // Handle flash notifications
+            @if (session('toast'))
+                document.addEventListener('DOMContentLoaded', () => {
+                    toastSystem.show(@json(session('toast')));
                 });
+            @endif
 
-                toast.addEventListener('mouseleave', () => {
-                    if (progressBar) {
-                        const currentWidth = parseFloat(progressBar.style.width);
-                        progressBar.style.transition = `width ${currentWidth/100 * duration}ms linear`;
-                        progressBar.style.width = '0%';
-                    }
-                });
-            }
+            // Handle AJAX notifications
+            window.showToast = (options) => toastSystem.show(options);
+            window.dismissToast = (id) => toastSystem.dismiss(id);
 
-            dismiss(id) {
-                const toast = this.toasts.get(id);
-                if (!toast) return;
-                toast.classList.add('animate-fade-out-down');
-                setTimeout(() => {
-                    toast.remove();
-                    this.toasts.delete(id);
-                }, 300);
-            }
-
-            timeAgo(timestamp) {
-                const now = new Date();
-                const diff = Math.floor((now - new Date(timestamp)) / 1000);
-                if (diff < 60) return 'à l\'instant';
-                if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-                if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
-                return `${Math.floor(diff/86400)}j ago`;
-            }
-        }
-
-        // Initialize
-        const toastSystem = new ToastSystem();
-
-        // Handle flash notifications
-        @if(session('toast'))
-            document.addEventListener('DOMContentLoaded', () => {
-                toastSystem.show(@json(session('toast')));
-            });
-        @endif
-
-        // Handle AJAX notifications
-        window.showToast = (options) => toastSystem.show(options);
-        window.dismissToast = (id) => toastSystem.dismiss(id);
-
-        // Animation classes
-        document.styleSheets[0].insertRule(`
+            // Animation classes
+            document.styleSheets[0].insertRule(`
             @keyframes fade-in-up {
                 from { opacity: 0; transform: translateY(20px); }
                 to { opacity: 1; transform: translateY(0); }
@@ -1190,7 +1232,7 @@
             .animate-fade-in-up { animation: fade-in-up 0.3s ease-out; }
             .animate-fade-out-down { animation: fade-out-down 0.3s ease-in; }
         `);
-    </script>
+        </script>
     @endpush
 
     <!-- Main Content -->
@@ -1303,7 +1345,7 @@
     <!-- Global Modal System -->
     @include('components.modal-system')
 
-    @if(session('verification_pending'))
+    @if (session('verification_pending'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
@@ -1313,4 +1355,5 @@
         </script>
     @endif
 </body>
-</html> 
+
+</html>
