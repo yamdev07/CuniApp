@@ -30,38 +30,40 @@ class SettingsController extends Controller
             'gestation_days' => 'nullable|integer|min:28|max:35',
             'weaning_weeks' => 'nullable|integer|min:4|max:8',
             'alert_threshold' => 'nullable|integer|min:1|max:100',
-            'theme' => 'nullable|in:dark,light',
-            'language' => 'nullable|in:fr,en',
+            'theme' => 'nullable|in:dark,light',      // ✅ VALIDATE
+            'language' => 'nullable|in:fr,en',        // ✅ VALIDATE
             'notifications_email' => 'nullable|boolean',
             'notifications_dashboard' => 'nullable|boolean',
         ]);
 
-        // Paramètres généraux (Ferme)
-        Setting::set('farm_name', $request->farm_name, 'string', 'general', 'Nom de la ferme');
-        Setting::set('farm_address', $request->farm_address, 'string', 'general', 'Adresse');
-        Setting::set('farm_phone', $request->farm_phone, 'string', 'general', 'Téléphone');
-        Setting::set('farm_email', $request->farm_email, 'string', 'general', 'Email');
+        // ✅ SAVE THEME/LANGUAGE TO USER (NOT GLOBAL SETTINGS!)
+        $user = Auth::user();
+        if ($request->has('theme')) {
+            $user->theme = $request->theme;
+        }
+        if ($request->has('language')) {
+            $user->language = $request->language;
+        }
 
-        // Paramètres d'élevage
-        Setting::set('gestation_days', $request->gestation_days ?? 31, 'number', 'breeding', 'Jours de gestation');
-        Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
-        Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', 'Seuil d\'alerte (%)');
-
-        // Préférences système ET notification preferences
-        Setting::set('theme', $request->theme ?? 'dark', 'string', 'system', 'Thème');
-        Setting::set('language', $request->language ?? 'fr', 'string', 'system', 'Langue');
-
-        // ✅ Update USER-SPECIFIC notification preferences
-        $user = User::find(Auth::id());
+        // Save notification preferences
         if ($request->has('notifications_email')) {
             $user->notifications_email = $request->boolean('notifications_email');
         }
         if ($request->has('notifications_dashboard')) {
             $user->notifications_dashboard = $request->boolean('notifications_dashboard');
         }
-        $user->save();
+        $user->save(); // ✅ ALL USER PREFERENCES SAVED HERE
 
-        // Create notification for settings update
+        // Save OTHER settings to global settings table (farm info, breeding params)
+        Setting::set('farm_name', $request->farm_name, 'string', 'general', 'Nom de la ferme');
+        Setting::set('farm_address', $request->farm_address, 'string', 'general', 'Adresse');
+        Setting::set('farm_phone', $request->farm_phone, 'string', 'general', 'Téléphone');
+        Setting::set('farm_email', $request->farm_email, 'string', 'general', 'Email');
+        Setting::set('gestation_days', $request->gestation_days ?? 31, 'number', 'breeding', 'Jours de gestation');
+        Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
+        Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', 'Seuil d\'alerte (%)');
+
+        // Notification
         $this->notifyUser([
             'type' => 'info',
             'title' => 'Paramètres sauvegardés',

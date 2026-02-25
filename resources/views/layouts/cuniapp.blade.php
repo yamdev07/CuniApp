@@ -886,7 +886,7 @@
     </style>
 </head>
 
-<body>
+<body class="theme-{{ auth()->check() ? auth()->user()->theme : 'dark' }}">
     <!-- Header -->
     <header class="cuni-header">
         <div class="header-wrapper">
