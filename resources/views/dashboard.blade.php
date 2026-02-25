@@ -1033,7 +1033,6 @@
                         ['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'],
                         ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'],
                         ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple'],
-                        ['url' => route('naissances.index'), 'icon' => 'birth', 'title' => 'Naissance', 'desc' => 'Enregistrer portée', 'color' => 'green']
                     ] as $action)
                     <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
                         <div class="tile-icon">
