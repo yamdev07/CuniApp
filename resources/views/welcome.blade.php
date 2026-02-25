@@ -1182,10 +1182,10 @@
                             <div class="form-group">
                                 <label class="form-label">Nom complet</label>
                                 <div class="form-input-wrapper">
-                                    <input type="text" name="name" class="form-input @error('name') error @enderror" placeholder="Jean Dupont" required autofocus value="{{ old('name') }}" id="registerName" minlength="2" maxlength="255">
+                                    <input type="text" name="name" class="form-input @error('name') error @enderror" placeholder="Jean Dupont" required autofocus value="{{ old('name') }}" id="registerName" minlength="2" maxlength="50">
                                     <i class="bi bi-person"></i>
                                 </div>
-                                <div class="char-counter" id="nameCharCounter">0/255</div>
+                                <div class="char-counter" id="nameCharCounter">0/50</div>
                                 @error('name')
                                 <div class="validation-message error">
                                     <i class="bi bi-exclamation-circle-fill"></i>
@@ -1559,12 +1559,12 @@
             if (registerName && nameCharCounter) {
                 registerName.addEventListener('input', function() {
                     const length = this.value.length;
-                    nameCharCounter.textContent = `${length}/255`;
+                    nameCharCounter.textContent = `${length}/50`;
 
-                    if (length > 255) {
+                    if (length > 50) {
                         nameCharCounter.classList.add('exceeded');
                         nameValidation.className = 'validation-message error';
-                        nameValidation.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Le nom est trop long (max 255 caractères)</span>';
+                        nameValidation.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Le nom est trop long (max 50 caractères)</span>';
                         nameValidation.style.display = 'flex';
                         this.classList.add('error');
                     } else if (length > 0 && length < 2) {
