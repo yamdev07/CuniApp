@@ -1,12 +1,12 @@
 @extends('layouts.cuniapp')
 
-@section('title', 'Femelles - CuniApp Élevage')
+@section('title', 'Lapins - CuniApp Élevage')
 
 @section('content')
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-arrow-down-right-square"></i>
+                <i class="bi-plus-lg"></i>
                 Gestion des Lapins
             </h2>
             <div class="breadcrumb">
