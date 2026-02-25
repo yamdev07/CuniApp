@@ -5,7 +5,6 @@ use App\Http\Controllers\MaleController;
 use App\Http\Controllers\FemelleController;
 use App\Http\Controllers\SaillieController;
 use App\Http\Controllers\MiseBasController;
-use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\LapinController;
 use App\Http\Controllers\ProfileController;
@@ -194,22 +193,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('mises-bas.update');
     Route::delete('/mises-bas/{miseBas}', [MiseBasController::class, 'destroy'])
         ->name('mises-bas.destroy');
-
-    // Naissances CRUD (Resource-style with explicit routes)
-    Route::get('/naissances', [NaissanceController::class, 'index'])
-        ->name('naissances.index');
-    Route::get('/naissances/create', [NaissanceController::class, 'create'])
-        ->name('naissances.create');
-    Route::post('/naissances', [NaissanceController::class, 'store'])
-        ->name('naissances.store');
-    Route::get('/naissances/{naissance}', [NaissanceController::class, 'show'])
-        ->name('naissances.show');
-    Route::get('/naissances/{naissance}/edit', [NaissanceController::class, 'edit'])
-        ->name('naissances.edit');
-    Route::put('/naissances/{naissance}', [NaissanceController::class, 'update'])
-        ->name('naissances.update');
-    Route::delete('/naissances/{naissance}', [NaissanceController::class, 'destroy'])
-        ->name('naissances.destroy');
 
     // Lapins (Unified entry point)
     Route::get('/lapins/create', [LapinController::class, 'create'])

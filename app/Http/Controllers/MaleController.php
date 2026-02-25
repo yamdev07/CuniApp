@@ -20,50 +20,23 @@ class MaleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      */
     public function create()
     {
-        return view('males.create');
+        // Generate next available unique code
+        $lastCode = Male::where('code', 'LIKE', 'MAL-%')
+            ->orderBy('code', 'desc')
+            ->value('code');
+
+        $nextNumber = $lastCode ? intval(substr($lastCode, 4)) + 1 : 1;
+        $suggestedCode = 'MAL-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        return view('males.create', compact('suggestedCode'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'code' => 'required|unique:males,code',
-            'nom' => 'required|string|max:255',
-            'race' => 'nullable|string|max:255',
-            'origine' => 'required|in:Interne,Achat',
-            'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive,Malade',
-        ]);
-
-        $male = Male::create($request->all());
-
-        // Create notification
-        $this->notifyUser([
-            'type' => 'success',
-            'title' => 'Nouveau Mâle Enregistré',
-            'message' => "Mâle '{$male->nom}' ({$male->code}) ajouté à l'élevage.",
-            'action_url' => route('males.show', $male),
-        ]);
-
-        // Flash toast
-        session()->flash('toast', [
-            'type' => 'success',
-            'title' => 'Succès !',
-            'message' => "Mâle '{$male->nom}' enregistré avec succès.",
-            'action_url' => route('males.index'),
-            'duration' => 6000,
-            'timestamp' => now()->toIso8601String()
-        ]);
-
-        return redirect()->route('males.index')
-            ->with('success', 'Mâle ajouté avec succès.');
-    }
+// In store method - validation already handles uniqueness!
+// No changes needed to validation rules
 
     /**
      * Display the specified resource.
@@ -165,7 +138,7 @@ class MaleController extends Controller
         $nextIndex = ($currentIndex + 1) % count($etats);
         $oldEtat = $male->etat;
         $newEtat = $etats[$nextIndex];
-        
+
         $male->etat = $newEtat;
         $male->save();
 
