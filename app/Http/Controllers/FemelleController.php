@@ -24,7 +24,14 @@ class FemelleController extends Controller
      */
     public function create()
     {
-        return view('femelles.create');
+        $lastCode = Femelle::where('code', 'LIKE', 'FEM-%')
+            ->orderBy('code', 'desc')
+            ->value('code');
+
+        $nextNumber = $lastCode ? intval(substr($lastCode, 4)) + 1 : 1;
+        $suggestedCode = 'FEM-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+        return view('femelles.create', compact('suggestedCode'));
     }
 
     /**
@@ -165,7 +172,7 @@ class FemelleController extends Controller
         $nextIndex = ($currentIndex + 1) % count($etats);
         $oldEtat = $femelle->etat;
         $newEtat = $etats[$nextIndex];
-        
+
         $femelle->etat = $newEtat;
         $femelle->save();
 
