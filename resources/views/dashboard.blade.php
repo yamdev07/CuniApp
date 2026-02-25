@@ -951,38 +951,45 @@
                     </div>
                     <div class="performance-grid">
                         @php
+                            // Calcul des progressions (barres visuelles)
+                            $totalCheptel = max($nbMales + $nbFemelles, 1);
+
                             $perfCards = [
                                 [
                                     'type' => 'blue',
                                     'icon' => 'male',
                                     'value' => $nbMales,
                                     'title' => 'Mâles Reproducteurs',
-                                    'progress' => 75,
-                                    'trend' => '+12%',
+                                    'progress' => ($nbMales / $totalCheptel) * 100,
+                                    'trend' => number_format($malePercent, 1) . '%',
+                                    'isUp' => $malePercent >= 0,
                                 ],
                                 [
                                     'type' => 'pink',
                                     'icon' => 'female',
                                     'value' => $nbFemelles,
                                     'title' => 'Femelles Reproductrices',
-                                    'progress' => 85,
-                                    'trend' => '+8%',
+                                    'progress' => ($nbFemelles / $totalCheptel) * 100,
+                                    'trend' => number_format($femalePercent, 1) . '%',
+                                    'isUp' => $femalePercent >= 0,
                                 ],
                                 [
                                     'type' => 'purple',
                                     'icon' => 'breed',
                                     'value' => $nbSaillies,
-                                    'title' => 'Saillies en Cours',
-                                    'progress' => 60,
-                                    'trend' => '-3%',
+                                    'title' => 'Saillies Totales',
+                                    'progress' => $nbFemelles > 0 ? min(($nbSaillies / $nbFemelles) * 100, 100) : 0,
+                                    'trend' => number_format($sailliePercent, 1) . '%',
+                                    'isUp' => $sailliePercent >= 0,
                                 ],
                                 [
                                     'type' => 'green',
                                     'icon' => 'birth',
                                     'value' => $nbMisesBas,
-                                    'title' => 'Mises Bas Récentes',
-                                    'progress' => 90,
-                                    'trend' => '+15%',
+                                    'title' => 'Mises Bas',
+                                    'progress' => $nbSaillies > 0 ? min(($nbMisesBas / $nbSaillies) * 100, 100) : 0,
+                                    'trend' => number_format($miseBasPercent, 1) . '%',
+                                    'isUp' => $miseBasPercent >= 0,
                                 ],
                             ];
                         @endphp
@@ -1020,17 +1027,19 @@
                                 <div class="card-number">{{ $card['value'] }}</div>
                                 <div class="progress-track">
                                     <div class="progress-bar {{ $card['type'] }}"
-                                        style="width: {{ $card['progress'] }}%">
-                                    </div>
+                                        style="width: {{ $card['progress'] }}%"></div>
                                 </div>
                                 <div class="card-footer">
-                                    <span class="progress-label">{{ $card['progress'] }}% objectif</span>
-                                    <span class="trend-badge">{{ $card['trend'] }}</span>
+                                    <span class="progress-label">{{ round($card['progress']) }}% du flux</span>
+                                    <span class="trend-badge" style="color: {{ $card['isUp'] ? '#10b981' : '#ef4444' }}">
+                                        {{ $card['isUp'] ? '↑' : '↓' }} {{ $card['trend'] }}
+                                    </span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
+
 
                 <!-- Quick Actions -->
                 <div class="section-block">
