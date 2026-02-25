@@ -951,7 +951,7 @@
 
     <!-- Main Content -->
     <main class="cuni-main">
-        @if (session('success'))
+        {{-- @if (session('success'))
             <div class="alert-cuni success">
                 <i class="bi bi-check-circle-fill"></i>
                 <div>{{ session('success') }}</div>
@@ -963,7 +963,7 @@
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <div>{{ session('error') }}</div>
             </div>
-        @endif
+        @endif --}}
 
         @yield('content')
     </main>

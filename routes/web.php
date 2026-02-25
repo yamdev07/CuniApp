@@ -49,30 +49,30 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-    
+
     Route::get('/register', [RegisteredUserController::class, 'create'])
         ->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
-    
+
     // Password Reset Routes
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
-    
+
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
-    
+
     // ✅ CRITICAL FIX #1: Custom verification code routes MUST be in guest middleware
     // (Users aren't authenticated yet during email verification flow)
     Route::post('/verification/code/verify', [EmailVerificationCodeController::class, 'verify'])
         ->name('verification.code.verify'); // Matches welcome.blade.php form action
-    
+
     Route::post('/verification/code/resend', [EmailVerificationCodeController::class, 'resend'])
         ->name('verification.code.resend'); // Fixes "Route not defined" error
-    
+
     Route::post('/verification/send-code', [EmailVerificationCodeController::class, 'sendCode'])
         ->name('verification.send-code');
 });
@@ -83,13 +83,13 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     // Standard Laravel Email Verification
-    Route::get('/verify-email', fn () => view('auth.verify-email'))
+    Route::get('/verify-email', fn() => view('auth.verify-email'))
         ->name('verification.notice');
-    
+
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-    
+
     // ✅ CRITICAL FIX #2: Fixed auth()->user() call with proper null check
     Route::post('/email/verification-notification', function () {
         if (auth()->check() && auth()->user()) {
@@ -98,12 +98,12 @@ Route::middleware('auth')->group(function () {
         }
         return redirect()->route('login');
     })->middleware(['throttle:6,1'])->name('verification.send');
-    
+
     // Password Confirmation
     Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
     Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store']);
-    
+
     // Logout (available to authenticated users)
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
@@ -117,7 +117,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
-    
+
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -125,7 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-    
+
     // Mâles CRUD (Resource-style with explicit routes)
     Route::get('/males', [MaleController::class, 'index'])
         ->name('males.index');
@@ -143,7 +143,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('males.destroy');
     Route::patch('/males/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])
         ->name('males.toggleEtat');
-    
+
     // Femelles CRUD (Resource-style with explicit routes)
     Route::get('/femelles', [FemelleController::class, 'index'])
         ->name('femelles.index');
@@ -161,7 +161,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('femelles.destroy');
     Route::patch('/femelles/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])
         ->name('femelles.toggleEtat');
-    
+
     // Saillies CRUD (Resource-style with explicit routes)
     Route::get('/saillies', [SaillieController::class, 'index'])
         ->name('saillies.index');
@@ -177,7 +177,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('saillies.update');
     Route::delete('/saillies/{saillie}', [SaillieController::class, 'destroy'])
         ->name('saillies.destroy');
-    
+
     // Mises Bas CRUD (Resource-style with explicit routes)
     Route::get('/mises-bas', [MiseBasController::class, 'index'])
         ->name('mises-bas.index');
@@ -193,7 +193,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('mises-bas.update');
     Route::delete('/mises-bas/{miseBas}', [MiseBasController::class, 'destroy'])
         ->name('mises-bas.destroy');
-    
+
     // Naissances CRUD (Resource-style with explicit routes)
     Route::get('/naissances', [NaissanceController::class, 'index'])
         ->name('naissances.index');
@@ -209,7 +209,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('naissances.update');
     Route::delete('/naissances/{naissance}', [NaissanceController::class, 'destroy'])
         ->name('naissances.destroy');
-    
+
     // Lapins (Unified entry point)
     Route::get('/lapins/create', [LapinController::class, 'create'])
         ->name('lapins.create');
@@ -217,7 +217,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('lapins.store');
     Route::get('/lapins', [LapinController::class, 'index'])
         ->name('lapins.index');
-    
+
     // Settings Management
     Route::get('/settings', [SettingsController::class, 'index'])
         ->name('settings.index');
@@ -229,6 +229,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('settings.export');
     Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])
         ->name('settings.clear-cache');
+    Route::patch('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
 });
 
 // ========================================================================
@@ -252,7 +253,7 @@ Route::middleware('guest')->group(function () {
             'environment' => app()->environment(),
         ]);
     });
-    
+
     Route::get('/ping', function () {
         return 'pong';
     });
