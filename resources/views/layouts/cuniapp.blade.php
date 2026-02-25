@@ -917,19 +917,6 @@
                         <a href="{{ route('mises-bas.index') }}" class="dropdown-item-custom {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
                             <i class="bi bi-egg text-primary"></i> Mises Bas
                         </a>
-                        <a href="{{ route('notifications.index') }}" class="dropdown-item-custom {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
-                            <i class="bi bi-bell text-primary"></i> Notifications
-                            @php
-                                $unread = \App\Models\Notification::where('user_id', auth()->id())
-                                    ->where('is_read', false)
-                                    ->count();
-                            @endphp
-                            @if($unread > 0)
-                            <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {{ $unread > 9 ? '9+' : $unread }}
-                            </span>
-                            @endif
-                        </a>
                         <hr class="my-1 border-gray-100">
                         <a href="{{ route('settings.index') }}" class="dropdown-item-custom {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                             <i class="bi bi-gear text-primary"></i> Paramètres
