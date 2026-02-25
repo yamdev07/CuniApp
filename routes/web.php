@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SaleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,6 +215,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])
         ->name('settings.clear-cache');
 });
+
+
+Route::get('/males/check-code', [MaleController::class, 'checkCode'])->name('males.check-code');
+Route::get('/femelles/check-code', [FemelleController::class, 'checkCode'])->name('femelles.check-code');
+
+// Add after other resource routes
+Route::resource('sales', SaleController::class)->middleware('auth');
+Route::patch('sales/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])->name('sales.mark-paid');
 
 // Notification System
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

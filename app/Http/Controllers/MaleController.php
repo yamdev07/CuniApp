@@ -163,4 +163,10 @@ class MaleController extends Controller
         return redirect()->back()
             ->with('success', 'État mis à jour avec succès !');
     }
+
+    public function checkCode(Request $request)
+    {
+        $exists = Male::where('code', $request->code)->exists();
+        return response()->json(['available' => !$exists]);
+    }
 }

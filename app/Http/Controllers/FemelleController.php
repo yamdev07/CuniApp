@@ -197,4 +197,10 @@ class FemelleController extends Controller
         return redirect()->back()
             ->with('success', 'État mis à jour avec succès !');
     }
+
+    public function checkCode(Request $request)
+    {
+        $exists = Femelle::where('code', $request->code)->exists();
+        return response()->json(['available' => !$exists]);
+    }
 }
