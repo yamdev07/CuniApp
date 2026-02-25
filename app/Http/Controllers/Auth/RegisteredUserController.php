@@ -17,7 +17,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Display registration (redirects to welcome page)
      */
     public function create(): View
     {
@@ -25,12 +25,8 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Handle registration
      */
-    // app/Http/Controllers/Auth/RegisteredUserController.php
-
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -40,12 +36,11 @@ class RegisteredUserController extends Controller
             'terms' => ['accepted'],
         ]);
 
-        // ✅ CREATE USER WITHOUT LOGGING IN
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'email_verified_at' => null, // Explicitly unverified
+            'email_verified_at' => null,
         ]);
 
         // Generate verification code
@@ -62,12 +57,12 @@ class RegisteredUserController extends Controller
                 ->from(config('mail.from.address'), config('mail.from.name'));
         });
 
-        // 🔑 CRITICAL: COMPLETE SESSION CLEANUP (prevents auto-login)
-        Auth::logout();                     // Explicit logout
-        $request->session()->flush();      // Destroy ALL session data
-        $request->session()->regenerate(); // Create fresh guest session
+        // Complete session cleanup
+        Auth::logout();
+        $request->session()->flush();
+        $request->session()->regenerate();
 
-        // Store verification state in NEW session
+        // Store verification state
         session([
             'verification_pending' => true,
             'verification_email' => $user->email,

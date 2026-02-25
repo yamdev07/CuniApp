@@ -10,9 +10,13 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
+    ->withMiddleware(function (Middleware $middleware) {
+        // Redirect guests to welcome page when trying to access protected routes
+        $middleware->redirectGuestsTo(fn () => route('welcome'));
+        
+        // Redirect authenticated users away from auth pages to dashboard
+        $middleware->redirectUsersTo(fn ($request) => route('dashboard'));
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
+    ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
