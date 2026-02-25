@@ -790,6 +790,32 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Dashboard - Fixed button styling */
+        .theme-dark .nav-link {
+            color: var(--text-secondary);
+            border-color: transparent;
+            background: transparent !important;
+        }
+
+        .theme-dark .nav-link.active {
+            background: var(--primary-subtle) !important;
+            color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+
+        /* Calendar - Fixed navigation buttons */
+        .theme-dark .cal-btn {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            border-color: var(--surface-border);
+        }
+
+        .theme-dark .cal-btn:hover {
+            background: var(--hover-subtle);
+            border-color: var(--gray-400);
+            color: var(--primary);
+        }
     </style>
 
     <div class="cuniapp-dashboard">

@@ -42,7 +42,8 @@ class SettingsController extends Controller
             $user->theme = $request->theme;
         }
         if ($request->has('language')) {
-            $user->language = $request->language;
+            // Fixed to properly save language
+            $user->language = $request->language ?? 'fr';
         }
 
         // Save notification preferences
@@ -62,14 +63,6 @@ class SettingsController extends Controller
         Setting::set('gestation_days', $request->gestation_days ?? 31, 'number', 'breeding', 'Jours de gestation');
         Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
         Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', 'Seuil d\'alerte (%)');
-
-        // Notification
-        $this->notifyUser([
-            'type' => 'info',
-            'title' => 'Paramètres sauvegardés',
-            'message' => 'Vos préférences système et notifications ont été mises à jour',
-            'action_url' => route('settings.index')
-        ]);
 
         return redirect()->route('settings.index')
             ->with('success', 'Paramètres enregistrés avec succès !');
