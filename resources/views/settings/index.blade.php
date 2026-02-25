@@ -22,20 +22,6 @@
 </div>
 @endif
 
-@if ($errors->any())
-<div class="alert-cuni error">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    <div>
-        <strong>Erreurs de validation</strong>
-        <ul style="margin: 8px 0 0 20px; padding: 0;">
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-</div>
-@endif
-
 <!-- Tabs Navigation -->
 <div class="tabs-container">
     <button class="tab-btn active" data-tab="general-tab">
@@ -67,18 +53,42 @@
                     <div class="form-group">
                         <label class="form-label">Nom de la ferme *</label>
                         <input type="text" name="farm_name" class="form-control" value="{{ \App\Models\Setting::get('farm_name', '') }}" placeholder="Ex: Ferme Lapin d'Or">
+                        @error('farm_name')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email</label>
                         <input type="email" name="farm_email" class="form-control" value="{{ \App\Models\Setting::get('farm_email', '') }}" placeholder="contact@ferme.com">
+                        @error('farm_email')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Téléphone</label>
                         <input type="text" name="farm_phone" class="form-control" value="{{ \App\Models\Setting::get('farm_phone', '') }}" placeholder="+33 6 00 00 00 00">
+                        @error('farm_phone')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Adresse</label>
                         <input type="text" name="farm_address" class="form-control" value="{{ \App\Models\Setting::get('farm_address', '') }}" placeholder="Adresse complète">
+                        @error('farm_address')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div style="margin-top: 24px;">
@@ -109,6 +119,12 @@
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-info-circle"></i> Moyenne: 31 jours
                         </small>
+                        @error('gestation_days')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Semaines de sevrage</label>
@@ -116,6 +132,12 @@
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-info-circle"></i> Recommandé: 6 semaines
                         </small>
+                        @error('weaning_weeks')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Seuil d'alerte (%)</label>
@@ -123,6 +145,12 @@
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-info-circle"></i> Pour les notifications
                         </small>
+                        @error('alert_threshold')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div style="margin-top: 24px;">
@@ -150,10 +178,22 @@
                     <div class="form-group">
                         <label class="form-label">Nom complet *</label>
                         <input type="text" name="name" class="form-control" value="{{ auth()->user()->name }}" required>
+                        @error('name')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email *</label>
                         <input type="email" name="email" class="form-control" value="{{ auth()->user()->email }}" required>
+                        @error('email')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mot de passe actuel</label>
@@ -161,14 +201,32 @@
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
                             <i class="bi bi-info-circle"></i> Obligatoire pour changer le mot de passe
                         </small>
+                        @error('current_password')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Nouveau mot de passe</label>
                         <input type="password" name="new_password" class="form-control" placeholder="••••••••">
+                        @error('new_password')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Confirmer mot de passe</label>
                         <input type="password" name="new_password_confirmation" class="form-control" placeholder="••••••••">
+                        @error('new_password_confirmation')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                 </div>
                 <div style="margin-top: 24px;">
@@ -203,6 +261,12 @@
                                 Clair
                             </option>
                         </select>
+                        @error('theme')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label class="form-label">Langue</label>
@@ -214,6 +278,12 @@
                                 English
                             </option>
                         </select>
+                        @error('language')
+                            <div class="validation-message error">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
                     </div>
                 </div>
 
@@ -245,7 +315,6 @@
                         </label>
                     </div>
                 </div>
-
                 <div style="margin-top: 24px;">
                     <button type="submit" class="btn-cuni primary">
                         <i class="bi bi-save"></i> Enregistrer les préférences
@@ -257,164 +326,210 @@
 </div>
 
 <style>
-    /* Enhanced Tab Styling */
+/* Enhanced Tab Styling */
+.tabs-container {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--surface-border);
+    padding-bottom: 0;
+    overflow-x: auto;
+    background: var(--surface);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: 8px 8px 0 8px;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border-radius: var(--radius) var(--radius) 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--gray-50);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--primary-subtle);
+}
+
+.tab-btn i {
+    font-size: 16px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form Enhancements */
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* Notification Section */
+.form-section {
+    background: var(--surface-alt);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid var(--surface-border);
+}
+
+.section-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-subtitle i {
+    color: var(--primary);
+}
+
+/* Validation Messages */
+.validation-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.validation-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.validation-message.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-green);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.validation-message.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--accent-orange);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.validation-message i {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
     .tabs-container {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 24px;
-        border-bottom: 1px solid var(--surface-border);
-        padding-bottom: 0;
-        overflow-x: auto;
-        background: var(--surface);
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
-        padding: 8px 8px 0 8px;
+        padding: 4px 4px 0 4px;
     }
 
     .tab-btn {
-        padding: 12px 20px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text-secondary);
-        background: transparent;
-        border: none;
-        border-bottom: 2px solid transparent;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        border-radius: var(--radius) var(--radius) 0 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        padding: 10px 14px;
+        font-size: 13px;
     }
 
-    .tab-btn:hover {
-        color: var(--text-primary);
-        background: var(--gray-50);
+    .settings-grid {
+        grid-template-columns: 1fr;
     }
-
-    .tab-btn.active {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-        background: var(--primary-subtle);
-    }
-
-    .tab-btn i {
-        font-size: 16px;
-    }
-
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.3s ease;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Form Enhancements */
-    .form-control:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-subtle);
-    }
-
-    /* Checkbox Styling */
-    input[type="checkbox"] {
-        accent-color: var(--primary);
-        cursor: pointer;
-    }
-
-    /* Notification Section */
-    .form-section {
-        background: var(--surface-alt);
-        border-radius: var(--radius-lg);
-        padding: 20px;
-        border: 1px solid var(--surface-border);
-    }
-
-    .section-subtitle {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--gray-700);
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .section-subtitle i {
-        color: var(--primary);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .tabs-container {
-            padding: 4px 4px 0 4px;
-        }
-
-        .tab-btn {
-            padding: 10px 14px;
-            font-size: 13px;
-        }
-
-        .settings-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+}
 </style>
 
 <script>
-    // Tab functionality
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
+// Tab functionality
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
 
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-            // Add active class to clicked tab
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+        // Add active class to clicked tab
+        this.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
 
-            // Save to localStorage
-            localStorage.setItem('cuniapp_active_tab', tabId);
-        });
+        // Save to localStorage
+        localStorage.setItem('cuniapp_active_tab', tabId);
     });
+});
 
-    // Restore active tab on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const savedTab = localStorage.getItem('cuniapp_active_tab');
-        if (savedTab) {
-            const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
-            if (tabBtn) {
-                tabBtn.click();
-            }
+// Restore active tab on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTab = localStorage.getItem('cuniapp_active_tab');
+    if (savedTab) {
+        const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+        if (tabBtn) {
+            tabBtn.click();
         }
+    }
 
-        // Add fade-in animation to cards
-        const cards = document.querySelectorAll('.cuni-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(10px)';
-            setTimeout(() => {
-                card.style.transition = 'all 0.4s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 50);
-        });
+    // Add fade-in animation to cards
+    const cards = document.querySelectorAll('.cuni-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(10px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 50);
     });
+});
 </script>
 @endsection

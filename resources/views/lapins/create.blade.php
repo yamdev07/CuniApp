@@ -46,7 +46,7 @@
                     <select name="type" class="form-select" required>
                         <option value="">-- Sélectionner --</option>
                         <option value="male">Mâle</option>
-                        <option value="female">Femelle</option>
+                        <option value="femelle">Femelle</option>
                     </select>
                 </div>
                 <div class="form-group">
