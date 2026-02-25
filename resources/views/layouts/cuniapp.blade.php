@@ -915,6 +915,71 @@
                     <span>Paramètres</span>
                 </a>
 
+<!-- Add before user dropdown -->
+<div class="relative" x-data="{ open: false }">
+    <button @click="open = !open" class="nav-link relative">
+        <i class="bi bi-bell text-lg"></i>
+        @php
+            $unreadCount = \App\Models\Notification::where('user_id', auth()->id())
+                ->where('is_read', false)
+                ->count();
+        @endphp
+        @if($unreadCount > 0)
+        <span class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+        </span>
+        @endif
+    </button>
+    
+    <!-- Dropdown menu with recent notifications -->
+    <div x-show="open" @click.outside="open = false" 
+         class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h4 class="font-semibold text-gray-800">Notifications</h4>
+            <p class="text-xs text-gray-500">{{ $unreadCount }} non lues</p>
+        </div>
+        
+        <div class="max-h-96 overflow-y-auto">
+            @php
+                $recent = \App\Models\Notification::where('user_id', auth()->id())
+                    ->orderBy('created_at', 'desc')
+                    ->limit(8)
+                    ->get();
+            @endphp
+            
+            @forelse($recent as $notif)
+            <a href="{{ route('notifications.read', $notif->id) }}" 
+               class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 {{ $notif->is_read ? 'opacity-70' : 'bg-blue-50' }}">
+                <div class="flex items-start gap-3">
+                    <div class="mt-1">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center" 
+                             style="background: rgba({{ $notif->type === 'success' ? '16, 185, 129' : ($notif->type === 'warning' ? '245, 158, 11' : ($notif->type === 'error' ? '239, 68, 68' : '59, 130, 246')) }}, 0.1)">
+                            <i class="bi {{ $notif->icon }} text-{{ $notif->type === 'success' ? 'green' : ($notif->type === 'warning' ? 'amber' : ($notif->type === 'error' ? 'red' : 'blue')) }}-500"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-800 text-sm">{{ $notif->title }}</p>
+                        <p class="text-xs text-gray-600 mt-1 truncate">{{ $notif->message }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+            </a>
+            @empty
+            <div class="px-4 py-6 text-center text-gray-500">
+                <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
+                <p>Aucune notification</p>
+            </div>
+            @endforelse
+        </div>
+        
+        <div class="px-4 py-2 border-t border-gray-100">
+            <a href="{{ route('notifications.index') }}" class="block text-center text-sm font-medium text-primary hover:text-primary-dark">
+                Voir toutes les notifications
+            </a>
+        </div>
+    </div>
+</div>
+
                 <div class="user-profile-dropdown" id="userDropdown">
                     <div class="user-trigger" onclick="toggleDropdown()">
                         <div class="user-avatar">
@@ -948,6 +1013,159 @@
             </nav>
         </div>
     </header>
+    <!-- Real-Time Toast Notifications -->
+<div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none"></div>
+
+@push('scripts')
+<script>
+// Real-time Toast System
+class ToastSystem {
+    constructor() {
+        this.container = document.getElementById('toast-container');
+        this.toasts = new Map();
+    }
+
+    show(options) {
+        const id = options.id || Date.now().toString();
+        if (this.toasts.has(id)) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in-up ${
+            options.type === 'success' ? 'bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500' :
+            options.type === 'warning' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500' :
+            options.type === 'error' ? 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500' :
+            'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-600'
+        }`;
+        toast.dataset.id = id;
+        
+        const iconMap = {
+            success: '<i class="bi bi-check-circle-fill text-green-500 text-xl"></i>',
+            warning: '<i class="bi bi-exclamation-triangle-fill text-amber-500 text-xl"></i>',
+            error: '<i class="bi bi-x-circle-fill text-red-500 text-xl"></i>',
+            info: '<i class="bi bi-info-circle-fill text-blue-500 text-xl"></i>'
+        };
+        
+        toast.innerHTML = `
+            <div class="flex-shrink-0 mt-0.5">${iconMap[options.type] || iconMap.info}</div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-bold text-gray-800">${options.title}</p>
+                <p class="text-sm text-gray-700 mt-1">${options.message}</p>
+                ${options.action_url ? `
+                <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
+                    Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>` : ''}
+            </div>
+            <div class="flex flex-col items-end">
+                <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
+                    <i class="bi bi-x-lg text-sm"></i>
+                </button>
+                <span class="mt-1 text-xs text-gray-500">${this.timeAgo(options.timestamp)}</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-current opacity-20 rounded-b-xl">
+                <div class="h-full bg-current opacity-100 rounded-b-xl transition-all duration-${options.duration || 5000} ease-linear" 
+                     style="width: 100%; background: ${
+                        options.type === 'success' ? '#10b981' :
+                        options.type === 'warning' ? '#f59e0b' :
+                        options.type === 'error' ? '#ef4444' : '#3b82f6'
+                     }"></div>
+            </div>
+        `;
+        
+        this.container.appendChild(toast);
+        this.toasts.set(id, toast);
+        
+        // Auto-dismiss
+        const duration = options.duration || 5000;
+        const progressBar = toast.querySelector('div.h-full');
+        setTimeout(() => {
+            if (progressBar) progressBar.style.width = '0%';
+        }, 100);
+        
+        const dismissTimer = setTimeout(() => {
+            this.dismiss(id);
+        }, duration);
+        
+        // Manual dismiss
+        toast.querySelector('[data-dismiss-toast]').addEventListener('click', () => {
+            clearTimeout(dismissTimer);
+            this.dismiss(id);
+        });
+        
+        // Action click
+        const actionBtn = toast.querySelector('[data-url]');
+        if (actionBtn) {
+            actionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.location.href = actionBtn.dataset.url;
+                this.dismiss(id);
+            });
+        }
+        
+        // Hover pause
+        toast.addEventListener('mouseenter', () => {
+            if (progressBar) progressBar.style.transition = 'none';
+        });
+        
+        toast.addEventListener('mouseleave', () => {
+            if (progressBar) {
+                const currentWidth = parseFloat(progressBar.style.width);
+                progressBar.style.transition = `width ${currentWidth/100 * duration}ms linear`;
+                progressBar.style.width = '0%';
+            }
+        });
+    }
+    
+    dismiss(id) {
+        const toast = this.toasts.get(id);
+        if (!toast) return;
+        
+        toast.classList.add('animate-fade-out-down');
+        setTimeout(() => {
+            toast.remove();
+            this.toasts.delete(id);
+        }, 300);
+    }
+    
+    timeAgo(timestamp) {
+        const now = new Date();
+        const diff = Math.floor((now - new Date(timestamp)) / 1000);
+        
+        if (diff < 60) return 'à l\'instant';
+        if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+        return `${Math.floor(diff/86400)}j ago`;
+    }
+}
+
+// Initialize
+const toastSystem = new ToastSystem();
+
+// Handle flash notifications
+@if(session('toast'))
+    document.addEventListener('DOMContentLoaded', () => {
+        toastSystem.show(@json(session('toast')));
+    });
+@endif
+
+// Handle AJAX notifications
+window.showToast = (options) => toastSystem.show(options);
+window.dismissToast = (id) => toastSystem.dismiss(id);
+
+// Animation classes
+document.styleSheets[0].insertRule(`
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-out-down {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(20px); }
+    }
+    .animate-fade-in-up { animation: fade-in-up 0.3s ease-out; }
+    .animate-fade-out-down { animation: fade-out-down 0.3s ease-in; }
+`);
+</script>
+@endpush
 
     <!-- Main Content -->
     <main class="cuni-main">

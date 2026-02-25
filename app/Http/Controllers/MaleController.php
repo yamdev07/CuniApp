@@ -4,76 +4,190 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Male;
+use App\Traits\Notifiable;
 
 class MaleController extends Controller
 {
+    use Notifiable;
+
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $males = Male::orderBy('created_at', 'desc')->paginate(10);
+        $males = Male::latest()->paginate(10);
         return view('males.index', compact('males'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         return view('males.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $request->validate([
             'code' => 'required|unique:males,code',
             'nom' => 'required|string|max:255',
-            'race' => 'nullable|string|max:255',  // Changed from required
+            'race' => 'nullable|string|max:255',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
+            'etat' => 'required|in:Active,Inactive,Malade',
         ]);
 
-        Male::create($request->all());
-        return redirect()->route('males.index')->with('success', 'Mâle ajouté avec succès.');
+        $male = Male::create($request->all());
+
+        // Create notification
+        $this->notifyUser([
+            'type' => 'success',
+            'title' => 'Nouveau Mâle Enregistré',
+            'message' => "Mâle '{$male->nom}' ({$male->code}) ajouté à l'élevage.",
+            'action_url' => route('males.show', $male),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'success',
+            'title' => 'Succès !',
+            'message' => "Mâle '{$male->nom}' enregistré avec succès.",
+            'action_url' => route('males.index'),
+            'duration' => 6000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
+        return redirect()->route('males.index')
+            ->with('success', 'Mâle ajouté avec succès.');
     }
 
-    public function edit(string $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $male = Male::findOrFail($id);
+        return view('males.show', compact('male'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
     {
         $male = Male::findOrFail($id);
         return view('males.edit', compact('male'));
     }
 
-    public function update(Request $request, string $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
     {
         $male = Male::findOrFail($id);
+
         $request->validate([
             'code' => 'required|unique:males,code,' . $male->id,
             'nom' => 'required|string|max:255',
-            'race' => 'nullable|string|max:255',  // Changed from required
+            'race' => 'nullable|string|max:255',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive,Malade',  // Added Malade option
+            'etat' => 'required|in:Active,Inactive,Malade',
         ]);
 
+        $oldNom = $male->nom;
         $male->update($request->all());
-        return redirect()->route('males.index')->with('success', 'Mâle modifié avec succès.');
-    }
 
-    public function destroy(string $id)
-    {
-        $male = Male::findOrFail($id);
-        $male->delete();
+        // Create notification
+        $this->notifyUser([
+            'type' => 'info',
+            'title' => 'Mâle Modifié',
+            'message' => "Informations du mâle '{$male->nom}' mises à jour.",
+            'action_url' => route('males.show', $male),
+        ]);
 
-        return redirect()->route('males.index')->with('success', 'Mâle supprimé avec succès.');
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'info',
+            'title' => 'Mise à jour !',
+            'message' => "Mâle '{$male->nom}' modifié avec succès.",
+            'action_url' => route('males.index'),
+            'duration' => 6000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
+        return redirect()->route('males.index')
+            ->with('success', 'Mâle modifié avec succès.');
     }
 
     /**
-     * Bascule l'état d'un mâle.
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $male = Male::findOrFail($id);
+        $maleName = $male->nom;
+
+        $male->delete();
+
+        // Create notification
+        $this->notifyUser([
+            'type' => 'warning',
+            'title' => 'Mâle Supprimé',
+            'message' => "Le mâle '{$maleName}' a été supprimé de l'élevage.",
+            'action_url' => route('males.index'),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'warning',
+            'title' => 'Supprimé !',
+            'message' => "Mâle '{$maleName}' supprimé avec succès.",
+            'duration' => 5000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
+        return redirect()->route('males.index')
+            ->with('success', 'Mâle supprimé avec succès.');
+    }
+
+    /**
+     * Toggle male state
      */
     public function toggleEtat(Male $male)
     {
-        $etats = ['Active', 'Inactive'];
+        $etats = ['Active', 'Inactive', 'Malade'];
         $currentIndex = array_search($male->etat, $etats);
         $nextIndex = ($currentIndex + 1) % count($etats);
-        $male->etat = $etats[$nextIndex];
+        $oldEtat = $male->etat;
+        $newEtat = $etats[$nextIndex];
+        
+        $male->etat = $newEtat;
         $male->save();
 
-        return redirect()->back()->with('success', 'État mis à jour avec succès !');
+        // Create notification
+        $this->notifyUser([
+            'type' => 'info',
+            'title' => 'État du Mâle Mis à Jour',
+            'message' => "État de '{$male->nom}' : {$oldEtat} → {$newEtat}",
+            'action_url' => route('males.show', $male),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'info',
+            'title' => 'État mis à jour !',
+            'message' => "État de '{$male->nom}' : {$newEtat}",
+            'action_url' => route('males.index'),
+            'duration' => 4000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'État mis à jour avec succès !');
     }
 }

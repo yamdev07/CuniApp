@@ -280,85 +280,52 @@
 <div class="tab-content" id="system-tab">
     <div class="cuni-card">
         <div class="card-header-custom">
-            <h3 class="card-title">
-                <i class="bi bi-hdd"></i>
-                Gestion du Système
-            </h3>
+            <h3 class="card-title"> <i class="bi bi-gear"></i> Préférences Système </h3>
         </div>
         <div class="card-body">
-            <div class="settings-grid">
-                <!-- Export Data -->
-                <div class="cuni-card" style="margin: 0; background: var(--surface-alt);">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <div style="width: 40px; height: 40px; background: rgba(6, 182, 212, 0.1); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-download" style="color: var(--accent-cyan); font-size: 20px;"></i>
-                        </div>
-                        <h4 style="font-size: 15px; font-weight: 600; color: var(--gray-800); margin: 0;">
-                            Exporter les données
-                        </h4>
-                    </div>
-                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
-                        Télécharger toutes les données de l'élevage au format JSON
-                    </p>
-                    <a href="{{ route('settings.export') }}" class="btn-cuni secondary">
-                        <i class="bi bi-download"></i>
-                        Exporter
-                    </a>
-                </div>
-
-                <!-- Clear Cache -->
-                <div class="cuni-card" style="margin: 0; background: var(--surface-alt);">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                        <div style="width: 40px; height: 40px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-trash" style="color: var(--accent-orange); font-size: 20px;"></i>
-                        </div>
-                        <h4 style="font-size: 15px; font-weight: 600; color: var(--gray-800); margin: 0;">
-                            Vider le cache
-                        </h4>
-                    </div>
-                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
-                        Effacer le cache de l'application pour résoudre les problèmes
-                    </p>
-                    <form action="{{ route('settings.clear-cache') }}" method="POST" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn-cuni danger" 
-                                onclick="return confirm('Voulez-vous vraiment vider le cache ?')">
-                            <i class="bi bi-trash"></i>
-                            Vider le cache
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- System Info -->
-            <div class="cuni-card" style="margin-top: 24px; background: var(--surface-alt);">
-                <div class="card-header-custom" style="background: transparent; padding: 0 0 16px 0; border: none;">
-                    <h3 class="card-title">
-                        <i class="bi bi-info-circle"></i>
-                        Informations Système
-                    </h3>
-                </div>
+            <form action="{{ route('settings.update') }}" method="POST">
+                @csrf
                 <div class="settings-grid">
-                    <div>
-                        <small style="color: var(--text-tertiary); font-size: 12px;">Version</small>
-                        <div style="font-weight: 600; color: var(--gray-800);">1.0.0</div>
+                    <div class="form-group">
+                        <label class="form-label">Thème de l'application</label>
+                        <select name="theme" class="form-select">
+                            <option value="dark" {{ \App\Models\Setting::get('theme', 'dark') == 'dark' ? 'selected' : '' }}> Sombre </option>
+                            <option value="light" {{ \App\Models\Setting::get('theme', 'dark') == 'light' ? 'selected' : '' }}> Clair </option>
+                        </select>
                     </div>
-                    <div>
-                        <small style="color: var(--text-tertiary); font-size: 12px;">PHP</small>
-                        <div style="font-weight: 600; color: var(--gray-800);">{{ phpversion() }}</div>
+                    <div class="form-group">
+                        <label class="form-label">Langue</label>
+                        <select name="language" class="form-select">
+                            <option value="fr" {{ \App\Models\Setting::get('language', 'fr') == 'fr' ? 'selected' : '' }}> Français </option>
+                            <option value="en" {{ \App\Models\Setting::get('language', 'fr') == 'en' ? 'selected' : '' }}> English </option>
+                        </select>
                     </div>
-                    <div>
-                        <small style="color: var(--text-tertiary); font-size: 12px;">Laravel</small>
-                        <div style="font-weight: 600; color: var(--gray-800);">{{ app()->version() }}</div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="notifications_email" {{ \App\Models\Setting::get('notifications_email', '0') == '1' ? 'checked' : '' }}>
+                            <span class="form-label" style="margin: 0;">Notifications par email</span>
+                        </label>
+                        <small class="text-gray-500 text-xs mt-1">Recevez des emails pour les activités importantes</small>
                     </div>
-                    <div>
-                        <small style="color: var(--text-tertiary); font-size: 12px;">Environnement</small>
-                        <div style="font-weight: 600; color: var(--gray-800);">{{ app()->environment() }}</div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="notifications_dashboard" {{ \App\Models\Setting::get('notifications_dashboard', '0') == '1' ? 'checked' : '' }}>
+                            <span class="form-label" style="margin: 0;">Notifications sur le tableau de bord</span>
+                        </label>
+                        <small class="text-gray-500 text-xs mt-1">Affichez les notifications dans le widget du tableau de bord</small>
                     </div>
                 </div>
-            </div>
+                <div style="margin-top: 24px;">
+                    <button type="submit" class="btn-cuni primary">
+                        <i class="bi bi-save"></i> Enregistrer les préférences
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+    
+    <!-- Keep Export & Cache sections here -->
+    <!-- Remove "Informations Système" section completely -->
 </div>
 
 <style>

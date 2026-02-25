@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\MiseBas;
 use App\Models\Femelle;
 use Illuminate\Http\Request;
+use App\Traits\Notifiable;
 
 class MiseBasController extends Controller
 {
+    use Notifiable;
+
     /**
-     * Liste des mises bas
+     * Display a listing of the resource.
      */
     public function index()
     {
@@ -18,7 +21,7 @@ class MiseBasController extends Controller
     }
 
     /**
-     * Formulaire de création
+     * Show the form for creating a new resource.
      */
     public function create()
     {
@@ -27,7 +30,7 @@ class MiseBasController extends Controller
     }
 
     /**
-     * Enregistrement
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
@@ -40,8 +43,7 @@ class MiseBasController extends Controller
             'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
 
-        // Create with femelle_id instead of relying on saillie_id
-        MiseBas::create([
+        $miseBas = MiseBas::create([
             'femelle_id' => $request->femelle_id,
             'date_mise_bas' => $request->date_mise_bas,
             'nb_vivant' => $request->nb_vivant,
@@ -50,32 +52,57 @@ class MiseBasController extends Controller
             'poids_moyen_sevrage' => $request->poids_moyen_sevrage,
         ]);
 
+        $femelle = Femelle::find($request->femelle_id);
+        $total = $request->nb_vivant + ($request->nb_mort_ne ?? 0);
+
+        // Create notification
+        $this->notifyUser([
+            'type' => 'success',
+            'title' => 'Nouvelle Mise Bas Enregistrée',
+            'message' => "Mise bas de {$femelle->nom} : {$total} lapereaux ({$request->nb_vivant} vivants)",
+            'action_url' => route('mises-bas.show', $miseBas),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'success',
+            'title' => 'Mise bas enregistrée !',
+            'message' => "{$total} lapereaux nés de {$femelle->nom}",
+            'action_url' => route('mises-bas.index'),
+            'duration' => 6000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
         return redirect()->route('mises-bas.index')
             ->with('success', 'Mise bas enregistrée avec succès.');
     }
 
     /**
-     * Affichage d'une mise bas
+     * Display the specified resource.
      */
-    public function show(MiseBas $miseBas)
+    public function show($id)
     {
+        $miseBas = MiseBas::with('femelle')->findOrFail($id);
         return view('mises_bas.show', compact('miseBas'));
     }
 
     /**
-     * Formulaire d'édition
+     * Show the form for editing the specified resource.
      */
-    public function edit(MiseBas $miseBas)
+    public function edit($id)
     {
+        $miseBas = MiseBas::findOrFail($id);
         $femelles = Femelle::all();
         return view('mises_bas.edit', compact('miseBas', 'femelles'));
     }
 
     /**
-     * Mise à jour
+     * Update the specified resource in storage.
      */
-    public function update(Request $request, MiseBas $miseBas)
+    public function update(Request $request, $id)
     {
+        $miseBas = MiseBas::findOrFail($id);
+
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'date_mise_bas' => 'required|date',
@@ -84,6 +111,9 @@ class MiseBasController extends Controller
             'date_sevrage' => 'nullable|date',
             'poids_moyen_sevrage' => 'nullable|numeric',
         ]);
+
+        $oldTotal = $miseBas->nb_vivant + $miseBas->nb_mort_ne;
+        $newTotal = $request->nb_vivant + ($request->nb_mort_ne ?? 0);
 
         $miseBas->update([
             'femelle_id' => $request->femelle_id,
@@ -94,16 +124,57 @@ class MiseBasController extends Controller
             'poids_moyen_sevrage' => $request->poids_moyen_sevrage,
         ]);
 
+        $femelle = Femelle::find($request->femelle_id);
+
+        // Create notification
+        $this->notifyUser([
+            'type' => 'info',
+            'title' => 'Mise Bas Modifiée',
+            'message' => "Mise bas de {$femelle->nom} mise à jour : {$newTotal} lapereaux",
+            'action_url' => route('mises-bas.show', $miseBas),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'info',
+            'title' => 'Mise à jour !',
+            'message' => "Mise bas de {$femelle->nom} modifiée avec succès.",
+            'action_url' => route('mises-bas.index'),
+            'duration' => 6000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
         return redirect()->route('mises-bas.index')
             ->with('success', 'Mise bas mise à jour avec succès.');
     }
 
     /**
-     * Suppression
+     * Remove the specified resource from storage.
      */
-    public function destroy(MiseBas $miseBas)
+    public function destroy($id)
     {
+        $miseBas = MiseBas::with('femelle')->findOrFail($id);
+        $femelleName = $miseBas->femelle->nom;
+        $total = $miseBas->nb_vivant + $miseBas->nb_mort_ne;
+
         $miseBas->delete();
+
+        // Create notification
+        $this->notifyUser([
+            'type' => 'warning',
+            'title' => 'Mise Bas Supprimée',
+            'message' => "Mise bas de {$femelleName} ({$total} lapereaux) supprimée.",
+            'action_url' => route('mises-bas.index'),
+        ]);
+
+        // Flash toast
+        session()->flash('toast', [
+            'type' => 'warning',
+            'title' => 'Supprimée !',
+            'message' => "Mise bas de {$femelleName} supprimée avec succès.",
+            'duration' => 5000,
+            'timestamp' => now()->toIso8601String()
+        ]);
 
         return redirect()->route('mises-bas.index')
             ->with('success', 'Mise bas supprimée avec succès.');

@@ -1714,7 +1714,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Un nouveau code a été envoyé à votre adresse email.');
+                        ('Un nouveau code a été envoyé à votre adresse email.');
                         startResendTimer();
                     } else {
                         alert('Une erreur est survenue. Veuillez réessayer.');
