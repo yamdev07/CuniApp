@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Tableau de Bord Élevage - CuniApp')</title>
-
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    
     <style>
         :root {
             /* Primary Colors */
@@ -24,7 +21,7 @@
             --primary-light: #3B82F6;
             --primary-dark: #1D4ED8;
             --primary-subtle: #EFF6FF;
-
+            
             /* Accent Colors */
             --accent-cyan: #06B6D4;
             --accent-purple: #8B5CF6;
@@ -32,7 +29,7 @@
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
             --accent-red: #EF4444;
-
+            
             /* Neutral Colors */
             --white: #FFFFFF;
             --gray-50: #F9FAFB;
@@ -45,7 +42,7 @@
             --gray-700: #374151;
             --gray-800: #1F2937;
             --gray-900: #111827;
-
+            
             /* Semantic Colors */
             --surface: #FFFFFF;
             --surface-alt: #F9FAFB;
@@ -53,12 +50,13 @@
             --text-primary: #1F2937;
             --text-secondary: #6B7280;
             --text-tertiary: #9CA3AF;
-
+            
             /* Effects */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            
             --radius-sm: 6px;
             --radius: 8px;
             --radius-md: 12px;
@@ -417,8 +415,8 @@
         }
 
         .tab-btn {
-            padding: 10px 16px;
-            font-size: 13px;
+            padding: 12px 20px;
+            font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
             background: transparent;
@@ -428,6 +426,9 @@
             transition: all 0.2s ease;
             white-space: nowrap;
             border-radius: var(--radius) var(--radius) 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .tab-btn:hover {
@@ -442,7 +443,7 @@
         }
 
         .tab-btn i {
-            margin-right: 6px;
+            font-size: 16px;
         }
 
         .tab-content {
@@ -528,33 +529,33 @@
                 align-items: flex-start;
                 padding: 16px;
             }
-
+            
             .header-nav {
                 width: 100%;
                 justify-content: flex-start;
             }
-
+            
             .cuni-main {
                 padding: 16px;
             }
-
+            
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
-
+            
             .footer-content {
                 flex-direction: column;
                 text-align: center;
             }
-
+            
             .tabs-container {
                 padding: 4px 4px 0 4px;
             }
-
+            
             .tab-btn {
-                padding: 8px 12px;
-                font-size: 12px;
+                padding: 10px 14px;
+                font-size: 13px;
             }
         }
 
@@ -562,17 +563,17 @@
             .brand-title {
                 font-size: 18px;
             }
-
+            
             .nav-link {
                 padding: 8px 12px;
                 font-size: 13px;
             }
-
+            
             .footer-links {
                 flex-direction: column;
                 gap: 12px;
             }
-
+            
             .footer-stats {
                 flex-direction: column;
                 gap: 8px;
@@ -735,18 +736,16 @@
             .table-responsive {
                 overflow-x: auto;
             }
-
+            
             .table {
                 min-width: 800px;
             }
-
+            
             .action-buttons {
                 flex-direction: column;
                 gap: 4px;
             }
         }
-
-
 
         /* ==================== USER DROPDOWN ==================== */
         .user-profile-dropdown {
@@ -793,7 +792,6 @@
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-lg);
             display: none;
-            /* Masqué par défaut */
             z-index: 1000;
             overflow: hidden;
             animation: slideIn 0.2s ease-out;
@@ -804,7 +802,6 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -858,9 +855,43 @@
             background: rgba(239, 68, 68, 0.05);
             color: var(--accent-red);
         }
+
+        /* Dropdown Item Enhancements */
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: var(--radius);
+        }
+
+        .dropdown-item-custom:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .dropdown-item-custom.active {
+            background: var(--primary-subtle);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .dropdown-item-custom i {
+            width: 20px;
+            text-align: center;
+        }
     </style>
 </head>
-
 <body>
     <!-- Header -->
     <header class="cuni-header">
@@ -877,126 +908,99 @@
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
-
+            
             <nav class="header-nav">
-                <a href="{{ route('dashboard') }}"
-                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <!-- Primary Navigation (Always Visible) -->
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('lapins.index') }}"
-                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                
+                <a href="{{ route('lapins.index') }}" class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
                     <i class="bi-plus-lg"></i>
-                    <span>Total Lapins</span>
+                    <span>Total</span>
                 </a>
-                <a href="{{ route('males.index') }}"
-                    class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                
+                <a href="{{ route('males.index') }}" class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-up-right-square"></i>
                     <span>Mâles</span>
                 </a>
-                <a href="{{ route('femelles.index') }}"
-                    class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                
+                <a href="{{ route('femelles.index') }}" class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-down-right-square"></i>
                     <span>Femelles</span>
                 </a>
-                <a href="{{ route('saillies.index') }}"
-                    class="nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
-                    <i class="bi bi-heart"></i>
-                    <span>Saillies</span>
-                </a>
-                <a href="{{ route('mises-bas.index') }}"
-                    class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
-                    <i class="bi bi-egg"></i>
-                    <span>Mises Bas</span>
-                </a>
-                <a href="{{ route('settings.index') }}"
-                    class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                    <i class="bi bi-gear"></i>
-                    <span>Paramètres</span>
-                </a>
-
-<!-- Add before user dropdown -->
-<div class="relative" x-data="{ open: false }">
-    <button @click="open = !open" class="nav-link relative">
-        <i class="bi bi-bell text-lg"></i>
-        @php
-            $unreadCount = \App\Models\Notification::where('user_id', auth()->id())
-                ->where('is_read', false)
-                ->count();
-        @endphp
-        @if($unreadCount > 0)
-        <span class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-        </span>
-        @endif
-    </button>
-    
-    <!-- Dropdown menu with recent notifications -->
-    <div x-show="open" @click.outside="open = false" 
-         class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-        <div class="px-4 py-3 border-b border-gray-100">
-            <h4 class="font-semibold text-gray-800">Notifications</h4>
-            <p class="text-xs text-gray-500">{{ $unreadCount }} non lues</p>
-        </div>
-        
-        <div class="max-h-96 overflow-y-auto">
-            @php
-                $recent = \App\Models\Notification::where('user_id', auth()->id())
-                    ->orderBy('created_at', 'desc')
-                    ->limit(8)
-                    ->get();
-            @endphp
-            
-            @forelse($recent as $notif)
-            <a href="{{ route('notifications.read', $notif->id) }}" 
-               class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 {{ $notif->is_read ? 'opacity-70' : 'bg-blue-50' }}">
-                <div class="flex items-start gap-3">
-                    <div class="mt-1">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center" 
-                             style="background: rgba({{ $notif->type === 'success' ? '16, 185, 129' : ($notif->type === 'warning' ? '245, 158, 11' : ($notif->type === 'error' ? '239, 68, 68' : '59, 130, 246')) }}, 0.1)">
-                            <i class="bi {{ $notif->icon }} text-{{ $notif->type === 'success' ? 'green' : ($notif->type === 'warning' ? 'amber' : ($notif->type === 'error' ? 'red' : 'blue')) }}-500"></i>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-800 text-sm">{{ $notif->title }}</p>
-                        <p class="text-xs text-gray-600 mt-1 truncate">{{ $notif->message }}</p>
-                        <p class="text-xs text-gray-400 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                
+                <!-- "More" Dropdown for Secondary Items -->
+                <div class="relative" x-data="{ open: false }">
+                    <button 
+                        @click="open = !open" 
+                        class="nav-link flex items-center gap-1 {{ 
+                            request()->routeIs('saillies.*', 'mises-bas.*', 'settings.*', 'notifications.*') ? 'active' : '' 
+                        }}"
+                        aria-label="Plus d'options">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        <span>Plus</span>
+                        <i class="bi bi-chevron-down text-xs ml-1"></i>
+                    </button>
+                    
+                    <div 
+                        x-show="open" 
+                        @click.outside="open = false"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50">
+                        
+                        <a href="{{ route('saillies.index') }}" class="dropdown-item-custom {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                            <i class="bi bi-heart text-primary"></i>
+                            Saillies
+                        </a>
+                        
+                        <a href="{{ route('mises-bas.index') }}" class="dropdown-item-custom {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                            <i class="bi bi-egg text-primary"></i>
+                            Mises Bas
+                        </a>
+                        
+                        <a href="{{ route('notifications.index') }}" class="dropdown-item-custom {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                            <i class="bi bi-bell text-primary"></i>
+                            Notifications
+                            @php 
+                                $unread = \App\Models\Notification::where('user_id', auth()->id())
+                                    ->where('is_read', false)
+                                    ->count(); 
+                            @endphp
+                            @if($unread > 0)
+                                <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                    {{ $unread > 9 ? '9+' : $unread }}
+                                </span>
+                            @endif
+                        </a>
+                        
+                        <hr class="my-1 border-gray-100">
+                        
+                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <i class="bi bi-gear text-primary"></i>
+                            Paramètres
+                        </a>
                     </div>
                 </div>
-            </a>
-            @empty
-            <div class="px-4 py-6 text-center text-gray-500">
-                <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
-                <p>Aucune notification</p>
-            </div>
-            @endforelse
-        </div>
-        
-        <div class="px-4 py-2 border-t border-gray-100">
-            <a href="{{ route('notifications.index') }}" class="block text-center text-sm font-medium text-primary hover:text-primary-dark">
-                Voir toutes les notifications
-            </a>
-        </div>
-    </div>
-</div>
-
+                
                 <div class="user-profile-dropdown" id="userDropdown">
                     <div class="user-trigger" onclick="toggleDropdown()">
                         <div class="user-avatar">
                             {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
                         </div>
-                        <span class="brand-title"
-                            style="font-size: 14px;">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
+                        <span class="brand-title" style="font-size: 14px;">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
                         <i class="bi bi-chevron-down" style="font-size: 12px; color: var(--text-secondary);"></i>
                     </div>
-
                     <div class="dropdown-menu-custom" id="dropdownMenu">
-                        {{-- <div class="dropdown-header">
-                            <span>{{ Auth::user()->name ?? 'Utilisateur' }}</span>
-                            <small>{{ Auth::user()->email ?? 'admin@cuniapp.com' }}</small>
-                        </div> --}}
                         <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
-                            <i class="bi bi-person-circle"></i> Mon Profil
+                            <i class="bi bi-person-circle"></i>
+                            Mon Profil
                         </a>
                         <hr style="margin: 4px 0; border: 0; border-top: 1px solid var(--surface-border);">
                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -1008,164 +1012,163 @@
                         </form>
                     </div>
                 </div>
-
-
             </nav>
         </div>
     </header>
+
     <!-- Real-Time Toast Notifications -->
-<div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none"></div>
 
-@push('scripts')
-<script>
-// Real-time Toast System
-class ToastSystem {
-    constructor() {
-        this.container = document.getElementById('toast-container');
-        this.toasts = new Map();
-    }
-
-    show(options) {
-        const id = options.id || Date.now().toString();
-        if (this.toasts.has(id)) return;
-        
-        const toast = document.createElement('div');
-        toast.className = `pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in-up ${
-            options.type === 'success' ? 'bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500' :
-            options.type === 'warning' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500' :
-            options.type === 'error' ? 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500' :
-            'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-600'
-        }`;
-        toast.dataset.id = id;
-        
-        const iconMap = {
-            success: '<i class="bi bi-check-circle-fill text-green-500 text-xl"></i>',
-            warning: '<i class="bi bi-exclamation-triangle-fill text-amber-500 text-xl"></i>',
-            error: '<i class="bi bi-x-circle-fill text-red-500 text-xl"></i>',
-            info: '<i class="bi bi-info-circle-fill text-blue-500 text-xl"></i>'
-        };
-        
-        toast.innerHTML = `
-            <div class="flex-shrink-0 mt-0.5">${iconMap[options.type] || iconMap.info}</div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-gray-800">${options.title}</p>
-                <p class="text-sm text-gray-700 mt-1">${options.message}</p>
-                ${options.action_url ? `
-                <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
-                    Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </button>` : ''}
-            </div>
-            <div class="flex flex-col items-end">
-                <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
-                    <i class="bi bi-x-lg text-sm"></i>
-                </button>
-                <span class="mt-1 text-xs text-gray-500">${this.timeAgo(options.timestamp)}</span>
-            </div>
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-current opacity-20 rounded-b-xl">
-                <div class="h-full bg-current opacity-100 rounded-b-xl transition-all duration-${options.duration || 5000} ease-linear" 
-                     style="width: 100%; background: ${
-                        options.type === 'success' ? '#10b981' :
-                        options.type === 'warning' ? '#f59e0b' :
-                        options.type === 'error' ? '#ef4444' : '#3b82f6'
-                     }"></div>
-            </div>
-        `;
-        
-        this.container.appendChild(toast);
-        this.toasts.set(id, toast);
-        
-        // Auto-dismiss
-        const duration = options.duration || 5000;
-        const progressBar = toast.querySelector('div.h-full');
-        setTimeout(() => {
-            if (progressBar) progressBar.style.width = '0%';
-        }, 100);
-        
-        const dismissTimer = setTimeout(() => {
-            this.dismiss(id);
-        }, duration);
-        
-        // Manual dismiss
-        toast.querySelector('[data-dismiss-toast]').addEventListener('click', () => {
-            clearTimeout(dismissTimer);
-            this.dismiss(id);
-        });
-        
-        // Action click
-        const actionBtn = toast.querySelector('[data-url]');
-        if (actionBtn) {
-            actionBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                window.location.href = actionBtn.dataset.url;
-                this.dismiss(id);
-            });
-        }
-        
-        // Hover pause
-        toast.addEventListener('mouseenter', () => {
-            if (progressBar) progressBar.style.transition = 'none';
-        });
-        
-        toast.addEventListener('mouseleave', () => {
-            if (progressBar) {
-                const currentWidth = parseFloat(progressBar.style.width);
-                progressBar.style.transition = `width ${currentWidth/100 * duration}ms linear`;
-                progressBar.style.width = '0%';
+    @push('scripts')
+    <script>
+        // Real-time Toast System
+        class ToastSystem {
+            constructor() {
+                this.container = document.getElementById('toast-container');
+                this.toasts = new Map();
             }
-        });
-    }
-    
-    dismiss(id) {
-        const toast = this.toasts.get(id);
-        if (!toast) return;
-        
-        toast.classList.add('animate-fade-out-down');
-        setTimeout(() => {
-            toast.remove();
-            this.toasts.delete(id);
-        }, 300);
-    }
-    
-    timeAgo(timestamp) {
-        const now = new Date();
-        const diff = Math.floor((now - new Date(timestamp)) / 1000);
-        
-        if (diff < 60) return 'à l\'instant';
-        if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-        if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
-        return `${Math.floor(diff/86400)}j ago`;
-    }
-}
 
-// Initialize
-const toastSystem = new ToastSystem();
+            show(options) {
+                const id = options.id || Date.now().toString();
+                if (this.toasts.has(id)) return;
 
-// Handle flash notifications
-@if(session('toast'))
-    document.addEventListener('DOMContentLoaded', () => {
-        toastSystem.show(@json(session('toast')));
-    });
-@endif
+                const toast = document.createElement('div');
+                toast.className = `pointer-events-auto relative flex items-start gap-3 p-4 rounded-xl shadow-lg transform transition-all duration-300 animate-fade-in-up ${
+                    options.type === 'success' ? 'bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500' :
+                    options.type === 'warning' ? 'bg-gradient-to-r from-amber-50 to-amber-100 border-l-4 border-amber-500' :
+                    options.type === 'error' ? 'bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500' :
+                    'bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-600'
+                }`;
+                toast.dataset.id = id;
 
-// Handle AJAX notifications
-window.showToast = (options) => toastSystem.show(options);
-window.dismissToast = (id) => toastSystem.dismiss(id);
+                const iconMap = {
+                    success: '<i class="bi bi-check-circle-fill text-green-500 text-xl"></i>',
+                    warning: '<i class="bi bi-exclamation-triangle-fill text-amber-500 text-xl"></i>',
+                    error: '<i class="bi bi-x-circle-fill text-red-500 text-xl"></i>',
+                    info: '<i class="bi bi-info-circle-fill text-blue-500 text-xl"></i>'
+                };
 
-// Animation classes
-document.styleSheets[0].insertRule(`
-    @keyframes fade-in-up {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fade-out-down {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(20px); }
-    }
-    .animate-fade-in-up { animation: fade-in-up 0.3s ease-out; }
-    .animate-fade-out-down { animation: fade-out-down 0.3s ease-in; }
-`);
-</script>
-@endpush
+                toast.innerHTML = `
+                    <div class="flex-shrink-0 mt-0.5">${iconMap[options.type] || iconMap.info}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-800">${options.title}</p>
+                        <p class="text-sm text-gray-700 mt-1">${options.message}</p>
+                        ${options.action_url ? `
+                            <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
+                                Voir les détails
+                                <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
+                            <i class="bi bi-x-lg text-sm"></i>
+                        </button>
+                        <span class="mt-1 text-xs text-gray-500">${this.timeAgo(options.timestamp)}</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-current opacity-20 rounded-b-xl">
+                        <div class="h-full bg-current opacity-100 rounded-b-xl transition-all duration-${options.duration || 5000} ease-linear" style="width: 100%; background: ${
+                            options.type === 'success' ? '#10b981' :
+                            options.type === 'warning' ? '#f59e0b' :
+                            options.type === 'error' ? '#ef4444' : '#3b82f6'
+                        }"></div>
+                    </div>
+                `;
+
+                this.container.appendChild(toast);
+                this.toasts.set(id, toast);
+
+                // Auto-dismiss
+                const duration = options.duration || 5000;
+                const progressBar = toast.querySelector('div.h-full');
+                setTimeout(() => {
+                    if (progressBar) progressBar.style.width = '0%';
+                }, 100);
+
+                const dismissTimer = setTimeout(() => {
+                    this.dismiss(id);
+                }, duration);
+
+                // Manual dismiss
+                toast.querySelector('[data-dismiss-toast]').addEventListener('click', () => {
+                    clearTimeout(dismissTimer);
+                    this.dismiss(id);
+                });
+
+                // Action click
+                const actionBtn = toast.querySelector('[data-url]');
+                if (actionBtn) {
+                    actionBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.location.href = actionBtn.dataset.url;
+                        this.dismiss(id);
+                    });
+                }
+
+                // Hover pause
+                toast.addEventListener('mouseenter', () => {
+                    if (progressBar) progressBar.style.transition = 'none';
+                });
+
+                toast.addEventListener('mouseleave', () => {
+                    if (progressBar) {
+                        const currentWidth = parseFloat(progressBar.style.width);
+                        progressBar.style.transition = `width ${currentWidth/100 * duration}ms linear`;
+                        progressBar.style.width = '0%';
+                    }
+                });
+            }
+
+            dismiss(id) {
+                const toast = this.toasts.get(id);
+                if (!toast) return;
+
+                toast.classList.add('animate-fade-out-down');
+                setTimeout(() => {
+                    toast.remove();
+                    this.toasts.delete(id);
+                }, 300);
+            }
+
+            timeAgo(timestamp) {
+                const now = new Date();
+                const diff = Math.floor((now - new Date(timestamp)) / 1000);
+                if (diff < 60) return 'à l\'instant';
+                if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+                if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+                return `${Math.floor(diff/86400)}j ago`;
+            }
+        }
+
+        // Initialize
+        const toastSystem = new ToastSystem();
+
+        // Handle flash notifications
+        @if(session('toast'))
+            document.addEventListener('DOMContentLoaded', () => {
+                toastSystem.show(@json(session('toast')));
+            });
+        @endif
+
+        // Handle AJAX notifications
+        window.showToast = (options) => toastSystem.show(options);
+        window.dismissToast = (id) => toastSystem.dismiss(id);
+
+        // Animation classes
+        document.styleSheets[0].insertRule(`
+            @keyframes fade-in-up {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fade-out-down {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(20px); }
+            }
+            .animate-fade-in-up { animation: fade-in-up 0.3s ease-out; }
+            .animate-fade-out-down { animation: fade-out-down 0.3s ease-in; }
+        `);
+    </script>
+    @endpush
 
     <!-- Main Content -->
     <main class="cuni-main">
@@ -1222,7 +1225,6 @@ document.styleSheets[0].insertRule(`
             });
         });
 
-
         function toggleDropdown() {
             const menu = document.getElementById('dropdownMenu');
             menu.classList.toggle('show');
@@ -1243,17 +1245,16 @@ document.styleSheets[0].insertRule(`
     </script>
 
     <!-- Global Modal System -->
-@include('components.modal-system')
+    @include('components.modal-system')
 
-@if(session('verification_pending'))
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        openVerificationModal('{{ session('verification_email') }}');
-    }, 500);
-});
-</script>
-@endif
+    @if(session('verification_pending'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    openVerificationModal('{{ session('verification_email') }}');
+                }, 500);
+            });
+        </script>
+    @endif
 </body>
-
 </html>
