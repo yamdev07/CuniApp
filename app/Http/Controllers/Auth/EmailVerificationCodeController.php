@@ -43,6 +43,7 @@ class EmailVerificationCodeController extends Controller
     /**
      * Verify the code (POST from modal)
      */
+
     public function verify(Request $request)
     {
         $request->validate([
@@ -55,25 +56,27 @@ class EmailVerificationCodeController extends Controller
         $storedCode = Cache::get("verification_code_{$email}");
 
         if (!$storedCode || $storedCode !== $code) {
-            return back()->withErrors(['code' => 'Code incorrect ou expiré. Veuillez demander un nouveau code.']);
+            return redirect()->route('welcome')
+                ->with('verification_pending', true)
+                ->with('verification_email', $email)
+                ->withErrors(['code' => 'Code incorrect ou expiré. Veuillez demander un nouveau code.']);
         }
 
         $user = User::where('email', $email)->first();
         if (!$user) {
-            return back()->withErrors(['email' => 'Utilisateur non trouvé.']);
+            return redirect()->route('welcome')
+                ->withErrors(['email' => 'Utilisateur non trouvé.']);
         }
 
-        // ✅ Mark as verified
+        // Mark as verified
         $user->email_verified_at = now();
         $user->save();
-
         Cache::forget("verification_code_{$email}");
         event(new Verified($user));
 
-        // 🔑 LOG IN AFTER VERIFICATION (Standard UX - user expects this)
-        Auth::login($user, true); // Remember session
+        // Log in after verification
+        Auth::login($user, true);
 
-        // ✅ REDIRECT TO DASHBOARD (Correct behavior after verification)
         return redirect()->route('dashboard')
             ->with('success', 'Email vérifié avec succès ! Bienvenue sur CuniApp.');
     }
