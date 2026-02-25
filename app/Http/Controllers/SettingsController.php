@@ -33,6 +33,8 @@ class SettingsController extends Controller
             'alert_threshold' => 'nullable|integer|min:1|max:100',
             'theme' => 'nullable|in:dark,light',
             'language' => 'nullable|in:fr,en',
+            'notifications_email' => 'nullable|boolean',
+            'notifications_dashboard' => 'nullable|boolean',
         ]);
 
         // Paramètres généraux (Ferme)
@@ -46,15 +48,25 @@ class SettingsController extends Controller
         Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
         Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', 'Seuil d\'alerte (%)');
 
-        // Préférences système
+        // Préférences système ET notification preferences
         Setting::set('theme', $request->theme ?? 'dark', 'string', 'system', 'Thème');
         Setting::set('language', $request->language ?? 'fr', 'string', 'system', 'Langue');
+
+        // ✅ Update USER-SPECIFIC notification preferences
+        $user = User::find(Auth::id());
+        if ($request->has('notifications_email')) {
+            $user->notifications_email = $request->boolean('notifications_email');
+        }
+        if ($request->has('notifications_dashboard')) {
+            $user->notifications_dashboard = $request->boolean('notifications_dashboard');
+        }
+        $user->save();
 
         // Create notification for settings update
         $this->notifyUser([
             'type' => 'info',
             'title' => 'Paramètres sauvegardés',
-            'message' => 'Vos paramètres d\'élevage et de système ont été mis à jour',
+            'message' => 'Vos préférences système et notifications ont été mises à jour',
             'action_url' => route('settings.index')
         ]);
 
@@ -71,13 +83,11 @@ class SettingsController extends Controller
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => 'nullable|min:8|confirmed',
-            'notifications_email' => 'nullable|boolean',
-            'notifications_dashboard' => 'nullable|boolean',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        
+
         // Handle password change
         if ($request->filled('new_password')) {
             if (!Hash::check($request->current_password, $user->password)) {
@@ -86,19 +96,13 @@ class SettingsController extends Controller
             $user->password = Hash::make($request->new_password);
         }
         
-        // Update notification preferences (USER-SPECIFIC)
-        $user->notifications_email = $request->boolean('notifications_email', true);
-        $user->notifications_dashboard = $request->boolean('notifications_dashboard', true);
-        
         $user->save();
 
         // Create notification for profile update
         $this->notifyUser([
             'type' => 'info',
             'title' => 'Profil mis à jour',
-            'message' => "Vos préférences de notification ont été mises à jour : " .
-                        ($user->notifications_email ? '📧 Emails activés' : '📧 Emails désactivés') . " | " .
-                        ($user->notifications_dashboard ? '🔔 Dashboard activé' : '🔔 Dashboard désactivé'),
+            'message' => 'Vos informations personnelles ont été mises à jour',
             'action_url' => route('settings.index')
         ]);
 
