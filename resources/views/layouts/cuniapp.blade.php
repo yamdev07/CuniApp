@@ -745,6 +745,119 @@
                 gap: 4px;
             }
         }
+
+
+
+        /* ==================== USER DROPDOWN ==================== */
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--gray-50);
+            border: 1px solid var(--surface-border);
+        }
+
+        .user-trigger:hover {
+            background: var(--gray-100);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 200px;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            /* Masqué par défaut */
+            z-index: 1000;
+            overflow: hidden;
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--surface-border);
+            background: var(--surface-alt);
+        }
+
+        .dropdown-header span {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .dropdown-header small {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s;
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item-custom:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+
+        .dropdown-item-custom.danger:hover {
+            background: rgba(239, 68, 68, 0.05);
+            color: var(--accent-red);
+        }
     </style>
 </head>
 
@@ -801,13 +914,37 @@
                     <i class="bi bi-gear"></i>
                     <span>Paramètres</span>
                 </a>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="nav-link danger" style="border: none; cursor: pointer;">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Déconnexion</span>
-                    </button>
-                </form>
+
+                <div class="user-profile-dropdown" id="userDropdown">
+                    <div class="user-trigger" onclick="toggleDropdown()">
+                        <div class="user-avatar">
+                            {{ substr(Auth::user()->name ?? 'U', 0, 1) }}
+                        </div>
+                        <span class="brand-title"
+                            style="font-size: 14px;">{{ Auth::user()->name ?? 'Utilisateur' }}</span>
+                        <i class="bi bi-chevron-down" style="font-size: 12px; color: var(--text-secondary);"></i>
+                    </div>
+
+                    <div class="dropdown-menu-custom" id="dropdownMenu">
+                        {{-- <div class="dropdown-header">
+                            <span>{{ Auth::user()->name ?? 'Utilisateur' }}</span>
+                            <small>{{ Auth::user()->email ?? 'admin@cuniapp.com' }}</small>
+                        </div> --}}
+                        <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
+                            <i class="bi bi-person-circle"></i> Mon Profil
+                        </a>
+                        <hr style="margin: 4px 0; border: 0; border-top: 1px solid var(--surface-border);">
+                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="nav-link danger" style="border: none; cursor: pointer;">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Déconnexion</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+
             </nav>
         </div>
     </header>
@@ -866,6 +1003,25 @@
                 document.getElementById(tabId).classList.add('active');
             });
         });
+
+
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        // Fermer le menu si on clique ailleurs sur la page
+        window.onclick = function(event) {
+            if (!event.target.closest('#userDropdown')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu-custom");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
     </script>
 
     <!-- Global Modal System -->

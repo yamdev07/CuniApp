@@ -11,6 +11,7 @@ use App\Http\Controllers\MiseBasController;
 use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\LapinController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -62,4 +63,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
     Route::get('/settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
     Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+
+    // Profile
+// Dans routes/web.php
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__ . '/auth.php';
