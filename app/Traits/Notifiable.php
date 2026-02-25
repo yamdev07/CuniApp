@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 use App\Models\Notification;
@@ -20,16 +21,14 @@ trait Notifiable
             'icon' => $this->getIconForType($data['type'] ?? 'info'),
         ]);
 
-        // Send email if enabled
+        // ✅ CRITICAL FIX: Check USER'S preference (not global setting)
         $user = $notification->user;
-        $emailEnabled = Setting::get('notifications_email', '0') === '1';
-        
-        if ($emailEnabled && !$notification->emailed) {
+        if ($user && $user->notifications_email && !$notification->emailed) {
             try {
                 Mail::to($user->email)->send(new ActivityNotificationMail($notification));
                 $notification->update(['emailed' => true]);
             } catch (\Exception $e) {
-                Log::error('Failed to send notification email: ' . $e->getMessage());
+                Log::error('Email notification failed: ' . $e->getMessage());
             }
         }
 
@@ -38,7 +37,7 @@ trait Notifiable
 
     private function getIconForType(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'success' => 'bi-check-circle-fill',
             'warning' => 'bi-exclamation-triangle-fill',
             'error' => 'bi-x-circle-fill',
