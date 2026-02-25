@@ -18,7 +18,7 @@ class LapinController extends Controller
     {
         $femelles = Femelle::latest()->paginate(10, ['*'], 'femelles_page');
         $males = Male::latest()->paginate(10, ['*'], 'males_page');
-        
+
         return view('lapins.index', compact('femelles', 'males'));
     }
 
@@ -36,12 +36,12 @@ class LapinController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:male,femelle',
+            'type' => 'required|in:male,femelle',  // ✅ Already correct
             'nom' => 'required|string|max:255',
             'race' => 'required|string|max:255',
             'origine' => 'required|string|max:255',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:active,inactive',
+            'etat' => 'required|in:active,inactive',  // ✅ This is correct (form sends English)
         ]);
 
         // Generate unique code
@@ -54,7 +54,7 @@ class LapinController extends Controller
                 'race' => $request->race,
                 'origine' => $request->origine,
                 'date_naissance' => $request->date_naissance,
-                'etat' => $request->etat === 'active' ? 'Active' : 'Inactive',
+                'etat' => $request->etat === 'active' ? 'Active' : 'Inactive',  // ✅ Converts to French
             ]);
 
             // Create notification
@@ -78,13 +78,14 @@ class LapinController extends Controller
             return redirect()->route('males.index')
                 ->with('success', 'Mâle créé avec succès.');
         } else {
+            // ✅ FIXED: For females, default to 'Active' (not 'active')
             $femelle = Femelle::create([
                 'code' => $code,
                 'nom' => $request->nom,
                 'race' => $request->race,
                 'origine' => $request->origine,
                 'date_naissance' => $request->date_naissance,
-                'etat' => 'Active',
+                'etat' => 'Active',  // ✅ Femelles always start as 'Active' (French)
             ]);
 
             // Create notification

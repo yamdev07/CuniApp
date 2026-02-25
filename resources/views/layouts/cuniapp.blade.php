@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Tableau de Bord Élevage - CuniApp')</title>
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <style>
         :root {
             /* Primary Colors */
@@ -22,7 +18,6 @@
             --primary-light: #3B82F6;
             --primary-dark: #1D4ED8;
             --primary-subtle: #EFF6FF;
-
             /* Accent Colors */
             --accent-cyan: #06B6D4;
             --accent-purple: #8B5CF6;
@@ -30,7 +25,6 @@
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
             --accent-red: #EF4444;
-
             /* Neutral Colors */
             --white: #FFFFFF;
             --gray-50: #F9FAFB;
@@ -43,7 +37,6 @@
             --gray-700: #374151;
             --gray-800: #1F2937;
             --gray-900: #111827;
-
             /* Semantic Colors */
             --surface: #FFFFFF;
             --surface-alt: #F9FAFB;
@@ -51,13 +44,11 @@
             --text-primary: #1F2937;
             --text-secondary: #6B7280;
             --text-tertiary: #9CA3AF;
-
             /* Effects */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-
             --radius-sm: 6px;
             --radius: 8px;
             --radius-md: 12px;
@@ -864,9 +855,32 @@
             width: 20px;
             text-align: center;
         }
+
+        /* ==================== MOBILE MENU ==================== */
+        #mobileMenuToggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #mobileMenuToggle {
+                display: block;
+                position: absolute;
+                right: 16px;
+                top: 16px;
+                z-index: 101;
+            }
+
+            .header-nav,
+            .user-profile-dropdown {
+                display: none;
+            }
+
+            #mobileMenu {
+                display: block;
+            }
+        }
     </style>
 </head>
-
 <body>
     <!-- Header -->
     <header class="cuni-header">
@@ -883,6 +897,11 @@
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobileMenuToggle" class="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none z-20">
+                <i class="bi bi-list text-2xl"></i>
+            </button>
 
             <nav class="header-nav">
                 <!-- Primary Navigation (Always Visible) -->
@@ -933,9 +952,9 @@
                 <a href="{{ route('notifications.index') }}" class="nav-link flex items-center gap-1 relative {{ request()->routeIs('notifications.*') ? 'active' : '' }}" title="Notifications" aria-label="Notifications">
                     <i class="bi bi-bell" style="font-size: 1.15rem;"></i>
                     @if($unreadCount > 0)
-                    <span class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[0.65rem] font-bold text-white bg-red-500 rounded-full border-2 border-white">
-                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                    </span>
+                        <span class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-[0.65rem] font-bold text-white bg-red-500 rounded-full border-2 border-white">
+                            {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                        </span>
                     @endif
                 </a>
 
@@ -965,6 +984,71 @@
             </nav>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu" class="fixed inset-0 bg-gray-900 bg-opacity-90 z-40 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+        <div class="flex justify-between items-center p-6 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <div class="cuniapp-logo" style="width:40px;height:40px">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                    </svg>
+                </div>
+                <span class="text-white font-bold text-xl">CuniApp</span>
+            </div>
+            <button id="closeMobileMenu" class="text-white hover:text-primary transition">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+        </div>
+
+        <div class="mt-8 px-6 space-y-1">
+            <!-- Mirror desktop nav items with mobile styling -->
+            <a href="{{ route('dashboard') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('dashboard') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-speedometer2 me-3"></i> Dashboard
+            </a>
+            <a href="{{ route('lapins.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('lapins.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-plus-lg me-3"></i> Total Lapins
+            </a>
+            <a href="{{ route('males.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('males.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-arrow-up-right-square me-3"></i> Mâles
+            </a>
+            <a href="{{ route('femelles.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('femelles.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-arrow-down-right-square me-3"></i> Femelles
+            </a>
+            <a href="{{ route('saillies.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('saillies.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-heart me-3"></i> Saillies
+            </a>
+            <a href="{{ route('mises-bas.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('mises-bas.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-egg me-3"></i> Mises Bas
+            </a>
+            <a href="{{ route('settings.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('settings.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-gear me-3"></i> Paramètres
+            </a>
+            <a href="{{ route('notifications.index') }}" class="block py-4 text-white hover:bg-gray-800 rounded-lg px-4 {{ request()->routeIs('notifications.*') ? 'bg-primary text-white' : '' }}">
+                <i class="bi bi-bell me-3"></i> Notifications
+                @if($unreadCount > 0)
+                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full ml-2">{{ $unreadCount }}</span>
+                @endif
+            </a>
+
+            <div class="border-t border-gray-800 mt-4 pt-4">
+                <div class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-lg">
+                    <div class="user-avatar" style="width:36px;height:36px">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
+                    <div>
+                        <div class="font-medium text-white">{{ Auth::user()->name ?? 'Utilisateur' }}</div>
+                        <div class="text-xs text-gray-400">{{ Auth::user()->email }}</div>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('logout') }}" class="mt-3">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center gap-3 py-3 text-red-400 hover:bg-gray-800 rounded-lg px-4">
+                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Real-Time Toast Notifications -->
     <div id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-3 max-w-md pointer-events-none"></div>
@@ -1084,9 +1168,9 @@
 
         // Handle flash notifications
         @if(session('toast'))
-        document.addEventListener('DOMContentLoaded', () => {
-            toastSystem.show(@json(session('toast')));
-        });
+            document.addEventListener('DOMContentLoaded', () => {
+                toastSystem.show(@json(session('toast')));
+            });
         @endif
 
         // Handle AJAX notifications
@@ -1112,17 +1196,17 @@
     <!-- Main Content -->
     <main class="cuni-main">
         @if (session('success'))
-        <div class="alert-cuni success">
-            <i class="bi bi-check-circle-fill"></i>
-            <div>{{ session('success') }}</div>
-        </div>
+            <div class="alert-cuni success">
+                <i class="bi bi-check-circle-fill"></i>
+                <div>{{ session('success') }}</div>
+            </div>
         @endif
 
         @if (session('error'))
-        <div class="alert-cuni error">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <div>{{ session('error') }}</div>
-        </div>
+            <div class="alert-cuni error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>{{ session('error') }}</div>
+            </div>
         @endif
 
         @yield('content')
@@ -1181,20 +1265,52 @@
                 }
             }
         }
+
+        // Mobile menu toggle
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const closeMenu = document.getElementById('closeMobileMenu');
+
+        if (mobileToggle && closeMenu && mobileMenu) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('-translate-x-full');
+                document.body.style.overflow = 'hidden';
+            });
+
+            closeMenu.addEventListener('click', () => {
+                mobileMenu.classList.add('-translate-x-full');
+                document.body.style.overflow = '';
+            });
+
+            // Close when clicking outside menu content
+            mobileMenu.addEventListener('click', (e) => {
+                if (e.target === mobileMenu) {
+                    mobileMenu.classList.add('-translate-x-full');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // Close on ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenu.classList.contains('-translate-x-full')) {
+                    mobileMenu.classList.add('-translate-x-full');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
     </script>
 
     <!-- Global Modal System -->
     @include('components.modal-system')
 
     @if(session('verification_pending'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                openVerificationModal('{{ session('verification_email') }}');
-            }, 500);
-        });
-    </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    openVerificationModal('{{ session('verification_email') }}');
+                }, 500);
+            });
+        </script>
     @endif
 </body>
-
-</html>
+</html> 
