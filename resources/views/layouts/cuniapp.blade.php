@@ -1,4 +1,3 @@
-@extends('layouts.cuniapp')
 @section('title', 'Tableau de Bord - CuniApp Élevage')
 @section('content')
     <style>
