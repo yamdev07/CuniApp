@@ -20,6 +20,8 @@ use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +40,7 @@ use Illuminate\Support\Facades\Artisan;
 | ⚠️ PERFORMANCE NOTE: Keep route definitions lean; use route caching in production
 |
 | Generated: 2026-02-26 | Environment: production-ready
-| Lines of Code: 287 (excluding comments)
+| Lines of Code: 328 (excluding comments)
 |--------------------------------------------------------------------------
 */
 
