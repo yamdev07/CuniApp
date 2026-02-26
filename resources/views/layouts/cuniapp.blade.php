@@ -1,16 +1,25 @@
-@section('title', 'Tableau de Bord - CuniApp Élevage')
-@section('content')
-    <style>
-        /* Dashboard Specific Styles - Optimized & Deduplicated */
-        .dash-header {
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--surface-border);
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'CuniApp Élevage')</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @stack('styles')
+
+    <style>
+        /* ==================== ALL ORIGINAL STYLES PRESERVED ==================== */
         :root {
             /* Primary Colors */
             --primary: #2563EB;
@@ -59,34 +68,21 @@
         .theme-dark {
             /* ===== CORE FOUNDATION ===== */
             --surface: #0A0F1D;
-            /* Deepest background (not pure black) */
             --surface-alt: #0F172A;
-            /* Card surfaces */
             --surface-elevated: #151E30;
-            /* Hover states, modals */
             --surface-overlay: #1A2335;
-            /* Dropdowns, tooltips */
             --surface-border: #25324A;
-            /* Subtle dividers */
-
             /* ===== TYPOGRAPHY ===== */
             --text-primary: #E6E9F0;
-            /* Headings, critical text (92% white) */
             --text-secondary: #A3B3C6;
-            /* Body text (65% white) */
             --text-tertiary: #6B7D95;
-            /* Muted text, placeholders (45% white) */
             --text-inverted: #0F172A;
-            /* Text on primary colors */
-
             /* ===== BRAND COLORS (Optimized for dark) ===== */
             --primary: #4DA6FF;
-            /* Brighter for visibility */
             --primary-light: #6EB5FF;
             --primary-dark: #2A88F0;
             --primary-subtle: rgba(77, 166, 255, 0.12);
             --primary-glow: rgba(77, 166, 255, 0.25);
-
             /* ===== ACCENTS (Increased saturation) ===== */
             --accent-cyan: #22D3EE;
             --accent-purple: #A78BFA;
@@ -94,7 +90,6 @@
             --accent-green: #34D399;
             --accent-orange: #FB923C;
             --accent-red: #F87171;
-
             /* ===== NEUTRALS (Expanded dark spectrum) ===== */
             --gray-50: #080C15;
             --gray-100: #0F172A;
@@ -106,7 +101,6 @@
             --gray-700: #A3B3C6;
             --gray-800: #CBD5E1;
             --gray-900: #F1F5F9;
-
             /* ===== EFFECTS (Dark-optimized) ===== */
             --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
@@ -116,7 +110,6 @@
             --glow-primary: 0 0 0 3px var(--primary-glow);
             --glow-success: 0 0 0 3px rgba(52, 211, 153, 0.3);
             --glow-warning: 0 0 0 3px rgba(251, 146, 60, 0.3);
-
             /* ===== FORM CONTROLS ===== */
             --input-bg: #151E30;
             --input-border: #25324A;
@@ -124,25 +117,21 @@
             --input-placeholder: var(--text-tertiary);
             --input-disabled-bg: #1A2335;
             --input-disabled-text: #54657F;
-
             /* ===== INTERACTIVE STATES ===== */
             --hover-subtle: rgba(255, 255, 255, 0.04);
             --hover-primary: rgba(77, 166, 255, 0.15);
             --active-primary: rgba(77, 166, 255, 0.25);
             --focus-ring: var(--glow-primary);
-
             /* ===== DATA VISUALIZATION ===== */
             --chart-grid: #25324A;
             --chart-axis: #3B4B63;
             --chart-tooltip-bg: var(--surface-overlay);
             --chart-tooltip-border: var(--surface-border);
-
             /* ===== TOOLTIPS & POPOVERS ===== */
             --tooltip-bg: var(--surface-overlay);
             --tooltip-border: #2D3E58;
             --tooltip-text: var(--text-primary);
             --tooltip-shadow: var(--shadow-tooltip);
-
             /* ===== BADGES & STATUS ===== */
             --badge-active-bg: rgba(52, 211, 153, 0.15);
             --badge-active-text: #22C55E;
@@ -152,7 +141,6 @@
             --badge-allaitante-text: var(--primary);
             --badge-vide-bg: rgba(108, 117, 125, 0.15);
             --badge-vide-text: #6C757D;
-
             /* ===== ALERTS (Enhanced contrast) ===== */
             --alert-success-bg: rgba(16, 185, 129, 0.12);
             --alert-success-border: rgba(16, 185, 129, 0.3);
@@ -162,7 +150,6 @@
             --alert-error-border: rgba(239, 68, 68, 0.3);
             --alert-info-bg: rgba(59, 130, 246, 0.12);
             --alert-info-border: rgba(59, 130, 246, 0.3);
-
             /* ===== CALENDAR SPECIFIC ===== */
             --cal-header-bg: var(--surface-alt);
             --cal-day-hover: var(--hover-subtle);
@@ -170,14 +157,12 @@
             --cal-day-today-text: var(--text-inverted);
             --cal-event-purple: var(--accent-purple);
             --cal-event-green: var(--accent-green);
-
             /* ===== APPLY BASE STYLES ===== */
             background-color: var(--surface);
             color: var(--text-primary);
         }
 
         /* ==================== DARK MODE FIXES - HEADER COMPONENTS ==================== */
-        /* Fixed: "Plus" Dropdown Menu */
         .theme-dark .header-nav div[x-show="open"] {
             background: var(--surface-overlay) !important;
             border-color: var(--surface-border) !important;
@@ -205,7 +190,6 @@
             font-weight: 500;
         }
 
-        /* Fixed: Dashboard Header Control Buttons (Paramètres, Nouvelle entrée) */
         .theme-dark .ctrl-btn.secondary {
             background: var(--surface-elevated);
             border-color: var(--surface-border);
@@ -233,7 +217,6 @@
             color: currentColor;
         }
 
-        /* Fixed: User Profile Trigger Button */
         .theme-dark .user-trigger {
             background: var(--surface-elevated);
             border-color: var(--surface-border);
@@ -248,7 +231,6 @@
             color: var(--white);
         }
 
-        /* Fixed: Notification Badge in Header */
         .theme-dark .nav-link .badge {
             background: rgba(239, 68, 68, 0.15);
             color: var(--accent-red);
@@ -301,7 +283,6 @@
             color: var(--text-primary);
         }
 
-        /* Form Controls */
         .theme-dark .form-control,
         .theme-dark .form-select {
             background: var(--input-bg);
@@ -331,7 +312,6 @@
             box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
         }
 
-        /* Buttons */
         .theme-dark .btn-cuni.primary {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             box-shadow: var(--shadow-sm);
@@ -364,7 +344,6 @@
             background: rgba(248, 113, 113, 0.15);
         }
 
-        /* Tables */
         .theme-dark .table thead {
             background: rgba(0, 0, 0, 0.2);
             border-bottom: 2px solid var(--surface-border);
@@ -383,7 +362,6 @@
             background: var(--surface-elevated);
         }
 
-        /* Badges */
         .theme-dark .badge {
             border: 1px solid transparent;
         }
@@ -412,7 +390,6 @@
             border-color: rgba(108, 117, 125, 0.3);
         }
 
-        /* Alerts */
         .theme-dark .alert-cuni {
             border-width: 1px;
         }
@@ -429,7 +406,6 @@
             color: var(--accent-red);
         }
 
-        /* Tooltips & Popovers */
         .theme-dark .tooltip-inner {
             background: var(--tooltip-bg);
             color: var(--tooltip-text);
@@ -442,7 +418,6 @@
             border-color: var(--tooltip-bg);
         }
 
-        /* Calendar */
         .theme-dark .calendar-body {
             background: var(--surface-alt);
             border-radius: var(--radius-lg);
@@ -468,7 +443,6 @@
             opacity: 0.85;
         }
 
-        /* Dropdowns */
         .theme-dark .dropdown-menu-custom {
             background: var(--surface-overlay);
             border: 1px solid var(--surface-border);
@@ -485,7 +459,6 @@
             border-bottom: 1px solid var(--surface-border);
         }
 
-        /* Toast Notifications */
         .theme-dark #toast-container .pointer-events-auto {
             box-shadow: var(--shadow-lg);
             border-left-width: 3px;
@@ -503,7 +476,6 @@
             color: var(--text-secondary) !important;
         }
 
-        /* Inputs with Icons */
         .theme-dark .form-input-wrapper i {
             color: var(--text-tertiary);
         }
@@ -513,7 +485,6 @@
             color: var(--primary);
         }
 
-        /* Pagination */
         .theme-dark .pagination .page-item .page-link {
             background: var(--surface-elevated);
             border-color: var(--surface-border);
@@ -532,7 +503,6 @@
             color: var(--primary);
         }
 
-        /* Verification Modal */
         .theme-dark .verification-modal {
             background: var(--surface-alt);
             box-shadow: var(--shadow-lg);
@@ -559,7 +529,6 @@
             border-color: var(--primary);
         }
 
-        /* Metrics Cards (Dashboard) */
         .theme-dark .metric-card:hover {
             border-color: var(--primary);
             box-shadow: var(--shadow-md);
@@ -577,7 +546,6 @@
             transform: translateY(-2px);
         }
 
-        /* Critical: Fix White SVG Icons */
         .theme-dark svg {
             fill: currentColor;
         }
@@ -591,6 +559,7 @@
             color: currentColor;
         }
 
+        /* ==================== GLOBAL BASE STYLES ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -1154,7 +1123,6 @@
             color: var(--text-primary);
         }
 
-        /* Empty State */
         .table-empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -1178,7 +1146,6 @@
             margin-top: 8px;
         }
 
-        /* Badge Improvements */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -1191,7 +1158,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* Status Colors */
         .status-active {
             background: rgba(16, 185, 129, 0.1);
             color: #10B981;
@@ -1217,7 +1183,6 @@
             color: #6B7280;
         }
 
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -1229,7 +1194,6 @@
             font-size: 12px;
         }
 
-        /* Pagination */
         .pagination {
             display: flex;
             gap: 4px;
@@ -1258,7 +1222,6 @@
             color: var(--primary);
         }
 
-        /* Responsive Table */
         @media (max-width: 768px) {
             .table-responsive {
                 overflow-x: auto;
@@ -1416,7 +1379,6 @@
             }
         }
 
-        /* Header - Fixed "Plus" dropdown */
         .theme-dark .dropdown-menu-custom {
             background: var(--surface-overlay);
             border: 1px solid var(--surface-border);
@@ -1432,477 +1394,116 @@
             color: var(--primary);
         }
     </style>
+</head>
 
-    <div class="cuniapp-dashboard">
-        <!-- Header Section -->
-        <header class="dash-header">
-            <div class="header-wrapper-dash">
-                <div class="brand-identity-dash">
-                    <div class="cuniapp-logo-dash">
-                        <svg viewBox="0 0 40 40" fill="none">
-                            <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
-                            <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
-                        </svg>
-                    </div>
-                    <div class="brand-text-dash">
-                        <h1>CuniApp <span class="subtitle-accent">Élevage</span></h1>
-                        <p class="brand-tagline-dash">Gestion intelligente de votre cheptel</p>
-                    </div>
-                </div>
-                <div class="header-controls">
-                    <a href="{{ route('settings.index') }}" class="ctrl-btn secondary">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0-.33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0 .33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg> Paramètres
-                    </a>
-                    <a href="{{ route('lapins.create') }}" class="ctrl-btn primary">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M12 5v14M5 12h14" />
-                        </svg> Nouvelle entrée
-                    </a>
-                </div>
-            </div>
-            <div class="metrics-grid">
-                @php
-                    $metricsData = [
-                        [
-                            'icon' => 'total',
-                            'value' => $nbMales + $nbFemelles,
-                            'label' => 'Total Lapins',
-                            'type' => 'primary',
-                            'change' => '+8.2%',
-                            'trend' => 'up',
-                            'route' => 'lapins.index',
-                        ],
-                        [
-                            'icon' => 'male',
-                            'value' => $nbMales,
-                            'label' => 'Mâles',
-                            'type' => 'blue',
-                            'change' => '+5.1%',
-                            'trend' => 'up',
-                            'route' => 'males.index',
-                        ],
-                        [
-                            'icon' => 'female',
-                            'value' => $nbFemelles,
-                            'label' => 'Femelles',
-                            'type' => 'pink',
-                            'change' => '+12%',
-                            'trend' => 'up',
-                            'route' => 'femelles.index',
-                        ],
-                        [
-                            'icon' => 'breed',
-                            'value' => $nbSaillies,
-                            'label' => 'Saillies',
-                            'type' => 'purple',
-                            'change' => '-3.1%',
-                            'trend' => 'down',
-                            'route' => 'saillies.index',
-                        ],
-                        [
-                            'icon' => 'birth',
-                            'value' => $nbMisesBas,
-                            'label' => 'Portées',
-                            'type' => 'green',
-                            'change' => '+15%',
-                            'trend' => 'up',
-                            'route' => 'mises-bas.index',
-                        ],
-                        [
-                            'icon' => 'alert',
-                            'value' => 3,
-                            'label' => 'Alertes',
-                            'type' => 'orange',
-                            'change' => '0%',
-                            'trend' => 'neutral',
-                            'route' => '',
-                        ],
-                        [
-                            'icon' => 'sales',
-                            'value' => number_format($totalRevenue, 0, ',', ' '),
-                            'label' => 'CA Total',
-                            'type' => 'purple',
-                            'change' => '+12%',
-                            'trend' => 'up',
-                            'route' => 'sales.index',
-                        ],
-                    ];
-                @endphp
-                @foreach ($metricsData as $metric)
-                    <a href="{{ Route::has($metric['route']) ? route($metric['route']) : '#' }}">
-                        <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
-                            <div class="metric-icon">
-                                @if ($metric['icon'] === 'total')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="9" cy="7" r="4" />
-                                        <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
-                                        <circle cx="17" cy="7" r="2" />
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                                    </svg>
-                                @elseif($metric['icon'] === 'male')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="10" cy="14" r="6" />
-                                        <path d="M16 8h6V2M22 2l-8.5 8.5" />
-                                    </svg>
-                                @elseif($metric['icon'] === 'female')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="8" r="6" />
-                                        <path d="M12 14v8M9 19h6" />
-                                    </svg>
-                                @elseif($metric['icon'] === 'breed')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path
-                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                    </svg>
-                                @elseif($metric['icon'] === 'birth')
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polygon
-                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                @else
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path
-                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                        <line x1="12" y1="9" x2="12" y2="13" />
-                                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                                    </svg>
-                                @endif
-                            </div>
-                            <div class="metric-data">
-                                <div class="metric-value">{{ $metric['value'] }}</div>
-                                <div class="metric-label">{{ $metric['label'] }}</div>
-                                <div class="metric-trend {{ $metric['trend'] }}">
-                                    <span
-                                        class="trend-arrow">{{ $metric['trend'] === 'up' ? '↗' : ($metric['trend'] === 'down' ? '↘' : '→') }}</span>
-                                    {{ $metric['change'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        </header>
-
-        <!-- Main Grid -->
-        <div class="main-grid">
-            <!-- Left Column -->
-            <div class="primary-col">
-                <!-- Performance Overview -->
-                <div class="section-block">
-                    <div class="section-title">
-                        <h2>Performance</h2>
-                    </div>
-                    <div class="performance-grid">
-                        @php
-                            $totalCheptel = max($nbMales + $nbFemelles, 1);
-                            $perfCards = [
-                                [
-                                    'type' => 'blue',
-                                    'icon' => 'male',
-                                    'value' => $nbMales,
-                                    'title' => 'Mâles Reproducteurs',
-                                    'progress' => ($nbMales / $totalCheptel) * 100,
-                                    'trend' => number_format($malePercent, 1) . '%',
-                                    'isUp' => $malePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'pink',
-                                    'icon' => 'female',
-                                    'value' => $nbFemelles,
-                                    'title' => 'Femelles Reproductrices',
-                                    'progress' => ($nbFemelles / $totalCheptel) * 100,
-                                    'trend' => number_format($femalePercent, 1) . '%',
-                                    'isUp' => $femalePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'purple',
-                                    'icon' => 'breed',
-                                    'value' => $nbSaillies,
-                                    'title' => 'Saillies Totales',
-                                    'progress' => $nbFemelles > 0 ? min(($nbSaillies / $nbFemelles) * 100, 100) : 0,
-                                    'trend' => number_format($sailliePercent, 1) . '%',
-                                    'isUp' => $sailliePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'green',
-                                    'icon' => 'birth',
-                                    'value' => $nbMisesBas,
-                                    'title' => 'Mises Bas',
-                                    'progress' => $nbSaillies > 0 ? min(($nbMisesBas / $nbSaillies) * 100, 100) : 0,
-                                    'trend' => number_format($miseBasPercent, 1) . '%',
-                                    'isUp' => $miseBasPercent >= 0,
-                                ],
-                            ];
-                        @endphp
-                        @foreach ($perfCards as $card)
-                            <div class="perf-card {{ $card['type'] }}">
-                                <div class="card-top">
-                                    <span class="card-label">{{ $card['title'] }}</span>
-                                    <div class="card-badge {{ $card['type'] }}">
-                                        @if ($card['icon'] === 'male')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="10" cy="14" r="6" />
-                                                <path d="M16 8h6V2M22 2l-8.5 8.5" />
-                                            </svg>
-                                        @elseif($card['icon'] === 'female')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <circle cx="12" cy="8" r="6" />
-                                                <path d="M12 14v8M9 19h6" />
-                                            </svg>
-                                        @elseif($card['icon'] === 'breed')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path
-                                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        @else
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <polygon
-                                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                            </svg>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="card-number">{{ $card['value'] }}</div>
-                                <div class="progress-track">
-                                    <div class="progress-bar {{ $card['type'] }}"
-                                        style="width: {{ $card['progress'] }}%"></div>
-                                </div>
-                                <div class="card-footer">
-                                    <span class="progress-label">{{ round($card['progress']) }}% du flux</span>
-                                    <span class="trend-badge" style="color: {{ $card['isUp'] ? '#10b981' : '#ef4444' }}">
-                                        {{ $card['isUp'] ? '↑' : '↓' }} {{ $card['trend'] }}
-                                    </span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="section-block">
-                    <div class="section-title">
-                        <h2>Actions Rapides</h2>
-                    </div>
-                    <div class="actions-grid">
-                        @foreach ([['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'], ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'], ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple']] as $action)
-                            <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
-                                <div class="tile-icon">
-                                    @if ($action['icon'] === 'male')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="10" cy="14" r="6" />
-                                            <path d="M16 8h6V2M22 2l-8.5 8.5" />
-                                        </svg>
-                                    @elseif($action['icon'] === 'female')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="8" r="6" />
-                                            <path d="M12 14v8M9 19h6" />
-                                        </svg>
-                                    @elseif($action['icon'] === 'breed')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path
-                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                        </svg>
-                                    @else
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polygon
-                                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                        </svg>
-                                    @endif
-                                </div>
-                                <h3>{{ $action['title'] }}</h3>
-                                <p>{{ $action['desc'] }}</p>
-                                <div class="tile-arrow">→</div>
-                            </a>
-                        @endforeach
-                    </div>
+<body class="{{ auth()->check() && auth()->user()->theme === 'dark' ? 'theme-dark' : '' }}">
+    <!-- Header -->
+    <header class="cuni-header">
+        <div class="header-wrapper">
+            <div class="brand-identity">
+                <a href="{{ route('dashboard') }}" class="cuniapp-logo">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
+                    </svg>
+                </a>
+                <div>
+                    <div class="brand-title">CuniApp <span>Élevage</span></div>
+                    <div class="brand-tagline">Gestion intelligente de votre cheptel</div>
                 </div>
             </div>
 
-            <!-- Right Column -->
-            <div class="sidebar-col">
-                <!-- Calendar -->
-                <div class="widget calendar-widget">
-                    <div class="widget-head">
-                        <h3>Calendrier</h3>
-                        <div class="calendar-controls">
-                            <button class="cal-btn" id="prevMonth">‹</button>
-                            <span class="cal-month" id="currentMonth">Février 2026</span>
-                            <button class="cal-btn" id="nextMonth">›</button>
-                        </div>
-                    </div>
-                    <div class="calendar-body" id="calendarGrid"></div>
-                    <div class="calendar-legend">
-                        <div class="legend-row">
-                            <span class="legend-dot purple"></span>
-                            <span>Saillies</span>
-                        </div>
-                        <div class="legend-row">
-                            <span class="legend-dot green"></span>
-                            <span>Naissances</span>
-                        </div>
-                    </div>
-                </div>
+            <nav class="header-nav">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-speedometer2"></i> Tableau de bord
+                </a>
+                <a href="{{ route('lapins.index') }}"
+                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                    <i class="bi bi-collection"></i> Lapins
+                </a>
+                <a href="{{ route('saillies.index') }}"
+                    class="nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                    <i class="bi bi-heart"></i> Saillies
+                </a>
+                <a href="{{ route('mises-bas.index') }}"
+                    class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                    <i class="bi bi-egg"></i> Mises Bas
+                </a>
+                <a href="{{ route('sales.index') }}"
+                    class="nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+                    <i class="bi bi-cart"></i> Ventes
+                </a>
+                <a href="{{ route('settings.index') }}"
+                    class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                    <i class="bi bi-gear"></i> Paramètres
+                </a>
+            </nav>
 
-                <!-- Activity Timeline -->
-                <div class="widget activity-widget">
-                    <div class="widget-head">
-                        <h3>Activité</h3>
-                        <button class="text-link">Tout voir</button>
+            <!-- User Profile Dropdown -->
+            @auth
+                <div class="user-profile-dropdown">
+                    <div class="user-trigger" onclick="toggleUserDropdown()">
+                        <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                        <span>{{ auth()->user()->name }}</span>
+                        <i class="bi bi-chevron-down"></i>
                     </div>
-                    <div class="timeline">
-                        @foreach ([['type' => 'green', 'title' => 'Mise bas enregistrée', 'desc' => 'Femelle #245 - 6 lapereaux', 'time' => 'Il y a 2h'], ['type' => 'purple', 'title' => 'Saillie programmée', 'desc' => 'F#245 × M#112', 'time' => 'Hier 15:30'], ['type' => 'orange', 'title' => 'Vaccination requise', 'desc' => '3 lapins concernés', 'time' => '23 août'], ['type' => 'blue', 'title' => 'Rapport généré', 'desc' => 'Stats mensuelles', 'time' => '20 août']] as $item)
-                            <div class="timeline-item">
-                                <div class="timeline-dot {{ $item['type'] }}"></div>
-                                <div class="timeline-content">
-                                    <div class="timeline-title">{{ $item['title'] }}</div>
-                                    <div class="timeline-desc">{{ $item['desc'] }}</div>
-                                    <div class="timeline-time">{{ $item['time'] }}</div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Notifications Widget -->
-                <div class="widget alerts-widget">
-                    <div class="widget-head">
-                        <h3>Notifications</h3>
-                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
-                            Voir tout <i class="bi bi-arrow-right"></i>
+                    <div class="dropdown-menu-custom" id="userDropdown">
+                        <div class="dropdown-header">
+                            <span>{{ auth()->user()->name }}</span>
+                            <small>{{ auth()->user()->email }}</small>
+                        </div>
+                        <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
+                            <i class="bi bi-person"></i> Profil
                         </a>
-                    </div>
-                    <div class="alerts-list">
-                        @php
-                            $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
-                                ->where('is_read', false)
-                                ->orderBy('created_at', 'desc')
-                                ->limit(5)
-                                ->get();
-                        @endphp
-                        @forelse($recentNotifs as $notif)
-                            <a href="{{ route('notifications.read', $notif->id) }}"
-                                class="alert-row {{ $notif->type }}">
-                                <div class="alert-indicator"></div>
-                                <div class="alert-text">
-                                    <div class="alert-title flex items-center gap-2">
-                                        <i class="bi {{ $notif->icon }} text-sm"></i>
-                                        {{ $notif->title }}
-                                    </div>
-                                    <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
-                                </div>
-                                @if (!$notif->is_read)
-                                    <span class="badge"
-                                        style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
-                                        Nouveau
-                                    </span>
-                                @endif
-                            </a>
-                        @empty
-                            <div class="text-center py-4 text-gray-500">
-                                <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
-                                <p>Aucune notification non lue</p>
-                            </div>
-                        @endforelse
+                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-gear"></i> Paramètres
+                        </a>
+                        <hr style="border-color: var(--surface-border); margin: 8px 0;">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item-custom danger">
+                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                            </button>
+                        </form>
                     </div>
                 </div>
+            @endauth
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="cuni-main">
+        @yield('content')
+    </main>
+
+    <!-- Footer -->
+    <footer class="cuni-footer">
+        <div class="footer-content">
+            <p>&copy; {{ date('Y') }} CuniApp Élevage - Tous droits réservés</p>
+            <div class="footer-links">
+                <a href="{{ route('settings.index') }}">Paramètres</a>
+                <a href="{{ route('profile.edit') }}">Profil</a>
             </div>
         </div>
-    </div>
+    </footer>
+
+    @stack('scripts')
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarGrid = document.getElementById('calendarGrid');
-            const currentMonthSpan = document.getElementById('currentMonth');
-            const prevMonthBtn = document.getElementById('prevMonth');
-            const nextMonthBtn = document.getElementById('nextMonth');
-            let currentDate = new Date();
-            const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre',
-                'Octobre', 'Novembre', 'Décembre'
-            ];
-            const weekdays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
 
-            function renderCalendar(date) {
-                calendarGrid.innerHTML = '';
-                weekdays.forEach(day => {
-                    const dayEl = document.createElement('div');
-                    dayEl.className = 'cal-day header';
-                    dayEl.textContent = day;
-                    calendarGrid.appendChild(dayEl);
-                });
-
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const today = new Date();
-                const startDay = firstDay === 0 ? 6 : firstDay - 1;
-                currentMonthSpan.textContent = `${months[month]} ${year}`;
-
-                for (let i = 0; i < startDay; i++) {
-                    calendarGrid.appendChild(document.createElement('div'));
-                }
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayEl = document.createElement('div');
-                    dayEl.className = 'cal-day';
-                    dayEl.textContent = day;
-
-                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                        dayEl.classList.add('today');
-                    }
-
-                    if ([5, 12, 18].includes(day)) {
-                        dayEl.classList.add('event', 'purple');
-                    }
-                    if ([8, 15, 22].includes(day)) {
-                        dayEl.classList.add('event', 'green');
-                    }
-
-                    calendarGrid.appendChild(dayEl);
-                }
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('userDropdown');
+            const trigger = document.querySelector('.user-trigger');
+            if (dropdown && !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
             }
-
-            prevMonthBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                renderCalendar(currentDate);
-            });
-
-            nextMonthBtn.addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                renderCalendar(currentDate);
-            });
-
-            renderCalendar(currentDate);
-
-            setTimeout(() => {
-                document.querySelectorAll('.progress-bar').forEach(bar => {
-                    const width = bar.style.width;
-                    bar.style.width = '0%';
-                    setTimeout(() => {
-                        bar.style.width = width;
-                    }, 100);
-                });
-            }, 500);
-
-            const elements = document.querySelectorAll('.metric-card, .perf-card, .action-tile, .widget');
-            elements.forEach((el, index) => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(10px)';
-                setTimeout(() => {
-                    el.style.transition = 'all 0.4s ease';
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, index * 50);
-            });
         });
     </script>
-@endsection
+</body>
+
+</html>
