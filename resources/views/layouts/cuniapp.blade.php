@@ -180,6 +180,85 @@
             color: var(--text-primary);
         }
 
+        /* ==================== DARK MODE FIXES - HEADER COMPONENTS ==================== */
+        /* Fixed: "Plus" Dropdown Menu */
+        .theme-dark .header-nav div[x-show="open"] {
+            background: var(--surface-overlay) !important;
+            border-color: var(--surface-border) !important;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .theme-dark .header-nav div[x-show="open"] .dropdown-item-custom {
+            color: var(--text-primary);
+            background: transparent;
+        }
+
+        .theme-dark .header-nav div[x-show="open"] .dropdown-item-custom:hover {
+            background: var(--hover-subtle) !important;
+            color: var(--primary) !important;
+            transform: translateX(4px);
+        }
+
+        .theme-dark .header-nav div[x-show="open"] hr {
+            border-color: var(--surface-border) !important;
+        }
+
+        .theme-dark .header-nav div[x-show="open"] .dropdown-item-custom.active {
+            background: var(--primary-subtle) !important;
+            color: var(--primary) !important;
+            font-weight: 500;
+        }
+
+        /* Fixed: Dashboard Header Control Buttons (Paramètres, Nouvelle entrée) */
+        .theme-dark .ctrl-btn.secondary {
+            background: var(--surface-elevated);
+            border-color: var(--surface-border);
+            color: var(--text-primary);
+        }
+
+        .theme-dark .ctrl-btn.secondary:hover {
+            background: var(--hover-subtle);
+            border-color: var(--gray-400);
+            color: var(--primary);
+        }
+
+        .theme-dark .ctrl-btn.primary {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-dark .ctrl-btn.primary:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .theme-dark .ctrl-btn i {
+            color: currentColor;
+        }
+
+        /* Fixed: User Profile Trigger Button */
+        .theme-dark .user-trigger {
+            background: var(--surface-elevated);
+            border-color: var(--surface-border);
+        }
+
+        .theme-dark .user-trigger:hover {
+            background: var(--hover-subtle);
+        }
+
+        .theme-dark .user-avatar {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Fixed: Notification Badge in Header */
+        .theme-dark .nav-link .badge {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
         /* ==================== DARK MODE COMPONENT OVERRIDES ==================== */
         .theme-dark .cuni-header {
             background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
@@ -1598,10 +1677,10 @@
                         <p class="text-sm font-bold text-gray-800">${options.title}</p>
                         <p class="text-sm text-gray-700 mt-1">${options.message}</p>
                         ${options.action_url ? `
-                                                    <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
-                                                        Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                                    </button>
-                                                ` : ''}
+                                                            <button class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group" data-url="${options.action_url}">
+                                                                Voir les détails <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                                            </button>
+                                                        ` : ''}
                     </div>
                     <div class="flex flex-col items-end">
                         <button class="text-gray-400 hover:text-gray-600 transition-colors" data-dismiss-toast>
