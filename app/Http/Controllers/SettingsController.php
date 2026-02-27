@@ -86,23 +86,30 @@ class SettingsController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-
         if ($request->filled('new_password')) {
+            // Vérification de sécurité avec le mot de passe actuel
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Votre mot de passe actuel est incorrect.']);
             }
+
+            // On assigne le mot de passe en clair : le Model User s'occupe du Hash 
+            // automatiquement grâce au cast 'password' => 'hashed'
             $user->password = $request->new_password;
         }
 
         $user->save();
 
+        // Maintien de la session active même après modification du mot de passe
         Auth::guard('web')->login($user);
+
+        // Envoi de la notification mail (sans données sensibles)
         $user->notify(new ProfileUpdatedNotification());
 
-        return redirect()->route('settings.index')
+        $user->save();
+
+        return redirect()->to(route('settings.index'))
             ->with('success', 'Profil mis à jour avec succès !');
     }
-
     public function exportData()
     {
         $data = [

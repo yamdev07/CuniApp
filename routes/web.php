@@ -278,7 +278,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings', [SettingsController::class, 'update'])
             ->name('settings.update');
         Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])
-            ->name('settings.profile');
+            ->name('settings.updateProfile');
         Route::get('/settings/export', [SettingsController::class, 'exportData'])
             ->name('settings.export');
         Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])
