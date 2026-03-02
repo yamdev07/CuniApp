@@ -98,28 +98,31 @@
         .cuni-header {
             background: var(--surface);
             border-bottom: 1px solid var(--surface-border);
-            padding: 10px 0;
+            padding: 0;
             position: sticky;
             top: 0;
             z-index: 100;
             min-width: 100%;
+            box-shadow: var(--shadow-sm);
         }
 
         .header-wrapper {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 80px;
-            padding: 0 1.5rem;
-            max-width: 1400px;
+            height: 72px;
+            padding: 0 2rem;
+            max-width: 1600px;
             margin: 0 auto;
             width: 100%;
+            gap: 16px;
         }
 
         .brand-identity {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .cuniapp-logo {
@@ -131,6 +134,7 @@
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent-cyan) 100%);
             border-radius: var(--radius-md);
             transition: transform 0.2s ease;
+            flex-shrink: 0;
         }
 
         .cuniapp-logo:hover {
@@ -145,6 +149,7 @@
         .brand-info {
             display: flex;
             flex-direction: column;
+            min-width: 0;
         }
 
         .brand-title {
@@ -152,6 +157,7 @@
             margin: 0;
             line-height: 1.1;
             color: var(--gray-800);
+            white-space: nowrap;
         }
 
         .theme-dark .brand-title {
@@ -164,25 +170,38 @@
             color: var(--text-secondary);
             opacity: 0.8;
             margin: 0;
-            padding: 5px;
+            padding: 5px 0 0 0;
         }
 
         .nav-main-links {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .nav-main-links::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
+            gap: 8px;
+            padding: 8px 14px;
             text-decoration: none;
             white-space: nowrap;
             transition: all 0.2s ease;
             color: var(--text-secondary);
             border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            flex-shrink: 0;
         }
 
         .nav-link:hover {
@@ -195,10 +214,15 @@
             color: var(--primary);
         }
 
+        .nav-link i {
+            font-size: 16px;
+        }
+
         .nav-user-side {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
         .notification-trigger {
@@ -213,6 +237,7 @@
             border: 1px solid var(--surface-border);
             cursor: pointer;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .notification-trigger:hover {
@@ -257,6 +282,7 @@
             transition: all 0.2s;
             background: var(--gray-50);
             border: 1px solid var(--surface-border);
+            white-space: nowrap;
         }
 
         .user-trigger:hover {
@@ -274,6 +300,7 @@
             justify-content: center;
             font-weight: 600;
             font-size: 14px;
+            flex-shrink: 0;
         }
 
         .dropdown-container {
@@ -299,6 +326,7 @@
         #moreDropdown {
             left: 0;
             right: auto;
+            width: 240px;
         }
 
         .dropdown-menu-custom.show {
@@ -378,13 +406,88 @@
         }
 
         .cuni-main {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 24px;
             min-height: calc(100vh - 200px);
             flex: 1;
             width: 100%;
             min-width: 320px;
+        }
+
+        .mobile-menu-trigger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .mobile-menu-trigger:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 72px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface);
+            z-index: 99;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .mobile-nav-overlay.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--text-primary);
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .mobile-nav-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+
+        .mobile-nav-link.active {
+            background: var(--primary-subtle);
+            color: var(--primary);
+        }
+
+        .mobile-nav-link i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .mobile-nav-divider {
+            height: 1px;
+            background: var(--surface-border);
+            margin: 16px 0;
         }
 
         .cuni-card {
@@ -714,7 +817,6 @@
             color: var(--accent-red);
         }
 
-        /* ==================== FOOTER ==================== */
         .cuni-footer {
             background: var(--surface);
             border-top: 1px solid var(--surface-border);
@@ -723,7 +825,7 @@
         }
 
         .footer-container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -903,8 +1005,72 @@
             }
         }
 
-        /* Responsive */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section {
+            background: var(--surface-alt);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--surface-border);
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle i {
+            color: var(--primary);
+        }
+
+        /* ===== RESPONSIVE HEADER ===== */
+        @media (max-width: 1200px) {
+            .header-wrapper {
+                padding: 0 1.5rem;
+            }
+
+            .brand-tagline {
+                display: none !important;
+            }
+        }
+
         @media (max-width: 1024px) {
+            .header-wrapper {
+                padding: 0 1rem;
+                height: 68px;
+            }
+
+            .nav-main-links {
+                display: none;
+            }
+
+            .mobile-menu-trigger {
+                display: block;
+            }
+
+            .user-trigger span {
+                display: none;
+            }
+
+            .cuni-main {
+                padding: 16px;
+            }
+
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 30px;
@@ -913,13 +1079,20 @@
 
         @media (max-width: 768px) {
             .header-wrapper {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 16px;
+                padding: 0 1rem;
+                height: 64px;
             }
 
-            .nav-main-links {
-                display: none;
+            .brand-info {
+                min-width: 0;
+            }
+
+            .brand-title {
+                font-size: 1rem;
+            }
+
+            .cuni-main {
+                padding: 12px;
             }
 
             .footer-grid {
@@ -936,20 +1109,6 @@
                 justify-content: center;
             }
 
-            .cuni-main {
-                padding: 16px;
-            }
-
-            .dropdown-menu-custom {
-                position: fixed !important;
-                top: 75px !important;
-                left: 15px !important;
-                right: 15px !important;
-                width: auto !important;
-            }
-        }
-
-        @media (max-width: 480px) {
             .page-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -963,6 +1122,37 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-wrapper {
+                gap: 8px;
+            }
+
+            .cuniapp-logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .cuniapp-logo svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .brand-title {
+                font-size: 0.95rem;
+            }
+
+            .notification-trigger {
+                width: 36px;
+                height: 36px;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
             }
         }
 
@@ -1030,6 +1220,24 @@
             border-bottom-color: var(--surface-border) !important;
         }
 
+        .theme-dark .mobile-nav-overlay {
+            background: var(--surface);
+        }
+
+        .theme-dark .mobile-nav-link {
+            color: var(--text-primary);
+        }
+
+        .theme-dark .mobile-nav-link:hover {
+            background: var(--surface-elevated);
+            color: var(--primary);
+        }
+
+        .theme-dark .mobile-nav-link.active {
+            background: var(--primary-subtle);
+            color: var(--primary);
+        }
+
         .d-md-none {
             display: none;
         }
@@ -1038,40 +1246,6 @@
             .d-md-none {
                 display: block;
             }
-        }
-
-        /* ✅ FIXED: Desktop form layouts should NOT be mobile */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-section {
-            background: var(--surface-alt);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            border: 1px solid var(--surface-border);
-        }
-
-        .section-subtitle {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-subtitle i {
-            color: var(--primary);
         }
     </style>
 </head>
@@ -1092,7 +1266,7 @@
                 </div>
             </div>
 
-            <nav class="nav-main-links">
+            <nav class="nav-main-links" id="navMainLinks">
                 <a href="{{ route('dashboard') }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
@@ -1124,7 +1298,7 @@
                     <span>Naissances</span>
                 </a>
                 <div class="dropdown-container">
-                    <button class="nav-link" onclick="toggleMoreDropdown()">
+                    <button class="nav-link" onclick="toggleMoreDropdown()" id="moreButton">
                         <i class="bi bi-three-dots"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
@@ -1143,8 +1317,7 @@
                 </div>
             </nav>
 
-            <div class="mobile-menu-trigger d-md-none" onclick="toggleMoreDropdown()"
-                style="cursor:pointer; font-size: 24px; color: var(--text-secondary); margin-right: 15px;">
+            <div class="mobile-menu-trigger d-md-none" onclick="toggleMobileNav()" style="cursor:pointer;">
                 <i class="bi bi-list"></i>
             </div>
 
@@ -1161,29 +1334,23 @@
                             <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
                         @endif
                     </a>
-
                     <div class="user-profile-dropdown">
                         <div class="user-trigger" onclick="toggleUserDropdown()">
                             <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
                             <span>{{ auth()->user()->name }}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
-
                         <div class="dropdown-menu-custom" id="userDropdown">
                             <div class="dropdown-header">
                                 <span>{{ auth()->user()->name }}</span>
                                 <small>{{ auth()->user()->email }}</small>
                             </div>
-
                             <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
                                 <i class="bi bi-person"></i> Profil
                             </a>
-
                             <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                                 <i class="bi bi-gear"></i> Paramètres
                             </a>
-
-                            <!-- ✅ FIXED: Theme Selection - Navigate to Settings -->
                             <a href="{{ route('settings.index') }}#system-tab"
                                 class="dropdown-item-custom theme-switch-row" id="theme-selector">
                                 <div class="theme-info" style="display: flex; align-items: center; gap: 10px; flex: 1;">
@@ -1194,9 +1361,7 @@
                                     <span id="theme-text">{{ ucfirst(auth()->user()->theme ?? 'system') }}</span>
                                 </div>
                             </a>
-
                             <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
-
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item-custom logout-btn" style="width: 100%;">
@@ -1208,13 +1373,86 @@
                 </div>
             @endauth
         </div>
+
+        @auth
+            <div class="mobile-nav-overlay" id="mobileNavOverlay">
+                <div class="mobile-nav-links">
+                    <a href="{{ route('dashboard') }}"
+                        class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                    <a href="{{ route('males.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                        <i class="bi bi-arrow-up-right-square"></i>
+                        <span>Mâles</span>
+                    </a>
+                    <a href="{{ route('femelles.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                        <i class="bi bi-arrow-down-right-square"></i>
+                        <span>Femelles</span>
+                    </a>
+                    <a href="{{ route('lapins.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                        <i class="bi bi-collection"></i>
+                        <span>Tous les Lapins</span>
+                    </a>
+                    <a href="{{ route('mises-bas.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                        <i class="bi bi-egg"></i>
+                        <span>Mises Bas</span>
+                    </a>
+                    <a href="{{ route('naissances.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('naissances.*') ? 'active' : '' }}">
+                        <i class="bi bi-egg-fill"></i>
+                        <span>Naissances</span>
+                    </a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="{{ route('saillies.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                        <i class="bi bi-heart"></i>
+                        <span>Saillies</span>
+                    </a>
+                    <a href="{{ route('sales.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+                        <i class="bi bi-cart"></i>
+                        <span>Ventes</span>
+                    </a>
+                    <div class="mobile-nav-divider"></div>
+                    <a href="{{ route('notifications.index') }}" class="mobile-nav-link">
+                        <i class="bi bi-bell"></i>
+                        <span>Notifications</span>
+                        @if ($unread > 0)
+                            <span class="notification-badge"
+                                style="position: static; margin-left: auto;">{{ $unread > 99 ? '99+' : $unread }}</span>
+                        @endif
+                    </a>
+                    <a href="{{ route('settings.index') }}" class="mobile-nav-link">
+                        <i class="bi bi-gear"></i>
+                        <span>Paramètres</span>
+                    </a>
+                    <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
+                        <i class="bi bi-person"></i>
+                        <span>Mon Profil</span>
+                    </a>
+                    <div class="mobile-nav-divider"></div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="mobile-nav-link"
+                            style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: var(--accent-red);">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Déconnexion</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endauth
     </header>
 
     <main class="cuni-main">
         @yield('content')
     </main>
 
-    <!-- ==================== FOOTER ==================== -->
     <footer class="cuni-footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -1228,12 +1466,9 @@
                         </div>
                         <div class="footer-logo-text">CuniApp <span>Élevage</span></div>
                     </div>
-                    <p class="footer-tagline">
-                        La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos
-                        reproductions, naissances et performances en toute simplicité.
-                    </p>
+                    <p class="footer-tagline"> La solution complète pour la gestion intelligente de votre élevage de
+                        lapins. Suivez vos reproductions, naissances et performances en toute simplicité. </p>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-compass"></i> Navigation</h4>
                     <ul class="footer-links">
@@ -1248,7 +1483,6 @@
                                 Bas</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-briefcase"></i> Gestion</h4>
                     <ul class="footer-links">
@@ -1263,7 +1497,6 @@
                         </li>
                     </ul>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-envelope"></i> Contact</h4>
                     <div class="footer-contact">
@@ -1284,7 +1517,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="footer-bottom">
                 <div class="footer-copyright">
                     &copy; {{ date('Y') }} <a href="{{ route('dashboard') }}">CuniApp Élevage</a>. Tous droits
@@ -1305,7 +1537,6 @@
 
     @stack('scripts')
     <script>
-        // ==================== THEME MANAGEMENT (SYSTEM, LIGHT, DARK) ====================
         function getSystemTheme() {
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
@@ -1314,11 +1545,9 @@
             const userTheme = '{{ auth()->check() ? auth()->user()->theme : 'system' }}';
             const savedTheme = localStorage.getItem('color-theme') || userTheme || 'system';
             let currentTheme = savedTheme;
-
             if (currentTheme === 'system') {
                 currentTheme = getSystemTheme();
             }
-
             applyThemeVisuals(currentTheme, savedTheme);
         }
 
@@ -1336,7 +1565,6 @@
                 if (themeText) themeText.innerText = savedTheme === 'system' ? 'Système' : 'Clair';
                 if (themeIcon) themeIcon.className = savedTheme === 'system' ? 'bi bi-display' : 'bi bi-sun';
             }
-
             const themeBadge = document.getElementById('theme-badge');
             if (themeBadge) {
                 const badgeText = themeBadge.querySelector('span');
@@ -1350,7 +1578,6 @@
 
         function setTheme(theme) {
             localStorage.setItem('color-theme', theme);
-
             if ({{ auth()->check() ? 'true' : 'false' }}) {
                 fetch('{{ route('settings.update') }}', {
                         method: 'POST',
@@ -1370,33 +1597,25 @@
                         console.error('Theme update failed:', error);
                     });
             }
-
             let applyTheme = theme;
             if (theme === 'system') {
                 applyTheme = getSystemTheme();
             }
-
             applyThemeVisuals(applyTheme, theme);
             showToast('Thème mis à jour: ' + ucfirst(theme));
-
             setTimeout(() => {
                 window.location.reload();
             }, 500);
         }
-
-        // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             const savedTheme = localStorage.getItem('color-theme');
             if (!savedTheme || savedTheme === 'system') {
                 initTheme();
             }
         });
-
-        // Close dropdowns on outside click
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
-
             if (userDropdown && !e.target.closest('.user-profile-dropdown')) {
                 userDropdown.classList.remove('show');
             }
@@ -1404,10 +1623,8 @@
                 moreDropdown.classList.remove('show');
             }
         });
-
         initTheme();
 
-        // ==================== TOAST NOTIFICATION ====================
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.style.cssText = `
@@ -1427,21 +1644,16 @@
                 animation: slideInRight 0.3s ease;
                 max-width: 400px;
             `;
-
             toast.innerHTML = `
-                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}"
-                   style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
+                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}" style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
                 <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
             `;
-
             document.body.appendChild(toast);
-
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
-
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideInRight {
@@ -1455,24 +1667,35 @@
         `;
         document.head.appendChild(style);
 
-        // ==================== DROPDOWN MANAGEMENT ====================
         function toggleMoreDropdown() {
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
-
+            const mobileNav = document.getElementById('mobileNavOverlay');
             if (userDropdown) userDropdown.classList.remove('show');
+            if (mobileNav) mobileNav.classList.remove('active');
             if (moreDropdown) moreDropdown.classList.toggle('show');
         }
 
         function toggleUserDropdown() {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
-
+            const mobileNav = document.getElementById('mobileNavOverlay');
             if (moreDropdown) moreDropdown.classList.remove('show');
+            if (mobileNav) mobileNav.classList.remove('active');
             if (userDropdown) userDropdown.classList.toggle('show');
         }
 
-        // ==================== BACK TO TOP ====================
+        function toggleMobileNav() {
+            const mobileNav = document.getElementById('mobileNavOverlay');
+            const userDropdown = document.getElementById('userDropdown');
+            const moreDropdown = document.getElementById('moreDropdown');
+            if (userDropdown) userDropdown.classList.remove('show');
+            if (moreDropdown) moreDropdown.classList.remove('show');
+            if (mobileNav) {
+                mobileNav.classList.toggle('active');
+                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+            }
+        }
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 300) {
@@ -1481,12 +1704,20 @@
                 backToTop.classList.remove('show');
             }
         });
-
         backToTop.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
+        });
+        document.addEventListener('click', function(e) {
+            const mobileNav = document.getElementById('mobileNavOverlay');
+            const mobileTrigger = document.querySelector('.mobile-menu-trigger');
+            if (mobileNav && mobileTrigger && !e.target.closest('.mobile-menu-trigger') && !e.target.closest(
+                    '.mobile-nav-overlay')) {
+                mobileNav.classList.remove('active');
+                document.body.style.overflow = '';
+            }
         });
     </script>
 </body>
