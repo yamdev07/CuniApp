@@ -4,7 +4,7 @@
 
 @section('content')
     <style>
-        /* Dashboard Specific Styles */
+        /* Dashboard Specific Styles - Optimized & Deduplicated */
         .dash-header {
             background: var(--surface);
             border-radius: var(--radius-xl);
@@ -50,7 +50,7 @@
         .brand-text-dash h1 {
             font-size: 22px;
             font-weight: 700;
-            color: var(--gray-800);
+            color: var(--text-primary);
             letter-spacing: -0.02em;
         }
 
@@ -83,34 +83,6 @@
             text-decoration: none;
             transition: all 0.2s ease;
             font-family: inherit;
-        }
-
-        .ctrl-btn.primary {
-            background: var(--primary);
-            color: var(--white);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .ctrl-btn.primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow);
-        }
-
-        .ctrl-btn.secondary {
-            background: var(--white);
-            color: var(--text-primary);
-            border: 1px solid var(--surface-border);
-        }
-
-        .ctrl-btn.secondary:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-300);
-        }
-
-        .ctrl-btn svg {
-            width: 18px;
-            height: 18px;
         }
 
         /* Metrics Grid */
@@ -188,7 +160,7 @@
             font-size: 28px;
             font-weight: 700;
             line-height: 1.2;
-            color: var(--gray-800);
+            color: var(--text-primary);
             letter-spacing: -0.02em;
         }
 
@@ -248,7 +220,7 @@
         .section-title h2 {
             font-size: 18px;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
             letter-spacing: -0.01em;
         }
 
@@ -323,13 +295,13 @@
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 12px;
-            color: var(--gray-800);
+            color: var(--text-primary);
             letter-spacing: -0.02em;
         }
 
         .progress-track {
             height: 6px;
-            background: var(--gray-200);
+            background: var(--surface-border);
             border-radius: 3px;
             overflow: hidden;
             margin-bottom: 12px;
@@ -438,7 +410,7 @@
             font-size: 15px;
             font-weight: 600;
             margin-bottom: 4px;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .action-tile p {
@@ -480,7 +452,7 @@
         .widget-head h3 {
             font-size: 15px;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .text-link {
@@ -508,7 +480,7 @@
             width: 30px;
             height: 30px;
             border: 1px solid var(--surface-border);
-            background: var(--white);
+            background: var(--surface);
             color: var(--text-primary);
             border-radius: var(--radius);
             font-size: 16px;
@@ -517,8 +489,9 @@
         }
 
         .cal-btn:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-300);
+            background: var(--hover-subtle);
+            border-color: var(--gray-400);
+            color: var(--primary);
         }
 
         .cal-month {
@@ -526,7 +499,7 @@
             font-weight: 600;
             min-width: 110px;
             text-align: center;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .calendar-body {
@@ -558,7 +531,7 @@
         }
 
         .cal-day:not(.header):hover {
-            background: var(--gray-100);
+            background: var(--hover-subtle);
         }
 
         .cal-day.today {
@@ -631,7 +604,7 @@
             top: 20px;
             width: 1px;
             height: calc(100% + 4px);
-            background: var(--gray-200);
+            background: var(--surface-border);
         }
 
         .timeline-dot {
@@ -662,7 +635,7 @@
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 3px;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .timeline-desc {
@@ -701,6 +674,12 @@
             border-radius: var(--radius);
             border-left: 3px solid;
             transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .alert-row:hover {
+            background: var(--hover-subtle);
+            transform: translateX(4px);
         }
 
         .alert-row.high {
@@ -713,10 +692,6 @@
 
         .alert-row.low {
             border-left-color: #3B82F6;
-        }
-
-        .alert-row:hover {
-            background: var(--gray-100);
         }
 
         .alert-indicator {
@@ -742,7 +717,10 @@
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 2px;
-            color: var(--gray-800);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .alert-time {
@@ -804,27 +782,16 @@
                         <p class="brand-tagline-dash">Gestion intelligente de votre cheptel</p>
                     </div>
                 </div>
-
                 <div class="header-controls">
-                    <a href="{{ route('settings.index') }}" class="ctrl-btn secondary">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg>
-                        Paramètres
-                    </a>
+    
                     <a href="{{ route('lapins.create') }}" class="ctrl-btn primary">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M12 5v14M5 12h14" />
-                        </svg>
-                        Nouvelle entrée
+                        </svg> Nouvelle entrée
                     </a>
                 </div>
             </div>
-
             <div class="metrics-grid">
                 @php
                     $metricsData = [
@@ -882,9 +849,17 @@
                             'trend' => 'neutral',
                             'route' => '',
                         ],
+                        [
+                            'icon' => 'sales',
+                            'value' => number_format($totalRevenue, 0, ',', ' '),
+                            'label' => 'CA Total',
+                            'type' => 'purple',
+                            'change' => '+12%',
+                            'trend' => 'up',
+                            'route' => 'sales.index',
+                        ],
                     ];
                 @endphp
-
                 @foreach ($metricsData as $metric)
                     <a href="{{ Route::has($metric['route']) ? route($metric['route']) : '#' }}">
                         <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
@@ -951,42 +926,46 @@
                     </div>
                     <div class="performance-grid">
                         @php
+                            $totalCheptel = max($nbMales + $nbFemelles, 1);
                             $perfCards = [
                                 [
                                     'type' => 'blue',
                                     'icon' => 'male',
                                     'value' => $nbMales,
                                     'title' => 'Mâles Reproducteurs',
-                                    'progress' => 75,
-                                    'trend' => '+12%',
+                                    'progress' => ($nbMales / $totalCheptel) * 100,
+                                    'trend' => number_format($malePercent, 1) . '%',
+                                    'isUp' => $malePercent >= 0,
                                 ],
                                 [
                                     'type' => 'pink',
                                     'icon' => 'female',
                                     'value' => $nbFemelles,
                                     'title' => 'Femelles Reproductrices',
-                                    'progress' => 85,
-                                    'trend' => '+8%',
+                                    'progress' => ($nbFemelles / $totalCheptel) * 100,
+                                    'trend' => number_format($femalePercent, 1) . '%',
+                                    'isUp' => $femalePercent >= 0,
                                 ],
                                 [
                                     'type' => 'purple',
                                     'icon' => 'breed',
                                     'value' => $nbSaillies,
-                                    'title' => 'Saillies en Cours',
-                                    'progress' => 60,
-                                    'trend' => '-3%',
+                                    'title' => 'Saillies Totales',
+                                    'progress' => $nbFemelles > 0 ? min(($nbSaillies / $nbFemelles) * 100, 100) : 0,
+                                    'trend' => number_format($sailliePercent, 1) . '%',
+                                    'isUp' => $sailliePercent >= 0,
                                 ],
                                 [
                                     'type' => 'green',
                                     'icon' => 'birth',
                                     'value' => $nbMisesBas,
-                                    'title' => 'Mises Bas Récentes',
-                                    'progress' => 90,
-                                    'trend' => '+15%',
+                                    'title' => 'Mises Bas',
+                                    'progress' => $nbSaillies > 0 ? min(($nbMisesBas / $nbSaillies) * 100, 100) : 0,
+                                    'trend' => number_format($miseBasPercent, 1) . '%',
+                                    'isUp' => $miseBasPercent >= 0,
                                 ],
                             ];
                         @endphp
-
                         @foreach ($perfCards as $card)
                             <div class="perf-card {{ $card['type'] }}">
                                 <div class="card-top">
@@ -1020,12 +999,12 @@
                                 <div class="card-number">{{ $card['value'] }}</div>
                                 <div class="progress-track">
                                     <div class="progress-bar {{ $card['type'] }}"
-                                        style="width: {{ $card['progress'] }}%">
-                                    </div>
+                                        style="width: {{ $card['progress'] }}%"></div>
                                 </div>
                                 <div class="card-footer">
-                                    <span class="progress-label">{{ $card['progress'] }}% objectif</span>
-                                    <span class="trend-badge">{{ $card['trend'] }}</span>
+                                    <span class="progress-label">{{ round($card['progress']) }}% du flux</span>
+                                    <span class="trend-badge" style="color: {{ $card['isUp'] ? '#10b981' : '#ef4444' }}">
+                                        {{ $card['isUp'] ? '↑' : '↓' }} {{ $card['trend'] }} </span>
                                 </div>
                             </div>
                         @endforeach
@@ -1038,7 +1017,7 @@
                         <h2>Actions Rapides</h2>
                     </div>
                     <div class="actions-grid">
-                        @foreach ([['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'], ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'], ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple'], ['url' => route('naissances.index'), 'icon' => 'birth', 'title' => 'Naissance', 'desc' => 'Enregistrer portée', 'color' => 'green']] as $action)
+                        @foreach ([['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'], ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'], ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple']] as $action)
                             <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
                                 <div class="tile-icon">
                                     @if ($action['icon'] === 'male')
@@ -1086,22 +1065,15 @@
                     </div>
                     <div class="calendar-body" id="calendarGrid"></div>
                     <div class="calendar-legend">
-                        <div class="legend-row">
-                            <span class="legend-dot purple"></span>
-                            <span>Saillies</span>
-                        </div>
-                        <div class="legend-row">
-                            <span class="legend-dot green"></span>
-                            <span>Naissances</span>
-                        </div>
+                        <div class="legend-row"><span class="legend-dot purple"></span><span>Saillies</span></div>
+                        <div class="legend-row"><span class="legend-dot green"></span><span>Naissances</span></div>
                     </div>
                 </div>
 
                 <!-- Activity Timeline -->
                 <div class="widget activity-widget">
                     <div class="widget-head">
-                        <h3>Activité</h3>
-                        <button class="text-link">Tout voir</button>
+                        <h3>Activité</h3><button class="text-link">Tout voir</button>
                     </div>
                     <div class="timeline">
                         @foreach ([['type' => 'green', 'title' => 'Mise bas enregistrée', 'desc' => 'Femelle #245 - 6 lapereaux', 'time' => 'Il y a 2h'], ['type' => 'purple', 'title' => 'Saillie programmée', 'desc' => 'F#245 × M#112', 'time' => 'Hier 15:30'], ['type' => 'orange', 'title' => 'Vaccination requise', 'desc' => '3 lapins concernés', 'time' => '23 août'], ['type' => 'blue', 'title' => 'Rapport généré', 'desc' => 'Stats mensuelles', 'time' => '20 août']] as $item)
@@ -1117,22 +1089,43 @@
                     </div>
                 </div>
 
-                <!-- Alerts -->
+                <!-- Notifications Widget -->
                 <div class="widget alerts-widget">
                     <div class="widget-head">
-                        <h3>Alertes</h3>
-                        <span class="alert-badge">3</span>
+                        <h3>Notifications</h3>
+                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1"> Voir tout
+                            <i class="bi bi-arrow-right"></i> </a>
                     </div>
                     <div class="alerts-list">
-                        @foreach ([['priority' => 'high', 'title' => 'Vaccination urgente', 'time' => 'Dans 2 jours'], ['priority' => 'medium', 'title' => 'Saillie à confirmer', 'time' => 'Demain'], ['priority' => 'low', 'title' => 'Rapport mensuel', 'time' => 'Fin semaine']] as $alert)
-                            <div class="alert-row {{ $alert['priority'] }}">
+                        @php
+                            $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())
+                                ->where('is_read', false)
+                                ->orderBy('created_at', 'desc')
+                                ->limit(5)
+                                ->get();
+                        @endphp
+                        @forelse($recentNotifs as $notif)
+                            <a href="{{ route('notifications.read', $notif->id) }}"
+                                class="alert-row {{ $notif->type }}">
                                 <div class="alert-indicator"></div>
                                 <div class="alert-text">
-                                    <div class="alert-title">{{ $alert['title'] }}</div>
-                                    <div class="alert-time">{{ $alert['time'] }}</div>
+                                    <div class="alert-title flex items-center gap-2">
+                                        <i class="bi {{ $notif->icon }} text-sm"></i> {{ $notif->title }}
+                                    </div>
+                                    <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
                                 </div>
+                                @if (!$notif->is_read)
+                                    <span class="badge"
+                                        style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
+                                        Nouveau </span>
+                                @endif
+                            </a>
+                        @empty
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="bi bi-bell-slash text-2xl mb-2 opacity-50"></i>
+                                <p>Aucune notification non lue</p>
                             </div>
-                        @endforeach
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -1145,7 +1138,6 @@
             const currentMonthSpan = document.getElementById('currentMonth');
             const prevMonthBtn = document.getElementById('prevMonth');
             const nextMonthBtn = document.getElementById('nextMonth');
-
             let currentDate = new Date();
             const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre',
                 'Octobre', 'Novembre', 'Décembre'
@@ -1154,61 +1146,48 @@
 
             function renderCalendar(date) {
                 calendarGrid.innerHTML = '';
-
                 weekdays.forEach(day => {
                     const dayEl = document.createElement('div');
                     dayEl.className = 'cal-day header';
                     dayEl.textContent = day;
                     calendarGrid.appendChild(dayEl);
                 });
-
                 const year = date.getFullYear();
                 const month = date.getMonth();
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const today = new Date();
                 const startDay = firstDay === 0 ? 6 : firstDay - 1;
-
                 currentMonthSpan.textContent = `${months[month]} ${year}`;
-
                 for (let i = 0; i < startDay; i++) {
                     calendarGrid.appendChild(document.createElement('div'));
                 }
-
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayEl = document.createElement('div');
                     dayEl.className = 'cal-day';
                     dayEl.textContent = day;
-
                     if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                         dayEl.classList.add('today');
                     }
-
                     if ([5, 12, 18].includes(day)) {
                         dayEl.classList.add('event', 'purple');
                     }
-
                     if ([8, 15, 22].includes(day)) {
                         dayEl.classList.add('event', 'green');
                     }
-
                     calendarGrid.appendChild(dayEl);
                 }
             }
-
             prevMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 renderCalendar(currentDate);
             });
-
             nextMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() + 1);
                 renderCalendar(currentDate);
             });
-
             renderCalendar(currentDate);
 
-            // Animate progress bars
             setTimeout(() => {
                 document.querySelectorAll('.progress-bar').forEach(bar => {
                     const width = bar.style.width;
@@ -1219,7 +1198,6 @@
                 });
             }, 500);
 
-            // Add staggered fade-in animation
             const elements = document.querySelectorAll('.metric-card, .perf-card, .action-tile, .widget');
             elements.forEach((el, index) => {
                 el.style.opacity = '0';

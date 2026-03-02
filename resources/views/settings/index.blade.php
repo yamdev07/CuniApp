@@ -1,13 +1,11 @@
 @extends('layouts.cuniapp')
-
 @section('title', 'Paramètres - CuniApp Élevage')
 
 @section('content')
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-gear"></i>
-                Paramètres de l'Application
+                <i class="bi bi-gear"></i> Paramètres de l'Application
             </h2>
             <div class="breadcrumb">
                 <a href="{{ route('dashboard') }}">Tableau de bord</a>
@@ -17,38 +15,29 @@
         </div>
     </div>
 
-   
+    @if (session('success'))
+        <div class="alert-cuni success">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>{{ session('success') }}</div>
+        </div>
+    @endif
 
     <!-- Tabs Navigation -->
     <div class="tabs-container">
         <button class="tab-btn active" data-tab="general-tab">
-            <i class="bi bi-house"></i>
-            Général
+            <i class="bi bi-house"></i> Général
         </button>
         <button class="tab-btn" data-tab="breeding-tab">
-            <i class="bi bi-heart-pulse"></i>
-            Élevage
+            <i class="bi bi-heart-pulse"></i> Élevage
         </button>
         <button class="tab-btn" data-tab="profile-tab">
-            <i class="bi bi-person"></i>
-            Profil
+            <i class="bi bi-person"></i> Profil
         </button>
         <button class="tab-btn" data-tab="notifications-tab">
-            <i class="bi bi-bell"></i>
-            Notifications
+            <i class="bi bi-bell"></i> Notifications
         </button>
-        <button class="tab-btn" data-tab="system-tab">
-            <i class="bi bi-hdd"></i>
-            Système
-        </button>
-    </div>
 
-     @if (session('success'))
-        <div class="alert-custom alert-custom-success">
-            <i class="bi bi-check-circle alert-icon"></i>
-            <div>{{ session('success') }}</div>
-        </div>
-    @endif
+    </div>
 
     @if ($errors->any() && session('active_tab') !== 'profile-tab')
         <div class="alert-custom alert-custom-danger">
@@ -69,8 +58,7 @@
         <div class="cuni-card">
             <div class="card-header-custom">
                 <h3 class="card-title">
-                    <i class="bi bi-building"></i>
-                    Informations de la Ferme
+                    <i class="bi bi-building"></i> Informations de la Ferme
                 </h3>
             </div>
             <div class="card-body">
@@ -100,8 +88,7 @@
                     </div>
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i>
-                            Enregistrer
+                            <i class="bi bi-save"></i> Enregistrer
                         </button>
                     </div>
                 </form>
@@ -114,8 +101,7 @@
         <div class="cuni-card">
             <div class="card-header-custom">
                 <h3 class="card-title">
-                    <i class="bi bi-egg"></i>
-                    Paramètres d'Élevage
+                    <i class="bi bi-egg"></i> Paramètres d'Élevage
                 </h3>
             </div>
             <div class="card-body">
@@ -150,8 +136,7 @@
                     </div>
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i>
-                            Enregistrer
+                            <i class="bi bi-save"></i> Enregistrer
                         </button>
                     </div>
                 </form>
@@ -160,13 +145,11 @@
     </div>
 
     <!-- Tab Content: Profil -->
-
     <div class="tab-content" id="profile-tab">
         <div class="cuni-card">
             <div class="card-header-custom">
                 <h3 class="card-title">
-                    <i class="bi bi-person-circle"></i>
-                    Mon Profil Utilisateur
+                    <i class="bi bi-person-circle"></i> Mon Profil Utilisateur
                 </h3>
             </div>
             <div class="card-body">
@@ -176,6 +159,7 @@
                         {{ session('success') }}
                     </div>
                 @endif
+
                 {{-- Bloc d'erreurs global --}}
                 @if ($errors->any())
                     <div class="alert-custom alert-custom-danger">
@@ -193,7 +177,6 @@
                 <form action="{{ route('settings.updateProfile') }}" method="POST">
                     @csrf
                     @method('PATCH')
-
                     <div class="settings-grid">
                         <div class="form-group">
                             <label class="form-label">Nom complet *</label>
@@ -219,11 +202,9 @@
                                 placeholder="••••••••">
                         </div>
                     </div>
-
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i>
-                            Enregistrer les modifications
+                            <i class="bi bi-save"></i> Enregistrer les modifications
                         </button>
                     </div>
                 </form>
@@ -236,8 +217,7 @@
         <div class="cuni-card">
             <div class="card-header-custom">
                 <h3 class="card-title">
-                    <i class="bi bi-bell"></i>
-                    Préférences de Notifications
+                    <i class="bi bi-bell"></i> Préférences de Notifications
                 </h3>
             </div>
             <div class="card-body">
@@ -289,8 +269,7 @@
                     </div>
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i>
-                            Enregistrer
+                            <i class="bi bi-save"></i> Enregistrer
                         </button>
                     </div>
                 </form>
@@ -298,92 +277,6 @@
         </div>
     </div>
 
-    <!-- Tab Content: Système -->
-    <div class="tab-content" id="system-tab">
-        <div class="cuni-card">
-            <div class="card-header-custom">
-                <h3 class="card-title">
-                    <i class="bi bi-hdd"></i>
-                    Gestion du Système
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="settings-grid">
-                    <!-- Export Data -->
-                    <div class="cuni-card" style="margin: 0; background: var(--surface-alt);">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                            <div
-                                style="width: 40px; height: 40px; background: rgba(6, 182, 212, 0.1); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-download" style="color: var(--accent-cyan); font-size: 20px;"></i>
-                            </div>
-                            <h4 style="font-size: 15px; font-weight: 600; color: var(--gray-800); margin: 0;">
-                                Exporter les données
-                            </h4>
-                        </div>
-                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
-                            Télécharger toutes les données de l'élevage au format JSON
-                        </p>
-                        <a href="{{ route('settings.export') }}" class="btn-cuni secondary">
-                            <i class="bi bi-download"></i>
-                            Exporter
-                        </a>
-                    </div>
-
-                    <!-- Clear Cache -->
-                    <div class="cuni-card" style="margin: 0; background: var(--surface-alt);">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                            <div
-                                style="width: 40px; height: 40px; background: rgba(245, 158, 11, 0.1); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-trash" style="color: var(--accent-orange); font-size: 20px;"></i>
-                            </div>
-                            <h4 style="font-size: 15px; font-weight: 600; color: var(--gray-800); margin: 0;">
-                                Vider le cache
-                            </h4>
-                        </div>
-                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
-                            Effacer le cache de l'application pour résoudre les problèmes
-                        </p>
-                        <form action="{{ route('settings.clear-cache') }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="btn-cuni danger"
-                                onclick="return confirm('Voulez-vous vraiment vider le cache ?')">
-                                <i class="bi bi-trash"></i>
-                                Vider le cache
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- System Info -->
-                <div class="cuni-card" style="margin-top: 24px; background: var(--surface-alt);">
-                    <div class="card-header-custom" style="background: transparent; padding: 0 0 16px 0; border: none;">
-                        <h3 class="card-title">
-                            <i class="bi bi-info-circle"></i>
-                            Informations Système
-                        </h3>
-                    </div>
-                    <div class="settings-grid">
-                        <div>
-                            <small style="color: var(--text-tertiary); font-size: 12px;">Version</small>
-                            <div style="font-weight: 600; color: var(--gray-800);">1.0.0</div>
-                        </div>
-                        <div>
-                            <small style="color: var(--text-tertiary); font-size: 12px;">PHP</small>
-                            <div style="font-weight: 600; color: var(--gray-800);">{{ phpversion() }}</div>
-                        </div>
-                        <div>
-                            <small style="color: var(--text-tertiary); font-size: 12px;">Laravel</small>
-                            <div style="font-weight: 600; color: var(--gray-800);">{{ app()->version() }}</div>
-                        </div>
-                        <div>
-                            <small style="color: var(--text-tertiary); font-size: 12px;">Environnement</small>
-                            <div style="font-weight: 600; color: var(--gray-800);">{{ app()->environment() }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <style>
         /* Enhanced Tab Styling */
@@ -452,38 +345,12 @@
             }
         }
 
-        /* Form Enhancements */
-        .form-control:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-subtle);
-        }
 
-        /* Checkbox Styling */
         input[type="checkbox"] {
             accent-color: var(--primary);
             cursor: pointer;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .tabs-container {
-                padding: 4px 4px 0 4px;
-            }
-
-            .tab-btn {
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-
-        /* Alertes personnalisées avec bordure gauche */
         .alert-custom {
             border: none;
             border-left: 5px solid;
@@ -495,24 +362,11 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .alert-custom-success {
-            background-color: #f0fdf4;
-            color: #166534;
-            border-color: #22c55e;
-        }
-
-        .alert-custom-danger {
-            background-color: #fef2f2;
-            color: #991b1b;
-            border-color: #ef4444;
-        }
-
         .alert-icon {
             font-size: 1.4rem;
             margin-right: 15px;
         }
 
-        /* Erreur sous le champ spécifique */
         .field-error {
             color: #ef4444;
             font-size: 0.85rem;
@@ -521,14 +375,6 @@
             align-items: center;
             gap: 5px;
         }
-
-        /* Form Enhancements & Grid */
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-subtle);
-        }
-
 
 
         .settings-grid {
@@ -541,6 +387,48 @@
             .settings-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+
+        .form-control,
+        .form-select,
+        .tab-content .form-control {
+            background-color: var(--surface-alt) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--surface-border) !important;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text-primary) !important;
+            -webkit-box-shadow: 0 0 0px 1000px var(--surface-alt) inset !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .form-control:focus {
+            background-color: var(--surface) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--text-tertiary) !important;
+            opacity: 0.5;
+        }
+
+        .alert-custom-success {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border-left: 5px solid #22c55e;
+        }
+
+        .alert-custom-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-left: 5px solid #ef4444;
         }
     </style>
 
@@ -564,8 +452,8 @@
             // On récupère l'onglet actif depuis la session Laravel ou l'URL
             const sessionTab = "{{ session('active_tab') }}";
             const targetTab = sessionTab || tabFromUrl || savedTab || 'general-tab';
-
             const tabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+
             if (tabBtn) {
                 tabBtn.click();
             }

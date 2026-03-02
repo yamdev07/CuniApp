@@ -68,17 +68,18 @@ class EmailVerificationCodeController extends Controller
                 ->withErrors(['email' => 'Utilisateur non trouvé.']);
         }
 
-        // Mark as verified
+        // ✅ ONLY mark as verified - DO NOT LOG IN
         $user->email_verified_at = now();
         $user->save();
         Cache::forget("verification_code_{$email}");
         event(new Verified($user));
 
-        // Log in after verification
-        Auth::login($user, true);
+        // ✅ CLEAR verification session flags
+        session()->forget(['verification_pending', 'verification_email']);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Email vérifié avec succès ! Bienvenue sur CuniApp.');
+        // ✅ Redirect to welcome page WITHOUT logging in
+        return redirect()->route('welcome')
+            ->with('success', '✅ Email vérifié avec succès ! Vous pouvez maintenant vous connecter.');
     }
 
     /**

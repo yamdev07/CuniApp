@@ -28,12 +28,23 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = $this->only('email', 'password');
+
+        // Attempt login first
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-            
-            // 🔧 FIXED: User-friendly French message instead of raw key
             throw ValidationException::withMessages([
                 'email' => __('Ces identifiants ne correspondent pas à nos enregistrements. Veuillez vérifier votre email et mot de passe.'),
+            ]);
+        }
+
+        // ✅ CRITICAL: Block unverified users from logging in
+        $user = Auth::user();
+        if ($user && ! $user->hasVerifiedEmail()) {
+            Auth::logout(); // Immediately log out unverified user
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => __('🔒 Votre email n\'est pas vérifié. Consultez votre boîte mail pour activer votre compte.'),
             ]);
         }
 
@@ -49,7 +60,7 @@ class LoginRequest extends FormRequest
         event(new Lockout($this));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
-        
+
         // 🔧 FIXED: User-friendly rate limit message
         throw ValidationException::withMessages([
             'email' => __('Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.', [
@@ -60,6 +71,6 @@ class LoginRequest extends FormRequest
 
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

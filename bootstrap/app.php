@@ -11,11 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Redirect guests to welcome page when trying to access protected routes
-        $middleware->redirectGuestsTo(fn () => route('welcome'));
-        
-        // Redirect authenticated users away from auth pages to dashboard
-        $middleware->redirectUsersTo(fn ($request) => route('dashboard'));
+        // Ajoutez vos middlewares ici
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -16,6 +16,10 @@ class User extends Authenticatable
         'email',
         'password',
         'email_verified_at',
+        'notifications_email',
+        'notifications_dashboard',
+        'theme',      // ✅ ADD THIS
+        'language',   // ✅ ADD THIS
     ];
 
     protected $hidden = [

@@ -36,12 +36,12 @@ class RegisteredUserController extends Controller
             'terms' => ['accepted'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'email_verified_at' => null,
-        ]);
+          $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'email_verified_at' => null, // ✅ MUST be null
+    ]);
 
         // Generate verification code
         $code = sprintf('%06d', mt_rand(0, 999999));
@@ -57,10 +57,10 @@ class RegisteredUserController extends Controller
                 ->from(config('mail.from.address'), config('mail.from.name'));
         });
 
-        // Complete session cleanup
-        Auth::logout();
-        $request->session()->flush();
-        $request->session()->regenerate();
+         // ✅ CRITICAL: Log out ANY existing session
+    Auth::logout();
+    $request->session()->flush();
+    $request->session()->regenerate();
 
         // Store verification state
         session([
@@ -69,8 +69,8 @@ class RegisteredUserController extends Controller
         ]);
 
         return redirect()->route('welcome')
-            ->with('success', 'Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.')
-            ->with('verification_pending', true)
-            ->with('verification_email', $user->email);
+        ->with('success', 'Inscription réussie ! Vérifiez votre email pour activer votre compte.')
+        ->with('verification_pending', true)
+        ->with('verification_email', $user->email);
     }
 }
