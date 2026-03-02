@@ -234,6 +234,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/lapins', [LapinController::class, 'store'])
             ->name('lapins.store');
 
+        // ====================================================================
+        // Unified Lapins Management - COMPLETE ROUTES
+        // ====================================================================
+        Route::get('/lapins', [LapinController::class, 'index'])->name('lapins.index');
+        Route::get('/lapins/create', [LapinController::class, 'create'])->name('lapins.create');
+        Route::post('/lapins', [LapinController::class, 'store'])->name('lapins.store');
+        Route::get('/lapins/{id}', [LapinController::class, 'show'])->name('lapins.show');
+        Route::get('/lapins/{id}/edit', [LapinController::class, 'edit'])->name('lapins.edit');
+        Route::put('/lapins/{id}', [LapinController::class, 'update'])->name('lapins.update');
+        Route::delete('/lapins/{id}', [LapinController::class, 'destroy'])->name('lapins.destroy');
+
         // ⚠️ CRITICAL: Sales Routes with FULL Notification Coverage
         // ====================================================================
         // SALES MANAGEMENT ROUTES (All actions trigger notifications)
