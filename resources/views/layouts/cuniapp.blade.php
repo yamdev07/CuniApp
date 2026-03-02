@@ -1118,6 +1118,11 @@
                     <i class="bi bi-egg"></i>
                     <span>Mises Bas</span>
                 </a>
+                <a href="{{ route('naissances.index') }}"
+                    class="nav-link {{ request()->routeIs('naissances.*') ? 'active' : '' }}">
+                    <i class="bi bi-egg-fill"></i>
+                    <span>Naissances</span>
+                </a>
                 <div class="dropdown-container">
                     <button class="nav-link" onclick="toggleMoreDropdown()">
                         <i class="bi bi-three-dots"></i>

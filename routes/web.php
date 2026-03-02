@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\EmailVerificationCodeController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
@@ -257,6 +258,18 @@ Route::middleware('auth')->group(function () {
             ->name('sales.update');
         Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])
             ->name('sales.destroy');
+
+
+        // Add inside the verified middleware group
+        Route::get('/naissances', [NaissanceController::class, 'index'])->name('naissances.index');
+        Route::get('/naissances/create', [NaissanceController::class, 'create'])->name('naissances.create');
+        Route::post('/naissances', [NaissanceController::class, 'store'])->name('naissances.store');
+        Route::get('/naissances/{naissance}', [NaissanceController::class, 'show'])->name('naissances.show');
+        Route::get('/naissances/{naissance}/edit', [NaissanceController::class, 'edit'])->name('naissances.edit');
+        Route::put('/naissances/{naissance}', [NaissanceController::class, 'update'])->name('naissances.update');
+        Route::delete('/naissances/{naissance}', [NaissanceController::class, 'destroy'])->name('naissances.destroy');
+        Route::patch('/naissances/{naissance}/archive', [NaissanceController::class, 'archive'])->name('naissances.archive');
+        Route::patch('/naissances/{naissance}/restore', [NaissanceController::class, 'restore'])->name('naissances.restore');
 
         // Payment Management (All trigger notifications)
         Route::patch('/sales/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])
