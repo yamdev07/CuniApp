@@ -69,17 +69,8 @@
             color: var(--text-primary);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            min-width: 100%;
-            width: 100%;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { min-width: 100%; width: 100%; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--gray-50);
@@ -129,31 +120,17 @@
             transition: transform 0.2s ease;
         }
 
-        .cuniapp-logo:hover {
-            transform: scale(1.05);
-        }
+        .cuniapp-logo:hover { transform: scale(1.05); }
+        .cuniapp-logo svg { width: 28px; height: 28px; }
 
-        .cuniapp-logo svg {
-            width: 28px;
-            height: 28px;
-        }
-
-        .brand-info {
-            display: flex;
-            flex-direction: column;
-        }
-
+        .brand-info { display: flex; flex-direction: column; }
         .brand-title {
             font-size: 1.1rem;
             margin: 0;
             line-height: 1.1;
             color: var(--gray-800);
         }
-
-        .theme-dark .brand-title {
-            color: #FFFFFF !important;
-        }
-
+        .theme-dark .brand-title { color: #FFFFFF !important; }
         .brand-tagline {
             display: block !important;
             font-size: 0.7rem;
@@ -238,10 +215,7 @@
             border: 2px solid var(--surface);
         }
 
-        .user-profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        .user-profile-dropdown { position: relative; display: inline-block; }
 
         .user-trigger {
             display: flex;
@@ -255,9 +229,7 @@
             border: 1px solid var(--surface-border);
         }
 
-        .user-trigger:hover {
-            background: var(--gray-100);
-        }
+        .user-trigger:hover { background: var(--gray-100); }
 
         .user-avatar {
             width: 32px;
@@ -272,9 +244,7 @@
             font-size: 14px;
         }
 
-        .dropdown-container {
-            position: relative;
-        }
+        .dropdown-container { position: relative; }
 
         .dropdown-menu-custom {
             position: absolute;
@@ -292,24 +262,12 @@
             padding: 8px;
         }
 
-        #moreDropdown {
-            left: 0;
-            right: auto;
-        }
-
-        .dropdown-menu-custom.show {
-            display: block !important;
-        }
+        #moreDropdown { left: 0; right: auto; }
+        .dropdown-menu-custom.show { display: block !important; }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .dropdown-header {
@@ -354,22 +312,12 @@
             color: var(--primary);
         }
 
-        .dropdown-item-custom i {
-            width: 20px;
-            display: flex;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
         .dropdown-item-custom.danger:hover {
             background: rgba(239, 68, 68, 0.05);
             color: var(--accent-red);
         }
 
-        .theme-switch-row {
-            cursor: pointer;
-        }
+        .theme-switch-row { cursor: pointer; }
 
         .theme-status-badge {
             font-size: 0.65rem;
@@ -417,17 +365,10 @@
             gap: 10px;
         }
 
-        .theme-dark .card-title {
-            color: var(--white);
-        }
+        .theme-dark .card-title { color: var(--white); }
+        .card-title i { color: var(--primary); }
 
-        .card-title i {
-            color: var(--primary);
-        }
-
-        .card-body {
-            padding: 24px;
-        }
+        .card-body { padding: 24px; }
 
         .btn-cuni {
             display: inline-flex;
@@ -487,14 +428,9 @@
             border-color: var(--accent-red);
         }
 
-        .btn-cuni.sm {
-            padding: 8px 14px;
-            font-size: 13px;
-        }
+        .btn-cuni.sm { padding: 8px 14px; font-size: 13px; }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
 
         .form-label {
             display: block;
@@ -505,9 +441,7 @@
             transition: color 0.2s ease;
         }
 
-        .theme-dark .form-label {
-            color: var(--text-secondary);
-        }
+        .theme-dark .form-label { color: var(--text-secondary); }
 
         .form-control, .form-select {
             width: 100%;
@@ -542,9 +476,7 @@
             box-shadow: 0 0 0 4px rgba(77, 166, 255, 0.15);
         }
 
-        .form-control::placeholder {
-            color: var(--text-tertiary);
-        }
+        .form-control::placeholder { color: var(--text-tertiary); }
 
         .page-header {
             display: flex;
@@ -565,14 +497,8 @@
             letter-spacing: -0.02em;
         }
 
-        .theme-dark .page-title {
-            color: var(--white);
-        }
-
-        .page-title i {
-            color: var(--primary);
-            font-size: 26px;
-        }
+        .theme-dark .page-title { color: var(--white); }
+        .page-title i { color: var(--primary); font-size: 26px; }
 
         .breadcrumb {
             display: flex;
@@ -593,63 +519,69 @@
             text-decoration: underline;
         }
 
-        .breadcrumb span {
+        .breadcrumb span { color: var(--text-tertiary); }
+
+        .table-responsive { overflow-x: auto; }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--surface-border);
+        }
+
+        .table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--surface-border);
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background: var(--surface-alt);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            border: none;
+        }
+
+        .status-active { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
+        .status-inactive { background: rgba(107, 114, 128, 0.1); color: var(--gray-500); }
+        .status-gestante { background: rgba(236, 72, 153, 0.1); color: var(--accent-pink); }
+        .status-allaitante { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); }
+        .status-vide { background: rgba(59, 130, 246, 0.1); color: var(--primary-light); }
+        .status-malade { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .table-empty-state {
+            text-align: center;
+            padding: 40px 20px;
             color: var(--text-tertiary);
         }
 
-        .tabs-container {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--surface-border);
-            padding-bottom: 0;
-            overflow-x: auto;
-            background: var(--surface);
-            border-radius: var(--radius-md) var(--radius-md) 0 0;
-            padding: 8px 8px 0 8px;
+        .table-empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
-        .tab-btn {
-            padding: 10px 16px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            border-radius: var(--radius) var(--radius) 0 0;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-            background: var(--gray-50);
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: var(--primary-subtle);
-        }
-
-        .tab-btn i {
-            margin-right: 6px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+        .table-empty-state p {
+            margin-bottom: 16px;
+            font-size: 14px;
         }
 
         .alert-cuni {
@@ -662,18 +594,12 @@
             font-size: 14px;
         }
 
-        .alert-cuni i {
-            font-size: 18px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
+        .alert-cuni i { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
         .alert-cuni.success {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.2);
             color: var(--accent-green);
         }
-
         .alert-cuni.error {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.2);
@@ -701,11 +627,7 @@
             margin-bottom: 40px;
         }
 
-        .footer-brand {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .footer-brand { display: flex; flex-direction: column; gap: 16px; }
 
         .footer-logo {
             display: flex;
@@ -724,10 +646,7 @@
             justify-content: center;
         }
 
-        .footer-logo-icon svg {
-            width: 28px;
-            height: 28px;
-        }
+        .footer-logo-icon svg { width: 28px; height: 28px; }
 
         .footer-logo-text {
             font-size: 1.3rem;
@@ -735,9 +654,7 @@
             color: var(--text-primary);
         }
 
-        .footer-logo-text span {
-            color: var(--primary);
-        }
+        .footer-logo-text span { color: var(--primary); }
 
         .footer-tagline {
             font-size: 0.9rem;
@@ -756,9 +673,7 @@
             gap: 8px;
         }
 
-        .footer-section h4 i {
-            color: var(--primary);
-        }
+        .footer-section h4 i { color: var(--primary); }
 
         .footer-links {
             list-style: none;
@@ -788,9 +703,7 @@
             transition: opacity 0.2s ease;
         }
 
-        .footer-links li a:hover i {
-            opacity: 1;
-        }
+        .footer-links li a:hover i { opacity: 1; }
 
         .footer-bottom {
             display: flex;
@@ -824,9 +737,7 @@
             transition: color 0.2s ease;
         }
 
-        .footer-legal a:hover {
-            color: var(--primary);
-        }
+        .footer-legal a:hover { color: var(--primary); }
 
         .back-to-top {
             position: fixed;
@@ -858,22 +769,13 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-            }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
         }
 
         @media (max-width: 768px) {
@@ -882,29 +784,14 @@
                 align-items: flex-start;
                 padding: 16px;
             }
-
-            .nav-main-links {
-                display: none;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
+            .nav-main-links { display: none; }
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
             }
-
-            .footer-legal {
-                justify-content: center;
-            }
-
-            .cuni-main {
-                padding: 16px;
-            }
-
+            .footer-legal { justify-content: center; }
+            .cuni-main { padding: 16px; }
             .dropdown-menu-custom {
                 position: fixed !important;
                 top: 75px !important;
@@ -920,15 +807,11 @@
             border-bottom-color: #334155;
         }
 
-        .theme-dark .nav-link {
-            color: #94a3b8;
-        }
-
+        .theme-dark .nav-link { color: #94a3b8; }
         .theme-dark .nav-link:hover {
             background: var(--hover-subtle);
             color: var(--text-primary);
         }
-
         .theme-dark .nav-link.active {
             background: var(--primary-subtle);
             color: var(--primary);
@@ -940,9 +823,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .theme-dark .dropdown-item-custom {
-            color: var(--text-primary);
-        }
+        .theme-dark .dropdown-item-custom { color: var(--text-primary); }
 
         .theme-dark .dropdown-header {
             background: var(--surface-elevated) !important;
@@ -960,32 +841,24 @@
             border-color: var(--surface-border);
         }
 
-        .theme-dark .notification-trigger:hover {
-            background: var(--hover-subtle);
-        }
+        .theme-dark .notification-trigger:hover { background: var(--hover-subtle); }
 
         .theme-dark .user-trigger {
             background: var(--surface-elevated);
             border-color: var(--surface-border);
         }
 
-        .theme-dark .user-trigger:hover {
-            background: var(--hover-subtle);
-        }
+        .theme-dark .user-trigger:hover { background: var(--hover-subtle); }
 
         .theme-dark .card-header-custom {
             background-color: var(--surface-alt) !important;
             border-bottom-color: var(--surface-border) !important;
         }
 
-        .d-md-none {
-            display: none;
-        }
+        .d-md-none { display: none; }
 
         @media (max-width: 1024px) {
-            .d-md-none {
-                display: block;
-            }
+            .d-md-none { display: block; }
         }
     </style>
 </head>
@@ -1081,8 +954,8 @@
                         <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-gear"></i> Paramètres
                         </a>
-                        
-                        <!-- Theme Selection Dropdown -->
+
+                        <!-- Theme Selection -->
                         <div class="dropdown-item-custom theme-switch-row" id="theme-selector" style="cursor: pointer;">
                             <div class="theme-info" style="display: flex; align-items: center; gap: 10px; flex: 1;">
                                 <i class="bi bi-palette" id="theme-icon-main" style="color: var(--primary);"></i>
@@ -1092,7 +965,7 @@
                                 <span id="theme-text">{{ ucfirst(auth()->user()->theme ?? 'system') }}</span>
                             </div>
                         </div>
-                        
+
                         <!-- Theme Submenu -->
                         <div class="dropdown-menu-custom" id="themeSubmenu" style="display: none; right: 100%; top: 0; margin-right: 8px; width: 180px;">
                             <button class="dropdown-item-custom" onclick="setTheme('system')" data-theme="system">
@@ -1142,7 +1015,6 @@
                         La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos reproductions, naissances et performances en toute simplicité.
                     </p>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-compass"></i> Navigation</h4>
                     <ul class="footer-links">
@@ -1153,7 +1025,6 @@
                         <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i> Mises Bas</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-briefcase"></i> Gestion</h4>
                     <ul class="footer-links">
@@ -1164,7 +1035,6 @@
                         <li><a href="{{ route('profile.edit') }}"><i class="bi bi-chevron-right"></i> Mon Profil</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-section">
                     <h4><i class="bi bi-envelope"></i> Contact</h4>
                     <div class="footer-contact">
@@ -1183,7 +1053,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="footer-bottom">
                 <div class="footer-copyright">
                     &copy; {{ date('Y') }} <a href="{{ route('dashboard') }}">CuniApp Élevage</a>. Tous droits réservés.
@@ -1223,7 +1092,11 @@
                 currentTheme = getSystemTheme();
             }
 
-            if (currentTheme === 'dark') {
+            applyThemeVisuals(currentTheme, savedTheme);
+        }
+
+        function applyThemeVisuals(actualTheme, savedTheme) {
+            if (actualTheme === 'dark') {
                 document.documentElement.classList.add('theme-dark');
                 if (themeText) themeText.innerText = 'Sombre';
                 if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
@@ -1233,7 +1106,6 @@
                 if (themeIcon) themeIcon.className = savedTheme === 'system' ? 'bi bi-display' : 'bi bi-sun';
             }
 
-            // Update badge
             if (themeBadge) {
                 themeBadge.querySelector('span').innerText = ucfirst(savedTheme);
             }
@@ -1256,6 +1128,13 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({ theme: theme })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Theme updated:', data);
+                })
+                .catch(error => {
+                    console.error('Theme update failed:', error);
                 });
             }
 
@@ -1265,20 +1144,7 @@
                 applyTheme = getSystemTheme();
             }
 
-            if (applyTheme === 'dark') {
-                document.documentElement.classList.add('theme-dark');
-                if (themeText) themeText.innerText = 'Sombre';
-                if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
-            } else {
-                document.documentElement.classList.remove('theme-dark');
-                if (themeText) themeText.innerText = theme === 'system' ? 'Système' : 'Clair';
-                if (themeIcon) themeIcon.className = theme === 'system' ? 'bi bi-display' : 'bi bi-sun';
-            }
-
-            // Update badge
-            if (themeBadge) {
-                themeBadge.querySelector('span').innerText = ucfirst(theme);
-            }
+            applyThemeVisuals(applyTheme, theme);
 
             // Hide submenu
             if (themeSubmenu) {
@@ -1287,6 +1153,11 @@
 
             // Show toast
             showToast('Thème mis à jour: ' + ucfirst(theme));
+
+            // Reload page to apply theme everywhere
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         }
 
         // Toggle theme submenu
@@ -1346,12 +1217,14 @@
                 animation: slideInRight 0.3s ease;
                 max-width: 400px;
             `;
+
             toast.innerHTML = `
-                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}" 
-                   style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
+                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}" style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
                 <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
             `;
+
             document.body.appendChild(toast);
+
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
@@ -1377,6 +1250,7 @@
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
             const themeSubmenu = document.getElementById('themeSubmenu');
+
             if (userDropdown) userDropdown.classList.remove('show');
             if (themeSubmenu) themeSubmenu.style.display = 'none';
             if (moreDropdown) moreDropdown.classList.toggle('show');
@@ -1386,6 +1260,7 @@
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
             const themeSubmenu = document.getElementById('themeSubmenu');
+
             if (moreDropdown) moreDropdown.classList.remove('show');
             if (themeSubmenu) themeSubmenu.style.display = 'none';
             if (userDropdown) userDropdown.classList.toggle('show');

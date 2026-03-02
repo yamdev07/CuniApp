@@ -30,10 +30,7 @@
         <i class="bi bi-heart-pulse"></i> Élevage
     </button>
     <button class="tab-btn" data-tab="system-tab">
-        <i class="bi bi-palette"></i> Système
-    </button>
-    <button class="tab-btn" data-tab="notifications-tab">
-        <i class="bi bi-bell"></i> Notifications
+        <i class="bi bi-palette"></i> Système & Notifications
     </button>
     <button class="tab-btn" data-tab="profile-tab">
         <i class="bi bi-person"></i> Profil
@@ -137,8 +134,9 @@
     </div>
 </div>
 
-<!-- Tab Content: Système (Theme) -->
+<!-- Tab Content: Système (Theme + Notifications) -->
 <div class="tab-content" id="system-tab">
+    <!-- Theme Section -->
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
@@ -253,11 +251,9 @@
             </form>
         </div>
     </div>
-</div>
 
-<!-- Tab Content: Notifications -->
-<div class="tab-content" id="notifications-tab">
-    <div class="cuni-card">
+    <!-- Notifications Section (Moved from separate tab) -->
+    <div class="cuni-card" style="margin-top: 24px;">
         <div class="card-header-custom">
             <h3 class="card-title">
                 <i class="bi bi-bell"></i> Préférences de Notifications
@@ -267,13 +263,13 @@
             <form action="{{ route('settings.update') }}" method="POST">
                 @csrf
                 <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 32px 0;">
-                
+
                 <!-- Notification Toggles -->
                 <div class="form-group">
                     <label class="form-label" style="font-size: 15px; font-weight: 600; margin-bottom: 24px; display: block;">
                         <i class="bi bi-bell-fill" style="color: var(--primary); margin-right: 8px;"></i> Canaux de Notification
                     </label>
-                    
+
                     <!-- Email Notifications Toggle -->
                     <div class="toggle-setting" style="
                         display: flex;
@@ -579,6 +575,56 @@
     .theme-dark input[type="checkbox"]:checked + .toggle-slider {
         background-color: var(--primary);
     }
+
+    /* Tabs Styles */
+    .tabs-container {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--surface-border);
+        padding-bottom: 0;
+        overflow-x: auto;
+        background: var(--surface);
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        padding: 8px 8px 0 8px;
+    }
+
+    .tab-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .tab-btn:hover {
+        color: var(--text-primary);
+        background: var(--gray-50);
+    }
+
+    .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: var(--primary-subtle);
+    }
+
+    .tab-btn i {
+        margin-right: 6px;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
 </style>
 
 <script>
@@ -600,6 +646,7 @@
         const sessionTab = "{{ session('active_tab') }}";
         const targetTab = sessionTab || tabFromUrl || savedTab || 'general-tab';
         const tabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+
         if (tabBtn) {
             tabBtn.click();
         }
