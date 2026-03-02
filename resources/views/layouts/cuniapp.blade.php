@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CuniApp Élevage')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -56,7 +53,6 @@
             --surface-alt: #0F172A;
             --surface-elevated: #151E30;
             --surface-overlay: #1E293B;
-            /* <--- AJOUTE CETTE LIGNE (Bleu gris sombre opaque) */
             --surface-border: #25324A;
             --text-primary: #E6E9F0;
             --text-secondary: #A3B3C6;
@@ -85,14 +81,18 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .cuni-header {
-            background: var(--surface-card);
+            background: var(--surface);
             border-bottom: 1px solid var(--surface-border);
             padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-
 
         .nav-user-side {
             display: flex;
@@ -100,12 +100,10 @@
             gap: 20px;
         }
 
-
         .nav-link.active {
-            color: var(--primary-color);
+            color: var(--primary);
         }
 
-        /* --- Responsive --- */
         @media (max-width: 1024px) {
             .nav-link span {
                 display: none;
@@ -117,14 +115,12 @@
                 flex-direction: column;
                 gap: 10px;
             }
-
             .header-nav {
                 width: 100%;
                 justify-content: center;
                 overflow-x: auto;
                 padding-bottom: 5px;
             }
-
             .header-actions {
                 border: none;
                 margin: 0;
@@ -152,13 +148,10 @@
             height: 28px;
         }
 
-
-
         .brand-title span {
             font-weight: 500;
             color: var(--text-secondary);
         }
-
 
         .nav-main-links {
             display: flex;
@@ -174,11 +167,9 @@
             flex-shrink: 0;
         }
 
-        .header-top-row,
-        .header-nav-bottom {
+        .header-top-row, .header-nav-bottom {
             display: contents;
         }
-
 
         .header-wrapper {
             display: flex;
@@ -186,12 +177,6 @@
             justify-content: space-between;
             height: 80px;
             padding: 0 1.5rem;
-
-        }
-
-        .header-top-row,
-        .header-nav-bottom {
-            display: contents;
         }
 
         .brand-identity {
@@ -203,7 +188,6 @@
         .brand-info {
             display: flex;
             flex-direction: column;
-            /* Titre sur Tagline */
         }
 
         .brand-title {
@@ -214,7 +198,6 @@
 
         .brand-tagline {
             display: block !important;
-            /* On force l'affichage */
             font-size: 0.7rem;
             color: var(--text-secondary);
             opacity: 0.8;
@@ -222,14 +205,12 @@
             padding: 5px
         }
 
-        /* 4. Navigation centrale */
         .nav-main-links {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        /* 5. Bloc de droite */
         .nav-user-side {
             display: flex;
             align-items: center;
@@ -244,15 +225,25 @@
             text-decoration: none;
             white-space: nowrap;
             transition: all 0.2s ease;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
         }
 
-        .top-actions,
-        .nav-user-side {
+        .nav-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: var(--primary-subtle);
+            color: var(--primary);
+        }
+
+        .top-actions, .nav-user-side {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-
 
         .user-trigger {
             display: flex;
@@ -262,12 +253,9 @@
         }
 
         @media (max-width: 1100px) {
-
-            .nav-link span,
-            .user-trigger span {
+            .nav-link span, .user-trigger span {
                 display: none;
             }
-
             .brand-title span {
                 display: none;
             }
@@ -283,12 +271,10 @@
             .nav-link span {
                 display: none;
             }
-
             .nav-main-links {
                 gap: 20px;
             }
         }
-
 
         .dropdown-menu-custom {
             position: absolute;
@@ -300,7 +286,6 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
             display: none;
-            /* Caché par défaut */
             z-index: 1000;
             overflow: hidden;
             animation: slideIn 0.2s ease-out;
@@ -312,7 +297,6 @@
             right: auto;
         }
 
-        /* On force l'affichage quand JS ajoute .show */
         .dropdown-menu-custom.show {
             display: block !important;
         }
@@ -345,17 +329,11 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
-        /* .dropdown-menu-custom.show {
-            display: block;
-        } */
-
 
         .dropdown-item-custom {
             display: flex;
@@ -468,9 +446,8 @@
             margin: 0 auto;
             padding: 24px;
             min-height: calc(100vh - 200px);
+            flex: 1;
         }
-
-
 
         @media (max-width: 768px) {
             .header-wrapper {
@@ -478,13 +455,11 @@
                 align-items: flex-start;
                 padding: 16px;
             }
-
             .header-nav {
                 width: 100%;
                 justify-content: flex-start;
                 overflow-x: auto;
             }
-
             .cuni-main {
                 padding: 16px;
             }
@@ -509,20 +484,15 @@
             color: var(--primary);
         }
 
-
         .theme-dark .dropdown-menu-custom {
             background: var(--surface-overlay) !important;
             border-color: var(--surface-border);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
-
-
         .theme-dark .dropdown-item-custom {
             color: var(--text-primary);
         }
-
-
 
         .theme-dark .dropdown-header {
             background: var(--surface-elevated) !important;
@@ -552,7 +522,6 @@
         .theme-dark .user-trigger:hover {
             background: var(--hover-subtle);
         }
-
 
         .cuni-card {
             background: var(--surface);
@@ -655,8 +624,7 @@
             margin-bottom: 8px;
         }
 
-        .form-control,
-        .form-select {
+        .form-control, .form-select {
             width: 100%;
             padding: 10px 14px;
             font-size: 14px;
@@ -668,8 +636,7 @@
             font-family: inherit;
         }
 
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-subtle);
@@ -678,7 +645,6 @@
         .form-control::placeholder {
             color: var(--text-tertiary);
         }
-
 
         .alert-cuni {
             padding: 14px 18px;
@@ -708,7 +674,6 @@
             color: var(--accent-red);
         }
 
-        /* ==================== TABS ==================== */
         .tabs-container {
             display: flex;
             gap: 4px;
@@ -758,14 +723,12 @@
             display: block;
         }
 
-        /* ==================== GRID ==================== */
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        /* ==================== ENHANCED TABLES ==================== */
         .table-responsive {
             border-radius: var(--radius-lg);
             overflow: hidden;
@@ -812,7 +775,6 @@
             color: var(--text-primary);
         }
 
-        /* Empty State */
         .table-empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -836,7 +798,6 @@
             margin-top: 8px;
         }
 
-        /* Badge Improvements */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -849,7 +810,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* Status Colors */
         .status-active {
             background: rgba(16, 185, 129, 0.1);
             color: #10B981;
@@ -875,7 +835,6 @@
             color: #6B7280;
         }
 
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -887,7 +846,6 @@
             font-size: 12px;
         }
 
-        /* Pagination */
         .pagination {
             display: flex;
             gap: 4px;
@@ -916,23 +874,19 @@
             color: var(--primary);
         }
 
-        /* Responsive Table */
         @media (max-width: 768px) {
             .table-responsive {
                 overflow-x: auto;
             }
-
             .table {
                 min-width: 800px;
             }
-
             .action-buttons {
                 flex-direction: column;
                 gap: 4px;
             }
         }
 
-        /* ==================== USER DROPDOWN ==================== */
         .user-profile-dropdown {
             position: relative;
             display: inline-block;
@@ -988,7 +942,6 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -999,13 +952,10 @@
             display: block;
         }
 
-
-
         .dropdown-header {
             padding: 24px 16px !important;
             border-bottom: 1px solid var(--surface-border);
             background: var(--surface-alt);
-
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -1014,8 +964,7 @@
             width: 100% !important;
         }
 
-        .dropdown-header span,
-        .dropdown-header small {
+        .dropdown-header span, .dropdown-header small {
             display: block !important;
             width: 100% !important;
             text-align: center !important;
@@ -1063,46 +1012,6 @@
             color: var(--accent-red);
         }
 
-
-
-
-        .btn-theme-toggle {
-            width: 50px;
-            height: 26px;
-            background: var(--gray-200);
-            border-radius: 50px;
-            position: relative;
-            cursor: pointer;
-            border: 1px solid var(--gray-300);
-            transition: background 0.3s ease;
-            padding: 0;
-        }
-
-        .toggle-circle {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .toggle-circle svg {
-            width: 14px;
-            height: 14px;
-            color: var(--gray-600);
-        }
-
-
-
-
-        /* ==================== PAGE HEADER ==================== */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -1164,7 +1073,6 @@
                 width: 100%;
                 gap: 8px;
             }
-
             .dropdown-menu-custom {
                 position: fixed;
                 top: auto;
@@ -1174,7 +1082,6 @@
             }
         }
 
-        /* --- DARK MODE FIX --- */
         .theme-dark body {
             background: #0f172a;
             color: white;
@@ -1189,7 +1096,6 @@
             color: #94a3b8;
         }
 
-        /* Style quand le mode sombre est actif */
         .theme-dark .btn-theme-toggle {
             background: var(--primary);
         }
@@ -1210,12 +1116,9 @@
             color: #FFFFFF !important;
         }
 
-
-        /* --- ADAPTATION MODE SOMBRE --- */
         .theme-dark .page-title {
             color: var(--white);
         }
-
 
         .theme-dark .card-header-custom {
             background: var(--surface-elevated);
@@ -1248,29 +1151,23 @@
             border-color: var(--accent-red);
         }
 
-
-        /* --- ADAPTATION MODE SOMBRE --- */
         .theme-dark .form-label {
             color: var(--text-secondary);
         }
 
-        .theme-dark .form-control,
-        .theme-dark .form-select {
+        .theme-dark .form-control, .theme-dark .form-select {
             background-color: var(--surface-alt);
             border-color: var(--surface-border);
             color: var(--text-primary);
             box-shadow: none;
         }
 
-        .theme-dark .form-control:focus,
-        .theme-dark .form-select:focus {
+        .theme-dark .form-control:focus, .theme-dark .form-select:focus {
             background-color: var(--surface-elevated);
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(77, 166, 255, 0.15);
         }
 
-
-        /* Conteneur pour espacer les blocs (Label + Champ) */
         .form-group {
             margin-bottom: 20px;
         }
@@ -1284,8 +1181,7 @@
             transition: color 0.2s ease;
         }
 
-        .form-control,
-        .form-select {
+        .form-control, .form-select {
             width: 100%;
             padding: 12px 16px;
             font-size: 14px;
@@ -1298,9 +1194,7 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* État Focus (clic dans le champ) */
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary);
             background-color: var(--white);
@@ -1311,35 +1205,28 @@
             color: var(--text-tertiary);
         }
 
-        /* --- ADAPTATION MODE SOMBRE --- */
         .theme-dark .form-label {
             color: var(--text-secondary);
         }
 
-        .theme-dark .form-control,
-        .theme-dark .form-select {
+        .theme-dark .form-control, .theme-dark .form-select {
             background-color: var(--surface-alt);
             border-color: var(--surface-border);
             color: var(--text-primary);
             box-shadow: none;
         }
 
-        .theme-dark .form-control:focus,
-        .theme-dark .form-select:focus {
+        .theme-dark .form-control:focus, .theme-dark .form-select:focus {
             background-color: var(--surface-elevated);
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(77, 166, 255, 0.15);
         }
 
-
         .theme-dark input[type="date"] {
             color-scheme: dark;
         }
 
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus,
-        input:-webkit-autofill:active {
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
             -webkit-transition: background-color 5000s ease-in-out 0s;
             transition: background-color 5000s ease-in-out 0s;
             -webkit-text-fill-color: var(--text-primary) !important;
@@ -1355,8 +1242,7 @@
             border-bottom-color: var(--surface-border) !important;
         }
 
-        .theme-dark .notif-message,
-        .theme-dark p {
+        .theme-dark .notif-message, .theme-dark p {
             color: var(--text-secondary) !important;
         }
 
@@ -1377,37 +1263,8 @@
             border-color: var(--surface-border) !important;
         }
 
-        .theme-dark h4,
-        .theme-dark .text-gray-800 {
+        .theme-dark h4, .theme-dark .text-gray-800 {
             color: #ffffff !important;
-        }
-
-        .theme-switch-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 15px;
-            transition: background 0.3s ease;
-        }
-
-        .theme-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .theme-status-badge {
-            font-size: 0.65rem;
-            font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.1);
-            color: var(--text-secondary);
-        }
-
-        .theme-dark .theme-status-badge {
-            background: #34d399;
-            color: #fff;
         }
 
         .back-to-top {
@@ -1444,246 +1301,338 @@
                 opacity: 0;
                 transform: scale(0.8);
             }
-
             to {
                 opacity: 1;
                 transform: scale(1);
             }
         }
 
-
+        /* ==================== PROFESSIONAL FOOTER ==================== */
         .cuni-footer {
             background: var(--surface);
             border-top: 1px solid var(--surface-border);
-            padding: 30px 0 20px 0;
-            position: relative;
+            padding: 60px 0 30px 0;
+            margin-top: auto;
         }
 
         .footer-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 20px;
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
         }
 
-        .footer-brand-side {
+        .footer-brand {
             display: flex;
             flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-cyan) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo-icon svg {
+            width: 28px;
+            height: 28px;
         }
 
         .footer-logo-text {
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .footer-logo-text span {
             color: var(--primary);
         }
 
         .footer-tagline {
-            font-size: 0.8rem;
-            opacity: 0.6;
-        }
-
-        .footer-nav {
-            display: flex;
-            gap: 25px;
-        }
-
-        .footer-nav a {
-            text-decoration: none;
-            color: var(--text-secondary);
             font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 300px;
         }
 
-        .footer-nav a:hover {
+        .footer-social {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .footer-social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .footer-social-link:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .footer-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-section h4 i {
             color: var(--primary);
         }
 
-        .footer-hr {
-            height: 1px;
-            background: var(--surface-border);
-            margin-bottom: 20px;
-            opacity: 0.5;
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links li a:hover {
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .footer-links li a i {
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .footer-links li a:hover i {
+            opacity: 1;
+        }
+
+        .footer-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-contact-item i {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-top: 2px;
+        }
+
+        .footer-contact-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-contact-item a:hover {
+            color: var(--primary);
         }
 
         .footer-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--surface-border);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+        }
+
+        .footer-copyright a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer-copyright a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-legal a {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-legal a:hover {
+            color: var(--primary);
+        }
+
+        .footer-version {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .version-badge {
+            color: var(--text-tertiary);
             background: var(--surface-alt);
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
             border: 1px solid var(--surface-border);
-            margin-right: 15px;
         }
 
-
+        @media (max-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+        }
 
         @media (max-width: 768px) {
-            .footer-top {
-                flex-direction: column;
-                align-items: flex-start;
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
             }
-
-            .footer-nav {
-                gap: 15px;
-                flex-wrap: wrap;
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+            .footer-legal {
+                justify-content: center;
+            }
+            .footer-container {
+                padding: 0 1.5rem;
             }
         }
 
+        @media (max-width: 480px) {
+            .footer-logo-text {
+                font-size: 1.1rem;
+            }
+            .footer-tagline {
+                font-size: 0.85rem;
+            }
+        }
 
+        .d-md-none {
+            display: none;
+        }
 
-      /* --- RESPONSIVITÉ DU HEADER CUNIAPP --- */
+        @media (max-width: 1024px) {
+            .d-md-none {
+                display: block;
+            }
+        }
 
-@media (max-width: 1024px) {
-    .nav-main-links {
-        display: none !important; 
-    }
+        .dropdown-menu-custom.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
+        }
 
-    
-}
+        @media (max-width: 768px) {
+            .dropdown-menu-custom {
+                position: fixed !important;
+                top: 75px !important;
+                left: 15px !important;
+                right: 15px !important;
+                width: auto !important;
+                z-index: 1000 !important;
+                background: var(--surface) !important;
+                border: 1px solid var(--surface-border) !important;
+                box-shadow: var(--shadow-lg) !important;
+                border-radius: var(--radius-lg) !important;
+            }
+            .nav-main-links {
+                display: none !important;
+            }
+        }
 
-@media (max-width: 768px) {
-    .header-wrapper {
-        padding: 0 15px;
-        height: 70px; 
-    }
+        @media (max-width: 600px) {
+            .footer-wrapper, .footer-top {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .footer-nav {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .footer-right {
+                margin-top: 10px;
+            }
+        }
 
-    .brand-info {
-        display: none; 
-    }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+            border-radius: var(--radius);
+        }
 
-    .cuniapp-logo svg {
-        width: 35px;
-        height: 35px;
-    }
+        @media (max-width: 600px) {
+            .cuni-card {
+                padding: 10px;
+            }
+            .page-title {
+                font-size: 1.2rem;
+            }
+        }
 
-    .nav-user-side {
-        gap: 10px;
-    }
-
-    .user-trigger span, 
-    .user-trigger i.bi-chevron-down {
-        display: none; /* On ne garde que l'avatar (le cercle avec l'initiale) */
-    }
-
-    .user-avatar {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
-        margin: 0;
-    }
-
-    /* 3. Ajustement du Menu Déroulant sur Mobile */
-    .dropdown-menu-custom {
-        position: fixed; /* Fixé par rapport à l'écran pour éviter les débordements */
-        top: 70px;
-        left: 10px;
-        right: 10px;
-        width: auto;
-        min-width: 0;
-    }
-}
-
-@media (max-width: 480px) {
-    /* Sur tout petit écran, on réduit encore les marges */
-    .header-wrapper {
-        padding: 0 10px;
-    }
-}
-
-.d-md-none { display: none; }
-@media (max-width: 1024px) {
-    .d-md-none { display: block; }
-}
-
-/* --- Force l'affichage du menu quand JS ajoute la classe .show --- */
-.dropdown-menu-custom.show {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(0) !important;
-}
-
-/* --- Placement spécifique pour Mobile --- */
-@media (max-width: 768px) {
-    .dropdown-menu-custom {
-        /* On le détache du bouton pour qu'il soit bien centré sous le header */
-        position: fixed !important; 
-        top: 75px !important; /* Ajuste selon la hauteur de ton header */
-        left: 15px !important;
-        right: 15px !important;
-        width: auto !important;
-        z-index: 1000 !important;
-        background: var(--surface) !important;
-        border: 1px solid var(--surface-border) !important;
-        box-shadow: var(--shadow-lg) !important;
-        border-radius: var(--radius-lg) !important;
-    }
-
-    
-    .nav-main-links {
-        display: none !important;
-    }
-}
-
-@media (max-width: 600px) {
-    .footer-wrapper, .footer-top {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-
-    .footer-nav {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .footer-right {
-        margin-top: 10px;
-    }
-}
-
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 1rem;
-    border-radius: var(--radius);
-}
-
-@media (max-width: 600px) {
-    .cuni-card {
-        padding: 10px; 
-    }
-    
-    .page-title {
-        font-size: 1.2rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .btn-cuni, .form-control, .form-select {
-        min-height: 48px; /* Taille recommandée par Google pour le tactile */
-    }
-}
+        @media (max-width: 768px) {
+            .btn-cuni, .form-control, .form-select {
+                min-height: 48px;
+            }
+        }
     </style>
-
 </head>
-
 <body class="{{ auth()->check() && auth()->user()->theme === 'dark' ? 'theme-dark' : '' }}">
     <header class="cuni-header">
         <div class="header-wrapper">
@@ -1699,96 +1648,107 @@
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
             </div>
-
+            
             <nav class="nav-main-links">
-                <a href="{{ route('dashboard') }}"
-                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-speedometer2"></i> Tableau de bord
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Tableau de bord</span>
                 </a>
-                <a href="{{ route('males.index') }}"
-                    class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
-                    <i class="bi bi-arrow-up-right-square"></i> Mâles
+                <a href="{{ route('males.index') }}" class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                    <i class="bi bi-arrow-up-right-square"></i>
+                    <span>Mâles</span>
                 </a>
-                <a href="{{ route('femelles.index') }}"
-                    class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
-                    <i class="bi bi-arrow-down-right-square"></i> Femelles
+                <a href="{{ route('femelles.index') }}" class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                    <i class="bi bi-arrow-down-right-square"></i>
+                    <span>Femelles</span>
                 </a>
-                <a href="{{ route('mises-bas.index') }}"
-                    class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
-                    <i class="bi bi-egg"></i> Mises Bas
+                <a href="{{ route('lapins.index') }}" class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                    <i class="bi bi-collection"></i>
+                    <span>Tous les Lapins</span>
                 </a>
-                <a href="{{ route('lapins.index') }}"
-                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
-                    <i class="bi bi-collection"></i> Tous les Lapins
+                <a href="{{ route('mises-bas.index') }}" class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                    <i class="bi bi-egg"></i>
+                    <span>Mises Bas</span>
                 </a>
-
-
                 <div class="dropdown-container">
                     <button class="nav-link" onclick="toggleMoreDropdown()">
-                        <i class="bi bi-three-dots"></i> Plus <i class="bi bi-chevron-down"
-                            style="font-size: 10px;"></i>
+                        <i class="bi bi-three-dots"></i>
+                        <span>Plus</span>
+                        <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
                     </button>
                     <div class="dropdown-menu-custom" id="moreDropdown">
-                        <a href="{{ route('saillies.index') }}" class="dropdown-item-custom"><i
-                                class="bi bi-heart"></i> Saillies</a>
-                        <a href="{{ route('sales.index') }}" class="dropdown-item-custom"><i class="bi bi-cart"></i>
-                            Ventes</a>
-                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom"><i class="bi bi-gear"></i>
-                            Paramètres</a>
+                        <a href="{{ route('saillies.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-heart"></i>
+                            Saillies
+                        </a>
+                        <a href="{{ route('sales.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-cart"></i>
+                            Ventes
+                        </a>
+                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-gear"></i>
+                            Paramètres
+                        </a>
                     </div>
                 </div>
             </nav>
 
-            <div class="mobile-menu-trigger d-md-none" onclick="toggleMoreDropdown()" style="cursor:pointer; font-size: 24px; color: white; margin-right: 15px;">
-    <i class="bi bi-list"></i>
-</div>
+            <div class="mobile-menu-trigger d-md-none" onclick="toggleMoreDropdown()" style="cursor:pointer; font-size: 24px; color: var(--text-secondary); margin-right: 15px;">
+                <i class="bi bi-list"></i>
+            </div>
 
             @auth
-                <div class="nav-user-side">
-                    <a href="{{ route('notifications.index') }}" class="notification-trigger">
-                        <i class="bi bi-bell"></i>
-                        @php
-                            $unread = \App\Models\Notification::where('user_id', auth()->id())
-                                ->where('is_read', false)
-                                ->count();
-                        @endphp
-                        @if ($unread > 0)
-                            <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
-                        @endif
-                    </a>
-
-                    <div class="user-profile-dropdown">
-                        <div class="user-trigger" onclick="toggleUserDropdown()">
-                            <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+            <div class="nav-user-side">
+                <a href="{{ route('notifications.index') }}" class="notification-trigger">
+                    <i class="bi bi-bell"></i>
+                    @php
+                        $unread = \App\Models\Notification::where('user_id', auth()->id())
+                            ->where('is_read', false)
+                            ->count();
+                    @endphp
+                    @if ($unread > 0)
+                        <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
+                    @endif
+                </a>
+                <div class="user-profile-dropdown">
+                    <div class="user-trigger" onclick="toggleUserDropdown()">
+                        <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                        <span>{{ auth()->user()->name }}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+                    <div class="dropdown-menu-custom" id="userDropdown">
+                        <div class="dropdown-header">
                             <span>{{ auth()->user()->name }}</span>
-                            <i class="bi bi-chevron-down"></i>
+                            <small>{{ auth()->user()->email }}</small>
                         </div>
-
-                        <div class="dropdown-menu-custom" id="userDropdown">
-                            <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
-                                <i class="bi bi-person"></i> Profil
-                            </a>
-
-                            <div class="dropdown-item-custom theme-switch-row" id="theme-toggle" style="cursor: pointer;">
-                                <div class="theme-info">
-                                    <i class="bi bi-moon-stars" id="theme-icon-main"></i>
-                                    <span>Mode Sombre</span>
-                                </div>
-                                <div class="theme-status-badge">
-                                    <span id="theme-text">OFF</span>
-                                </div>
+                        <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
+                            <i class="bi bi-person"></i>
+                            Profil
+                        </a>
+                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-gear"></i>
+                            Paramètres
+                        </a>
+                        <div class="dropdown-item-custom theme-switch-row" id="theme-toggle" style="cursor: pointer;">
+                            <div class="theme-info" style="display: flex; align-items: center; gap: 10px;">
+                                <i class="bi bi-moon-stars" id="theme-icon-main"></i>
+                                <span>Mode Sombre</span>
                             </div>
-
-                            <hr>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item-custom logout-btn">
-                                    <i class="bi bi-box-arrow-right"></i> Déconnexion
-                                </button>
-                            </form>
+                            <div class="theme-status-badge" style="font-size: 0.65rem; font-weight: bold; padding: 2px 8px; border-radius: 12px; background: rgba(0, 0, 0, 0.1); color: var(--text-secondary);">
+                                <span id="theme-text">OFF</span>
+                            </div>
                         </div>
+                        <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item-custom logout-btn" style="width: 100%;">
+                                <i class="bi bi-box-arrow-right"></i>
+                                Déconnexion
+                            </button>
+                        </form>
                     </div>
                 </div>
+            </div>
             @endauth
         </div>
     </header>
@@ -1797,86 +1757,302 @@
         @yield('content')
     </main>
 
-
+    <!-- ==================== PROFESSIONAL FOOTER ==================== -->
     <footer class="cuni-footer">
         <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-brand-side">
-                    <span class="footer-logo-text">CuniApp <span>Élevage</span></span>
-                    <span class="footer-tagline">La gestion intelligente de votre cheptel</span>
+            <div class="footer-grid">
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <svg viewBox="0 0 40 40" fill="none">
+                                <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
+                                <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                            </svg>
+                        </div>
+                        <div class="footer-logo-text">CuniApp <span>Élevage</span></div>
+                    </div>
+                    <p class="footer-tagline">
+                        La solution complète pour la gestion intelligente de votre élevage de lapins. 
+                        Suivez vos reproductions, naissances et performances en toute simplicité.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-link" title="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="footer-social-link" title="Twitter">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="#" class="footer-social-link" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="footer-social-link" title="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
                 </div>
 
-                <nav class="footer-nav">
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
-                    <a href="{{ route('lapins.index') }}">Cheptel</a>
-                    <a href="{{ route('settings.index') }}">Paramètres</a>
-                    <a href="#">Aide</a>
-                </nav>
+                <!-- Quick Links -->
+                <div class="footer-section">
+                    <h4>
+                        <i class="bi bi-compass"></i>
+                        Navigation
+                    </h4>
+                    <ul class="footer-links">
+                        <li>
+                            <a href="{{ route('dashboard') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Tableau de bord
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('males.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Mâles
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('femelles.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Femelles
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('lapins.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Tous les Lapins
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('mises-bas.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Mises Bas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Management -->
+                <div class="footer-section">
+                    <h4>
+                        <i class="bi bi-briefcase"></i>
+                        Gestion
+                    </h4>
+                    <ul class="footer-links">
+                        <li>
+                            <a href="{{ route('saillies.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Saillies
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('sales.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Ventes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('notifications.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Notifications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('settings.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('profile.edit') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Mon Profil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="footer-section">
+                    <h4>
+                        <i class="bi bi-envelope"></i>
+                        Contact
+                    </h4>
+                    <div class="footer-contact">
+                        <div class="footer-contact-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>{{ \App\Models\Setting::get('farm_address', 'Adresse non renseignée') }}</span>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="bi bi-telephone"></i>
+                            <a href="tel:{{ \App\Models\Setting::get('farm_phone', '') }}">{{ \App\Models\Setting::get('farm_phone', 'Non renseigné') }}</a>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="bi bi-envelope"></i>
+                            <a href="mailto:{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}">{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}</a>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="bi bi-clock"></i>
+                            <span>Lun - Ven: 8h00 - 18h00</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="footer-hr"></div>
-
             <div class="footer-bottom">
-                <div class="footer-left">
-                    <p>&copy; {{ date('Y') }} CuniApp. Tous droits réservés.</p>
+                <div class="footer-copyright">
+                    &copy; {{ date('Y') }} <a href="{{ route('dashboard') }}">CuniApp Élevage</a>. 
+                    Tous droits réservés.
                 </div>
-                <div class="footer-right">
-                    <span class="version-badge">v1.2.0</span>
+                <div class="footer-version">
+                    <i class="bi bi-box"></i>
+                    <span>v1.2.0</span>
+                </div>
+                <div class="footer-legal">
+                    <a href="{{ route('privacy') }}">Confidentialité</a>
+                    <a href="{{ route('terms') }}">Conditions</a>
+                    <a href="{{ route('contact') }}">Support</a>
                 </div>
             </div>
         </div>
-
-        <button id="backToTop" class="back-to-top" title="Retour en haut">
-            <i class="bi bi-arrow-up-short"></i>
-        </button>
     </footer>
 
-    @stack('scripts')
+    <button id="backToTop" class="back-to-top" title="Retour en haut">
+        <i class="bi bi-arrow-up-short"></i>
+    </button>
 
+    @stack('scripts')
     <script>
-        // --- Gestion du Thème (Dark Mode) ---
+        // ==================== THEME MANAGEMENT (SYSTEM, LIGHT, DARK) ====================
         const themeToggleBtn = document.getElementById('theme-toggle');
         const themeText = document.getElementById('theme-text');
         const themeIcon = document.getElementById('theme-icon-main');
 
-        function initTheme() {
-            const isDark = localStorage.getItem('color-theme') === 'dark' ||
-                (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
 
-            if (isDark) {
+        function initTheme() {
+            const savedTheme = localStorage.getItem('color-theme');
+            let currentTheme = savedTheme || 'system';
+            
+            if (currentTheme === 'system') {
+                currentTheme = getSystemTheme();
+            }
+
+            if (currentTheme === 'dark') {
                 document.documentElement.classList.add('theme-dark');
                 if (themeText) themeText.innerText = 'ON';
-                if (themeIcon) themeIcon.className = 'bi bi-moon-fill'; // Icône pleine pour le dark
+                if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
             } else {
                 document.documentElement.classList.remove('theme-dark');
                 if (themeText) themeText.innerText = 'OFF';
-                if (themeIcon) themeIcon.className = 'bi bi-moon-stars'; // Icône contour pour le light
+                if (themeIcon) themeIcon.className = 'bi bi-moon-stars';
             }
         }
 
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // Empêche la fermeture du menu lors du clic sur le toggle
-
-                const isCurrentlyDark = document.documentElement.classList.toggle('theme-dark');
-
-                // Mise à jour visuelle
-                if (themeText) themeText.innerText = isCurrentlyDark ? 'ON' : 'OFF';
-                if (themeIcon) {
-                    themeIcon.className = isCurrentlyDark ? 'bi bi-moon-fill' : 'bi bi-moon-stars';
+                e.stopPropagation();
+                
+                const savedTheme = localStorage.getItem('color-theme');
+                let currentTheme = savedTheme || 'system';
+                
+                // Cycle: system -> dark -> light -> system
+                if (currentTheme === 'system') {
+                    currentTheme = 'dark';
+                } else if (currentTheme === 'dark') {
+                    currentTheme = 'light';
+                } else {
+                    currentTheme = 'system';
                 }
-
-                localStorage.setItem('color-theme', isCurrentlyDark ? 'dark' : 'light');
+                
+                localStorage.setItem('color-theme', currentTheme);
+                
+                // Apply theme
+                let applyTheme = currentTheme;
+                if (currentTheme === 'system') {
+                    applyTheme = getSystemTheme();
+                }
+                
+                if (applyTheme === 'dark') {
+                    document.documentElement.classList.add('theme-dark');
+                    if (themeText) themeText.innerText = 'ON';
+                    if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
+                } else {
+                    document.documentElement.classList.remove('theme-dark');
+                    if (themeText) themeText.innerText = 'OFF';
+                    if (themeIcon) themeIcon.className = 'bi bi-moon-stars';
+                }
+                
+                // Show toast notification
+                showToast('Thème mis à jour: ' + 
+                    (currentTheme === 'system' ? 'Système' : 
+                    currentTheme === 'dark' ? 'Sombre' : 'Clair'));
             });
         }
 
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            const savedTheme = localStorage.getItem('color-theme');
+            if (!savedTheme || savedTheme === 'system') {
+                initTheme();
+            }
+        });
+
         initTheme();
 
-        // --- Gestion des Dropdowns ---
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 30px;
+                background: var(--surface);
+                border: 1px solid var(--surface-border);
+                border-left: 4px solid ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'};
+                padding: 16px 24px;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideInRight 0.3s ease;
+                max-width: 400px;
+            `;
+            toast.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}" 
+                   style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
+                <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ==================== DROPDOWN MANAGEMENT ====================
         function toggleMoreDropdown() {
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
-
             if (userDropdown) userDropdown.classList.remove('show');
             if (moreDropdown) moreDropdown.classList.toggle('show');
         }
@@ -1884,29 +2060,25 @@
         function toggleUserDropdown() {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
-
             if (moreDropdown) moreDropdown.classList.remove('show');
             if (userDropdown) userDropdown.classList.toggle('show');
         }
 
-        // Fermeture propre au clic extérieur
         document.addEventListener('click', function(e) {
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
-
-            // Si on clique en dehors du bouton "Plus"
+            
             if (moreDropdown && !e.target.closest('.dropdown-container')) {
                 moreDropdown.classList.remove('show');
             }
-            // Si on clique en dehors du bloc Profil
+            
             if (userDropdown && !e.target.closest('.user-profile-dropdown')) {
                 userDropdown.classList.remove('show');
             }
         });
 
-        // --- Gestion du bouton Retour en haut ---
+        // ==================== BACK TO TOP ====================
         const backToTop = document.getElementById('backToTop');
-
         window.addEventListener('scroll', () => {
             if (window.scrollY > 300) {
                 backToTop.classList.add('show');
@@ -1914,17 +2086,9 @@
                 backToTop.classList.remove('show');
             }
         });
-
         backToTop.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
-
-        
     </script>
 </body>
-
 </html>
