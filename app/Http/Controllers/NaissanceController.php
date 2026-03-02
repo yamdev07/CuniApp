@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/NaissanceController.php
 
 namespace App\Http\Controllers;
 
@@ -21,14 +22,15 @@ class NaissanceController extends Controller
             ->active()
             ->latest('date_naissance')
             ->paginate(15);
-        
+
         $stats = [
             'total' => Naissance::active()->count(),
             'this_month' => Naissance::active()->thisMonth()->count(),
             'nb_vivant_total' => Naissance::active()->sum('nb_vivant'),
-            'taux_survie_moyen' => Naissance::active()->get()->avg(function($n) {
+            'taux_survie_moyen' => Naissance::active()->get()->avg(function ($n) {
                 return $n->taux_survie;
             }),
+            'pending_verification' => Naissance::pendingVerification()->count(),
         ];
 
         return view('naissances.index', compact('naissances', 'stats'));
@@ -40,13 +42,10 @@ class NaissanceController extends Controller
             ->orWhere('etat', 'Allaitante')
             ->orderBy('nom')
             ->get();
-        
-        $saillies = Saillie::whereHas('femelle', function($q) {
+        $saillies = Saillie::whereHas('femelle', function ($q) {
             $q->whereIn('etat', ['Gestante', 'Allaitante']);
         })->with('femelle', 'male')->get();
-
         $miseBas = MiseBas::latest()->take(10)->get();
-
         return view('naissances.create', compact('femelles', 'saillies', 'miseBas'));
     }
 
@@ -66,12 +65,13 @@ class NaissanceController extends Controller
             'observations' => 'nullable|string|max:1000',
             'date_sevrage_prevue' => 'nullable|date|after:date_naissance',
             'date_vaccination_prevue' => 'nullable|date|after:date_naissance',
+            'sex_verified' => 'nullable|boolean',
         ]);
 
         $validated['user_id'] = Auth::id();
         $validated['nb_mort_ne'] = $validated['nb_mort_ne'] ?? 0;
-        
-        // Auto-calculate sevrage date if not provided (6 weeks)
+        $validated['sex_verified'] = $validated['sex_verified'] ?? false;
+
         if (empty($validated['date_sevrage_prevue'])) {
             $validated['date_sevrage_prevue'] = Carbon::parse($validated['date_naissance'])
                 ->addWeeks(6)
@@ -80,13 +80,11 @@ class NaissanceController extends Controller
 
         $naissance = Naissance::create($validated);
 
-        // Update femelle status to Allaitante
         $femelle = Femelle::find($validated['femelle_id']);
         if ($femelle && $femelle->etat === 'Gestante') {
             $femelle->update(['etat' => 'Allaitante']);
         }
 
-        // Notification
         $this->notifyUser([
             'type' => 'success',
             'title' => '🐰 Nouvelle Naissance Enregistrée',
@@ -109,7 +107,6 @@ class NaissanceController extends Controller
         $femelles = Femelle::orderBy('nom')->get();
         $saillies = Saillie::with('femelle', 'male')->get();
         $miseBas = MiseBas::latest()->get();
-
         return view('naissances.edit', compact('naissance', 'femelles', 'saillies', 'miseBas'));
     }
 
@@ -130,9 +127,24 @@ class NaissanceController extends Controller
             'observations' => 'nullable|string|max:1000',
             'date_sevrage_prevue' => 'nullable|date|after:date_naissance',
             'date_vaccination_prevue' => 'nullable|date|after:date_naissance',
+            'sex_verified' => 'nullable|boolean',
         ]);
 
+        // Check if verification status changed
+        $wasUnverified = !$naissance->sex_verified;
+        $isNowVerified = !empty($validated['sex_verified']);
+
         $naissance->update($validated);
+
+        // Send notification if verification was just completed
+        if ($wasUnverified && $isNowVerified) {
+            $this->notifyUser([
+                'type' => 'success',
+                'title' => '✅ Vérification de Portée Complétée',
+                'message' => "La portée de {$naissance->femelle->nom} a été vérifiée avec succès",
+                'action_url' => route('naissances.show', $naissance),
+            ]);
+        }
 
         $this->notifyUser([
             'type' => 'info',
@@ -167,7 +179,6 @@ class NaissanceController extends Controller
             'is_archived' => true,
             'archived_at' => now(),
         ]);
-
         return back()->with('success', 'Naissance archivée !');
     }
 
@@ -177,7 +188,6 @@ class NaissanceController extends Controller
             'is_archived' => false,
             'archived_at' => null,
         ]);
-
         return back()->with('success', 'Naissance restaurée !');
     }
 }

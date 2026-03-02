@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/SettingsController.php
 
 namespace App\Http\Controllers;
 
@@ -37,21 +38,22 @@ class SettingsController extends Controller
             'language' => 'nullable|in:fr,en',
             'notifications_email' => 'nullable|boolean',
             'notifications_dashboard' => 'nullable|boolean',
+            // ✅ NEW: Verification Settings
+            'verification_initial_days' => 'nullable|integer|min:5|max:30',
+            'verification_reminder_days' => 'nullable|integer|min:10|max:60',
+            'verification_interval_days' => 'nullable|integer|min:1|max:15',
         ]);
 
         $user = Auth::user();
 
-        // Update theme preference
         if ($request->has('theme')) {
             $user->theme = $request->theme;
         }
 
-        // Update language preference
         if ($request->has('language')) {
             $user->language = $request->language ?? 'fr';
         }
 
-        // Update notification preferences
         if ($request->has('notifications_email')) {
             $user->notifications_email = $request->boolean('notifications_email');
         }
@@ -71,15 +73,19 @@ class SettingsController extends Controller
         Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
         Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', "Seuil d'alerte (%)");
 
+        // ✅ NEW: Save verification settings
+        Setting::set('verification_initial_days', $request->verification_initial_days ?? 10, 'number', 'breeding', 'Délai initial de vérification (jours)');
+        Setting::set('verification_reminder_days', $request->verification_reminder_days ?? 15, 'number', 'breeding', 'Délai premier rappel (jours)');
+        Setting::set('verification_interval_days', $request->verification_interval_days ?? 5, 'number', 'breeding', 'Intervalle des rappels (jours)');
+
         return redirect()->route('settings.index')
             ->with('success', 'Paramètres enregistrés avec succès !')
-            ->with('active_tab', $request->has('theme') ? 'system-tab' : ($request->has('notifications_email') || $request->has('notifications_dashboard') ? 'notifications-tab' : 'general-tab'));
+            ->with('active_tab', $request->has('theme') ? 'system-tab' : ($request->has('notifications_email') || $request->has('notifications_dashboard') ? 'notifications-tab' : ($request->has('verification_initial_days') ? 'breeding-tab' : 'general-tab')));
     }
 
     public function updateProfile(Request $request)
     {
         $user = $request->user();
-
         $request->validate([
             'name' => 'required|string|max:50',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -97,21 +103,15 @@ class SettingsController extends Controller
         $user->email = $request->email;
 
         if ($request->filled('new_password')) {
-            // Security check with current password
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Votre mot de passe actuel est incorrect.'])
                     ->with('active_tab', 'profile-tab');
             }
-            // Assign password in plain text: User Model handles Hash automatically via 'password' => 'hashed' cast
             $user->password = $request->new_password;
         }
 
         $user->save();
-
-        // Keep session active even after password change
         Auth::guard('web')->login($user);
-
-        // Send email notification (without sensitive data)
         $user->notify(new ProfileUpdatedNotification());
 
         return redirect()->to(route('settings.index'))
@@ -126,11 +126,10 @@ class SettingsController extends Controller
             'males' => \App\Models\Male::all(),
             'saillies' => \App\Models\Saillie::all(),
             'mises_bas' => \App\Models\MiseBas::all(),
+            'naissances' => \App\Models\Naissance::all(),
         ];
-
         $filename = 'cuniapp_export_' . date('Y-m-d') . '.json';
         $json = json_encode($data, JSON_PRETTY_PRINT);
-
         return response($json, 200)
             ->header('Content-Type', 'application/json')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
@@ -141,7 +140,6 @@ class SettingsController extends Controller
         Artisan::call('cache:clear');
         Artisan::call('config:clear');
         Artisan::call('view:clear');
-
         return redirect()->route('settings.index')
             ->with('success', 'Cache vidé avec succès !');
     }

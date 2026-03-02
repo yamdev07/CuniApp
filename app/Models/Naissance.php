@@ -1,10 +1,12 @@
 <?php
+// app/Models/Naissance.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class Naissance extends Model
 {
@@ -31,6 +33,11 @@ class Naissance extends Model
         'user_id',
         'is_archived',
         'archived_at',
+        'sex_verified',
+        'sex_verified_at',
+        'first_reminder_sent_at',
+        'last_reminder_sent_at',
+        'reminder_count',
     ];
 
     protected $casts = [
@@ -39,15 +46,19 @@ class Naissance extends Model
         'date_sevrage_prevue' => 'date',
         'date_vaccination_prevue' => 'date',
         'archived_at' => 'datetime',
+        'sex_verified_at' => 'datetime',
+        'first_reminder_sent_at' => 'datetime',
+        'last_reminder_sent_at' => 'datetime',
         'is_archived' => 'boolean',
+        'sex_verified' => 'boolean',
         'nb_vivant' => 'integer',
         'nb_mort_ne' => 'integer',
         'nb_sevre' => 'integer',
         'poids_moyen_naissance' => 'decimal:2',
         'poids_total_portee' => 'decimal:2',
+        'reminder_count' => 'integer',
     ];
 
-    // Relations
     public function femelle(): BelongsTo
     {
         return $this->belongsTo(Femelle::class);
@@ -68,33 +79,67 @@ class Naissance extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Scopes
     public function scopeActive($query)
     {
         return $query->where('is_archived', false);
     }
 
-    public function scopeByHealthStatus($query, $status)
+    public function scopePendingVerification($query)
     {
-        return $query->where('etat_sante', $status);
+        return $query->where('sex_verified', false)
+            ->where('is_archived', false);
     }
 
-    public function scopeThisMonth($query)
+    public function scopeNeedsInitialReminder($query, $days = 15)
     {
-        return $query->whereYear('date_naissance', now()->year)
-                    ->whereMonth('date_naissance', now()->month);
+        return $query->where('sex_verified', false)
+            ->where('is_archived', false)
+            ->where('first_reminder_sent_at', null)
+            ->where('date_naissance', '<=', Carbon::now()->subDays($days));
     }
 
-    // Accessors
+    public function scopeNeedsFollowupReminder($query, $interval = 5)
+    {
+        return $query->where('sex_verified', false)
+            ->where('is_archived', false)
+            ->whereNotNull('first_reminder_sent_at')
+            ->where('last_reminder_sent_at', '<=', Carbon::now()->subDays($interval));
+    }
+
     public function getTauxSurvieAttribute(): float
     {
-        if ($this->nb_total == 0) return 0;
-        return round(($this->nb_vivant / $this->nb_total) * 100, 2);
+        $total = $this->nb_vivant + $this->nb_mort_ne;
+        if ($total == 0) return 0;
+        return round(($this->nb_vivant / $total) * 100, 2);
     }
 
     public function getJoursAvantSevrageAttribute(): int
     {
         if (!$this->date_sevrage_prevue) return 0;
         return max(0, $this->date_sevrage_prevue->diffInDays(now()));
+    }
+
+    public function getJoursDepuisNaissanceAttribute(): int
+    {
+        return $this->date_naissance->diffInDays(now());
+    }
+
+    public function getVerificationStatusAttribute(): string
+    {
+        if ($this->sex_verified) {
+            return 'verified';
+        } elseif (!$this->first_reminder_sent_at) {
+            return 'pending';
+        } else {
+            return 'overdue';
+        }
+    }
+
+    public function markSexAsVerified(): void
+    {
+        $this->update([
+            'sex_verified' => true,
+            'sex_verified_at' => now(),
+        ]);
     }
 }
