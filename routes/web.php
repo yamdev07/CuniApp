@@ -226,16 +226,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/mises-bas/{miseBas}', [MiseBasController::class, 'destroy'])
             ->name('mises-bas.destroy');
 
-        // Unified Lapins Management
-        Route::get('/lapins', [LapinController::class, 'index'])
-            ->name('lapins.index');
-        Route::get('/lapins/create', [LapinController::class, 'create'])
-            ->name('lapins.create');
-        Route::post('/lapins', [LapinController::class, 'store'])
-            ->name('lapins.store');
-
         // ====================================================================
-        // Unified Lapins Management - COMPLETE ROUTES
+        // ✅ Unified Lapins Management - COMPLETE ROUTES
         // ====================================================================
         Route::get('/lapins', [LapinController::class, 'index'])->name('lapins.index');
         Route::get('/lapins/create', [LapinController::class, 'create'])->name('lapins.create');
