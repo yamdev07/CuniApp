@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CuniApp Élevage')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -69,8 +72,18 @@
             color: var(--text-primary);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { min-width: 100%; width: 100%; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-width: 100%;
+            width: 100%;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--gray-50);
@@ -120,17 +133,31 @@
             transition: transform 0.2s ease;
         }
 
-        .cuniapp-logo:hover { transform: scale(1.05); }
-        .cuniapp-logo svg { width: 28px; height: 28px; }
+        .cuniapp-logo:hover {
+            transform: scale(1.05);
+        }
 
-        .brand-info { display: flex; flex-direction: column; }
+        .cuniapp-logo svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
         .brand-title {
             font-size: 1.1rem;
             margin: 0;
             line-height: 1.1;
             color: var(--gray-800);
         }
-        .theme-dark .brand-title { color: #FFFFFF !important; }
+
+        .theme-dark .brand-title {
+            color: #FFFFFF !important;
+        }
+
         .brand-tagline {
             display: block !important;
             font-size: 0.7rem;
@@ -215,7 +242,10 @@
             border: 2px solid var(--surface);
         }
 
-        .user-profile-dropdown { position: relative; display: inline-block; }
+        .user-profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
         .user-trigger {
             display: flex;
@@ -229,7 +259,9 @@
             border: 1px solid var(--surface-border);
         }
 
-        .user-trigger:hover { background: var(--gray-100); }
+        .user-trigger:hover {
+            background: var(--gray-100);
+        }
 
         .user-avatar {
             width: 32px;
@@ -244,7 +276,9 @@
             font-size: 14px;
         }
 
-        .dropdown-container { position: relative; }
+        .dropdown-container {
+            position: relative;
+        }
 
         .dropdown-menu-custom {
             position: absolute;
@@ -262,12 +296,25 @@
             padding: 8px;
         }
 
-        #moreDropdown { left: 0; right: auto; }
-        .dropdown-menu-custom.show { display: block !important; }
+        #moreDropdown {
+            left: 0;
+            right: auto;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block !important;
+        }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .dropdown-header {
@@ -317,7 +364,9 @@
             color: var(--accent-red);
         }
 
-        .theme-switch-row { cursor: pointer; }
+        .theme-switch-row {
+            cursor: pointer;
+        }
 
         .theme-status-badge {
             font-size: 0.65rem;
@@ -365,10 +414,17 @@
             gap: 10px;
         }
 
-        .theme-dark .card-title { color: var(--white); }
-        .card-title i { color: var(--primary); }
+        .theme-dark .card-title {
+            color: var(--white);
+        }
 
-        .card-body { padding: 24px; }
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
 
         .btn-cuni {
             display: inline-flex;
@@ -428,9 +484,14 @@
             border-color: var(--accent-red);
         }
 
-        .btn-cuni.sm { padding: 8px 14px; font-size: 13px; }
+        .btn-cuni.sm {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
 
-        .form-group { margin-bottom: 20px; }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
         .form-label {
             display: block;
@@ -441,9 +502,12 @@
             transition: color 0.2s ease;
         }
 
-        .theme-dark .form-label { color: var(--text-secondary); }
+        .theme-dark .form-label {
+            color: var(--text-secondary);
+        }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             width: 100%;
             padding: 12px 16px;
             font-size: 14px;
@@ -456,27 +520,32 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .theme-dark .form-control, .theme-dark .form-select {
+        .theme-dark .form-control,
+        .theme-dark .form-select {
             background-color: var(--surface-alt);
             border-color: var(--surface-border);
             color: var(--text-primary);
             box-shadow: none;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             outline: none;
             border-color: var(--primary);
             background-color: var(--white);
             box-shadow: 0 0 0 4px var(--primary-subtle);
         }
 
-        .theme-dark .form-control:focus, .theme-dark .form-select:focus {
+        .theme-dark .form-control:focus,
+        .theme-dark .form-select:focus {
             background-color: var(--surface-elevated);
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(77, 166, 255, 0.15);
         }
 
-        .form-control::placeholder { color: var(--text-tertiary); }
+        .form-control::placeholder {
+            color: var(--text-tertiary);
+        }
 
         .page-header {
             display: flex;
@@ -497,8 +566,14 @@
             letter-spacing: -0.02em;
         }
 
-        .theme-dark .page-title { color: var(--white); }
-        .page-title i { color: var(--primary); font-size: 26px; }
+        .theme-dark .page-title {
+            color: var(--white);
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 26px;
+        }
 
         .breadcrumb {
             display: flex;
@@ -519,9 +594,13 @@
             text-decoration: underline;
         }
 
-        .breadcrumb span { color: var(--text-tertiary); }
+        .breadcrumb span {
+            color: var(--text-tertiary);
+        }
 
-        .table-responsive { overflow-x: auto; }
+        .table-responsive {
+            overflow-x: auto;
+        }
 
         .table {
             width: 100%;
@@ -554,12 +633,35 @@
             border: none;
         }
 
-        .status-active { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
-        .status-inactive { background: rgba(107, 114, 128, 0.1); color: var(--gray-500); }
-        .status-gestante { background: rgba(236, 72, 153, 0.1); color: var(--accent-pink); }
-        .status-allaitante { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); }
-        .status-vide { background: rgba(59, 130, 246, 0.1); color: var(--primary-light); }
-        .status-malade { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .status-inactive {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--gray-500);
+        }
+
+        .status-gestante {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--accent-pink);
+        }
+
+        .status-allaitante {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+        }
+
+        .status-vide {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-light);
+        }
+
+        .status-malade {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-red);
+        }
 
         .action-buttons {
             display: flex;
@@ -594,12 +696,18 @@
             font-size: 14px;
         }
 
-        .alert-cuni i { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+        .alert-cuni i {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
         .alert-cuni.success {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.2);
             color: var(--accent-green);
         }
+
         .alert-cuni.error {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.2);
@@ -627,7 +735,11 @@
             margin-bottom: 40px;
         }
 
-        .footer-brand { display: flex; flex-direction: column; gap: 16px; }
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
         .footer-logo {
             display: flex;
@@ -646,7 +758,10 @@
             justify-content: center;
         }
 
-        .footer-logo-icon svg { width: 28px; height: 28px; }
+        .footer-logo-icon svg {
+            width: 28px;
+            height: 28px;
+        }
 
         .footer-logo-text {
             font-size: 1.3rem;
@@ -654,7 +769,9 @@
             color: var(--text-primary);
         }
 
-        .footer-logo-text span { color: var(--primary); }
+        .footer-logo-text span {
+            color: var(--primary);
+        }
 
         .footer-tagline {
             font-size: 0.9rem;
@@ -673,7 +790,9 @@
             gap: 8px;
         }
 
-        .footer-section h4 i { color: var(--primary); }
+        .footer-section h4 i {
+            color: var(--primary);
+        }
 
         .footer-links {
             list-style: none;
@@ -703,7 +822,9 @@
             transition: opacity 0.2s ease;
         }
 
-        .footer-links li a:hover i { opacity: 1; }
+        .footer-links li a:hover i {
+            opacity: 1;
+        }
 
         .footer-bottom {
             display: flex;
@@ -737,7 +858,9 @@
             transition: color 0.2s ease;
         }
 
-        .footer-legal a:hover { color: var(--primary); }
+        .footer-legal a:hover {
+            color: var(--primary);
+        }
 
         .back-to-top {
             position: fixed;
@@ -769,13 +892,23 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -784,14 +917,29 @@
                 align-items: flex-start;
                 padding: 16px;
             }
-            .nav-main-links { display: none; }
-            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+
+            .nav-main-links {
+                display: none;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
             }
-            .footer-legal { justify-content: center; }
-            .cuni-main { padding: 16px; }
+
+            .footer-legal {
+                justify-content: center;
+            }
+
+            .cuni-main {
+                padding: 16px;
+            }
+
             .dropdown-menu-custom {
                 position: fixed !important;
                 top: 75px !important;
@@ -801,17 +949,38 @@
             }
         }
 
+        @media (max-width: 480px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .card-header-custom {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
         /* Dark mode specific overrides */
         .theme-dark .cuni-header {
             background: #1e293b;
             border-bottom-color: #334155;
         }
 
-        .theme-dark .nav-link { color: #94a3b8; }
+        .theme-dark .nav-link {
+            color: #94a3b8;
+        }
+
         .theme-dark .nav-link:hover {
             background: var(--hover-subtle);
             color: var(--text-primary);
         }
+
         .theme-dark .nav-link.active {
             background: var(--primary-subtle);
             color: var(--primary);
@@ -823,7 +992,9 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .theme-dark .dropdown-item-custom { color: var(--text-primary); }
+        .theme-dark .dropdown-item-custom {
+            color: var(--text-primary);
+        }
 
         .theme-dark .dropdown-header {
             background: var(--surface-elevated) !important;
@@ -841,27 +1012,70 @@
             border-color: var(--surface-border);
         }
 
-        .theme-dark .notification-trigger:hover { background: var(--hover-subtle); }
+        .theme-dark .notification-trigger:hover {
+            background: var(--hover-subtle);
+        }
 
         .theme-dark .user-trigger {
             background: var(--surface-elevated);
             border-color: var(--surface-border);
         }
 
-        .theme-dark .user-trigger:hover { background: var(--hover-subtle); }
+        .theme-dark .user-trigger:hover {
+            background: var(--hover-subtle);
+        }
 
         .theme-dark .card-header-custom {
             background-color: var(--surface-alt) !important;
             border-bottom-color: var(--surface-border) !important;
         }
 
-        .d-md-none { display: none; }
+        .d-md-none {
+            display: none;
+        }
 
         @media (max-width: 1024px) {
-            .d-md-none { display: block; }
+            .d-md-none {
+                display: block;
+            }
+        }
+
+        /* ✅ FIXED: Desktop form layouts should NOT be mobile */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section {
+            background: var(--surface-alt);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--surface-border);
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle i {
+            color: var(--primary);
         }
     </style>
 </head>
+
 <body class="{{ auth()->check() && auth()->user()->theme === 'dark' ? 'theme-dark' : '' }}">
     <header class="cuni-header">
         <div class="header-wrapper">
@@ -879,23 +1093,28 @@
             </div>
 
             <nav class="nav-main-links">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Tableau de bord</span>
                 </a>
-                <a href="{{ route('males.index') }}" class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                <a href="{{ route('males.index') }}"
+                    class="nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-up-right-square"></i>
                     <span>Mâles</span>
                 </a>
-                <a href="{{ route('femelles.index') }}" class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                <a href="{{ route('femelles.index') }}"
+                    class="nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-down-right-square"></i>
                     <span>Femelles</span>
                 </a>
-                <a href="{{ route('lapins.index') }}" class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                <a href="{{ route('lapins.index') }}"
+                    class="nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
                     <i class="bi bi-collection"></i>
                     <span>Tous les Lapins</span>
                 </a>
-                <a href="{{ route('mises-bas.index') }}" class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                <a href="{{ route('mises-bas.index') }}"
+                    class="nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
                     <i class="bi bi-egg"></i>
                     <span>Mises Bas</span>
                 </a>
@@ -919,76 +1138,69 @@
                 </div>
             </nav>
 
-            <div class="mobile-menu-trigger d-md-none" onclick="toggleMoreDropdown()" style="cursor:pointer; font-size: 24px; color: var(--text-secondary); margin-right: 15px;">
+            <div class="mobile-menu-trigger d-md-none" onclick="toggleMoreDropdown()"
+                style="cursor:pointer; font-size: 24px; color: var(--text-secondary); margin-right: 15px;">
                 <i class="bi bi-list"></i>
             </div>
 
             @auth
-            <div class="nav-user-side">
-                <a href="{{ route('notifications.index') }}" class="notification-trigger">
-                    <i class="bi bi-bell"></i>
-                    @php
-                        $unread = \App\Models\Notification::where('user_id', auth()->id())
-                            ->where('is_read', false)
-                            ->count();
-                    @endphp
-                    @if ($unread > 0)
-                        <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
-                    @endif
-                </a>
+                <div class="nav-user-side">
+                    <a href="{{ route('notifications.index') }}" class="notification-trigger">
+                        <i class="bi bi-bell"></i>
+                        @php
+                            $unread = \App\Models\Notification::where('user_id', auth()->id())
+                                ->where('is_read', false)
+                                ->count();
+                        @endphp
+                        @if ($unread > 0)
+                            <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
+                        @endif
+                    </a>
 
-                <div class="user-profile-dropdown">
-                    <div class="user-trigger" onclick="toggleUserDropdown()">
-                        <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
-                        <span>{{ auth()->user()->name }}</span>
-                        <i class="bi bi-chevron-down"></i>
-                    </div>
-                    <div class="dropdown-menu-custom" id="userDropdown">
-                        <div class="dropdown-header">
+                    <div class="user-profile-dropdown">
+                        <div class="user-trigger" onclick="toggleUserDropdown()">
+                            <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
                             <span>{{ auth()->user()->name }}</span>
-                            <small>{{ auth()->user()->email }}</small>
+                            <i class="bi bi-chevron-down"></i>
                         </div>
-                        <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
-                            <i class="bi bi-person"></i> Profil
-                        </a>
-                        <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
-                            <i class="bi bi-gear"></i> Paramètres
-                        </a>
 
-                        <!-- Theme Selection -->
-                        <div class="dropdown-item-custom theme-switch-row" id="theme-selector" style="cursor: pointer;">
-                            <div class="theme-info" style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                                <i class="bi bi-palette" id="theme-icon-main" style="color: var(--primary);"></i>
-                                <span>Thème</span>
+                        <div class="dropdown-menu-custom" id="userDropdown">
+                            <div class="dropdown-header">
+                                <span>{{ auth()->user()->name }}</span>
+                                <small>{{ auth()->user()->email }}</small>
                             </div>
-                            <div class="theme-status-badge" id="theme-badge">
-                                <span id="theme-text">{{ ucfirst(auth()->user()->theme ?? 'system') }}</span>
-                            </div>
-                        </div>
 
-                        <!-- Theme Submenu -->
-                        <div class="dropdown-menu-custom" id="themeSubmenu" style="display: none; right: 100%; top: 0; margin-right: 8px; width: 180px;">
-                            <button class="dropdown-item-custom" onclick="setTheme('system')" data-theme="system">
-                                <i class="bi bi-display"></i> Système
-                            </button>
-                            <button class="dropdown-item-custom" onclick="setTheme('light')" data-theme="light">
-                                <i class="bi bi-sun"></i> Clair
-                            </button>
-                            <button class="dropdown-item-custom" onclick="setTheme('dark')" data-theme="dark">
-                                <i class="bi bi-moon-stars"></i> Sombre
-                            </button>
-                        </div>
+                            <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
+                                <i class="bi bi-person"></i> Profil
+                            </a>
 
-                        <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="dropdown-item-custom logout-btn" style="width: 100%;">
-                                <i class="bi bi-box-arrow-right"></i> Déconnexion
-                            </button>
-                        </form>
+                            <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
+                                <i class="bi bi-gear"></i> Paramètres
+                            </a>
+
+                            <!-- ✅ FIXED: Theme Selection - Navigate to Settings -->
+                            <a href="{{ route('settings.index') }}#system-tab"
+                                class="dropdown-item-custom theme-switch-row" id="theme-selector">
+                                <div class="theme-info" style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                                    <i class="bi bi-palette" id="theme-icon-main" style="color: var(--primary);"></i>
+                                    <span>Thème</span>
+                                </div>
+                                <div class="theme-status-badge" id="theme-badge">
+                                    <span id="theme-text">{{ ucfirst(auth()->user()->theme ?? 'system') }}</span>
+                                </div>
+                            </a>
+
+                            <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item-custom logout-btn" style="width: 100%;">
+                                    <i class="bi bi-box-arrow-right"></i> Déconnexion
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
             @endauth
         </div>
     </header>
@@ -1005,36 +1217,48 @@
                     <div class="footer-logo">
                         <div class="footer-logo-icon">
                             <svg viewBox="0 0 40 40" fill="none">
-                                <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
-                                <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                                <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                                <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                             </svg>
                         </div>
                         <div class="footer-logo-text">CuniApp <span>Élevage</span></div>
                     </div>
                     <p class="footer-tagline">
-                        La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos reproductions, naissances et performances en toute simplicité.
+                        La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos
+                        reproductions, naissances et performances en toute simplicité.
                     </p>
                 </div>
+
                 <div class="footer-section">
                     <h4><i class="bi bi-compass"></i> Navigation</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ route('dashboard') }}"><i class="bi bi-chevron-right"></i> Tableau de bord</a></li>
+                        <li><a href="{{ route('dashboard') }}"><i class="bi bi-chevron-right"></i> Tableau de
+                                bord</a></li>
                         <li><a href="{{ route('males.index') }}"><i class="bi bi-chevron-right"></i> Mâles</a></li>
-                        <li><a href="{{ route('femelles.index') }}"><i class="bi bi-chevron-right"></i> Femelles</a></li>
-                        <li><a href="{{ route('lapins.index') }}"><i class="bi bi-chevron-right"></i> Tous les Lapins</a></li>
-                        <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i> Mises Bas</a></li>
+                        <li><a href="{{ route('femelles.index') }}"><i class="bi bi-chevron-right"></i> Femelles</a>
+                        </li>
+                        <li><a href="{{ route('lapins.index') }}"><i class="bi bi-chevron-right"></i> Tous les
+                                Lapins</a></li>
+                        <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i> Mises
+                                Bas</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-section">
                     <h4><i class="bi bi-briefcase"></i> Gestion</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ route('saillies.index') }}"><i class="bi bi-chevron-right"></i> Saillies</a></li>
+                        <li><a href="{{ route('saillies.index') }}"><i class="bi bi-chevron-right"></i> Saillies</a>
+                        </li>
                         <li><a href="{{ route('sales.index') }}"><i class="bi bi-chevron-right"></i> Ventes</a></li>
-                        <li><a href="{{ route('notifications.index') }}"><i class="bi bi-chevron-right"></i> Notifications</a></li>
-                        <li><a href="{{ route('settings.index') }}"><i class="bi bi-chevron-right"></i> Paramètres</a></li>
-                        <li><a href="{{ route('profile.edit') }}"><i class="bi bi-chevron-right"></i> Mon Profil</a></li>
+                        <li><a href="{{ route('notifications.index') }}"><i class="bi bi-chevron-right"></i>
+                                Notifications</a></li>
+                        <li><a href="{{ route('settings.index') }}"><i class="bi bi-chevron-right"></i>
+                                Paramètres</a></li>
+                        <li><a href="{{ route('profile.edit') }}"><i class="bi bi-chevron-right"></i> Mon Profil</a>
+                        </li>
                     </ul>
                 </div>
+
                 <div class="footer-section">
                     <h4><i class="bi bi-envelope"></i> Contact</h4>
                     <div class="footer-contact">
@@ -1044,18 +1268,22 @@
                         </div>
                         <div class="footer-contact-item">
                             <i class="bi bi-telephone"></i>
-                            <a href="tel:{{ \App\Models\Setting::get('farm_phone', '') }}">{{ \App\Models\Setting::get('farm_phone', 'Non renseigné') }}</a>
+                            <a
+                                href="tel:{{ \App\Models\Setting::get('farm_phone', '') }}">{{ \App\Models\Setting::get('farm_phone', 'Non renseigné') }}</a>
                         </div>
                         <div class="footer-contact-item">
                             <i class="bi bi-envelope"></i>
-                            <a href="mailto:{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}">{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}</a>
+                            <a
+                                href="mailto:{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}">{{ \App\Models\Setting::get('farm_email', config('mail.from.address')) }}</a>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="footer-bottom">
                 <div class="footer-copyright">
-                    &copy; {{ date('Y') }} <a href="{{ route('dashboard') }}">CuniApp Élevage</a>. Tous droits réservés.
+                    &copy; {{ date('Y') }} <a href="{{ route('dashboard') }}">CuniApp Élevage</a>. Tous droits
+                    réservés.
                 </div>
                 <div class="footer-legal">
                     <a href="{{ route('privacy') }}">Confidentialité</a>
@@ -1073,18 +1301,12 @@
     @stack('scripts')
     <script>
         // ==================== THEME MANAGEMENT (SYSTEM, LIGHT, DARK) ====================
-        const themeSelector = document.getElementById('theme-selector');
-        const themeSubmenu = document.getElementById('themeSubmenu');
-        const themeText = document.getElementById('theme-text');
-        const themeBadge = document.getElementById('theme-badge');
-        const themeIcon = document.getElementById('theme-icon-main');
-
         function getSystemTheme() {
             return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
 
         function initTheme() {
-            const userTheme = '{{ auth()->check() ? auth()->user()->theme : "system" }}';
+            const userTheme = '{{ auth()->check() ? auth()->user()->theme : 'system' }}';
             const savedTheme = localStorage.getItem('color-theme') || userTheme || 'system';
             let currentTheme = savedTheme;
 
@@ -1098,16 +1320,22 @@
         function applyThemeVisuals(actualTheme, savedTheme) {
             if (actualTheme === 'dark') {
                 document.documentElement.classList.add('theme-dark');
+                const themeText = document.getElementById('theme-text');
+                const themeIcon = document.getElementById('theme-icon-main');
                 if (themeText) themeText.innerText = 'Sombre';
                 if (themeIcon) themeIcon.className = 'bi bi-moon-fill';
             } else {
                 document.documentElement.classList.remove('theme-dark');
+                const themeText = document.getElementById('theme-text');
+                const themeIcon = document.getElementById('theme-icon-main');
                 if (themeText) themeText.innerText = savedTheme === 'system' ? 'Système' : 'Clair';
                 if (themeIcon) themeIcon.className = savedTheme === 'system' ? 'bi bi-display' : 'bi bi-sun';
             }
 
+            const themeBadge = document.getElementById('theme-badge');
             if (themeBadge) {
-                themeBadge.querySelector('span').innerText = ucfirst(savedTheme);
+                const badgeText = themeBadge.querySelector('span');
+                if (badgeText) badgeText.innerText = ucfirst(savedTheme);
             }
         }
 
@@ -1116,58 +1344,39 @@
         }
 
         function setTheme(theme) {
-            // Save to localStorage
             localStorage.setItem('color-theme', theme);
 
-            // Update user preference if logged in
             if ({{ auth()->check() ? 'true' : 'false' }}) {
-                fetch('{{ route("settings.update") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ theme: theme })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Theme updated:', data);
-                })
-                .catch(error => {
-                    console.error('Theme update failed:', error);
-                });
+                fetch('{{ route('settings.update') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            theme: theme
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Theme updated:', data);
+                    })
+                    .catch(error => {
+                        console.error('Theme update failed:', error);
+                    });
             }
 
-            // Apply theme
             let applyTheme = theme;
             if (theme === 'system') {
                 applyTheme = getSystemTheme();
             }
 
             applyThemeVisuals(applyTheme, theme);
-
-            // Hide submenu
-            if (themeSubmenu) {
-                themeSubmenu.style.display = 'none';
-            }
-
-            // Show toast
             showToast('Thème mis à jour: ' + ucfirst(theme));
 
-            // Reload page to apply theme everywhere
             setTimeout(() => {
                 window.location.reload();
             }, 500);
-        }
-
-        // Toggle theme submenu
-        if (themeSelector) {
-            themeSelector.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (themeSubmenu) {
-                    themeSubmenu.style.display = themeSubmenu.style.display === 'none' ? 'block' : 'none';
-                }
-            });
         }
 
         // Listen for system theme changes
@@ -1182,16 +1391,12 @@
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
-            const themeSubmenu = document.getElementById('themeSubmenu');
 
             if (userDropdown && !e.target.closest('.user-profile-dropdown')) {
                 userDropdown.classList.remove('show');
             }
             if (moreDropdown && !e.target.closest('.dropdown-container')) {
                 moreDropdown.classList.remove('show');
-            }
-            if (themeSubmenu && !e.target.closest('#theme-selector')) {
-                themeSubmenu.style.display = 'none';
             }
         });
 
@@ -1219,7 +1424,8 @@
             `;
 
             toast.innerHTML = `
-                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}" style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
+                <i class="bi bi-${type === 'success' ? 'check-circle-fill' : 'info-circle-fill'}"
+                   style="color: ${type === 'success' ? 'var(--accent-green)' : 'var(--primary)'}; font-size: 20px;"></i>
                 <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
             `;
 
@@ -1231,7 +1437,6 @@
             }, 3000);
         }
 
-        // Add animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideInRight {
@@ -1249,20 +1454,16 @@
         function toggleMoreDropdown() {
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
-            const themeSubmenu = document.getElementById('themeSubmenu');
 
             if (userDropdown) userDropdown.classList.remove('show');
-            if (themeSubmenu) themeSubmenu.style.display = 'none';
             if (moreDropdown) moreDropdown.classList.toggle('show');
         }
 
         function toggleUserDropdown() {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
-            const themeSubmenu = document.getElementById('themeSubmenu');
 
             if (moreDropdown) moreDropdown.classList.remove('show');
-            if (themeSubmenu) themeSubmenu.style.display = 'none';
             if (userDropdown) userDropdown.classList.toggle('show');
         }
 
@@ -1277,8 +1478,12 @@
         });
 
         backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
     </script>
 </body>
+
 </html>
