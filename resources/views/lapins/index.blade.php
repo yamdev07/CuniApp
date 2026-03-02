@@ -44,7 +44,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                      
+
                         @forelse($femelles as $femelle)
                             <tr class="border-bottom border-light">
                                 <td class="ps-4 fw-semibold text-dark">{{ $femelle->code }}</td>
@@ -68,13 +68,14 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="action-buttons">
-                                        <a href="{{ route('femelles.edit', $femelle->id) }}" class="btn-cuni sm secondary"
+                                        <a href="{{ route('lapins.edit', $femelle->id) }}" class="btn-cuni sm secondary"
                                             title="Modifier">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('femelles.destroy', $femelle->id) }}" method="POST"
+                                        <form action="{{ route('lapins.destroy', $femelle->id) }}" method="POST"
                                             style="display:inline;">
-                                            @csrf @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit" class="btn-cuni sm danger" title="Supprimer"
                                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette femelle ?')">
                                                 <i class="bi bi-trash"></i>
@@ -119,13 +120,14 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="action-buttons">
-                                        <a href="{{ route('males.edit', $m->id) }}" class="btn-cuni sm secondary"
+                                        <a href="{{ route('lapins.edit', $m->id) }}" class="btn-cuni sm secondary"
                                             title="Modifier">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form action="{{ route('males.destroy', $m->id) }}" method="POST"
+                                        <form action="{{ route('lapins.destroy', $m->id) }}" method="POST"
                                             style="display:inline;">
-                                            @csrf @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit" class="btn-cuni sm danger" title="Supprimer"
                                                 onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ?')">
                                                 <i class="bi bi-trash"></i>
