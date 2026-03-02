@@ -98,9 +98,7 @@
     <div class="tab-content" id="breeding-tab">
         <div class="cuni-card">
             <div class="card-header-custom">
-                <h3 class="card-title">
-                    <i class="bi bi-egg"></i> Paramètres d'Élevage
-                </h3>
+                <h3 class="card-title"><i class="bi bi-egg"></i> Paramètres d'Élevage</h3>
             </div>
             <div class="card-body">
                 <form action="{{ route('settings.update') }}" method="POST">
@@ -110,34 +108,122 @@
                             <label class="form-label">Jours de gestation (lapine)</label>
                             <input type="number" name="gestation_days" class="form-control"
                                 value="{{ \App\Models\Setting::get('gestation_days', 31) }}" min="28" max="35">
-                            <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                                <i class="bi bi-info-circle"></i> Moyenne: 31 jours
-                            </small>
+                            <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Moyenne: 31 jours</small>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Semaines de sevrage</label>
                             <input type="number" name="weaning_weeks" class="form-control"
                                 value="{{ \App\Models\Setting::get('weaning_weeks', 6) }}" min="4" max="8">
-                            <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                                <i class="bi bi-info-circle"></i> Recommandé: 6 semaines
-                            </small>
+                            <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Recommandé: 6 semaines</small>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Seuil d'alerte (%)</label>
                             <input type="number" name="alert_threshold" class="form-control"
                                 value="{{ \App\Models\Setting::get('alert_threshold', 80) }}" min="1"
                                 max="100">
-                            <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                                <i class="bi bi-info-circle"></i> Pour les notifications
-                            </small>
+                            <small
+                                style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Pour les notifications</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="bi bi-calendar-check" style="color: var(--primary);"></i>
+                                Délai initial de vérification (jours)</label>
+                            <input type="number" name="verification_initial_days" class="form-control"
+                                value="{{ \App\Models\Setting::get('verification_initial_days', 10) }}" min="5"
+                                max="30">
+                            <small
+                                style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Après combien de jours envoyer la première
+                                notification</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="bi bi-bell" style="color: var(--accent-orange);"></i>
+                                Délai premier rappel (jours)</label>
+                            <input type="number" name="verification_reminder_days" class="form-control"
+                                value="{{ \App\Models\Setting::get('verification_reminder_days', 15) }}" min="10"
+                                max="60">
+                            <small
+                                style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Quand envoyer le premier rappel si non vérifié</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="bi bi-arrow-repeat"
+                                    style="color: var(--accent-purple);"></i> Intervalle des rappels (jours)</label>
+                            <input type="number" name="verification_interval_days" class="form-control"
+                                value="{{ \App\Models\Setting::get('verification_interval_days', 5) }}" min="1"
+                                max="15">
+                            <small
+                                style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;"><i
+                                    class="bi bi-info-circle"></i> Fréquence des rappels suivants</small>
                         </div>
                     </div>
                     <div style="margin-top: 24px;">
-                        <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i> Enregistrer
-                        </button>
+                        <button type="submit" class="btn-cuni primary"><i class="bi bi-save"></i> Enregistrer</button>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-clipboard-data"></i> État des Vérifications en Attente</h3>
+            </div>
+            <div class="card-body">
+                @php
+                    $pendingVerifications = \App\Models\Naissance::pendingVerification()
+                        ->orderBy('date_naissance', 'asc')
+                        ->limit(5)
+                        ->get();
+                    $totalPending = \App\Models\Naissance::pendingVerification()->count();
+                @endphp
+                @if ($totalPending > 0)
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-exclamation-triangle"
+                                style="font-size: 24px; color: var(--accent-orange);"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">{{ $totalPending }} portée(s) en
+                                attente de vérification</div>
+                            <div style="font-size: 13px; color: var(--text-tertiary);">Sexe et date de naissance à
+                                confirmer</div>
+                        </div>
+                    </div>
+                    <div style="background: var(--surface-alt); border-radius: var(--radius-lg); padding: 16px;">
+                        @foreach ($pendingVerifications as $naissance)
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: {{ !$loop->last ? '1px solid var(--surface-border)' : 'none' }};">
+                                <div>
+                                    <div style="font-weight: 500; color: var(--text-primary);">
+                                        {{ $naissance->femelle->nom ?? 'N/A' }}<span
+                                            style="color: var(--text-tertiary); font-size: 12px;">({{ $naissance->date_naissance->format('d/m/Y') }})</span>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--text-tertiary);">
+                                        {{ $naissance->jours_depuis_naissance }} jours •
+                                        {{ $naissance->reminder_count > 0 ? $naissance->reminder_count . ' rappel(s) envoyé(s)' : 'En attente' }}
+                                    </div>
+                                </div>
+                                <a href="{{ route('naissances.edit', $naissance) }}" class="btn-cuni sm secondary"><i
+                                        class="bi bi-pencil"></i> Vérifier</a>
+                            </div>
+                        @endforeach
+                    </div>
+                    @if ($totalPending > 5)
+                        <div style="text-align: center; margin-top: 16px;">
+                            <a href="{{ route('naissances.index') }}" class="btn-cuni sm secondary">Voir toutes les
+                                portées <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    @endif
+                @else
+                    <div style="text-align: center; padding: 32px; color: var(--text-tertiary);">
+                        <i class="bi bi-check-circle"
+                            style="font-size: 48px; color: var(--accent-green); margin-bottom: 16px; display: block;"></i>
+                        <div style="font-weight: 500;">Toutes les portées sont à jour</div>
+                        <div style="font-size: 13px; margin-top: 4px;">Aucune vérification en attente</div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

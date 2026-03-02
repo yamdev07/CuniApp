@@ -111,17 +111,17 @@
             align-items: center;
             justify-content: space-between;
             height: 72px;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
-            gap: 16px;
+            gap: 20px;
         }
 
         .brand-identity {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             flex-shrink: 0;
         }
 
@@ -153,11 +153,12 @@
         }
 
         .brand-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             margin: 0;
             line-height: 1.1;
             color: var(--gray-800);
             white-space: nowrap;
+            font-weight: 700;
         }
 
         .theme-dark .brand-title {
@@ -166,17 +167,17 @@
 
         .brand-tagline {
             display: block !important;
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--text-secondary);
-            opacity: 0.8;
+            opacity: 0.85;
             margin: 0;
-            padding: 5px 0 0 0;
+            padding: 4px 0 0 0;
         }
 
         .nav-main-links {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             flex: 1;
             justify-content: center;
             overflow-x: auto;
@@ -193,7 +194,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 14px;
+            padding: 9px 15px;
             text-decoration: none;
             white-space: nowrap;
             transition: all 0.2s ease;
@@ -202,6 +203,9 @@
             font-size: 14px;
             font-weight: 500;
             flex-shrink: 0;
+            border: none;
+            background: none;
+            cursor: pointer;
         }
 
         .nav-link:hover {
@@ -221,7 +225,7 @@
         .nav-user-side {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             flex-shrink: 0;
         }
 
@@ -230,14 +234,15 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: var(--radius);
             background: var(--gray-50);
             border: 1px solid var(--surface-border);
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
+            text-decoration: none;
         }
 
         .notification-trigger:hover {
@@ -252,15 +257,15 @@
 
         .notification-badge {
             position: absolute;
-            top: -4px;
-            right: -4px;
+            top: -5px;
+            right: -5px;
             background: var(--accent-red);
             color: white;
             font-size: 10px;
             font-weight: 700;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
+            min-width: 19px;
+            height: 19px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -276,7 +281,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 12px;
+            padding: 7px 13px;
             border-radius: var(--radius-md);
             cursor: pointer;
             transition: all 0.2s;
@@ -397,19 +402,20 @@
         }
 
         .theme-status-badge {
-            font-size: 0.65rem;
-            font-weight: bold;
-            padding: 2px 8px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 9px;
             border-radius: 12px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.08);
             color: var(--text-secondary);
+            text-transform: capitalize;
         }
 
         .cuni-main {
             max-width: 1600px;
             margin: 0 auto;
-            padding: 24px;
-            min-height: calc(100vh - 200px);
+            padding: 28px;
+            min-height: calc(100vh - 220px);
             flex: 1;
             width: 100%;
             min-width: 320px;
@@ -424,6 +430,8 @@
             border-radius: var(--radius);
             transition: all 0.2s;
             flex-shrink: 0;
+            background: none;
+            border: none;
         }
 
         .mobile-menu-trigger:hover {
@@ -442,7 +450,7 @@
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             overflow-y: auto;
-            padding: 16px;
+            padding: 20px;
         }
 
         .mobile-nav-overlay.active {
@@ -827,7 +835,7 @@
         .footer-container {
             max-width: 1600px;
             margin: 0 auto;
-            padding: 0 2rem;
+            padding: 0 2.5rem;
         }
 
         .footer-grid {
@@ -1039,9 +1047,9 @@
         }
 
         /* ===== RESPONSIVE HEADER ===== */
-        @media (max-width: 1200px) {
+        @media (max-width: 1280px) {
             .header-wrapper {
-                padding: 0 1.5rem;
+                padding: 0 2rem;
             }
 
             .brand-tagline {
@@ -1049,9 +1057,9 @@
             }
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1100px) {
             .header-wrapper {
-                padding: 0 1rem;
+                padding: 0 1.5rem;
                 height: 68px;
             }
 
@@ -1068,7 +1076,7 @@
             }
 
             .cuni-main {
-                padding: 16px;
+                padding: 20px;
             }
 
             .footer-grid {
@@ -1079,7 +1087,7 @@
 
         @media (max-width: 768px) {
             .header-wrapper {
-                padding: 0 1rem;
+                padding: 0 1.25rem;
                 height: 64px;
             }
 
@@ -1088,11 +1096,11 @@
             }
 
             .brand-title {
-                font-size: 1rem;
+                font-size: 1.05rem;
             }
 
             .cuni-main {
-                padding: 12px;
+                padding: 16px;
             }
 
             .footer-grid {
@@ -1127,7 +1135,7 @@
 
         @media (max-width: 480px) {
             .header-wrapper {
-                gap: 8px;
+                gap: 10px;
             }
 
             .cuniapp-logo {
@@ -1141,18 +1149,18 @@
             }
 
             .brand-title {
-                font-size: 0.95rem;
+                font-size: 1rem;
             }
 
             .notification-trigger {
-                width: 36px;
-                height: 36px;
+                width: 38px;
+                height: 38px;
             }
 
             .user-avatar {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
+                width: 30px;
+                height: 30px;
+                font-size: 13px;
             }
         }
 
@@ -1167,7 +1175,7 @@
         }
 
         .theme-dark .nav-link:hover {
-            background: var(--hover-subtle);
+            background: var(--surface-elevated);
             color: var(--text-primary);
         }
 
@@ -1203,7 +1211,7 @@
         }
 
         .theme-dark .notification-trigger:hover {
-            background: var(--hover-subtle);
+            background: var(--surface-overlay);
         }
 
         .theme-dark .user-trigger {
@@ -1212,7 +1220,7 @@
         }
 
         .theme-dark .user-trigger:hover {
-            background: var(--hover-subtle);
+            background: var(--surface-overlay);
         }
 
         .theme-dark .card-header-custom {
@@ -1242,7 +1250,7 @@
             display: none;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1100px) {
             .d-md-none {
                 display: block;
             }
@@ -1298,7 +1306,7 @@
                     <span>Naissances</span>
                 </a>
                 <div class="dropdown-container">
-                    <button class="nav-link" onclick="toggleMoreDropdown()" id="moreButton">
+                    <button class="nav-link" onclick="toggleMoreDropdown(event)" id="moreButton">
                         <i class="bi bi-three-dots"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
@@ -1317,9 +1325,9 @@
                 </div>
             </nav>
 
-            <div class="mobile-menu-trigger d-md-none" onclick="toggleMobileNav()" style="cursor:pointer;">
+            <button class="mobile-menu-trigger d-md-none" onclick="toggleMobileNav()" aria-label="Menu">
                 <i class="bi bi-list"></i>
-            </div>
+            </button>
 
             @auth
                 <div class="nav-user-side">
@@ -1335,7 +1343,7 @@
                         @endif
                     </a>
                     <div class="user-profile-dropdown">
-                        <div class="user-trigger" onclick="toggleUserDropdown()">
+                        <div class="user-trigger" onclick="toggleUserDropdown(event)">
                             <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
                             <span>{{ auth()->user()->name }}</span>
                             <i class="bi bi-chevron-down"></i>
@@ -1358,7 +1366,16 @@
                                     <span>Thème</span>
                                 </div>
                                 <div class="theme-status-badge" id="theme-badge">
-                                    <span id="theme-text">{{ ucfirst(auth()->user()->theme ?? 'system') }}</span>
+                                    @php
+                                        $themeValue = auth()->user()->theme ?? 'system';
+                                        $themeLabel = match ($themeValue) {
+                                            'system' => 'Système',
+                                            'light' => 'Clair',
+                                            'dark' => 'Sombre',
+                                            default => 'Système',
+                                        };
+                                    @endphp
+                                    <span id="theme-text">{{ $themeLabel }}</span>
                                 </div>
                             </a>
                             <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
@@ -1568,12 +1585,12 @@
             const themeBadge = document.getElementById('theme-badge');
             if (themeBadge) {
                 const badgeText = themeBadge.querySelector('span');
-                if (badgeText) badgeText.innerText = ucfirst(savedTheme);
+                if (badgeText) {
+                    const themeValue = '{{ auth()->check() ? auth()->user()->theme : 'system' }}';
+                    badgeText.innerText = themeValue === 'system' ? 'Système' : (themeValue === 'light' ? 'Clair' :
+                        'Sombre');
+                }
             }
-        }
-
-        function ucfirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
         function setTheme(theme) {
@@ -1602,17 +1619,20 @@
                 applyTheme = getSystemTheme();
             }
             applyThemeVisuals(applyTheme, theme);
-            showToast('Thème mis à jour: ' + ucfirst(theme));
+            const label = theme === 'system' ? 'Système' : (theme === 'light' ? 'Clair' : 'Sombre');
+            showToast('Thème mis à jour: ' + label);
             setTimeout(() => {
                 window.location.reload();
             }, 500);
         }
+
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             const savedTheme = localStorage.getItem('color-theme');
             if (!savedTheme || savedTheme === 'system') {
                 initTheme();
             }
         });
+
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
@@ -1623,6 +1643,7 @@
                 moreDropdown.classList.remove('show');
             }
         });
+
         initTheme();
 
         function showToast(message, type = 'info') {
@@ -1654,6 +1675,7 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideInRight {
@@ -1667,22 +1689,28 @@
         `;
         document.head.appendChild(style);
 
-        function toggleMoreDropdown() {
+        function toggleMoreDropdown(event) {
+            if (event) event.stopPropagation();
             const moreDropdown = document.getElementById('moreDropdown');
             const userDropdown = document.getElementById('userDropdown');
             const mobileNav = document.getElementById('mobileNavOverlay');
             if (userDropdown) userDropdown.classList.remove('show');
             if (mobileNav) mobileNav.classList.remove('active');
-            if (moreDropdown) moreDropdown.classList.toggle('show');
+            if (moreDropdown) {
+                moreDropdown.classList.toggle('show');
+            }
         }
 
-        function toggleUserDropdown() {
+        function toggleUserDropdown(event) {
+            if (event) event.stopPropagation();
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
             const mobileNav = document.getElementById('mobileNavOverlay');
             if (moreDropdown) moreDropdown.classList.remove('show');
             if (mobileNav) mobileNav.classList.remove('active');
-            if (userDropdown) userDropdown.classList.toggle('show');
+            if (userDropdown) {
+                userDropdown.classList.toggle('show');
+            }
         }
 
         function toggleMobileNav() {
@@ -1696,6 +1724,7 @@
                 document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
             }
         }
+
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 300) {
@@ -1704,12 +1733,14 @@
                 backToTop.classList.remove('show');
             }
         });
+
         backToTop.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
         });
+
         document.addEventListener('click', function(e) {
             const mobileNav = document.getElementById('mobileNavOverlay');
             const mobileTrigger = document.querySelector('.mobile-menu-trigger');
