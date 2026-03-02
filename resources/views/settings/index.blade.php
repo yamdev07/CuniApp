@@ -4,8 +4,7 @@
 <div class="page-header">
     <div>
         <h2 class="page-title">
-            <i class="bi bi-gear"></i>
-            Paramètres de l'Application
+            <i class="bi bi-gear"></i> Paramètres de l'Application
         </h2>
         <div class="breadcrumb">
             <a href="{{ route('dashboard') }}">Tableau de bord</a>
@@ -25,20 +24,19 @@
 <!-- Tabs Navigation -->
 <div class="tabs-container">
     <button class="tab-btn active" data-tab="general-tab">
-        <i class="bi bi-house"></i>
-        Général
+        <i class="bi bi-house"></i> Général
     </button>
     <button class="tab-btn" data-tab="breeding-tab">
-        <i class="bi bi-heart-pulse"></i>
-        Élevage
+        <i class="bi bi-heart-pulse"></i> Élevage
     </button>
-    <button class="tab-btn" data-tab="profile-tab">
-        <i class="bi bi-person"></i>
-        Profil
+    <button class="tab-btn" data-tab="system-tab">
+        <i class="bi bi-palette"></i> Système
     </button>
     <button class="tab-btn" data-tab="notifications-tab">
-        <i class="bi bi-bell"></i>
-        Notifications
+        <i class="bi bi-bell"></i> Notifications
+    </button>
+    <button class="tab-btn" data-tab="profile-tab">
+        <i class="bi bi-person"></i> Profil
     </button>
 </div>
 
@@ -61,8 +59,7 @@
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
-                <i class="bi bi-building"></i>
-                Informations de la Ferme
+                <i class="bi bi-building"></i> Informations de la Ferme
             </h3>
         </div>
         <div class="card-body">
@@ -71,33 +68,24 @@
                 <div class="settings-grid">
                     <div class="form-group">
                         <label class="form-label">Nom de la ferme *</label>
-                        <input type="text" name="farm_name" class="form-control" 
-                               value="{{ \App\Models\Setting::get('farm_name', '') }}" 
-                               placeholder="Ex: Ferme Lapin d'Or">
+                        <input type="text" name="farm_name" class="form-control" value="{{ \App\Models\Setting::get('farm_name', '') }}" placeholder="Ex: Ferme Lapin d'Or">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" name="farm_email" class="form-control" 
-                               value="{{ \App\Models\Setting::get('farm_email', '') }}" 
-                               placeholder="contact@ferme.com">
+                        <input type="email" name="farm_email" class="form-control" value="{{ \App\Models\Setting::get('farm_email', '') }}" placeholder="contact@ferme.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Téléphone</label>
-                        <input type="text" name="farm_phone" class="form-control" 
-                               value="{{ \App\Models\Setting::get('farm_phone', '') }}" 
-                               placeholder="+33 6 00 00 00 00">
+                        <input type="text" name="farm_phone" class="form-control" value="{{ \App\Models\Setting::get('farm_phone', '') }}" placeholder="+33 6 00 00 00 00">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Adresse</label>
-                        <input type="text" name="farm_address" class="form-control" 
-                               value="{{ \App\Models\Setting::get('farm_address', '') }}" 
-                               placeholder="Adresse complète">
+                        <input type="text" name="farm_address" class="form-control" value="{{ \App\Models\Setting::get('farm_address', '') }}" placeholder="Adresse complète">
                     </div>
                 </div>
                 <div style="margin-top: 24px;">
                     <button type="submit" class="btn-cuni primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
+                        <i class="bi bi-save"></i> Enregistrer
                     </button>
                 </div>
             </form>
@@ -110,8 +98,7 @@
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
-                <i class="bi bi-egg"></i>
-                Paramètres d'Élevage
+                <i class="bi bi-egg"></i> Paramètres d'Élevage
             </h3>
         </div>
         <div class="card-body">
@@ -120,39 +107,29 @@
                 <div class="settings-grid">
                     <div class="form-group">
                         <label class="form-label">Jours de gestation (lapine)</label>
-                        <input type="number" name="gestation_days" class="form-control" 
-                               value="{{ \App\Models\Setting::get('gestation_days', 31) }}" 
-                               min="28" max="35">
+                        <input type="number" name="gestation_days" class="form-control" value="{{ \App\Models\Setting::get('gestation_days', 31) }}" min="28" max="35">
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                            <i class="bi bi-info-circle"></i>
-                            Moyenne: 31 jours
+                            <i class="bi bi-info-circle"></i> Moyenne: 31 jours
                         </small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Semaines de sevrage</label>
-                        <input type="number" name="weaning_weeks" class="form-control" 
-                               value="{{ \App\Models\Setting::get('weaning_weeks', 6) }}" 
-                               min="4" max="8">
+                        <input type="number" name="weaning_weeks" class="form-control" value="{{ \App\Models\Setting::get('weaning_weeks', 6) }}" min="4" max="8">
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                            <i class="bi bi-info-circle"></i>
-                            Recommandé: 6 semaines
+                            <i class="bi bi-info-circle"></i> Recommandé: 6 semaines
                         </small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Seuil d'alerte (%)</label>
-                        <input type="number" name="alert_threshold" class="form-control" 
-                               value="{{ \App\Models\Setting::get('alert_threshold', 80) }}" 
-                               min="1" max="100">
+                        <input type="number" name="alert_threshold" class="form-control" value="{{ \App\Models\Setting::get('alert_threshold', 80) }}" min="1" max="100">
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                            <i class="bi bi-info-circle"></i>
-                            Pour les notifications
+                            <i class="bi bi-info-circle"></i> Pour les notifications
                         </small>
                     </div>
                 </div>
                 <div style="margin-top: 24px;">
                     <button type="submit" class="btn-cuni primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer
+                        <i class="bi bi-save"></i> Enregistrer
                     </button>
                 </div>
             </form>
@@ -160,95 +137,20 @@
     </div>
 </div>
 
-<!-- Tab Content: Profil -->
-<div class="tab-content" id="profile-tab">
+<!-- Tab Content: Système (Theme) -->
+<div class="tab-content" id="system-tab">
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
-                <i class="bi bi-person-circle"></i>
-                Mon Profil Utilisateur
-            </h3>
-        </div>
-        <div class="card-body">
-            @if (session('success') && session('active_tab') == 'profile-tab')
-            <div class="alert-custom alert-custom-success">
-                <i class="bi bi-check-circle alert-icon"></i>
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if ($errors->any())
-            <div class="alert-custom alert-custom-danger">
-                <i class="bi bi-exclamation-octagon alert-icon"></i>
-                <div>
-                    <ul style="margin: 0; padding-left: 15px;">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-            @endif
-
-            <form action="{{ route('settings.updateProfile') }}" method="POST">
-                @csrf
-                @method('PATCH')
-                <div class="settings-grid">
-                    <div class="form-group">
-                        <label class="form-label">Nom complet *</label>
-                        <input type="text" name="name" class="form-control" 
-                               value="{{ old('name', auth()->user()->name) }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email *</label>
-                        <input type="email" name="email" class="form-control" 
-                               value="{{ old('email', auth()->user()->email) }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mot de passe actuel</label>
-                        <input type="password" name="current_password" class="form-control" 
-                               placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nouveau mot de passe</label>
-                        <input type="password" name="new_password" class="form-control" 
-                               placeholder="••••••••">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Confirmer nouveau mot de passe</label>
-                        <input type="password" name="new_password_confirmation" class="form-control" 
-                               placeholder="••••••••">
-                    </div>
-                </div>
-                <div style="margin-top: 24px;">
-                    <button type="submit" class="btn-cuni primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer les modifications
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Tab Content: Notifications -->
-<div class="tab-content" id="notifications-tab">
-    <div class="cuni-card">
-        <div class="card-header-custom">
-            <h3 class="card-title">
-                <i class="bi bi-bell"></i>
-                Préférences de Notifications
+                <i class="bi bi-palette"></i> Apparence de l'Application
             </h3>
         </div>
         <div class="card-body">
             <form action="{{ route('settings.update') }}" method="POST">
                 @csrf
-                
-                <!-- Theme Selection -->
                 <div class="form-group" style="margin-bottom: 32px;">
                     <label class="form-label" style="font-size: 15px; font-weight: 600; margin-bottom: 16px; display: block;">
-                        <i class="bi bi-palette" style="color: var(--primary); margin-right: 8px;"></i>
-                        Thème de l'application
+                        <i class="bi bi-palette" style="color: var(--primary); margin-right: 8px;"></i> Thème de l'application
                     </label>
                     <div class="theme-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
                         <!-- System Theme -->
@@ -263,9 +165,7 @@
                             transition: all 0.2s ease;
                             background: var(--surface-alt);
                         " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--surface-border)'">
-                            <input type="radio" name="theme" value="system" 
-                                   {{ \App\Models\Setting::get('theme', 'system') == 'system' ? 'checked' : '' }}
-                                   style="display: none;">
+                            <input type="radio" name="theme" value="system" {{ (auth()->check() && auth()->user()->theme === 'system') || !auth()->user()->theme ? 'checked' : '' }} style="display: none;">
                             <div style="
                                 width: 64px;
                                 height: 64px;
@@ -280,9 +180,7 @@
                                 <i class="bi bi-display" style="font-size: 32px; color: white;"></i>
                             </div>
                             <span style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Système</span>
-                            <span style="font-size: 12px; color: var(--text-tertiary); text-align: center;">
-                                Suit les paramètres de votre appareil
-                            </span>
+                            <span style="font-size: 12px; color: var(--text-tertiary); text-align: center;">Suit les paramètres de votre appareil</span>
                         </label>
 
                         <!-- Light Theme -->
@@ -297,9 +195,7 @@
                             transition: all 0.2s ease;
                             background: var(--surface);
                         " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--surface-border)'">
-                            <input type="radio" name="theme" value="light" 
-                                   {{ \App\Models\Setting::get('theme', 'system') == 'light' ? 'checked' : '' }}
-                                   style="display: none;">
+                            <input type="radio" name="theme" value="light" {{ auth()->check() && auth()->user()->theme === 'light' ? 'checked' : '' }} style="display: none;">
                             <div style="
                                 width: 64px;
                                 height: 64px;
@@ -314,9 +210,7 @@
                                 <i class="bi bi-sun" style="font-size: 32px; color: #f59e0b;"></i>
                             </div>
                             <span style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Clair</span>
-                            <span style="font-size: 12px; color: var(--text-tertiary); text-align: center;">
-                                Thème lumineux et épuré
-                            </span>
+                            <span style="font-size: 12px; color: var(--text-tertiary); text-align: center;">Thème lumineux et épuré</span>
                         </label>
 
                         <!-- Dark Theme -->
@@ -331,9 +225,7 @@
                             transition: all 0.2s ease;
                             background: #1a1a2e;
                         " onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--surface-border)'">
-                            <input type="radio" name="theme" value="dark" 
-                                   {{ \App\Models\Setting::get('theme', 'system') == 'dark' ? 'checked' : '' }}
-                                   style="display: none;">
+                            <input type="radio" name="theme" value="dark" {{ auth()->check() && auth()->user()->theme === 'dark' ? 'checked' : '' }} style="display: none;">
                             <div style="
                                 width: 64px;
                                 height: 64px;
@@ -349,22 +241,39 @@
                                 <i class="bi bi-moon-stars" style="font-size: 32px; color: #4da6ff;"></i>
                             </div>
                             <span style="font-weight: 600; color: white; margin-bottom: 4px;">Sombre</span>
-                            <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6); text-align: center;">
-                                Confortable pour les yeux
-                            </span>
+                            <span style="font-size: 12px; color: rgba(255, 255, 255, 0.6); text-align: center;">Confortable pour les yeux</span>
                         </label>
                     </div>
                 </div>
+                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
+                    <button type="submit" class="btn-cuni primary">
+                        <i class="bi bi-save"></i> Enregistrer le thème
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<!-- Tab Content: Notifications -->
+<div class="tab-content" id="notifications-tab">
+    <div class="cuni-card">
+        <div class="card-header-custom">
+            <h3 class="card-title">
+                <i class="bi bi-bell"></i> Préférences de Notifications
+            </h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('settings.update') }}" method="POST">
+                @csrf
                 <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 32px 0;">
-
+                
                 <!-- Notification Toggles -->
                 <div class="form-group">
                     <label class="form-label" style="font-size: 15px; font-weight: 600; margin-bottom: 24px; display: block;">
-                        <i class="bi bi-bell-fill" style="color: var(--primary); margin-right: 8px;"></i>
-                        Canaux de Notification
+                        <i class="bi bi-bell-fill" style="color: var(--primary); margin-right: 8px;"></i> Canaux de Notification
                     </label>
-
+                    
                     <!-- Email Notifications Toggle -->
                     <div class="toggle-setting" style="
                         display: flex;
@@ -389,12 +298,8 @@
                                 <i class="bi bi-envelope" style="font-size: 24px; color: var(--primary);"></i>
                             </div>
                             <div>
-                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
-                                    Notifications par email
-                                </div>
-                                <div style="font-size: 13px; color: var(--text-tertiary);">
-                                    Recevez les alertes importantes par courrier électronique
-                                </div>
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Notifications par email</div>
+                                <div style="font-size: 13px; color: var(--text-tertiary);">Recevez les alertes importantes par courrier électronique</div>
                             </div>
                         </div>
                         <label class="toggle-switch" style="
@@ -403,9 +308,7 @@
                             width: 60px;
                             height: 34px;
                         ">
-                            <input type="checkbox" name="notifications_email" 
-                                   {{ \App\Models\Setting::get('notifications_email', '0') == '1' ? 'checked' : '' }}
-                                   style="opacity: 0; width: 0; height: 0;">
+                            <input type="checkbox" name="notifications_email" {{ auth()->check() && auth()->user()->notifications_email ? 'checked' : '' }} style="opacity: 0; width: 0; height: 0;">
                             <span class="toggle-slider" style="
                                 position: absolute;
                                 cursor: pointer;
@@ -456,12 +359,8 @@
                                 <i class="bi bi-bell" style="font-size: 24px; color: var(--accent-green);"></i>
                             </div>
                             <div>
-                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">
-                                    Notifications sur le dashboard
-                                </div>
-                                <div style="font-size: 13px; color: var(--text-tertiary);">
-                                    Affiche les alertes en temps réel dans l'application
-                                </div>
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Notifications sur le dashboard</div>
+                                <div style="font-size: 13px; color: var(--text-tertiary);">Affiche les alertes en temps réel dans l'application</div>
                             </div>
                         </div>
                         <label class="toggle-switch" style="
@@ -470,9 +369,7 @@
                             width: 60px;
                             height: 34px;
                         ">
-                            <input type="checkbox" name="notifications_dashboard" 
-                                   {{ \App\Models\Setting::get('notifications_dashboard', '0') == '1' ? 'checked' : '' }}
-                                   style="opacity: 0; width: 0; height: 0;">
+                            <input type="checkbox" name="notifications_dashboard" {{ auth()->check() && auth()->user()->notifications_dashboard ? 'checked' : '' }} style="opacity: 0; width: 0; height: 0;">
                             <span class="toggle-slider" style="
                                 position: absolute;
                                 cursor: pointer;
@@ -502,8 +399,71 @@
 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
                     <button type="submit" class="btn-cuni primary">
-                        <i class="bi bi-save"></i>
-                        Enregistrer les préférences
+                        <i class="bi bi-save"></i> Enregistrer les préférences
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Content: Profil -->
+<div class="tab-content" id="profile-tab">
+    <div class="cuni-card">
+        <div class="card-header-custom">
+            <h3 class="card-title">
+                <i class="bi bi-person-circle"></i> Mon Profil Utilisateur
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (session('success') && session('active_tab') == 'profile-tab')
+            <div class="alert-custom alert-custom-success">
+                <i class="bi bi-check-circle alert-icon"></i>
+                {{ session('success') }}
+            </div>
+            @endif
+
+            @if ($errors->any())
+            <div class="alert-custom alert-custom-danger">
+                <i class="bi bi-exclamation-octagon alert-icon"></i>
+                <div>
+                    <ul style="margin: 0; padding-left: 15px;">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            @endif
+
+            <form action="{{ route('settings.updateProfile') }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nom complet *</label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name', auth()->user()->name) }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email', auth()->user()->email) }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe actuel</label>
+                        <input type="password" name="current_password" class="form-control" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nouveau mot de passe</label>
+                        <input type="password" name="new_password" class="form-control" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirmer nouveau mot de passe</label>
+                        <input type="password" name="new_password_confirmation" class="form-control" placeholder="••••••••">
+                    </div>
+                </div>
+                <div style="margin-top: 24px;">
+                    <button type="submit" class="btn-cuni primary">
+                        <i class="bi bi-save"></i> Enregistrer les modifications
                     </button>
                 </div>
             </form>
@@ -526,11 +486,6 @@
     }
 
     /* Theme Option Cards */
-    input[type="radio"]:checked + div {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-subtle);
-    }
-
     .theme-option-card:has(input[type="radio"]:checked) {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px var(--primary-subtle);
@@ -645,7 +600,6 @@
         const sessionTab = "{{ session('active_tab') }}";
         const targetTab = sessionTab || tabFromUrl || savedTab || 'general-tab';
         const tabBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
-        
         if (tabBtn) {
             tabBtn.click();
         }

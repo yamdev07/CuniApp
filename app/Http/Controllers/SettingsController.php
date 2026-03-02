@@ -26,35 +26,43 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'farm_name'   => 'nullable|string|max:255',
+            'farm_name' => 'nullable|string|max:255',
             'farm_address' => 'nullable|string|max:500',
-            'farm_phone'   => 'nullable|string|max:20',
-            'farm_email'   => 'nullable|email|max:255',
-            'gestation_days'   => 'nullable|integer|min:28|max:35',
-            'weaning_weeks'    => 'nullable|integer|min:4|max:8',
-            'alert_threshold'  => 'nullable|integer|min:1|max:100',
-            'theme'        => 'nullable|in:dark,light',
-            'language'     => 'nullable|in:fr,en',
+            'farm_phone' => 'nullable|string|max:20',
+            'farm_email' => 'nullable|email|max:255',
+            'gestation_days' => 'nullable|integer|min:28|max:35',
+            'weaning_weeks' => 'nullable|integer|min:4|max:8',
+            'alert_threshold' => 'nullable|integer|min:1|max:100',
+            'theme' => 'nullable|in:system,light,dark',
+            'language' => 'nullable|in:fr,en',
             'notifications_email' => 'nullable|boolean',
             'notifications_dashboard' => 'nullable|boolean',
         ]);
 
         $user = Auth::user();
+
+        // Update theme preference
         if ($request->has('theme')) {
             $user->theme = $request->theme;
         }
+
+        // Update language preference
         if ($request->has('language')) {
             $user->language = $request->language ?? 'fr';
         }
+
+        // Update notification preferences
         if ($request->has('notifications_email')) {
             $user->notifications_email = $request->boolean('notifications_email');
         }
+
         if ($request->has('notifications_dashboard')) {
             $user->notifications_dashboard = $request->boolean('notifications_dashboard');
         }
+
         $user->save();
 
-        // Sauvegarde des paramètres généraux
+        // Save general settings
         Setting::set('farm_name', $request->farm_name, 'string', 'general', 'Nom de la ferme');
         Setting::set('farm_address', $request->farm_address, 'string', 'general', 'Adresse');
         Setting::set('farm_phone', $request->farm_phone, 'string', 'general', 'Téléphone');
@@ -64,7 +72,8 @@ class SettingsController extends Controller
         Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', "Seuil d'alerte (%)");
 
         return redirect()->route('settings.index')
-            ->with('success', 'Paramètres enregistrés avec succès !');
+            ->with('success', 'Paramètres enregistrés avec succès !')
+            ->with('active_tab', $request->has('theme') ? 'system-tab' : ($request->has('notifications_email') || $request->has('notifications_dashboard') ? 'notifications-tab' : 'general-tab'));
     }
 
     public function updateProfile(Request $request)
@@ -86,37 +95,37 @@ class SettingsController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        if ($request->filled('new_password')) {
-            // Vérification de sécurité avec le mot de passe actuel
-            if (!Hash::check($request->current_password, $user->password)) {
-                return back()->withErrors(['current_password' => 'Votre mot de passe actuel est incorrect.']);
-            }
 
-            // On assigne le mot de passe en clair : le Model User s'occupe du Hash 
-            // automatiquement grâce au cast 'password' => 'hashed'
+        if ($request->filled('new_password')) {
+            // Security check with current password
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Votre mot de passe actuel est incorrect.'])
+                    ->with('active_tab', 'profile-tab');
+            }
+            // Assign password in plain text: User Model handles Hash automatically via 'password' => 'hashed' cast
             $user->password = $request->new_password;
         }
 
         $user->save();
 
-        // Maintien de la session active même après modification du mot de passe
+        // Keep session active even after password change
         Auth::guard('web')->login($user);
 
-        // Envoi de la notification mail (sans données sensibles)
+        // Send email notification (without sensitive data)
         $user->notify(new ProfileUpdatedNotification());
 
-        $user->save();
-
         return redirect()->to(route('settings.index'))
-            ->with('success', 'Profil mis à jour avec succès !');
+            ->with('success', 'Profil mis à jour avec succès !')
+            ->with('active_tab', 'profile-tab');
     }
+
     public function exportData()
     {
         $data = [
-            'femelles'   => \App\Models\Femelle::all(),
-            'males'      => \App\Models\Male::all(),
-            'saillies'   => \App\Models\Saillie::all(),
-            'mises_bas'  => \App\Models\MiseBas::all(),
+            'femelles' => \App\Models\Femelle::all(),
+            'males' => \App\Models\Male::all(),
+            'saillies' => \App\Models\Saillie::all(),
+            'mises_bas' => \App\Models\MiseBas::all(),
         ];
 
         $filename = 'cuniapp_export_' . date('Y-m-d') . '.json';
