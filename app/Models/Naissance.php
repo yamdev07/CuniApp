@@ -151,4 +151,20 @@ class Naissance extends Model
         return $query->whereYear('date_naissance', now()->year)
             ->whereMonth('date_naissance', now()->month);
     }
+
+    public function scopeThisYear($query)
+    {
+        return $query->whereYear('date_naissance', now()->year);
+    }
+
+    public function scopeLastMonth($query)
+    {
+        return $query->whereYear('date_naissance', now()->subMonth()->year)
+            ->whereMonth('date_naissance', now()->subMonth()->month);
+    }
+
+    public function scopeWhereDateRange($query, $start, $end)
+    {
+        return $query->whereBetween('date_naissance', [$start, $end]);
+    }
 }
