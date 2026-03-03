@@ -13,6 +13,7 @@ class MiseBas extends Model
     protected $table = 'mises_bas';
 
     protected $fillable = [
+        'femelle_id',
         'saillie_id',
         'date_mise_bas',
         'nb_vivant',
@@ -42,15 +43,11 @@ class MiseBas extends Model
     /**
      * Relation directe : une mise bas est liée à une femelle (via la saillie)
      */
+    /**
+     * Relation directe : une mise bas appartient à une femelle
+     */
     public function femelle()
     {
-        return $this->hasOneThrough(
-            Femelle::class,   // Modèle cible
-            Saillie::class,   // Modèle intermédiaire
-            'id',             // Clé primaire sur saillies
-            'id',             // Clé primaire sur femelles
-            'saillie_id',     // Clé étrangère sur mises_bas
-            'femelle_id'      // Clé étrangère sur saillies
-        );
+        return $this->belongsTo(Femelle::class);
     }
 }
