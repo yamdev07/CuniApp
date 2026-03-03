@@ -323,7 +323,7 @@
               border: 1px solid var(--surface-border);
               border-radius: var(--radius-lg);
               box-shadow: var(--shadow-lg);
-              display: none !important;
+              display: none;
               z-index: 1000;
               overflow: hidden;
               animation: slideIn 0.2s ease-out;
@@ -1310,13 +1310,14 @@
                       <i class="bi bi-egg-fill"></i>
                       <span>Naissances</span>
                   </a>
+                  <!-- Replace this section in the nav-main-links -->
                   <div class="dropdown-container">
                       <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton">
                           <i class="bi bi-three-dots"></i>
                           <span>Plus</span>
                           <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
                       </button>
-                      <div class="dropdown-menu-custom" id="moreDropdown" style="display: none;">
+                      <div class="dropdown-menu-custom" id="moreDropdown">
                           <a href="{{ route('saillies.index') }}" class="dropdown-item-custom">
                               <i class="bi bi-heart"></i> Saillies
                           </a>
