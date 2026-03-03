@@ -35,8 +35,43 @@ class MaleController extends Controller
         return view('males.create', compact('suggestedCode'));
     }
 
-// In store method - validation already handles uniqueness!
-// No changes needed to validation rules
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|unique:males,code',
+            'nom' => 'required|string|max:255',
+            'race' => 'nullable|string|max:255',
+            'origine' => 'required|in:Interne,Achat',
+            'date_naissance' => 'nullable|date',
+            'etat' => 'required|in:Active,Inactive,Malade',
+        ]);
+
+        $male = Male::create($request->all());
+
+        // Create notification using Notifiable trait
+        $this->notifyUser([
+            'type' => 'success',
+            'title' => 'Nouveau Mâle Enregistré',
+            'message' => "Mâle '{$male->nom}' ({$male->code}) ajouté à l'élevage.",
+            'action_url' => route('males.show', $male),
+        ]);
+
+        // Flash toast for real-time UI feedback
+        session()->flash('toast', [
+            'type' => 'success',
+            'title' => 'Succès !',
+            'message' => "Mâle '{$male->nom}' enregistré avec succès.",
+            'action_url' => route('males.index'),
+            'duration' => 6000,
+            'timestamp' => now()->toIso8601String()
+        ]);
+
+        return redirect()->route('males.index')
+            ->with('success', 'Mâle ajouté avec succès !');
+    }
 
     /**
      * Display the specified resource.

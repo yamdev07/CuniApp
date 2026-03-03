@@ -10,8 +10,19 @@ class Saillie extends Model
     use HasFactory;
 
     protected $fillable = [
-        'femelle_id', 'male_id', 'date_saillie', 'date_palpage',
-        'palpation_resultat', 'date_mise_bas_theorique'
+        'femelle_id',
+        'male_id',
+        'date_saillie',
+        'date_palpage',
+        'palpation_resultat',
+        'date_mise_bas_theorique'
+    ];
+
+    // ✅ ADD THIS: Cast date fields to Carbon instances
+    protected $casts = [
+        'date_saillie' => 'date',
+        'date_palpage' => 'date',
+        'date_mise_bas_theorique' => 'date',
     ];
 
     public function femelle()

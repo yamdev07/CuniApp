@@ -50,8 +50,8 @@
             @method('PUT')
             <div class="settings-grid">
                 <div class="form-group">
-                    <label class="form-label">Code *</label>
-                    <input type="text" name="code" class="form-control" value="{{ old('code', $femelle->code) }}" required>
+                                        <label class="form-label">Code *</label>
+<input type="text" name="code" class="form-control" value="{{ old('code', $femelle->code) }}" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Nom *</label>

@@ -13,6 +13,7 @@ class MiseBas extends Model
     protected $table = 'mises_bas';
 
     protected $fillable = [
+        'femelle_id',
         'saillie_id',
         'date_mise_bas',
         'nb_vivant',
@@ -21,6 +22,12 @@ class MiseBas extends Model
         'nb_adopte',
         'date_sevrage',
         'poids_moyen_sevrage'
+    ];
+
+    // ✅ ADD THIS: Cast date fields to Carbon instances
+    protected $casts = [
+        'date_mise_bas' => 'date',
+        'date_sevrage' => 'date',
     ];
 
     /**
@@ -42,15 +49,11 @@ class MiseBas extends Model
     /**
      * Relation directe : une mise bas est liée à une femelle (via la saillie)
      */
+    /**
+     * Relation directe : une mise bas appartient à une femelle
+     */
     public function femelle()
     {
-        return $this->hasOneThrough(
-            Femelle::class,   // Modèle cible
-            Saillie::class,   // Modèle intermédiaire
-            'id',             // Clé primaire sur saillies
-            'id',             // Clé primaire sur femelles
-            'saillie_id',     // Clé étrangère sur mises_bas
-            'femelle_id'      // Clé étrangère sur saillies
-        );
+        return $this->belongsTo(Femelle::class);
     }
 }
