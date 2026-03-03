@@ -24,6 +24,12 @@ class MiseBas extends Model
         'poids_moyen_sevrage'
     ];
 
+    // ✅ ADD THIS: Cast date fields to Carbon instances
+    protected $casts = [
+        'date_mise_bas' => 'date',
+        'date_sevrage' => 'date',
+    ];
+
     /**
      * Relation : une mise bas appartient à une saillie
      */
