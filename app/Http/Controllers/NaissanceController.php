@@ -38,19 +38,27 @@ class NaissanceController extends Controller
 
     public function create()
     {
-        $femelles = Femelle::where('etat', 'Gestante')
-            ->orWhere('etat', 'Allaitante')
+        // ✅ Get ALL femelles (not just Gestante/Allaitante)
+        $femelles = Femelle::where('etat', '!=', 'Vide')
             ->orderBy('nom')
             ->get();
-        $saillies = Saillie::whereHas('femelle', function ($q) {
-            $q->whereIn('etat', ['Gestante', 'Allaitante']);
-        })->with('femelle', 'male')->get();
+
+        // ✅ Get saillies with proper relationships
+        $saillies = Saillie::with(['femelle', 'male'])
+            ->whereHas('femelle', function ($q) {
+                $q->where('etat', '!=', 'Vide');
+            })
+            ->orderBy('date_saillie', 'desc')
+            ->get();
+
         $miseBas = MiseBas::latest()->take(10)->get();
+
         return view('naissances.create', compact('femelles', 'saillies', 'miseBas'));
     }
 
     public function store(Request $request)
     {
+        // app/Http/Controllers/NaissanceController.php - store() method
         $validated = $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'saillie_id' => 'nullable|exists:saillies,id',
@@ -63,9 +71,14 @@ class NaissanceController extends Controller
             'poids_moyen_naissance' => 'nullable|numeric|min:0|max:200',
             'etat_sante' => 'required|in:Excellent,Bon,Moyen,Faible',
             'observations' => 'nullable|string|max:1000',
-            'date_sevrage_prevue' => 'nullable|date|after:date_naissance',
-            'date_vaccination_prevue' => 'nullable|date|after:date_naissance',
+            // ✅ FIX: Use after_or_equal instead of after, and add date_naissance first
+            'date_sevrage_prevue' => 'nullable|date|after_or_equal:date_naissance',
+            'date_vaccination_prevue' => 'nullable|date|after_or_equal:date_naissance',
             'sex_verified' => 'nullable|boolean',
+        ], [
+            // ✅ Add custom error messages
+            'date_sevrage_prevue.after_or_equal' => 'La date de sevrage doit être après la date de naissance',
+            'date_vaccination_prevue.after_or_equal' => 'La date de vaccination doit être après la date de naissance',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -104,9 +117,18 @@ class NaissanceController extends Controller
 
     public function edit(Naissance $naissance)
     {
-        $femelles = Femelle::orderBy('nom')->get();
-        $saillies = Saillie::with('femelle', 'male')->get();
+        // ✅ Load ALL femelles for selection
+        $femelles = Femelle::where('etat', '!=', 'Vide')
+            ->orderBy('nom')
+            ->get();
+
+        // ✅ Load saillies with relationships
+        $saillies = Saillie::with(['femelle', 'male'])
+            ->orderBy('date_saillie', 'desc')
+            ->get();
+
         $miseBas = MiseBas::latest()->get();
+
         return view('naissances.edit', compact('naissance', 'femelles', 'saillies', 'miseBas'));
     }
 
