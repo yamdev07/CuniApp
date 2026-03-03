@@ -180,7 +180,7 @@
               gap: 6px;
               flex: 1;
               justify-content: center;
-              overflow-x: auto;
+              overflow:visible;
               -webkit-overflow-scrolling: touch;
               scrollbar-width: none;
               -ms-overflow-style: none;
