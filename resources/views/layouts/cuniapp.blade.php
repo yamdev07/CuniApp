@@ -977,126 +977,6 @@
               color: var(--primary);
           }
 
-
-          /* ===== FOOTER RESPONSIVE FIX ===== */
-@media (max-width: 1100px) {
-    .footer-container {
-        padding: 0 1.5rem;
-    }
-    .footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-    }
-    .footer-brand {
-        grid-column: 1 / -1;
-        text-align: center;
-    }
-    .footer-logo {
-        justify-content: center;
-    }
-    .footer-tagline {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-}
-
-@media (max-width: 768px) {
-    .footer-container {
-        padding: 0 1.25rem;
-    }
-    .footer-grid {
-        grid-template-columns: 1fr !important; /* ✅ Marque en pleine largeur */
-        gap: 24px;
-    }
-    .footer-brand {
-        grid-column: 1 / -1 !important;
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid var(--surface-border);
-    }
-    .footer-logo {
-        justify-content: center;
-    }
-    .footer-tagline {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-    
-    /* ✅ Les 3 sections en 3 colonnes */
-    .footer-section {
-        grid-column: span 1;
-    }
-    
-    /* ✅ Container pour les 3 colonnes */
-    .footer-grid > .footer-section {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }
-    
-    .footer-section h4 {
-        font-size: 0.9rem;
-        margin-bottom: 12px;
-    }
-    .footer-links li a {
-        font-size: 0.8rem;
-        padding: 3px 0;
-    }
-    .footer-contact-item {
-        font-size: 0.8rem;
-        margin-bottom: 6px;
-    }
-    .footer-bottom {
-        flex-direction: column;
-        text-align: center;
-        gap: 16px;
-        padding: 24px 0 0 0;
-    }
-    .footer-copyright {
-        font-size: 0.8rem;
-        order: 2;
-    }
-    .footer-legal {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 16px;
-        order: 1;
-    }
-    .footer-legal a {
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .footer-container {
-        padding: 0 1rem;
-    }
-    .footer-logo-text {
-        font-size: 1.1rem;
-    }
-    .footer-logo-icon {
-        width: 40px;
-        height: 40px;
-    }
-    
-    /* ✅ 3 colonnes même sur très petit écran */
-    .footer-grid > .footer-section {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-    }
-    
-    .footer-section h4 {
-        font-size: 0.85rem;
-    }
-    .footer-links li a {
-        font-size: 0.75rem;
-    }
-    .footer-contact-item {
-        font-size: 0.75rem;
-    }
-}
-
           .back-to-top {
               position: fixed;
               bottom: 30px;
@@ -1144,11 +1024,6 @@
               gap: 20px;
           }
 
-          @media (max-width: 768px) {
-              .settings-grid {
-                  grid-template-columns: 1fr;
-              }
-          }
 
           .form-section {
               background: var(--surface-alt);
@@ -1171,123 +1046,6 @@
               color: var(--primary);
           }
 
-          /* ===== RESPONSIVE HEADER ===== */
-          @media (max-width: 1280px) {
-              .header-wrapper {
-                  padding: 0 2rem;
-              }
-
-              .brand-tagline {
-                  display: none !important;
-              }
-          }
-
-          @media (max-width: 1100px) {
-              .header-wrapper {
-                  padding: 0 1.5rem;
-                  height: 68px;
-              }
-
-              .nav-main-links {
-                  display: none;
-              }
-
-              .mobile-menu-trigger {
-                  display: block;
-              }
-
-              .user-trigger span {
-                  display: none;
-              }
-
-              .cuni-main {
-                  padding: 20px;
-              }
-
-              .footer-grid {
-                  grid-template-columns: 1fr 1fr;
-                  gap: 30px;
-              }
-          }
-
-          @media (max-width: 768px) {
-              .header-wrapper {
-                  padding: 0 1.25rem;
-                  height: 64px;
-              }
-
-              .brand-info {
-                  min-width: 0;
-              }
-
-              .brand-title {
-                  font-size: 1.05rem;
-              }
-
-              .cuni-main {
-                  padding: 16px;
-              }
-
-              .footer-grid {
-                  grid-template-columns: 1fr;
-                  gap: 30px;
-              }
-
-              .footer-bottom {
-                  flex-direction: column;
-                  text-align: center;
-              }
-
-              .footer-legal {
-                  justify-content: center;
-              }
-
-              .page-header {
-                  flex-direction: column;
-                  align-items: flex-start;
-              }
-
-              .page-title {
-                  font-size: 20px;
-              }
-
-              .card-header-custom {
-                  flex-direction: column;
-                  align-items: flex-start;
-                  gap: 12px;
-              }
-          }
-
-          @media (max-width: 480px) {
-              .header-wrapper {
-                  gap: 10px;
-              }
-
-              .cuniapp-logo {
-                  width: 40px;
-                  height: 40px;
-              }
-
-              .cuniapp-logo svg {
-                  width: 24px;
-                  height: 24px;
-              }
-
-              .brand-title {
-                  font-size: 1rem;
-              }
-
-              .notification-trigger {
-                  width: 38px;
-                  height: 38px;
-              }
-
-              .user-avatar {
-                  width: 30px;
-                  height: 30px;
-                  font-size: 13px;
-              }
-          }
 
           /* Dark mode specific overrides */
           .theme-dark .cuni-header {
@@ -1375,33 +1133,302 @@
               display: none;
           }
 
-          @media (max-width: 1100px) {
-              .d-md-none {
-                  display: block;
-              }
+         /* ===== UTILITAIRES RESPONSIVE ===== */
+.d-none {
+    display: none !important;
+}
 
-              /* Badge notification dans le menu mobile */
-              .mobile-nav-link .notification-badge {
-                  position: static !important;
-                  margin-left: auto;
-                  font-size: 11px;
-                  min-width: 18px;
-                  height: 18px;
-              }
+.d-md-none {
+    display: none;
+}
 
-              /* Avatar utilisateur dans le menu mobile */
-              .mobile-nav-link .user-avatar {
-                  width: 28px;
-                  height: 28px;
-                  font-size: 13px;
-                  margin-right: 8px;
-              }
+.d-md-flex {
+    display: none;
+}
 
-              /* Espacement pour les sous-liens de profil */
-              .mobile-nav-link[style*="padding-left: 52px"] {
-                  padding-left: 52px !important;
-              }
-          }
+@media (max-width: 1100px) {
+    .d-md-none {
+        display: block !important;
+    }
+    .d-md-flex {
+        display: none !important;
+    }
+    
+    /* Badge notification dans le menu mobile */
+    .mobile-nav-link .notification-badge {
+        position: static !important;
+        margin-left: auto;
+        font-size: 11px;
+        min-width: 18px;
+        height: 18px;
+    }
+
+    /* Avatar utilisateur dans le menu mobile */
+    .mobile-nav-link .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+        margin-right: 8px;
+    }
+
+    /* Espacement pour les sous-liens de profil */
+    .mobile-nav-link[style*="padding-left: 52px"] {
+        padding-left: 52px !important;
+    }
+}
+
+@media (min-width: 1101px) {
+    .d-md-none {
+        display: none !important;
+    }
+    .d-md-flex {
+        display: flex !important;
+    }
+}
+
+/* ===== RESPONSIVE HEADER ===== */
+@media (max-width: 1280px) {
+    .header-wrapper {
+        padding: 0 2rem;
+    }
+
+    .brand-tagline {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .header-wrapper {
+        padding: 0 1.5rem;
+        height: 68px;
+    }
+
+    .nav-main-links {
+        display: none !important; /* ✅ Cache le menu desktop */
+    }
+
+    .mobile-menu-trigger {
+        display: block !important; /* ✅ Affiche le burger */
+    }
+
+    .user-trigger span {
+        display: none;
+    }
+
+    .cuni-main {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-wrapper {
+        padding: 0 1.25rem;
+        height: 64px;
+    }
+
+    .brand-info {
+        min-width: 0;
+    }
+
+    .brand-title {
+        font-size: 1.05rem;
+    }
+
+    .cuni-main {
+        padding: 16px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-legal {
+        justify-content: center;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .card-header-custom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-wrapper {
+        gap: 10px;
+    }
+
+    .cuniapp-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .cuniapp-logo svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .brand-title {
+        font-size: 1rem;
+    }
+
+    .notification-trigger {
+        width: 38px;
+        height: 38px;
+    }
+
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+}
+
+/* ===== FOOTER RESPONSIVE FIX ===== */
+@media (max-width: 1100px) {
+    .footer-container {
+        padding: 0 1.5rem;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-tagline {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 0 1.25rem;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px;
+    } 
+
+    .footer-brand {
+        grid-column: 1 / -1 !important;
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--surface-border);
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-tagline {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* ✅ Les 3 sections en 3 colonnes */
+    .footer-section {
+        grid-column: span 1;
+    }
+
+    /* ✅ Container pour les 3 colonnes */
+    .footer-grid > .footer-section {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .footer-links li a {
+        font-size: 0.8rem;
+        padding: 3px 0;
+    }
+
+    .footer-contact-item {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+        padding: 24px 0 0 0;
+    }
+
+    .footer-copyright {
+        font-size: 0.8rem;
+        order: 2;
+    }
+
+    .footer-legal {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        order: 1;
+    }
+
+    .footer-legal a {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 0 1rem;
+    }
+
+    .footer-logo-text {
+        font-size: 1.1rem;
+    }
+
+    .footer-logo-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* ✅ 3 colonnes même sur très petit écran */
+    .footer-grid > .footer-section {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.85rem;
+    }
+
+    .footer-links li a {
+        font-size: 0.75rem;
+    }
+
+    .footer-contact-item {
+        font-size: 0.75rem;
+    }
+}
       </style>
   </head>
 
@@ -1484,7 +1511,7 @@
               </button>
 
               @auth
-                  <div class="nav-user-side" style="display: none;">
+                  <div class="nav-user-side d-none d-md-flex">
                       <a href="{{ route('notifications.index') }}" class="notification-trigger">
                           <i class="bi bi-bell"></i>
                           @php

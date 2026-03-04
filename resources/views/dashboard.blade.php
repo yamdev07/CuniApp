@@ -805,6 +805,14 @@
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
+
+        .timeline-dot.amber {
+            background: var(--accent-orange);
+        }
+
+        .timeline-dot.cyan {
+            background: var(--accent-cyan);
+        }
     </style>
 
     <div class="cuniapp-dashboard">

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Naissance;  
+use App\Models\Naissance;
 use App\Models\Saillie;
 use App\Models\Sale;
+use App\Models\Male;
+use App\Models\Femelle;
+use App\Models\MiseBas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,15 +16,15 @@ class ActiviteController extends Controller
     public function index()
     {
         // Récupérer TOUTES les activités fusionnées
-        
-        // ✅ 1. Naissances (vert) → remplace MiseBas
+
+        // Naissances (vert) → remplace MiseBas
         $naissances = Naissance::with('femelle')
-            ->where('nb_vivant', '>', 0) // ✅ Seulement les naissances avec vivants
+            ->where('nb_vivant', '>', 0) //Seulement les naissances avec vivants
             ->latest('date_naissance')
             ->get()
             ->map(fn($n) => [
                 'type' => 'green',
-                'title' => 'Naissance enregistrée', // ✅ Titre cohérent
+                'title' => 'Naissance enregistrée',
                 'desc' => sprintf(
                     '%s (%d nés)',
                     $n->femelle?->nom ?? 'Inconnue',
@@ -33,7 +36,7 @@ class ActiviteController extends Controller
                 'icon' => 'bi-egg-fill',
             ]);
 
-        // 2. Saillies (violet) → inchangé
+        // Saillies (violet) 
         $saillies = Saillie::with('femelle', 'male')
             ->latest('date_saillie')
             ->get()
@@ -49,23 +52,23 @@ class ActiviteController extends Controller
                 'icon' => 'bi-heart',
             ]);
 
-        // ✅ 3. Alertes : naissances incomplètes (orange) → basé sur Naissance
-        $alertes = Naissance::whereNull('femelle_id')
-            ->orWhereDoesntHave('femelle')
-            ->latest('created_at')
-            ->limit(10) // Limite pour ne pas surcharger
-            ->get()
-            ->map(fn($n) => [
-                'type' => 'orange',
-                'title' => '⚠️ Naissance incomplète',
-                'desc' => "Naissance #{$n->id} sans femelle associée",
-                'time' => Carbon::parse($n->created_at)->diffForHumans(),
-                'date' => $n->created_at,
-                'url' => route('naissances.edit', $n->id),
-                'icon' => 'bi-exclamation-triangle',
-            ]);
+        // Alertes : naissances incomplètes (orange) → basé sur Naissance
+        // $alertes = Naissance::whereNull('femelle_id')
+        //     ->orWhereDoesntHave('femelle')
+        //     ->latest('created_at')
+        //     ->limit(10)
+        //     ->get()
+        //     ->map(fn($n) => [
+        //         'type' => 'orange',
+        //         'title' => '⚠️ Naissance incomplète',
+        //         'desc' => "Naissance #{$n->id} sans femelle associée",
+        //         'time' => Carbon::parse($n->created_at)->diffForHumans(),
+        //         'date' => $n->created_at,
+        //         'url' => route('naissances.edit', $n->id),
+        //         'icon' => 'bi-exclamation-triangle',
+        //     ]);
 
-        // 4. Ventes (bleu) → inchangé
+        // Ventes (bleu)
         $ventes = Sale::latest('created_at')
             ->get()
             ->map(fn($v) => [
@@ -78,24 +81,98 @@ class ActiviteController extends Controller
                 'icon' => 'bi-cart-check',
             ]);
 
+
+
+        // Enregistrement de lapins (cyan)
+        $nouveauxLapins = collect();
+
+        // Mâles enregistrés
+        $nouveauxMales = Male::latest('created_at')->limit(10)->get()
+            ->map(fn($m) => [
+                'type' => 'cyan',
+                'title' => 'Mâle enregistré',
+                'desc' => "{$m->nom} ({$m->code}) - {$m->race}",
+                'time' => Carbon::parse($m->created_at)->diffForHumans(),
+                'date' => $m->created_at,
+                'url' => route('males.show', $m->id),
+                'icon' => 'bi-arrow-up-right-square',
+            ]);
+
+        // Femelles enregistrées
+        $nouvellesFemelles = Femelle::latest('created_at')->limit(10)->get()
+            ->map(fn($f) => [
+                'type' => 'cyan',
+                'title' => 'Femelle enregistrée',
+                'desc' => "{$f->nom} ({$f->code}) - {$f->race}",
+                'time' => Carbon::parse($f->created_at)->diffForHumans(),
+                'date' => $f->created_at,
+                'url' => route('femelles.show', $f->id),
+                'icon' => 'bi-arrow-down-right-square',
+            ]);
+
+        $nouveauxLapins = collect([...$nouveauxMales, ...$nouvellesFemelles]);
+
+
+        // NOUVEAU : Mises Bas (amber/jaune)
+        $misesBas = MiseBas::with('femelle')
+            ->latest('date_mise_bas')
+            ->limit(10)
+            ->get()
+            ->map(fn($m) => [
+                'type' => 'amber',
+                'title' => ' Mise bas enregistrée',
+                'desc' => sprintf(
+                    '%s : %d lapereaux (%d vivants)',
+                    $m->femelle?->nom ?? 'Inconnue',
+                    $m->nb_vivant + ($m->nb_mort_ne ?? 0),
+                    $m->nb_vivant
+                ),
+                'time' => Carbon::parse($m->created_at)->diffForHumans(),
+                'date' => $m->created_at,
+                'url' => route('mises-bas.show', $m->id),
+                'icon' => 'bi-egg',
+            ]);
+
+
         // Fusionner et trier par date décroissante
         $allActivities = collect([
-            ...$naissances->toArray(),    // ✅ Naissances au lieu de MiseBas
+            ...$naissances->toArray(),
             ...$saillies->toArray(),
-            ...$alertes->toArray(),
+            // ...$alertes->toArray(),
             ...$ventes->toArray(),
+            ...$nouveauxLapins->toArray(),
+            ...$misesBas->toArray(),
+
         ])
             ->sortByDesc('date')
             ->values();
+
+        // Après avoir créé $allActivities
+        $filter = request()->get('type');
+
+        if ($filter) {
+            $allActivities = $allActivities->where('type', $filter);
+        }
 
         // Pagination manuelle (20 par page)
         $perPage = 20;
         $currentPage = request()->get('page', 1);
         $paginatedActivities = $allActivities->forPage($currentPage, $perPage);
 
+
+        $stats = [
+            'total' => $allActivities->count(),
+            'naissances' => $allActivities->where('type', 'green')->count(),
+            'saillies' => $allActivities->where('type', 'purple')->count(),
+            'ventes' => $allActivities->where('type', 'blue')->count(),
+            'lapins' => $allActivities->where('type', 'cyan')->count(),
+            'misesBas' => $allActivities->where('type', 'amber')->count(),  // ✅ AJOUT
+
+        ];
         return view('activites.index', [
             'activities' => $paginatedActivities,
-            'total' => $allActivities->count(),
+            'currentFilter' => $filter,
+            'stats' => $stats,
             'currentPage' => $currentPage,
             'perPage' => $perPage,
             'lastPage' => ceil($allActivities->count() / $perPage),
