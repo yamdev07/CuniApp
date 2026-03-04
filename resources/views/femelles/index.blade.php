@@ -107,7 +107,7 @@
                         femelles
                     </div>
                     <nav>
-                        {{ $femelles->links('vendor.pagination.bootstrap-5-sm') }}
+                        {{ $femelles->links('resources/views/pagination/bootstrap-5-sm.blade.php') }}
                     </nav>
                 </div>
             @endif

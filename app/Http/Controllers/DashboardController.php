@@ -89,24 +89,23 @@ class DashboardController extends Controller
                 ->toArray(),
 
             //  Sexuations (bleu) → J+10, SEULEMENT si nb_vivant > 0
-            'sexuations' => \App\Models\Naissance::with('femelle')
-                ->whereNotNull('date_naissance')
-                ->where('nb_vivant', '>', 0) // ✅ FILTRE : uniquement les vivants
-                ->where('sex_verified', false) // Optionnel : seulement les non-vérifiées
+            'sexuations' => \App\Models\Naissance::with('miseBas.femelle')
+                ->whereHas('miseBas', function ($q) {
+                    $q->whereNotNull('date_mise_bas');
+                })
+                ->where('sex_verified', false)
                 ->get()
+                ->filter(fn($n) => $n->nb_vivant > 0)
                 ->map(function ($n) {
-                    $nomAffiche = $n->femelle?->nom
-                        ?? $n->femelle?->tag
-                        ?? null;
-
+                    $nomAffiche = $n->femelle?->nom ?? $n->femelle?->tag ?? null;
+                    $dateNaissance = $n->miseBas?->date_mise_bas;
                     return [
-                        'date' => \Carbon\Carbon::parse($n->date_naissance)->addDays(10)->format('Y-m-d'),
-                        'label' => $nomAffiche
-                            ? "Sexage: {$nomAffiche} (#{$n->id})"
-                            : "Sexage: Portée #{$n->id}",
+                        'date' => $dateNaissance ? \Carbon\Carbon::parse($dateNaissance)->addDays(10)->format('Y-m-d') : null,
+                        'label' => $nomAffiche ? "Sexage: {$nomAffiche} (#{$n->id})" : "Sexage: Portée #{$n->id}",
                         'type' => 'sexuation'
                     ];
                 })
+                ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
         ];
 
