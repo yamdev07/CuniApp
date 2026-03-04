@@ -154,7 +154,7 @@
                                 </td>
                                 <td class="text-muted">
                                     {{ $naissance->date_sevrage_prevue ? $naissance->date_sevrage_prevue->format('d/m/Y') : '-' }}
-                                    @if ($naissance->jours_avant_sevrage ?? 0 > 0 && ($naissance->jours_avant_sevrage ?? 0) <= 7)
+                                    @if (($naissance->jours_avant_sevrage ?? 0) > 0 && ($naissance->jours_avant_sevrage ?? 0) <= 7)
                                         <span class="badge"
                                             style="background: rgba(245, 158, 11, 0.1); color: #F59E0B; font-size: 10px;">J-{{ $naissance->jours_avant_sevrage }}</span>
                                     @endif

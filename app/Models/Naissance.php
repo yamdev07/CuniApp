@@ -27,8 +27,6 @@ class Naissance extends Model
         'is_archived',
         'archived_at',
         'heure_naissance' => 'string',
-        'date_sevrage_prevue' => 'date',
-        'date_vaccination_prevue' => 'date',
     ];
 
     protected $casts = [
@@ -39,6 +37,8 @@ class Naissance extends Model
         'last_reminder_sent_at' => 'datetime',
         'archived_at' => 'datetime',
         'poids_moyen_naissance' => 'decimal:2',
+        'date_sevrage_prevue' => 'date',
+        'date_vaccination_prevue' => 'date',
     ];
 
     public function miseBas(): BelongsTo
