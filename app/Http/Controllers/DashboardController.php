@@ -83,11 +83,6 @@ class DashboardController extends Controller
                 ->get()
                 ->map(fn($n) => [
                     'date' => \Carbon\Carbon::parse($n->date_naissance)->format('Y-m-d'),
-                    // 'label' => sprintf(
-                    //     '%s (%d nés)',
-                    //     $n->femelle?->nom ?? 'Inconnue',
-                    //     $n->nb_vivant ?? 0
-                    // )
 
                     'label' => sprintf('Naissance: %s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0)
                 ])
@@ -121,8 +116,7 @@ class DashboardController extends Controller
         //Récupérer les dernières NAISSANCES (vert) 
         $recentNaissances = Naissance::with('femelle')
             ->where('nb_vivant', '>', 0)
-            ->latest('date_naissance')
-            ->limit(2)
+            ->latest('created_at')
             ->get()
             ->map(fn($n) => [
                 'type' => 'green',
@@ -137,10 +131,10 @@ class DashboardController extends Controller
                 'url' => route('naissances.show', $n->id) ?? '#', // ✅ Route vers Naissance
             ]);
 
-        // 2. Récupérer les dernières saillies (violet) → inchangé
+        // Récupérer les dernières saillies (violet) → inchangé
         $recentSaillies = Saillie::with('femelle', 'male')
             ->latest('date_saillie')
-            ->limit(2)
+            ->limit(1)
             ->get()
             ->map(fn($s) => [
                 'type' => 'purple',
@@ -153,24 +147,9 @@ class DashboardController extends Controller
                 'url' => route('saillies.show', $s->id) ?? '#',
             ]);
 
-        // 3. Alertes : naissances sans femelle liée ou données incomplètes (orange) ⚠️
-        $alertesOrphelines = Naissance::whereNull('femelle_id')
-            ->orWhereDoesntHave('femelle')
-            ->latest('created_at')
-            ->limit(2)
-            ->get()
-            ->map(fn($n) => [
-                'type' => 'orange',
-                'title' => 'Naissance incomplète',
-                'desc' => "Naissance #{$n->id} sans femelle associée",
-                'time' => Carbon::parse($n->created_at)->diffForHumans(),
-                'date' => $n->created_at,
-                'url' => route('naissances.edit', $n->id) ?? '#',
-            ]);
-
-        // 4. Dernières ventes (bleu) → inchangé
+        // Dernières ventes (bleu) → inchangé
         $recentSales = Sale::latest('created_at')
-            ->limit(2)
+            ->limit(1)
             ->get()
             ->map(fn($v) => [
                 'type' => 'blue',
@@ -181,15 +160,61 @@ class DashboardController extends Controller
                 'url' => route('sales.show', $v->id) ?? '#',
             ]);
 
+        $recentMisesBas = MiseBas::with('saillie.femelle')
+            ->latest('date_mise_bas')
+            ->limit(1)
+            ->get()
+            ->map(fn($m) => [
+                'type' => 'amber',
+                'title' => ' Mise bas enregistrée',
+                'desc' => sprintf(
+                    '%s : %d lapereaux',
+                    $m->saillie?->femelle?->nom ?? 'Inconnue',
+                    $m->nb_vivant + ($m->nb_mort_ne ?? 0)
+                ),
+                'time' => Carbon::parse($m->created_at)->diffForHumans(),
+                'date' => $m->created_at,
+                'url' => route('mises-bas.show', $m->id),
+            ]);
+
+        // Nouveaux Lapins (AJOUT) - Mâles et Femelles
+        $nouveauxMales = Male::latest('created_at')
+            ->limit(1)
+            ->get()
+            ->map(fn($m) => [
+                'type' => 'cyan',
+                'title' => 'Mâle enregistré',
+                'desc' => "{$m->nom} ({$m->code}) - {$m->race}",
+                'time' => Carbon::parse($m->created_at)->diffForHumans(),
+                'date' => $m->created_at,
+                'url' => route('males.show', $m->id),
+            ]);
+
+        $nouvellesFemelles = Femelle::latest('created_at')
+            ->limit(1)
+            ->get()
+            ->map(fn($f) => [
+                'type' => 'cyan',
+                'title' => 'Femelle enregistrée',
+                'desc' => "{$f->nom} ({$f->code}) - {$f->race}",
+                'time' => Carbon::parse($f->created_at)->diffForHumans(),
+                'date' => $f->created_at,
+                'url' => route('femelles.show', $f->id),
+            ]);
+
+        $nouveauxLapins = collect([...$nouveauxMales, ...$nouvellesFemelles]);
+
+
         // Fusionner, trier par date décroissante et limiter à 6 items
         $timelineActivities = collect([
-            ...$recentNaissances->toArray(),  
+            ...$recentNaissances->toArray(),
             ...$recentSaillies->toArray(),
-            ...$alertesOrphelines->toArray(),
             ...$recentSales->toArray(),
+            ...$recentMisesBas->toArray(),
+            ...$nouveauxLapins->toArray(),
         ])
             ->sortByDesc('date')
-            ->take(6)
+            ->take(5)
             ->values();
 
 

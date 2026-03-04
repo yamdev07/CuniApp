@@ -18,88 +18,69 @@
         </a>
     </div>
 
-    {{-- Stats rapides --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Total activités</p>
-                        <p class="text-2xl font-bold mt-1">{{ $total }}</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(59, 130, 246, 0.1)">
-                        <i class="bi bi-list-ul text-blue-500 text-lg"></i>
-                    </div>
-                </div>
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Total</p>
+                <p class="text-xl font-bold text-primary">{{ $stats['total'] }}</p>
             </div>
         </div>
         <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Naissances</p>
-                        <p class="text-2xl font-bold mt-1 text-green-600">
-                            {{ $activities->where('title', 'Naissance enregistrée')->count() }}
-                        </p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(16, 185, 129, 0.1)">
-                        <i class="bi bi-egg-fill text-green-500 text-lg"></i>
-                    </div>
-                </div>
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Saillies</p>
+                <p class="text-xl font-bold text-purple-600">{{ $stats['saillies'] }}</p>
             </div>
         </div>
         <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Saillies</p>
-                        <p class="text-2xl font-bold mt-1 text-purple-600">
-                            {{ $activities->where('title', 'Saillie programmée')->count() }}
-                        </p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(139, 92, 246, 0.1)">
-                        <i class="bi bi-heart text-purple-500 text-lg"></i>
-                    </div>
-                </div>
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Mises Bas</p>
+                <p class="text-xl font-bold" style="color: var(--accent-orange)">{{ $stats['misesBas'] }}</p>
             </div>
         </div>
         <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Ventes</p>
-                        <p class="text-2xl font-bold mt-1 text-blue-600">
-                            {{ $activities->where('title', 'Vente enregistrée')->count() }}
-                        </p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(59, 130, 246, 0.1)">
-                        <i class="bi bi-cart text-blue-500 text-lg"></i>
-                    </div>
-                </div>
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Naissances</p>
+                <p class="text-xl font-bold text-green-600">{{ $stats['naissances'] }}</p>
+            </div>
+        </div>
+
+        <div class="cuni-card">
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Ventes</p>
+                <p class="text-xl font-bold text-blue-600">{{ $stats['ventes'] }}</p>
+            </div>
+        </div>
+        <div class="cuni-card">
+            <div class="card-body p-3 text-center">
+                <p class="text-xs text-gray-500">Nouveaux lapins</p>
+                <p class="text-xl font-bold" style="color: var(--accent-cyan)">{{ $stats['lapins'] }}</p>
             </div>
         </div>
     </div>
 
-    {{-- Filtres par type --}}
     <div class="cuni-card mb-6">
         <div class="card-body">
             <div class="flex gap-2 flex-wrap">
-                <a href="?type=" class="btn-cuni sm {{ !request('type') ? 'primary' : 'secondary' }}">Tous</a>
-                <a href="?type=green" class="btn-cuni sm {{ request('type') === 'green' ? 'primary' : 'secondary' }}">
-                    <i class="bi bi-egg-fill"></i> Mises bas
+                <a href="?type=" class="btn-cuni sm {{ !$currentFilter ? 'primary' : 'secondary' }}">
+                    <i class="bi bi-list-ul"></i> Tous
                 </a>
-                <a href="?type=purple" class="btn-cuni sm {{ request('type') === 'purple' ? 'primary' : 'secondary' }}">
+                <a href="?type=purple" class="btn-cuni sm {{ $currentFilter === 'purple' ? 'primary' : 'secondary' }}">
                     <i class="bi bi-heart"></i> Saillies
                 </a>
-                <a href="?type=blue" class="btn-cuni sm {{ request('type') === 'blue' ? 'primary' : 'secondary' }}">
+                <a href="?type=amber" class="btn-cuni sm {{ $currentFilter === 'amber' ? 'primary' : 'secondary' }}">
+                    <i class="bi bi-egg"></i> Mises Bas
+                </a>
+                <a href="?type=green" class="btn-cuni sm {{ $currentFilter === 'green' ? 'primary' : 'secondary' }}">
+                    <i class="bi bi-egg-fill"></i> Naissances
+                </a>
+                <a href="?type=blue" class="btn-cuni sm {{ $currentFilter === 'blue' ? 'primary' : 'secondary' }}">
                     <i class="bi bi-cart"></i> Ventes
                 </a>
-                <a href="?type=orange" class="btn-cuni sm {{ request('type') === 'orange' ? 'primary' : 'secondary' }}">
+                {{-- <a href="?type=orange" class="btn-cuni sm {{ $currentFilter === 'orange' ? 'primary' : 'secondary' }}">
                     <i class="bi bi-exclamation-triangle"></i> Alertes
+                </a> --}}
+                <a href="?type=cyan" class="btn-cuni sm {{ $currentFilter === 'cyan' ? 'primary' : 'secondary' }}">
+                    <i class="bi bi-collection"></i> Nouveaux Lapins
                 </a>
             </div>
         </div>
@@ -179,6 +160,7 @@
         </div>
     </div>
 
+
     <style>
         .timeline {
             display: flex;
@@ -231,6 +213,14 @@
 
         .timeline-dot.blue {
             background: #3B82F6;
+        }
+
+        .timeline-dot.cyan {
+            background: var(--accent-cyan, #06B6D4);
+        }
+
+        .timeline-dot.amber {
+            background: var(--accent-orange);
         }
 
         .timeline-title {
