@@ -171,8 +171,11 @@
             </div>
             <div class="card-body">
                 @php
-                    $pendingVerifications = \App\Models\Naissance::pendingVerification()
-                        ->orderBy('date_naissance', 'asc')
+                    // ✅ NEW - Order by relationship's date
+$pendingVerifications = \App\Models\Naissance::pendingVerification()
+    ->join('mises_bas', 'naissances.mise_bas_id', '=', 'mises_bas.id')
+    ->orderBy('mises_bas.date_mise_bas', 'asc') // ← Use mise_bas date
+    ->select('naissances.*')
                         ->limit(5)
                         ->get();
                     $totalPending = \App\Models\Naissance::pendingVerification()->count();
