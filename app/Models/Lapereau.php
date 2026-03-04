@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,12 +8,41 @@ class Lapereau extends Model
 {
     use HasFactory;
 
+    protected $table = 'lapereaux';
+
     protected $fillable = [
-        'mise_bas_id', 'age_semaines', 'categorie', 'alimentation_jour', 'alimentation_semaine'
+        'naissance_id', // ✅ NEW
+        'mise_bas_id',
+        'sex',          // ✅ NEW
+        'nom',          // ✅ NEW
+        'code',         // ✅ NEW
+        'etat',         // ✅ NEW
+        'age_semaines',
+        'categorie',
+        'alimentation_jour',
+        'alimentation_semaine'
     ];
 
-    public function miseBas()
+    protected $casts = [
+        'date_naissance' => 'date', // If added later
+    ];
+
+    public function naissance() { 
+        return $this->belongsTo(Naissance::class); 
+    }
+
+    public function miseBas() { 
+        return $this->belongsTo(MiseBas::class); 
+    }
+    
+    // Auto-generate code if not set
+    public static function boot()
     {
-        return $this->belongsTo(MiseBas::class);
+        parent::boot();
+        static::creating(function ($lapereau) {
+            if (empty($lapereau->code)) {
+                $lapereau->code = 'LAP-' . strtoupper(uniqid());
+            }
+        });
     }
 }
