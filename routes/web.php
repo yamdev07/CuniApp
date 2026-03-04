@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaleController;
+use App\Http\Controllers\ActiviteController;
 use App\Http\Controllers\FemelleController;
 use App\Http\Controllers\SaillieController;
 use App\Http\Controllers\MiseBasController;
@@ -218,6 +219,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
         Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+        // Historique des activités
+        Route::get('/activites', [ActiviteController::class, 'index'])->name('activites.index');
     });
 
     // ========================================================================
@@ -351,3 +355,5 @@ Route::bind('sale', function ($value) {
 // ========================================================================
 // 💡 PRODUCTION: Run `php artisan route:cache` after deployment
 // ⚠️ All routes use Controller@method syntax for cache compatibility
+
+
