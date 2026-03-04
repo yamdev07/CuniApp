@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,13 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Lapereau extends Model {
     protected $table = 'lapereaux';
-
+    
     protected $fillable = [
         'naissance_id',
         'code',
         'nom',
         'sex',
         'etat',
+        'poids_naissance',      // ✅ NOUVEAU: Poids individuel (grammes)
+        'etat_sante',            // ✅ NOUVEAU: Santé individuelle
+        'observations',          // ✅ NOUVEAU: Observations individuelles
         'categorie',
         'alimentation_jour',
         'alimentation_semaine',
@@ -22,6 +26,8 @@ class Lapereau extends Model {
     protected $casts = [
         'sex' => 'string',
         'etat' => 'string',
+        'etat_sante' => 'string',
+        'poids_naissance' => 'decimal:2',
     ];
 
     public function naissance(): BelongsTo {
@@ -40,10 +46,9 @@ class Lapereau extends Model {
         return $this->hasOneThrough(Saillie::class, MiseBas::class, 'id', 'id', 'naissance_id', 'saillie_id');
     }
 
-    // ✅ AUTO-GENERATE CODE (like Males/Femelles)
+    // ✅ AUTO-GENERATE CODE (but allow override)
     public static function boot() {
         parent::boot();
-        
         static::creating(function ($lapereau) {
             if (empty($lapereau->code)) {
                 $lapereau->code = self::generateUniqueCode();
@@ -55,7 +60,6 @@ class Lapereau extends Model {
     public static function generateUniqueCode(): string {
         $year = date('Y');
         $prefix = "LAP-{$year}-";
-        
         $lastLapereau = self::where('code', 'LIKE', "{$prefix}%")
             ->orderBy('code', 'desc')
             ->first();
@@ -70,6 +74,15 @@ class Lapereau extends Model {
         return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
+    // ✅ Check if code is unique (for validation)
+    public static function isCodeUnique(string $code, ?int $excludeId = null): bool {
+        $query = self::where('code', $code);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+        return !$query->exists();
+    }
+
     // ✅ Get birth date from naissance
     public function getDateNaissanceAttribute(): ?\Carbon\Carbon {
         return $this->naissance?->date_naissance;
@@ -79,5 +92,11 @@ class Lapereau extends Model {
     public function getAgeSemainesAttribute(): int {
         if (!$this->date_naissance) return 0;
         return floor($this->date_naissance->diffInDays(now()) / 7);
+    }
+
+    // ✅ Get age in days
+    public function getAgeJoursAttribute(): int {
+        if (!$this->date_naissance) return 0;
+        return $this->date_naissance->diffInDays(now());
     }
 }

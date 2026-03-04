@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -9,11 +10,11 @@ use Carbon\Carbon;
 
 class Naissance extends Model {
     protected $table = 'naissances';
-
+    
     protected $fillable = [
         'mise_bas_id',
-        'poids_moyen_naissance',
-        'etat_sante',
+        'poids_moyen_naissance',  // Garder pour moyenne de la portée
+        'etat_sante',              // Garder pour état général de la portée
         'observations',
         'date_sevrage_prevue',
         'date_vaccination_prevue',
@@ -40,12 +41,27 @@ class Naissance extends Model {
         return $this->belongsTo(MiseBas::class);
     }
 
+    // ✅ CORRECTION: Get femelle through mise_bas (NOT direct femelle_id)
     public function femelle(): HasOneThrough {
-        return $this->hasOneThrough(Femelle::class, MiseBas::class, 'id', 'id', 'mise_bas_id', 'femelle_id');
+        return $this->hasOneThrough(
+            Femelle::class,
+            MiseBas::class,
+            'id',           // Foreign key on mises_bas table
+            'id',           // Foreign key on femelles table
+            'mise_bas_id',  // Local key on naissances table
+            'femelle_id'    // Local key on mises_bas table
+        );
     }
 
     public function saillie(): HasOneThrough {
-        return $this->hasOneThrough(Saillie::class, MiseBas::class, 'id', 'id', 'mise_bas_id', 'saillie_id');
+        return $this->hasOneThrough(
+            Saillie::class,
+            MiseBas::class,
+            'id',
+            'id',
+            'mise_bas_id',
+            'saillie_id'
+        );
     }
 
     public function lapereaux(): HasMany {
@@ -83,7 +99,19 @@ class Naissance extends Model {
         return $this->lapereaux()->where('etat', 'mort')->count();
     }
 
-    // ✅ SCOPE: Pending verification (not verified + older than 10 days)
+    // ✅ CALCULATED: Sold rabbits
+    public function getNbVenduAttribute(): int {
+        return $this->lapereaux()->where('etat', 'vendu')->count();
+    }
+
+    // ✅ CALCULATED: Survival rate
+    public function getTauxSurvieAttribute(): float {
+        $total = $this->total_lapereaux;
+        if ($total === 0) return 0;
+        return round(($this->nb_vivant / $total) * 100, 2);
+    }
+
+    // ✅ SCOPE: Pending verification
     public function scopePendingVerification($query) {
         return $query->where('sex_verified', false)
             ->where('is_archived', false)
@@ -103,5 +131,21 @@ class Naissance extends Model {
             'sex_verified' => true,
             'sex_verified_at' => now(),
         ]);
+    }
+
+    // ✅ VALIDATION: Get max allowed lapereaux from mise_bas
+    public function getMaxAllowedLapereauxAttribute(): int {
+        if (!$this->miseBas) return 0;
+        
+        // Get from mise_bas counts (if they exist)
+        $vivant = $this->miseBas->nb_vivant ?? 0;
+        $mortNe = $this->miseBas->nb_mort_ne ?? 0;
+        
+        // If mise_bas doesn't have counts, calculate from existing lapereaux
+        if ($vivant === 0 && $mortNe === 0) {
+            return $this->lapereaux()->count();
+        }
+        
+        return $vivant + $mortNe;
     }
 }
