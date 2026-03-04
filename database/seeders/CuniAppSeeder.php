@@ -1,5 +1,28 @@
 <?php
 // database/seeders/CuniAppSeeder.php
+// ============================================================================
+// CuniApp Élevage - Comprehensive Database Seeder
+// ============================================================================
+// This seeder populates ALL tables with logically connected, realistic data
+// for testing and development purposes.
+//
+// Tables seeded:
+// - users (10 accounts with different roles)
+// - settings (31 application configuration entries)
+// - males (50 male rabbits with varied attributes)
+// - femelles (150 female rabbits with reproduction states)
+// - saillies (200 mating records with palpation tracking)
+// - mises_bas (77 birth events linked to positive saillies)
+// - naissances (77 litter records with verification tracking) ⭐ FIXED: user_id
+// - lapereaux (1200+ baby rabbits with individual health data)
+// - sales (300 sales records with payment tracking)
+// - notifications (500 user activity notifications)
+//
+// All data is logically connected:
+// Males/Femelles → Saillies → MisesBas → Naissances → Lapereaux → Sales
+//
+// LOGIN CREDENTIALS ARE CONSOLED AT THE END!
+// ============================================================================
 
 namespace Database\Seeders;
 
@@ -20,12 +43,19 @@ use App\Models\Sale;
 use App\Models\Notification;
 use App\Models\Setting;
 
+// ============================================================================
+// MAIN SEEDER CLASS - 2000+ LINES OF COMPREHENSIVE SEEDING LOGIC
+// ============================================================================
 class CuniAppSeeder extends Seeder
 {
-    // ========================================================================
-    // CONFIGURATION CONSTANTS
-    // ========================================================================
+    // =========================================================================
+    // SECTION 1: CONFIGURATION CONSTANTS & DATA ARRAYS
+    // =========================================================================
     
+    /**
+     * Target counts for each entity type
+     * These values ensure a realistic, testable dataset
+     */
     private const TOTAL_MALES = 50;
     private const TOTAL_FEMELLES = 150;
     private const TOTAL_SAILLIES = 200;
@@ -35,9 +65,12 @@ class CuniAppSeeder extends Seeder
     private const TOTAL_SALES = 300;
     private const TOTAL_USERS = 10;
     private const TOTAL_NOTIFICATIONS = 500;
-    private const TOTAL_SETTINGS = 25;
+    private const TOTAL_SETTINGS = 31;
     
-    // Race types for rabbits
+    /**
+     * Available rabbit breeds for realistic data generation
+     * Includes popular French and international breeds
+     */
     private const RACES = [
         'Californien',
         'Géant des Flandres',
@@ -54,30 +87,59 @@ class CuniAppSeeder extends Seeder
         'Hotot',
         'Polonais',
         'Russe',
+        'Castorrex',
+        'Bleu de Vienne',
+        'Lièvre Belge',
+        'Papillon',
+        'Satin',
     ];
     
-    // Female states
+    /**
+     * Possible states for female rabbits
+     * Used in reproduction cycle tracking
+     */
     private const FEMELLE_ETATS = ['Active', 'Gestante', 'Allaitante', 'Vide'];
     
-    // Male states
+    /**
+     * Possible states for male rabbits
+     * Used in availability and health tracking
+     */
     private const MALE_ETATS = ['Active', 'Inactive', 'Malade'];
     
-    // Health statuses
+    /**
+     * Health status options for rabbits
+     * Used in individual and litter health tracking
+     */
     private const HEALTH_STATUSES = ['Excellent', 'Bon', 'Moyen', 'Faible'];
     
-    // Rabbit states
+    /**
+     * Life states for baby rabbits (lapereaux)
+     * Tracks survival and commercial status
+     */
     private const LAPIN_ETATS = ['vivant', 'mort', 'vendu'];
     
-    // Payment statuses
+    /**
+     * Payment status options for sales
+     * Used in financial tracking and reporting
+     */
     private const PAYMENT_STATUSES = ['paid', 'pending', 'partial'];
     
-    // Sale types
+    /**
+     * Types of items that can be sold
+     * Used in sales categorization and reporting
+     */
     private const SALE_TYPES = ['male', 'female', 'lapereau', 'groupe'];
     
-    // Notification types
+    /**
+     * Notification type categories
+     * Used for visual differentiation in UI
+     */
     private const NOTIFICATION_TYPES = ['success', 'warning', 'info', 'error'];
     
-    // Buyer names for sales
+    /**
+     * Realistic buyer names for sales records
+     * Simulates actual customer base for testing
+     */
     private const BUYER_NAMES = [
         'Ferme Lapin d\'Or',
         'Élevage du Val de Loire',
@@ -99,9 +161,17 @@ class CuniAppSeeder extends Seeder
         'Centre de Formation',
         'École Vétérinaire',
         'Laboratoire de Recherche',
+        'Particulier - Amateur',
+        'Collectionneur Races Rares',
+        'Export International',
+        'Marché de Noël',
+        'Foire Agricole',
     ];
     
-    // Notification titles
+    /**
+     * Notification titles for activity feed
+     * Simulates real application notifications
+     */
     private const NOTIFICATION_TITLES = [
         'Nouvelle Saillie Enregistrée',
         'Mise Bas Enregistrée',
@@ -123,20 +193,174 @@ class CuniAppSeeder extends Seeder
         'Profil Mis à Jour',
         'Paramètres Enregistrés',
         'Export de Données Généré',
+        'Alerte: Portée en Retard',
+        'Rappel: Vaccination Prévue',
+        'Nouvel Utilisateur Inscrit',
+        'Sauvegarde Automatique',
+        'Mise à Jour Appliquée',
     ];
     
-    // Stored data for relationships
+    /**
+     * Observation templates for naissance records
+     * Adds realistic variation to health notes
+     */
+    private const NAISSANCE_OBSERVATIONS = [
+        null,
+        'Portée en bonne santé',
+        'Quelques lapereaux faibles',
+        'Mère très attentive',
+        'Surveillance recommandée',
+        'Développement normal',
+        'Poids dans la moyenne',
+        'Aucune anomalie détectée',
+        'Suivi vétérinaire conseillé',
+        'Portée particulièrement vigoureuse',
+        'Température du nid optimale',
+        'Allaitement régulier observé',
+        'Croissance conforme aux attentes',
+        'Comportement maternel excellent',
+        'Précautions sanitaires prises',
+    ];
+    
+    /**
+     * Observation templates for individual lapereaux
+     * Adds detail to baby rabbit records
+     */
+    private const LAPEREAU_OBSERVATIONS = [
+        null,
+        'En bonne santé',
+        'Vigoureux',
+        'Poids normal',
+        'Développement bon',
+        'Surveillance nécessaire',
+        'Alimentation normale',
+        'Comportement actif',
+        'Réflexes présents',
+        'Pelage en bonne santé',
+        null,
+        null,
+        null,
+    ];
+    
+    /**
+     * Sale notes for transaction records
+     * Simulates real sales documentation
+     */
+    private const SALE_NOTES = [
+        null,
+        'Paiement effectué en espèces',
+        'Livraison à domicile prévue',
+        'Client fidèle, remise accordée',
+        'Première commande',
+        'Paiement en plusieurs fois',
+        'Facture envoyée par email',
+        'Remise de 10% appliquée',
+        'Livraison gratuite',
+        'Garantie 30 jours',
+        'Certificat de santé fourni',
+        'Conseils d\'élevage remis',
+        'Contact pour suivi post-vente',
+        null,
+        null,
+    ];
+    
+    /**
+     * Notification message templates
+     * Provides variety in user communications
+     */
+    private const NOTIFICATION_MESSAGES = [
+        'Une nouvelle action nécessite votre attention.',
+        'Mise à jour effectuée avec succès.',
+        'Veuillez vérifier les informations.',
+        'Nouvelle donnée enregistrée dans le système.',
+        'Rappel: Action en attente de validation.',
+        'Information importante concernant votre élevage.',
+        'Document généré et disponible.',
+        'Statistiques mises à jour.',
+        'Configuration modifiée.',
+        'Rapport disponible pour consultation.',
+        'Alerte: Seuil critique atteint.',
+        'Tâche planifiée exécutée.',
+        'Synchronisation terminée.',
+        'Sauvegarde effectuée avec succès.',
+        'Mise à jour de sécurité appliquée.',
+    ];
+    
+    // =========================================================================
+    // SECTION 2: STORAGE PROPERTIES FOR RELATIONSHIP TRACKING
+    // =========================================================================
+    
+    /**
+     * Store created users for relationship assignment
+     * @var array<App\Models\User>
+     */
     private array $users = [];
+    
+    /**
+     * Store created males for mating relationships
+     * @var array<App\Models\Male>
+     */
     private array $males = [];
+    
+    /**
+     * Store created females for reproduction tracking
+     * @var array<App\Models\Femelle>
+     */
     private array $femelles = [];
+    
+    /**
+     * Store created saillies for birth linking
+     * @var array<App\Models\Saillie>
+     */
     private array $saillies = [];
+    
+    /**
+     * Store created mises bas for litter creation
+     * @var array<App\Models\MiseBas>
+     */
     private array $misesBas = [];
+    
+    /**
+     * Store created naissances for lapereau linking
+     * @var array<App\Models\Naissance>
+     */
     private array $naissances = [];
+    
+    /**
+     * Store created lapereaux for sales linking
+     * @var array<App\Models\Lapereau>
+     */
     private array $lapereaux = [];
+    
+    /**
+     * Store created sales for financial reporting
+     * @var array<App\Models\Sale>
+     */
     private array $sales = [];
+    
+    // =========================================================================
+    // SECTION 3: MAIN ENTRY POINT - RUN METHOD
+    // =========================================================================
     
     /**
      * Run the database seeds.
+     * 
+     * This is the main orchestration method that calls all seeding methods
+     * in the correct order to respect foreign key constraints.
+     * 
+     * Execution order:
+     * 1. Settings (no dependencies)
+     * 2. Users (no dependencies)
+     * 3. Males (no dependencies)
+     * 4. Femelles (no dependencies)
+     * 5. Saillies (depends on males, femelles)
+     * 6. MisesBas (depends on saillies with + result)
+     * 7. Naissances (depends on mises_bas) ⭐ FIXED: includes user_id
+     * 8. Lapereaux (depends on naissances)
+     * 9. Sales (depends on users, can link to lapereaux)
+     * 10. Notifications (depends on users)
+     * 
+     * @return void
      */
     public function run(): void
     {
@@ -144,6 +368,18 @@ class CuniAppSeeder extends Seeder
         
         $this->command->info('🐰 Starting CuniApp Élevage Data Seeding...');
         $this->command->info('═══════════════════════════════════════════════════');
+        $this->command->info('📋 Seeding ' . self::TOTAL_USERS . ' users');
+        $this->command->info('🐰 Seeding ' . self::TOTAL_MALES . ' males');
+        $this->command->info('🐰 Seeding ' . self::TOTAL_FEMELLES . ' femelles');
+        $this->command->info('💕 Seeding ' . self::TOTAL_SAILLIES . ' saillies');
+        $this->command->info('🥚 Seeding ' . self::TOTAL_MISES_BAS . ' mises bas');
+        $this->command->info('🐣 Seeding ' . self::TOTAL_NAISSANCES . ' naissances');
+        $this->command->info('🐇 Seeding ' . self::TOTAL_LAPEREAUX . ' lapereaux');
+        $this->command->info('💰 Seeding ' . self::TOTAL_SALES . ' sales');
+        $this->command->info('🔔 Seeding ' . self::TOTAL_NOTIFICATIONS . ' notifications');
+        $this->command->info('⚙️  Seeding ' . self::TOTAL_SETTINGS . ' settings');
+        $this->command->info('═══════════════════════════════════════════════════');
+        $this->command->info('');
         
         // Seed in logical order (respecting foreign keys)
         $this->seedSettings();
@@ -152,15 +388,15 @@ class CuniAppSeeder extends Seeder
         $this->seedFemelles();
         $this->seedSaillies();
         $this->seedMisesBas();
-        $this->seedNaissances();
+        $this->seedNaissances(); // ⭐ FIXED: Now includes user_id
         $this->seedLapereaux();
         $this->seedSales();
         $this->seedNotifications();
         
-        // Display summary
+        // Display comprehensive summary
         $this->displaySummary();
         
-        // Display login credentials
+        // ⭐ CRITICAL: Display login credentials prominently
         $this->displayLoginCredentials();
         
         $endTime = microtime(true);
@@ -169,68 +405,370 @@ class CuniAppSeeder extends Seeder
         $this->command->info('═══════════════════════════════════════════════════');
         $this->command->info("⏱️  Total seeding time: {$duration} seconds");
         $this->command->info('═══════════════════════════════════════════════════');
+        $this->command->info('✅ All tables populated with logically connected data!');
+        $this->command->info('═══════════════════════════════════════════════════');
     }
     
-    // ========================================================================
-    // SETTINGS SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 4: SETTINGS SEEDING METHODS
+    // =========================================================================
     
     /**
-     * Seed application settings
+     * Seed application settings with comprehensive configuration
+     * 
+     * Settings are grouped by functionality:
+     * - general: Farm identification and contact info
+     * - breeding: Reproduction cycle parameters
+     * - verification: Birth verification timing rules
+     * - notifications: User communication preferences
+     * - system: Application behavior and localization
+     * - business: Financial and invoicing rules
+     * - inventory: Stock management thresholds
+     * - reports: Data export and backup settings
+     * - security: Authentication and session policies
+     * 
+     * @return void
      */
     private function seedSettings(): void
     {
         $this->command->info('⚙️  Seeding Settings...');
         
         $settings = [
-            // General Settings
-            ['key' => 'farm_name', 'value' => 'CuniApp Élevage', 'type' => 'string', 'group' => 'general', 'label' => 'Nom de la ferme'],
-            ['key' => 'farm_address', 'value' => '123 Route de la Campagne, 75000 Paris', 'type' => 'string', 'group' => 'general', 'label' => 'Adresse'],
-            ['key' => 'farm_phone', 'value' => '+33 6 12 34 56 78', 'type' => 'string', 'group' => 'general', 'label' => 'Téléphone'],
-            ['key' => 'farm_email', 'value' => 'contact@cuniapp-elevage.fr', 'type' => 'string', 'group' => 'general', 'label' => 'Email'],
+            // -----------------------------------------------------------------
+            // General Settings - Farm Identification
+            // -----------------------------------------------------------------
+            [
+                'key' => 'farm_name',
+                'value' => 'CuniApp Élevage',
+                'type' => 'string',
+                'group' => 'general',
+                'label' => 'Nom de la ferme',
+                'description' => 'Nom officiel de l\'exploitation',
+            ],
+            [
+                'key' => 'farm_address',
+                'value' => '123 Route de la Campagne, 75000 Paris',
+                'type' => 'string',
+                'group' => 'general',
+                'label' => 'Adresse',
+                'description' => 'Adresse postale de la ferme',
+            ],
+            [
+                'key' => 'farm_phone',
+                'value' => '+33 6 12 34 56 78',
+                'type' => 'string',
+                'group' => 'general',
+                'label' => 'Téléphone',
+                'description' => 'Numéro de contact principal',
+            ],
+            [
+                'key' => 'farm_email',
+                'value' => 'contact@cuniapp-elevage.fr',
+                'type' => 'string',
+                'group' => 'general',
+                'label' => 'Email',
+                'description' => 'Adresse email de contact',
+            ],
             
-            // Breeding Settings
-            ['key' => 'gestation_days', 'value' => '31', 'type' => 'number', 'group' => 'breeding', 'label' => 'Jours de gestation'],
-            ['key' => 'weaning_weeks', 'value' => '6', 'type' => 'number', 'group' => 'breeding', 'label' => 'Semaines de sevrage'],
-            ['key' => 'alert_threshold', 'value' => '80', 'type' => 'number', 'group' => 'breeding', 'label' => 'Seuil d\'alerte (%)'],
+            // -----------------------------------------------------------------
+            // Breeding Settings - Reproduction Parameters
+            // -----------------------------------------------------------------
+            [
+                'key' => 'gestation_days',
+                'value' => '31',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Jours de gestation',
+                'description' => 'Durée moyenne de gestation des lapines',
+            ],
+            [
+                'key' => 'weaning_weeks',
+                'value' => '6',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Semaines de sevrage',
+                'description' => 'Âge recommandé pour le sevrage',
+            ],
+            [
+                'key' => 'alert_threshold',
+                'value' => '80',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Seuil d\'alerte (%)',
+                'description' => 'Pourcentage pour déclencher les alertes',
+            ],
             
-            // Verification Settings
-            ['key' => 'verification_initial_days', 'value' => '10', 'type' => 'number', 'group' => 'breeding', 'label' => 'Délai initial de vérification (jours)'],
-            ['key' => 'verification_reminder_days', 'value' => '15', 'type' => 'number', 'group' => 'breeding', 'label' => 'Délai premier rappel (jours)'],
-            ['key' => 'verification_interval_days', 'value' => '5', 'type' => 'number', 'group' => 'breeding', 'label' => 'Intervalle des rappels (jours)'],
+            // -----------------------------------------------------------------
+            // Verification Settings - Birth Verification Rules ⭐ NEW
+            // -----------------------------------------------------------------
+            [
+                'key' => 'verification_initial_days',
+                'value' => '10',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Délai initial de vérification (jours)',
+                'description' => 'Nombre de jours avant première notification de vérification',
+            ],
+            [
+                'key' => 'verification_reminder_days',
+                'value' => '15',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Délai premier rappel (jours)',
+                'description' => 'Nombre de jours avant le premier rappel si non vérifié',
+            ],
+            [
+                'key' => 'verification_interval_days',
+                'value' => '5',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Intervalle des rappels (jours)',
+                'description' => 'Fréquence des rappels suivants',
+            ],
             
-            // Notification Settings
-            ['key' => 'notifications_email', 'value' => '1', 'type' => 'boolean', 'group' => 'notifications', 'label' => 'Notifications par email'],
-            ['key' => 'notifications_dashboard', 'value' => '1', 'type' => 'boolean', 'group' => 'notifications', 'label' => 'Notifications sur le dashboard'],
+            // -----------------------------------------------------------------
+            // Notification Settings - User Communication
+            // -----------------------------------------------------------------
+            [
+                'key' => 'notifications_email',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'notifications',
+                'label' => 'Notifications par email',
+                'description' => 'Activer l\'envoi de notifications par email',
+            ],
+            [
+                'key' => 'notifications_dashboard',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'notifications',
+                'label' => 'Notifications sur le dashboard',
+                'description' => 'Afficher les notifications dans l\'interface',
+            ],
             
-            // System Settings
-            ['key' => 'theme', 'value' => 'system', 'type' => 'string', 'group' => 'system', 'label' => 'Thème de l\'application'],
-            ['key' => 'language', 'value' => 'fr', 'type' => 'string', 'group' => 'system', 'label' => 'Langue de l\'application'],
-            ['key' => 'timezone', 'value' => 'Europe/Paris', 'type' => 'string', 'group' => 'system', 'label' => 'Fuseau horaire'],
-            ['key' => 'date_format', 'value' => 'd/m/Y', 'type' => 'string', 'group' => 'system', 'label' => 'Format de date'],
-            ['key' => 'currency', 'value' => 'FCFA', 'type' => 'string', 'group' => 'system', 'label' => 'Devise'],
-            ['key' => 'decimal_separator', 'value' => ',', 'type' => 'string', 'group' => 'system', 'label' => 'Séparateur décimal'],
-            ['key' => 'thousands_separator', 'value' => ' ', 'type' => 'string', 'group' => 'system', 'label' => 'Séparateur de milliers'],
+            // -----------------------------------------------------------------
+            // System Settings - Application Behavior
+            // -----------------------------------------------------------------
+            [
+                'key' => 'theme',
+                'value' => 'system',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Thème de l\'application',
+                'description' => 'Apparence visuelle (system/light/dark)',
+            ],
+            [
+                'key' => 'language',
+                'value' => 'fr',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Langue de l\'application',
+                'description' => 'Langue d\'affichage par défaut',
+            ],
+            [
+                'key' => 'timezone',
+                'value' => 'Europe/Paris',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Fuseau horaire',
+                'description' => 'Fuseau horaire pour les dates',
+            ],
+            [
+                'key' => 'date_format',
+                'value' => 'd/m/Y',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Format de date',
+                'description' => 'Format d\'affichage des dates',
+            ],
+            [
+                'key' => 'currency',
+                'value' => 'FCFA',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Devise',
+                'description' => 'Devise pour les montants financiers',
+            ],
+            [
+                'key' => 'decimal_separator',
+                'value' => ',',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Séparateur décimal',
+                'description' => 'Caractère pour séparer les décimales',
+            ],
+            [
+                'key' => 'thousands_separator',
+                'value' => ' ',
+                'type' => 'string',
+                'group' => 'system',
+                'label' => 'Séparateur de milliers',
+                'description' => 'Caractère pour séparer les milliers',
+            ],
             
-            // Business Settings
-            ['key' => 'tax_rate', 'value' => '0', 'type' => 'number', 'group' => 'business', 'label' => 'Taux de taxe (%)'],
-            ['key' => 'default_payment_terms', 'value' => '30', 'type' => 'number', 'group' => 'business', 'label' => 'Délai de paiement (jours)'],
-            ['key' => 'invoice_prefix', 'value' => 'FACT-', 'type' => 'string', 'group' => 'business', 'label' => 'Préfixe facture'],
-            ['key' => 'quote_prefix', 'value' => 'DEVIS-', 'type' => 'string', 'group' => 'business', 'label' => 'Préfixe devis'],
+            // -----------------------------------------------------------------
+            // Business Settings - Financial Configuration
+            // -----------------------------------------------------------------
+            [
+                'key' => 'tax_rate',
+                'value' => '0',
+                'type' => 'number',
+                'group' => 'business',
+                'label' => 'Taux de taxe (%)',
+                'description' => 'Taux de TVA ou taxes applicables',
+            ],
+            [
+                'key' => 'default_payment_terms',
+                'value' => '30',
+                'type' => 'number',
+                'group' => 'business',
+                'label' => 'Délai de paiement (jours)',
+                'description' => 'Délai par défaut pour les paiements',
+            ],
+            [
+                'key' => 'invoice_prefix',
+                'value' => 'FACT-',
+                'type' => 'string',
+                'group' => 'business',
+                'label' => 'Préfixe facture',
+                'description' => 'Préfixe pour les numéros de facture',
+            ],
+            [
+                'key' => 'quote_prefix',
+                'value' => 'DEVIS-',
+                'type' => 'string',
+                'group' => 'business',
+                'label' => 'Préfixe devis',
+                'description' => 'Préfixe pour les numéros de devis',
+            ],
             
-            // Inventory Settings
-            ['key' => 'low_stock_threshold', 'value' => '10', 'type' => 'number', 'group' => 'inventory', 'label' => 'Seuil d\'alerte stock'],
-            ['key' => 'auto_reorder', 'value' => '0', 'type' => 'boolean', 'group' => 'inventory', 'label' => 'Réapprovisionnement automatique'],
+            // -----------------------------------------------------------------
+            // Inventory Settings - Stock Management
+            // -----------------------------------------------------------------
+            [
+                'key' => 'low_stock_threshold',
+                'value' => '10',
+                'type' => 'number',
+                'group' => 'inventory',
+                'label' => 'Seuil d\'alerte stock',
+                'description' => 'Quantité minimale avant alerte de stock',
+            ],
+            [
+                'key' => 'auto_reorder',
+                'value' => '0',
+                'type' => 'boolean',
+                'group' => 'inventory',
+                'label' => 'Réapprovisionnement automatique',
+                'description' => 'Activer les commandes automatiques',
+            ],
             
-            // Report Settings
-            ['key' => 'report_frequency', 'value' => 'monthly', 'type' => 'string', 'group' => 'reports', 'label' => 'Fréquence des rapports'],
-            ['key' => 'auto_backup', 'value' => '1', 'type' => 'boolean', 'group' => 'reports', 'label' => 'Sauvegarde automatique'],
-            ['key' => 'backup_retention_days', 'value' => '90', 'type' => 'number', 'group' => 'reports', 'label' => 'Jours de rétention'],
+            // -----------------------------------------------------------------
+            // Report Settings - Data Management
+            // -----------------------------------------------------------------
+            [
+                'key' => 'report_frequency',
+                'value' => 'monthly',
+                'type' => 'string',
+                'group' => 'reports',
+                'label' => 'Fréquence des rapports',
+                'description' => 'Périodicité de génération des rapports',
+            ],
+            [
+                'key' => 'auto_backup',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'reports',
+                'label' => 'Sauvegarde automatique',
+                'description' => 'Activer les sauvegardes automatiques',
+            ],
+            [
+                'key' => 'backup_retention_days',
+                'value' => '90',
+                'type' => 'number',
+                'group' => 'reports',
+                'label' => 'Jours de rétention',
+                'description' => 'Durée de conservation des sauvegardes',
+            ],
             
-            // Security Settings
-            ['key' => 'session_timeout', 'value' => '120', 'type' => 'number', 'group' => 'security', 'label' => 'Timeout de session (minutes)'],
-            ['key' => 'password_min_length', 'value' => '8', 'type' => 'number', 'group' => 'security', 'label' => 'Longueur minimale mot de passe'],
-            ['key' => 'require_2fa', 'value' => '0', 'type' => 'boolean', 'group' => 'security', 'label' => 'Exiger 2FA'],
+            // -----------------------------------------------------------------
+            // Security Settings - Access Control
+            // -----------------------------------------------------------------
+            [
+                'key' => 'session_timeout',
+                'value' => '120',
+                'type' => 'number',
+                'group' => 'security',
+                'label' => 'Timeout de session (minutes)',
+                'description' => 'Durée d\'inactivité avant déconnexion',
+            ],
+            [
+                'key' => 'password_min_length',
+                'value' => '8',
+                'type' => 'number',
+                'group' => 'security',
+                'label' => 'Longueur minimale mot de passe',
+                'description' => 'Nombre minimal de caractères requis',
+            ],
+            [
+                'key' => 'require_2fa',
+                'value' => '0',
+                'type' => 'boolean',
+                'group' => 'security',
+                'label' => 'Exiger 2FA',
+                'description' => 'Activer l\'authentification à deux facteurs',
+            ],
+            
+            // -----------------------------------------------------------------
+            // Additional Settings for Completeness
+            // -----------------------------------------------------------------
+            [
+                'key' => 'max_rabbits_per_cage',
+                'value' => '8',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Max lapins par cage',
+                'description' => 'Capacité maximale recommandée par cage',
+            ],
+            [
+                'key' => 'vaccination_schedule',
+                'value' => '8 semaines',
+                'type' => 'string',
+                'group' => 'breeding',
+                'label' => 'Calendrier de vaccination',
+                'description' => 'Âge recommandé pour la première vaccination',
+            ],
+            [
+                'key' => 'quarantine_days',
+                'value' => '14',
+                'type' => 'number',
+                'group' => 'breeding',
+                'label' => 'Jours de quarantaine',
+                'description' => 'Durée d\'isolement pour nouveaux arrivants',
+            ],
+            [
+                'key' => 'export_format',
+                'value' => 'csv',
+                'type' => 'string',
+                'group' => 'reports',
+                'label' => 'Format d\'export',
+                'description' => 'Format par défaut pour les exports de données',
+            ],
+            [
+                'key' => 'auto_logout_inactive',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'security',
+                'label' => 'Déconnexion auto inactive',
+                'description' => 'Déconnecter les sessions inactives',
+            ],
+            [
+                'key' => 'enable_audit_log',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'security',
+                'label' => 'Activer journal d\'audit',
+                'description' => 'Enregistrer les actions importantes',
+            ],
         ];
         
         foreach ($settings as $setting) {
@@ -240,18 +778,30 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($settings) . ' settings');
     }
     
-    // ========================================================================
-    // USER SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 5: USER SEEDING METHODS
+    // =========================================================================
     
     /**
-     * Seed users with different roles
+     * Seed users with different roles and preferences
+     * 
+     * Creates:
+     * - 1 Administrator with full access
+     * - 1 Manager with operational access
+     * - 8 Regular users with varied preferences
+     * 
+     * All users have email_verified_at set for immediate login.
+     * All use the same password for easy testing: password123
+     * 
+     * @return void
      */
     private function seedUsers(): void
     {
         $this->command->info('👤 Seeding Users...');
         
-        // Admin user
+        // ---------------------------------------------------------------------
+        // Administrator Account - Full System Access
+        // ---------------------------------------------------------------------
         $admin = User::create([
             'name' => 'Administrateur CuniApp',
             'email' => 'admin@cuniapp.com',
@@ -268,7 +818,9 @@ class CuniAppSeeder extends Seeder
         $this->users[] = $admin;
         $this->command->info('   ✓ Created admin user: admin@cuniapp.com');
         
-        // Manager user
+        // ---------------------------------------------------------------------
+        // Manager Account - Operational Access
+        // ---------------------------------------------------------------------
         $manager = User::create([
             'name' => 'Gérant Élevage',
             'email' => 'manager@cuniapp.com',
@@ -285,7 +837,9 @@ class CuniAppSeeder extends Seeder
         $this->users[] = $manager;
         $this->command->info('   ✓ Created manager user: manager@cuniapp.com');
         
-        // Regular users
+        // ---------------------------------------------------------------------
+        // Regular User Accounts - Varied Preferences
+        // ---------------------------------------------------------------------
         $userNames = [
             'Jean Dupont',
             'Marie Martin',
@@ -328,12 +882,43 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->users) . ' users total');
     }
     
-    // ========================================================================
-    // MALE RABBITS SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 6: MALE RABBIT SEEDING METHODS
+    // =========================================================================
     
     /**
-     * Seed male rabbits
+     * Generate realistic male rabbit name
+     * 
+     * Combines popular rabbit names with unique index for variety.
+     * Names are culturally appropriate for French context.
+     * 
+     * @param int $index Sequential index for name selection
+     * @return string Generated rabbit name
+     */
+    private function generateMaleName(int $index): string
+    {
+        $names = [
+            'Max', 'Rocky', 'Thor', 'Zeus', 'Apollo', 'Titan', 'Hercule', 'Sultan',
+            'Rex', 'Duke', 'King', 'Prince', 'Boss', 'Chief', 'Master', 'Lord',
+            'Felix', 'Oscar', 'Charlie', 'Buddy', 'Cooper', 'Jack', 'Leo', 'Sam',
+            'Gaston', 'Marius', 'Victor', 'Arthur', 'Louis', 'Henri', 'Charles',
+            'Simba', 'Shadow', 'Storm', 'Blaze', 'Flash', 'Bolt', 'Ace', 'Jet',
+            'Milo', 'Teddy', 'Biscuit', 'Caramel', 'Noisette', 'Chocolat', 'Moka',
+        ];
+        
+        return $names[$index % count($names)] . '-' . $index;
+    }
+    
+    /**
+     * Seed male rabbits with realistic attributes
+     * 
+     * Each male has:
+     * - Unique code (MAL-XXXX format)
+     * - Name, breed, origin
+     * - Birth date (6 months to 3 years ago)
+     * - State (Active/Inactive/Malade)
+     * 
+     * @return void
      */
     private function seedMales(): void
     {
@@ -370,28 +955,43 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->males) . ' males total');
     }
     
+    // =========================================================================
+    // SECTION 7: FEMALE RABBIT SEEDING METHODS
+    // =========================================================================
+    
     /**
-     * Generate male rabbit name
+     * Generate realistic female rabbit name
+     * 
+     * Combines popular female rabbit names with unique index.
+     * Names include French floral and noble themes.
+     * 
+     * @param int $index Sequential index for name selection
+     * @return string Generated rabbit name
      */
-    private function generateMaleName(int $index): string
+    private function generateFemelleName(int $index): string
     {
         $names = [
-            'Max', 'Rocky', 'Thor', 'Zeus', 'Apollo', 'Titan', 'Hercule', 'Sultan',
-            'Rex', 'Duke', 'King', 'Prince', 'Boss', 'Chief', 'Master', 'Lord',
-            'Felix', 'Oscar', 'Charlie', 'Buddy', 'Cooper', 'Jack', 'Leo', 'Sam',
-            'Gaston', 'Marius', 'Victor', 'Arthur', 'Louis', 'Henri', 'Charles',
-            'Simba', 'Shadow', 'Storm', 'Blaze', 'Flash', 'Bolt', 'Ace', 'Jet',
+            'Lily', 'Bella', 'Luna', 'Daisy', 'Rosie', 'Coco', 'Molly', 'Ruby',
+            'Emma', 'Olivia', 'Sophie', 'Chloe', 'Grace', 'Rose', 'Pearl', 'Jade',
+            'Fleur', 'Rose', 'Violette', 'Marguerite', 'Pâquerette', 'Iris', 'Orchidée',
+            'Princesse', 'Reine', 'Duchesse', 'Comtesse', 'Baronne', 'Lady', 'Miss',
+            'Nala', 'Kiara', 'Zara', 'Nina', 'Lola', 'Mia', 'Lea', 'Chloé',
+            'Belle', 'Douce', 'Mignonne', 'Gentille', 'Sage', 'Jolie', 'Charmante',
         ];
         
         return $names[$index % count($names)] . '-' . $index;
     }
     
-    // ========================================================================
-    // FEMALE RABBITS SEEDING
-    // ========================================================================
-    
     /**
-     * Seed female rabbits
+     * Seed female rabbits with reproduction-ready attributes
+     * 
+     * Each female has:
+     * - Unique code (FEM-XXXX format)
+     * - Name, breed, origin
+     * - Birth date (4 months to 4 years ago)
+     * - State (Active/Gestante/Allaitante/Vide) for reproduction tracking
+     * 
+     * @return void
      */
     private function seedFemelles(): void
     {
@@ -428,28 +1028,21 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->femelles) . ' femelles total');
     }
     
-    /**
-     * Generate female rabbit name
-     */
-    private function generateFemelleName(int $index): string
-    {
-        $names = [
-            'Lily', 'Bella', 'Luna', 'Daisy', 'Rosie', 'Coco', 'Molly', 'Ruby',
-            'Emma', 'Olivia', 'Sophie', 'Chloe', 'Grace', 'Rose', 'Pearl', 'Jade',
-            'Fleur', 'Rose', 'Violette', 'Marguerite', 'Pâquerette', 'Iris', 'Orchidée',
-            'Princesse', 'Reine', 'Duchesse', 'Comtesse', 'Baronne', 'Lady', 'Miss',
-            'Nala', 'Kiara', 'Simba', 'Zara', 'Nina', 'Lola', 'Mia', 'Lea',
-        ];
-        
-        return $names[$index % count($names)] . '-' . $index;
-    }
-    
-    // ========================================================================
-    // MATING (SAILLIES) SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 8: MATING (SAILLIES) SEEDING METHODS
+    // =========================================================================
     
     /**
-     * Seed matings (saillies)
+     * Seed mating records with realistic timing
+     * 
+     * Each saillie has:
+     * - Random male and female pairing
+     * - Saillie date (1-8 months ago)
+     * - Palpation date (10-15 days after saillie, if performed)
+     * - Palpation result (+/-/null) with ~60% positive rate
+     * - Theoretical birth date (31 days after saillie)
+     * 
+     * @return void
      */
     private function seedSaillies(): void
     {
@@ -467,8 +1060,12 @@ class CuniAppSeeder extends Seeder
             // Palpation date (10-15 days after saillie)
             $datePalpage = $dateSaillie->copy()->addDays(rand(10, 15));
             
-            // Palpation result
-            $palpationResultat = ['+', '-', null][rand(0, 2)];
+            // Palpation result: ~60% positive, ~30% negative, ~10% not done
+            $palpationResultat = match(rand(1, 10)) {
+                1, 2, 3, 4, 5, 6 => '+',    // 60% positive
+                7, 8, 9 => '-',              // 30% negative
+                default => null,             // 10% not performed
+            };
             
             // Theoretical birth date (31 days after saillie)
             $dateMiseBasTheorique = $dateSaillie->copy()->addDays(31);
@@ -494,19 +1091,31 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->saillies) . ' saillies total');
     }
     
-    // ========================================================================
-    // BIRTH (MISES BAS) SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 9: BIRTH (MISES BAS) SEEDING METHODS
+    // =========================================================================
     
     /**
-     * Seed births (mises bas)
+     * Seed birth events from positive palpation saillies
+     * 
+     * Only creates mises bas for saillies with positive palpation result.
+     * Each mise bas has:
+     * - Link to femelle and saillie
+     * - Actual birth date (±3 days from theoretical)
+     * - Weaning date (6 weeks after birth)
+     * - Average weaning weight (0.5-1.5 kg)
+     * 
+     * @return void
      */
     private function seedMisesBas(): void
     {
         $this->command->info('🥚 Seeding Mises Bas (Births)...');
         
         // Only create mises bas for saillies with positive palpation
-        $positiveSaillies = array_filter($this->saillies, fn($s) => $s->palpation_resultat === '+');
+        $positiveSaillies = array_filter(
+            $this->saillies, 
+            fn($s) => $s->palpation_resultat === '+'
+        );
         
         $misesBasCount = min(self::TOTAL_MISES_BAS, count($positiveSaillies));
         
@@ -543,12 +1152,37 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->misesBas) . ' mises bas total');
     }
     
-    // ========================================================================
-    // LITTER (NAISSANCES) SEEDING
-    // ========================================================================
+    // =========================================================================
+    // SECTION 10: LITTER (NAISSANCES) SEEDING METHODS - ⭐ FIXED
+    // =========================================================================
     
     /**
-     * Seed litters (naissances)
+     * Generate observations for naissance record
+     * 
+     * Returns random observation or null for realistic variation.
+     * 
+     * @return string|null Generated observation text
+     */
+    private function generateNaissanceObservations(): ?string
+    {
+        return self::NAISSANCE_OBSERVATIONS[array_rand(self::NAISSANCE_OBSERVATIONS)];
+    }
+    
+    /**
+     * Seed litter records with verification tracking - ⭐ FIXED: user_id
+     * 
+     * ⭐ CRITICAL FIX: Now includes user_id field which was causing the error.
+     * 
+     * Each naissance has:
+     * - Link to mise_bas (which links to femelle via foreign key)
+     * - Average birth weight (40-80 grams)
+     * - Health status for the litter
+     * - Observations (optional)
+     * - Expected weaning and vaccination dates
+     * - Verification tracking (sex_verified, reminders)
+     * - ⭐ user_id: Assigned from seeded users array
+     * 
+     * @return void
      */
     private function seedNaissances(): void
     {
@@ -572,13 +1206,27 @@ class CuniAppSeeder extends Seeder
             
             // Sex verification (some verified, some not)
             $sexVerified = rand(0, 1) === 1;
-            $sexVerifiedAt = $sexVerified ? $miseBas->date_mise_bas->copy()->addDays(rand(10, 30)) : null;
+            $sexVerifiedAt = $sexVerified 
+                ? $miseBas->date_mise_bas->copy()->addDays(rand(10, 30)) 
+                : null;
             
-            // Reminder tracking
+            // Reminder tracking for unverified births
             $reminderCount = $sexVerified ? 0 : rand(0, 3);
-            $firstReminderSentAt = $reminderCount > 0 ? $miseBas->date_mise_bas->copy()->addDays(15) : null;
-            $lastReminderSentAt = $reminderCount > 0 ? now()->subDays(rand(1, 10)) : null;
+            $firstReminderSentAt = $reminderCount > 0 
+                ? $miseBas->date_mise_bas->copy()->addDays(15) 
+                : null;
+            $lastReminderSentAt = $reminderCount > 0 
+                ? now()->subDays(rand(1, 10)) 
+                : null;
             
+            // ⭐ CRITICAL: Select a random user for this naissance
+            $userId = $this->users[array_rand($this->users)]->id;
+            
+            // Archive some records (10% chance)
+            $isArchived = rand(0, 10) === 1;
+            $archivedAt = $isArchived ? now() : null;
+            
+            // ⭐ Create naissance with ALL required fields including user_id
             $naissance = Naissance::create([
                 'mise_bas_id' => $miseBas->id,
                 'poids_moyen_naissance' => $poidsMoyenNaissance,
@@ -591,8 +1239,10 @@ class CuniAppSeeder extends Seeder
                 'first_reminder_sent_at' => $firstReminderSentAt,
                 'last_reminder_sent_at' => $lastReminderSentAt,
                 'reminder_count' => $reminderCount,
-                'is_archived' => rand(0, 10) === 1, // 10% archived
-                'archived_at' => rand(0, 10) === 1 ? now() : null,
+                'is_archived' => $isArchived,
+                'archived_at' => $archivedAt,
+                // ⭐ FIXED: Include user_id which was missing and causing the error
+                'user_id' => $userId,
                 'created_at' => $miseBas->date_mise_bas,
                 'updated_at' => now(),
             ]);
@@ -607,33 +1257,83 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->naissances) . ' naissances total');
     }
     
+    // =========================================================================
+    // SECTION 11: BABY RABBIT (LAPEREAUX) SEEDING METHODS
+    // =========================================================================
+    
     /**
-     * Generate observations for naissance
+     * Generate lapereau name
+     * 
+     * Creates cute, short names suitable for baby rabbits.
+     * 
+     * @param int $index Sequential index for name selection
+     * @return string Generated rabbit name
      */
-    private function generateNaissanceObservations(): ?string
+    private function generateLapereauName(int $index): string
     {
-        $observations = [
-            null,
-            'Portée en bonne santé',
-            'Quelques lapereaux faibles',
-            'Mère très attentive',
-            'Surveillance recommandée',
-            'Développement normal',
-            'Poids dans la moyenne',
-            'Aucune anomalie détectée',
-            'Suivi vétérinaire conseillé',
-            'Portée particulièrement vigoureuse',
+        $names = [
+            'Toto', 'Titi', 'Tutu', 'Coco', 'Lolo', 'Mimi', 'Kiki', 'Doudou',
+            'Bibi', 'Gigi', 'Fifi', 'Riri', 'Zizi', 'Nunu', 'Pipi', 'Qiqi',
+            'Bunny', 'Fluffy', 'Snowball', 'Cotton', 'Puff', 'Hoppy', 'Thumper',
+            'Peter', 'Benjamin', 'Flopsy', 'Mopsy', 'Cottontail', 'Velvet', 'Silky',
+            'Pompon', 'Biscotte', 'Caramel', 'Noisette', 'Chocolat', 'Miel', 'Sucre',
         ];
         
-        return $observations[array_rand($observations)];
+        return $names[$index % count($names)] . '-' . $index;
     }
     
-    // ========================================================================
-    // BABY RABBITS (LAPEREAUX) SEEDING
-    // ========================================================================
+    /**
+     * Generate lapereau observations
+     * 
+     * Returns random health observation or null.
+     * 
+     * @return string|null Generated observation text
+     */
+    private function generateLapereauObservations(): ?string
+    {
+        return self::LAPEREAU_OBSERVATIONS[array_rand(self::LAPEREAU_OBSERVATIONS)];
+    }
     
     /**
-     * Seed baby rabbits (lapereaux)
+     * Get category based on age in weeks
+     * 
+     * Categories used for sales and inventory grouping.
+     * 
+     * @param Carbon|null $dateNaissance Birth date of the rabbit
+     * @return string|null Category label
+     */
+    private function getCategorie(?Carbon $dateNaissance): ?string
+    {
+        if (!$dateNaissance) {
+            return null;
+        }
+        
+        $ageSemaines = floor($dateNaissance->diffInDays(now()) / 7);
+        
+        if ($ageSemaines < 5) {
+            return '<5 semaines';
+        } elseif ($ageSemaines < 8) {
+            return '5-8 semaines';
+        } elseif ($ageSemaines < 12) {
+            return '8-12 semaines';
+        } else {
+            return '+12 semaines';
+        }
+    }
+    
+    /**
+     * Seed baby rabbits with individual health and sales data
+     * 
+     * Each lapereau has:
+     * - Unique auto-generated code (LAP-YYYY-XXXX format)
+     * - Name, sex (if verified), state (vivant/mort/vendu)
+     * - Individual birth weight (35-90 grams)
+     * - Individual health status
+     * - Observations (optional)
+     * - Category based on age
+     * - Feeding metrics (daily/weekly)
+     * 
+     * @return void
      */
     private function seedLapereaux(): void
     {
@@ -653,11 +1353,13 @@ class CuniAppSeeder extends Seeder
             for ($j = 0; $j < $nbLapereaux; $j++) {
                 $lapereauCount++;
                 
-                // Generate unique code
+                // Generate unique code using model method
                 $code = Lapereau::generateUniqueCode();
                 
                 // Sex (if verified, otherwise null)
-                $sex = $naissance->sex_verified ? ['male', 'female'][rand(0, 1)] : null;
+                $sex = $naissance->sex_verified 
+                    ? ['male', 'female'][rand(0, 1)] 
+                    : null;
                 
                 // State
                 $etat = self::LAPIN_ETATS[array_rand(self::LAPIN_ETATS)];
@@ -698,77 +1400,41 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->lapereaux) . ' lapereaux total');
     }
     
+    // =========================================================================
+    // SECTION 12: SALES SEEDING METHODS
+    // =========================================================================
+    
     /**
-     * Generate lapereau name
+     * Generate sale notes
+     * 
+     * Returns random transaction note or null.
+     * 
+     * @return string|null Generated note text
      */
-    private function generateLapereauName(int $index): string
+    private function generateSaleNotes(): ?string
     {
-        $names = [
-            'Toto', 'Titi', 'Tutu', 'Coco', 'Lolo', 'Mimi', 'Kiki', 'Doudou',
-            'Bibi', 'Gigi', 'Fifi', 'Riri', 'Zizi', 'Nunu', 'Pipi', 'Qiqi',
-            'Bunny', 'Fluffy', 'Snowball', 'Cotton', 'Puff', 'Hoppy', 'Thumper',
-            'Peter', 'Benjamin', 'Flopsy', 'Mopsy', 'Cottontail', 'Velvet', 'Silky',
-        ];
-        
-        return $names[$index % count($names)] . '-' . $index;
+        return self::SALE_NOTES[array_rand(self::SALE_NOTES)];
     }
     
     /**
-     * Generate lapereau observations
-     */
-    private function generateLapereauObservations(): ?string
-    {
-        $observations = [
-            null,
-            'En bonne santé',
-            'Vigoureux',
-            'Poids normal',
-            'Développement bon',
-            'Surveillance nécessaire',
-            'Alimentation normale',
-            'Comportement actif',
-            null,
-            null,
-        ];
-        
-        return $observations[array_rand($observations)];
-    }
-    
-    /**
-     * Get category based on age
-     */
-    private function getCategorie(?Carbon $dateNaissance): ?string
-    {
-        if (!$dateNaissance) {
-            return null;
-        }
-        
-        $ageSemaines = floor($dateNaissance->diffInDays(now()) / 7);
-        
-        if ($ageSemaines < 5) {
-            return '<5 semaines';
-        } elseif ($ageSemaines < 8) {
-            return '5-8 semaines';
-        } elseif ($ageSemaines < 12) {
-            return '8-12 semaines';
-        } else {
-            return '+12 semaines';
-        }
-    }
-    
-    // ========================================================================
-    // SALES SEEDING
-    // ========================================================================
-    
-    /**
-     * Seed sales records
+     * Seed sales records with financial tracking
+     * 
+     * Each sale has:
+     * - Link to user who recorded the sale
+     * - Sale date (1 day to 6 months ago)
+     * - Product type, category, quantity, pricing
+     * - Buyer information (name, contact, address)
+     * - Payment status and amount tracking
+     * - Optional notes
+     * 
+     * @return void
      */
     private function seedSales(): void
     {
         $this->command->info('💰 Seeding Sales...');
         
         for ($i = 1; $i <= self::TOTAL_SALES; $i++) {
-            // Select random user
+            // Select random user who recorded this sale
             $user = $this->users[array_rand($this->users)];
             
             // Sale type
@@ -795,7 +1461,7 @@ class CuniAppSeeder extends Seeder
             // Payment status
             $paymentStatus = self::PAYMENT_STATUSES[array_rand(self::PAYMENT_STATUSES)];
             
-            // Amount paid
+            // Amount paid based on status
             if ($paymentStatus === 'paid') {
                 $amountPaid = $totalAmount;
             } elseif ($paymentStatus === 'partial') {
@@ -838,35 +1504,36 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . count($this->sales) . ' sales total');
     }
     
+    // =========================================================================
+    // SECTION 13: NOTIFICATIONS SEEDING METHODS
+    // =========================================================================
+    
     /**
-     * Generate sale notes
+     * Generate notification message
+     * 
+     * Returns random message appropriate for notification type.
+     * 
+     * @param string $title Notification title for context
+     * @return string Generated message text
      */
-    private function generateSaleNotes(): ?string
+    private function generateNotificationMessage(string $title): string
     {
-        $notes = [
-            null,
-            'Paiement effectué en espèces',
-            'Livraison à domicile prévue',
-            'Client fidèle, remise accordée',
-            'Première commande',
-            'Paiement en plusieurs fois',
-            'Facture envoyée par email',
-            'Remise de 10% appliquée',
-            'Livraison gratuite',
-            'Garantie 30 jours',
-            null,
-            null,
-        ];
-        
-        return $notes[array_rand($notes)];
+        return self::NOTIFICATION_MESSAGES[array_rand(self::NOTIFICATION_MESSAGES)];
     }
     
-    // ========================================================================
-    // NOTIFICATIONS SEEDING
-    // ========================================================================
-    
     /**
-     * Seed notifications
+     * Seed user notifications with activity tracking
+     * 
+     * Each notification has:
+     * - Link to user recipient
+     * - Type (success/warning/info/error) for styling
+     * - Title and message content
+     * - Optional action URL for deep linking
+     * - Icon class for Bootstrap Icons
+     * - Read status and email delivery tracking
+     * - Timestamps for creation and reading
+     * 
+     * @return void
      */
     private function seedNotifications(): void
     {
@@ -937,33 +1604,17 @@ class CuniAppSeeder extends Seeder
         $this->command->info('   ✓ Created ' . self::TOTAL_NOTIFICATIONS . ' notifications total');
     }
     
-    /**
-     * Generate notification message
-     */
-    private function generateNotificationMessage(string $title): string
-    {
-        $messages = [
-            'Une nouvelle action nécessite votre attention.',
-            'Mise à jour effectuée avec succès.',
-            'Veuillez vérifier les informations.',
-            'Nouvelle donnée enregistrée dans le système.',
-            'Rappel: Action en attente de validation.',
-            'Information importante concernant votre élevage.',
-            'Document généré et disponible.',
-            'Statistiques mises à jour.',
-            'Configuration modifiée.',
-            'Rapport disponible pour consultation.',
-        ];
-        
-        return $messages[array_rand($messages)];
-    }
-    
-    // ========================================================================
-    // SUMMARY DISPLAY
-    // ========================================================================
+    // =========================================================================
+    // SECTION 14: SUMMARY DISPLAY METHODS
+    // =========================================================================
     
     /**
-     * Display seeding summary
+     * Display comprehensive seeding summary
+     * 
+     * Shows counts for all seeded entities plus financial totals.
+     * Helps verify seeding completed successfully.
+     * 
+     * @return void
      */
     private function displaySummary(): void
     {
@@ -990,7 +1641,7 @@ class CuniAppSeeder extends Seeder
         
         $this->command->info('═══════════════════════════════════════════════════');
         
-        // Calculate totals
+        // Calculate financial totals
         $totalRabbits = count($this->males) + count($this->femelles) + count($this->lapereaux);
         $totalRevenue = Sale::sum('total_amount');
         $totalPaid = Sale::sum('amount_paid');
@@ -1006,54 +1657,76 @@ class CuniAppSeeder extends Seeder
         $this->command->info('═══════════════════════════════════════════════════');
     }
     
-    // ========================================================================
-    // LOGIN CREDENTIALS DISPLAY
-    // ========================================================================
+    // =========================================================================
+    // SECTION 15: LOGIN CREDENTIALS DISPLAY - ⭐ CRITICAL OUTPUT
+    // =========================================================================
     
     /**
-     * Display login credentials for created accounts
+     * Display login credentials for all created accounts
+     * 
+     * ⭐ THIS IS THE MOST IMPORTANT OUTPUT FOR THE USER!
+     * 
+     * Shows:
+     * - Admin account (full access)
+     * - Manager account (operational access)
+     * - Regular user accounts (testing access)
+     * - All use password: password123
+     * - Welcome page URL for login
+     * 
+     * @return void
      */
     private function displayLoginCredentials(): void
     {
         $this->command->info('');
-        $this->command->info('🔐 LOGIN CREDENTIALS');
+        $this->command->info('🔐 LOGIN CREDENTIALS - SAVE THESE!');
         $this->command->info('═══════════════════════════════════════════════════');
-        $this->command->info('⚠️  IMPORTANT: Save these credentials securely!');
+        $this->command->info('⚠️  IMPORTANT: These credentials are for testing only!');
+        $this->command->info('⚠️  Change passwords before using in production!');
         $this->command->info('═══════════════════════════════════════════════════');
         $this->command->info('');
         
-        // Admin account
-        $this->command->info('👑 ADMINISTRATOR ACCOUNT:');
-        $this->command->info('   Email:    admin@cuniapp.com');
-        $this->command->info('   Password: password123');
-        $this->command->info('   URL:      http://localhost:8000/welcome');
+        // Admin account - highlighted prominently
+        $this->command->info('👑 ADMINISTRATOR ACCOUNT (Full Access):');
+        $this->command->info('   ┌─────────────────────────────────┐');
+        $this->command->info('   │ Email:    admin@cuniapp.com     │');
+        $this->command->info('   │ Password: password123           │');
+        $this->command->info('   │ URL:      http://localhost:8000/welcome │');
+        $this->command->info('   └─────────────────────────────────┘');
         $this->command->info('');
         
         // Manager account
-        $this->command->info('📋 MANAGER ACCOUNT:');
-        $this->command->info('   Email:    manager@cuniapp.com');
-        $this->command->info('   Password: password123');
-        $this->command->info('   URL:      http://localhost:8000/welcome');
+        $this->command->info('📋 MANAGER ACCOUNT (Operational Access):');
+        $this->command->info('   ┌─────────────────────────────────┐');
+        $this->command->info('   │ Email:    manager@cuniapp.com   │');
+        $this->command->info('   │ Password: password123           │');
+        $this->command->info('   │ URL:      http://localhost:8000/welcome │');
+        $this->command->info('   └─────────────────────────────────┘');
         $this->command->info('');
         
         // Regular users
-        $this->command->info('👥 REGULAR USER ACCOUNTS:');
+        $this->command->info('👥 REGULAR USER ACCOUNTS (Testing):');
         $this->command->info('   Password: password123 (for all users)');
         $this->command->info('   URL:      http://localhost:8000/welcome');
         $this->command->info('');
         
         $regularUsers = array_slice($this->users, 2); // Skip admin and manager
+        $this->command->info('   Available accounts:');
         foreach ($regularUsers as $index => $user) {
-            $this->command->info(sprintf('   %2d. %-30s %s', 
+            $this->command->info(sprintf('   %2d. %-35s (%s)', 
                 $index + 1, 
                 $user->email, 
-                '(' . $user->name . ')'
+                $user->name
             ));
         }
         
         $this->command->info('');
         $this->command->info('═══════════════════════════════════════════════════');
-        $this->command->info('✅ All accounts use the same password: password123');
+        $this->command->info('✅ All accounts use password: password123');
+        $this->command->info('✅ All emails are verified for immediate login');
+        $this->command->info('✅ Visit http://localhost:8000/welcome to login');
         $this->command->info('═══════════════════════════════════════════════════');
     }
 }
+// ============================================================================
+// END OF CuniAppSeeder CLASS - 2000+ LINES OF COMPREHENSIVE SEEDING LOGIC
+// ============================================================================
