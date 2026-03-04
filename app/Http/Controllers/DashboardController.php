@@ -75,15 +75,15 @@ class DashboardController extends Controller
                 ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
 
-            // ✅ Naissances (vert) → SEULEMENT si nb_vivant > 0
-            'naissances' => \App\Models\Naissance::select('id', 'date_naissance', 'femelle_id', 'nb_vivant')
-                ->with('femelle')
-                ->whereNotNull('date_naissance')
-                ->where('nb_vivant', '>', 0) // ✅ FILTRE : uniquement les vivants
+            // ✅ NEW CODE (use accessors)
+            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+                ->whereHas('miseBas', function ($q) {
+                    $q->whereNotNull('date_mise_bas');
+                })
                 ->get()
+                ->filter(fn($n) => $n->nb_vivant > 0)
                 ->map(fn($n) => [
-                    'date' => \Carbon\Carbon::parse($n->date_naissance)->format('Y-m-d'),
-
+                    'date' => $n->date_naissance?->format('Y-m-d'),
                     'label' => sprintf('Naissance: %s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0)
                 ])
                 ->toArray(),
@@ -239,6 +239,4 @@ class DashboardController extends Controller
             'timelineActivities'
         ));
     }
-
-
 }
