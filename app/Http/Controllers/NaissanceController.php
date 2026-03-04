@@ -197,10 +197,21 @@ class NaissanceController extends Controller
 
     public function archive(Naissance $naissance)
     {
+        $femelleName = $naissance->femelle->nom ?? 'Inconnue';
+
         $naissance->update([
             'is_archived' => true,
             'archived_at' => now(),
         ]);
+
+        // Notification
+        $this->notifyUser([
+            'type' => 'warning',
+            'title' => '🗑️ Naissance Archivée',
+            'message' => "La naissance de {$femelleName} a été archivée",
+            'action_url' => route('naissances.index'),
+        ]);
+
         return back()->with('success', 'Naissance archivée !');
     }
 

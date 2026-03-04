@@ -156,12 +156,14 @@
                                             title="Modifier"><i class="bi bi-pencil"></i></a>
                                         @if (!$naissance->is_archived)
                                             <form action="{{ route('naissances.archive', $naissance) }}" method="POST"
-                                                style="display:inline;">
-                                                @csrf @method('PATCH')
-                                                <button type="submit" class="btn-cuni sm danger" title="Archiver"
-                                                    onclick="return confirm('Archiver cette naissance ?')"><i
-                                                        class="bi bi-archive"></i></button>
+                                                id="archive-form-{{ $naissance->id }}" style="display:inline;">
+                                                @csrf
+                                                @method('PATCH')
                                             </form>
+                                            <button type="button" class="btn-cuni sm danger" title="Archiver"
+                                                onclick="showModal('confirm', 'Archiver cette naissance ?', 'Êtes-vous sûr de vouloir archiver cette naissance ? Cette action peut être annulée.', function() { document.getElementById('archive-form-{{ $naissance->id }}').submit(); })">
+                                                <i class="bi bi-archive"></i>
+                                            </button>
                                         @endif
                                         <form action="{{ route('naissances.destroy', $naissance) }}" method="POST"
                                             style="display:inline;">
@@ -192,7 +194,8 @@
                     style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
                     <div class="text-muted" style="font-size: 13px;">Affichage de
                         <strong>{{ $naissances->firstItem() }}</strong> à <strong>{{ $naissances->lastItem() }}</strong>
-                        sur <strong>{{ $naissances->total() }}</strong> naissances</div>
+                        sur <strong>{{ $naissances->total() }}</strong> naissances
+                    </div>
                     <nav>{{ $naissances->links('vendor.pagination.bootstrap-5-sm') }}</nav>
                 </div>
             @endif
