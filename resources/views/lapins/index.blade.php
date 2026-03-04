@@ -162,7 +162,7 @@
                         Femelles : <strong>{{ $femelles->firstItem() }}-{{ $femelles->lastItem() }}</strong> sur
                         {{ $femelles->total() }}
                     </div>
-                    {{ $femelles->appends(['males_page' => request('males_page')])->links('resources/views/pagination/bootstrap-5-sm.blade.php') }}
+                    {{ $femelles->appends(['males_page' => request('males_page')])->links('pagination.bootstrap-5-sm') }}
                 </div>
             @endif
 
@@ -175,7 +175,7 @@
                         Mâles : <strong>{{ $males->firstItem() }}-{{ $males->lastItem() }}</strong> sur
                         {{ $males->total() }}
                     </div>
-                    {{ $males->appends(['femelles_page' => request('femelles_page')])->links('pagination.bootstrap-5-sm.blade.php') }}
+                    {{ $males->appends(['femelles_page' => request('femelles_page')])->links('pagination.bootstrap-5-sm') }}
                 </div>
             @endif
         </div>

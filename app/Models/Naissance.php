@@ -166,4 +166,14 @@ class Naissance extends Model
 
         return $vivant + $mortNe;
     }
+
+
+    // ✅ ADD THIS ACCESSOR
+    public function getJoursAvantSevrageAttribute(): ?int
+    {
+        if (!$this->date_sevrage_prevue || !$this->date_naissance) {
+            return null;
+        }
+        return $this->date_naissance->diffInDays($this->date_sevrage_prevue);
+    }
 }

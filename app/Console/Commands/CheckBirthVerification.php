@@ -31,7 +31,6 @@ class CheckBirthVerification extends Command
 
         // Check births that need initial verification (10 days old, not verified)
         $pendingBirths = Naissance::where('sex_verified', false)
-            ->where('date_naissance', '<=', $initialThreshold)
             ->where('is_archived', false)
             ->get();
 

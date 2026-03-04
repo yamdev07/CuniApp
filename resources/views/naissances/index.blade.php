@@ -104,7 +104,7 @@
                         @forelse($naissances as $naissance)
                             <tr class="border-bottom border-light">
                                 <td class="ps-4 fw-semibold text-dark">
-                                    {{ $naissance->date_naissance ? \Carbon\Carbon::parse($naissance->date_naissance)->format('d/m/Y') : '-' }}
+                                    {{ $naissance->miseBas?->date_mise_bas ? \Carbon\Carbon::parse($naissance->miseBas->date_mise_bas)->format('d/m/Y') : '-' }}
                                     @if ($naissance->heure_naissance)
                                         <small class="text-muted">({{ $naissance->heure_naissance->format('H:i') }})</small>
                                     @endif
@@ -143,7 +143,7 @@
                                 </td>
                                 <td class="text-muted">
                                     {{ $naissance->date_sevrage_prevue ? $naissance->date_sevrage_prevue->format('d/m/Y') : '-' }}
-                                    @if ($naissance->jours_avant_sevrage > 0 && $naissance->jours_avant_sevrage <= 7)
+                                    @if ($naissance->jours_avant_sevrage ?? 0 > 0 && ($naissance->jours_avant_sevrage ?? 0) <= 7)
                                         <span class="badge"
                                             style="background: rgba(245, 158, 11, 0.1); color: #F59E0B; font-size: 10px;">J-{{ $naissance->jours_avant_sevrage }}</span>
                                     @endif
@@ -196,7 +196,7 @@
                         <strong>{{ $naissances->firstItem() }}</strong> à <strong>{{ $naissances->lastItem() }}</strong>
                         sur <strong>{{ $naissances->total() }}</strong> naissances
                     </div>
-                    <nav>{{ $naissances->links('pagination.bootstrap-5-sm.blade.php') }}</nav>
+                    <nav>{{ $naissances->links('pagination.bootstrap-5-sm') }}</nav>
                 </div>
             @endif
         </div>

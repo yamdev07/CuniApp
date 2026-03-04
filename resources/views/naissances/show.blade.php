@@ -208,7 +208,7 @@
                         <!-- Pagination -->
                         @if ($lapereaux->hasPages())
                             <div style="margin-top: 20px;">
-                                {{ $lapereaux->appends(request()->query())->links('pagination.bootstrap-5-sm.blade') }}
+                                {{ $lapereaux->appends(request()->query())->links('pagination.bootstrap-5-sm') }}
                             </div>
                         @endif
                     @else

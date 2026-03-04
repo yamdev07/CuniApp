@@ -105,7 +105,7 @@
                         <strong>{{ $males->lastItem() }}</strong> sur <strong>{{ $males->total() }}</strong> mâles
                     </div>
                     <nav>
-                        {{ $males->links('vendor.pagination.bootstrap-5-sm') }}
+                        {{ $males->links('pagination.bootstrap-5-sm') }}
                     </nav>
                 </div>
             @endif
