@@ -1,40 +1,37 @@
 <?php
-// app/Http/Controllers/NaissanceController.php
 namespace App\Http\Controllers;
 
 use App\Models\Naissance;
-use App\Models\Lapereau; // ✅ Added
-use App\Models\Femelle;
-use App\Models\Saillie;
+use App\Models\Lapereau;
 use App\Models\MiseBas;
+use App\Models\Femelle;
 use Illuminate\Http\Request;
 use App\Traits\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class NaissanceController extends Controller
-{
+class NaissanceController extends Controller {
     use Notifiable;
 
-    public function index()
-    {
-        $naissances = Naissance::with(['femelle', 'lapereaux']) // ✅ Load lapereaux
+    public function index() {
+        $naissances = Naissance::with(['miseBas.femelle', 'lapereaux'])
             ->active()
-            ->latest('date_naissance')
+            ->latest()
             ->paginate(15);
 
         $stats = [
             'total' => Naissance::active()->count(),
             'this_month' => Naissance::active()
-                ->whereMonth('date_naissance', now()->month)
-                ->whereYear('date_naissance', now()->year)
+                ->whereHas('miseBas', fn($q) => 
+                    $q->whereMonth('date_mise_bas', now()->month)
+                      ->whereYear('date_mise_bas', now()->year)
+                )
                 ->count(),
             'nb_vivant_total' => Lapereau::whereHas('naissance', fn($q) => $q->active())
                 ->where('etat', 'vivant')
                 ->count(),
             'taux_survie_moyen' => Naissance::active()->get()->avg(function ($n) {
-                return $n->taux_survie;
+                return $n->taux_survie ?? 0;
             }),
             'pending_verification' => Naissance::pendingVerification()->count(),
         ];
@@ -42,137 +39,117 @@ class NaissanceController extends Controller
         return view('naissances.index', compact('naissances', 'stats'));
     }
 
-    public function create()
-    {
-        $femelles = Femelle::where('etat', '!=', 'Vide')->orderBy('nom')->get();
-        $saillies = Saillie::with(['femelle', 'male'])->whereHas('femelle', function ($q) {
-            $q->where('etat', '!=', 'Vide');
-        })->orderBy('date_saillie', 'desc')->get();
-        $miseBas = MiseBas::latest()->take(10)->get();
-        return view('naissances.create', compact('femelles', 'saillies', 'miseBas'));
+    public function create(Request $request) {
+        $miseBas = null;
+        if ($request->has('mise_bas_id')) {
+            $miseBas = MiseBas::with('femelle')->find($request->mise_bas_id);
+        }
+
+        $misesBas = MiseBas::with('femelle')
+            ->whereDoesntHave('naissances')
+            ->orderBy('date_mise_bas', 'desc')
+            ->get();
+
+        return view('naissances.create', compact('miseBas', 'misesBas'));
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $validated = $request->validate([
-            'femelle_id' => 'required|exists:femelles,id',
-            'saillie_id' => 'nullable|exists:saillies,id',
-            'mise_bas_id' => 'nullable|exists:mises_bas,id',
-            'date_naissance' => 'required|date',
-            'heure_naissance' => 'nullable|date_format:H:i',
-            'lieu_naissance' => 'nullable|string|max:100',
-            // 'nb_vivant' => 'required|integer', // ✅ Removed: Calculated from rabbits
-            // 'nb_mort_ne' => 'nullable|integer', // ✅ Removed
+            'mise_bas_id' => 'required|exists:mises_bas,id',
             'poids_moyen_naissance' => 'nullable|numeric|min:0|max:200',
             'etat_sante' => 'required|in:Excellent,Bon,Moyen,Faible',
             'observations' => 'nullable|string|max:1000',
-            'date_sevrage_prevue' => 'nullable|date|after_or_equal:date_naissance',
-            'date_vaccination_prevue' => 'nullable|date|after_or_equal:date_naissance',
-            // ✅ NEW: Validate rabbits array
-            'rabbits' => 'nullable|array',
-            'rabbits.*.sex' => 'required|in:male,female',
+            'date_sevrage_prevue' => 'nullable|date|after_or_equal:date_mise_bas',
+            'date_vaccination_prevue' => 'nullable|date|after_or_equal:date_mise_bas',
+            // ✅ Lapereaux with REQUIRED code and sex (can be null for 10 days)
+            'rabbits' => 'required|array|min:1',
             'rabbits.*.nom' => 'nullable|string|max:50',
-            'rabbits.*.code' => 'nullable|string|max:20|unique:lapereaux,code',
+            'rabbits.*.sex' => 'nullable|in:male,female', // ✅ NULL allowed initially
             'rabbits.*.etat' => 'required|in:vivant,mort,vendu',
-        ], [
-            'date_sevrage_prevue.after_or_equal' => 'La date de sevrage doit être après la date de naissance',
-            'date_vaccination_prevue.after_or_equal' => 'La date de vaccination doit être après la date de naissance',
         ]);
 
-        $validated['user_id'] = Auth::id();
-        // Calculate nb_vivant from rabbits array
-        $rabbits = $validated['rabbits'] ?? [];
-        $validated['nb_vivant'] = count(array_filter($rabbits, fn($r) => $r['etat'] === 'vivant'));
+        $miseBas = MiseBas::with('femelle')->findOrFail($validated['mise_bas_id']);
 
-        // Remove rabbits from validated data for Naissance creation
-        unset($validated['rabbits']);
-
+        // ✅ Calculate sevrage date if not provided (6 weeks from birth)
         if (empty($validated['date_sevrage_prevue'])) {
-            $validated['date_sevrage_prevue'] = Carbon::parse($validated['date_naissance'])->addWeeks(6)->format('Y-m-d');
+            $validated['date_sevrage_prevue'] = Carbon::parse($miseBas->date_mise_bas)
+                ->addWeeks(6)
+                ->format('Y-m-d');
         }
 
         DB::beginTransaction();
         try {
+            // Create Naissance record
             $naissance = Naissance::create($validated);
 
-            // ✅ Create Individual Rabbits
-            foreach ($rabbits as $rabbitData) {
+            // ✅ Create Individual Lapereaux with AUTO-GENERATED CODE
+            foreach ($validated['rabbits'] as $rabbitData) {
                 $rabbitData['naissance_id'] = $naissance->id;
-                // Auto-generate code if empty
-                if (empty($rabbitData['code'])) {
-                    $rabbitData['code'] = 'LAP-' . strtoupper(uniqid());
-                }
+                // Code is auto-generated in model boot() if empty
                 Lapereau::create($rabbitData);
-            }
-
-            $femelle = Femelle::find($validated['femelle_id']);
-            if ($femelle && $femelle->etat === 'Gestante') {
-                $femelle->update(['etat' => 'Allaitante']);
             }
 
             $this->notifyUser([
                 'type' => 'success',
-                'title' => '🐰 Nouvelle Naissance Enregistrée',
-                'message' => "Portée de {$femelle->nom}: {$validated['nb_vivant']} lapereaux enregistrés individuellement",
+                'title' => '🐰 Naissance & Lapereaux Enregistrés',
+                'message' => "Portée de {$miseBas->femelle->nom}: {$naissance->total_lapereaux} lapereaux (codes auto-générés)",
                 'action_url' => route('naissances.show', $naissance),
             ]);
 
             DB::commit();
-            return redirect()->route('naissances.index')->with('success', 'Naissance et lapereaux enregistrés avec succès !');
+            return redirect()->route('naissances.show', $naissance)
+                ->with('success', 'Naissance et lapereaux enregistrés ! Sexe à vérifier après 10 jours.');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Erreur lors de l\'enregistrement: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Erreur: ' . $e->getMessage()]);
         }
     }
 
-    public function show(Naissance $naissance)
-    {
-        $naissance->load(['femelle', 'saillie.male', 'miseBas', 'user', 'lapereaux']); // ✅ Load lapereaux
-        return view('naissances.show', compact('naissance'));
+    public function show(Naissance $naissance) {
+        $naissance->load(['miseBas.femelle', 'miseBas.saillie.male', 'lapereaux']);
+        
+        $canVerifySex = $naissance->can_verify_sex;
+        $daysUntilVerification = max(0, 10 - $naissance->jours_depuis_naissance);
+        
+        return view('naissances.show', compact('naissance', 'canVerifySex', 'daysUntilVerification'));
     }
 
-    public function edit(Naissance $naissance)
-    {
-        $femelles = Femelle::where('etat', '!=', 'Vide')->orderBy('nom')->get();
-        $saillies = Saillie::with(['femelle', 'male'])->orderBy('date_saillie', 'desc')->get();
-        $miseBas = MiseBas::latest()->get();
-        $naissance->load('lapereaux'); // ✅ Load existing rabbits
-        return view('naissances.edit', compact('naissance', 'femelles', 'saillies', 'miseBas'));
+    public function edit(Naissance $naissance) {
+        $naissance->load(['miseBas.femelle', 'lapereaux']);
+        $canVerifySex = $naissance->can_verify_sex;
+        
+        return view('naissances.edit', compact('naissance', 'canVerifySex'));
     }
 
-    public function update(Request $request, Naissance $naissance)
-    {
+    public function update(Request $request, Naissance $naissance) {
         $validated = $request->validate([
-            'femelle_id' => 'required|exists:femelles,id',
-            'date_naissance' => 'required|date',
-            'heure_naissance' => 'nullable|date_format:H:i',
-            'lieu_naissance' => 'nullable|string|max:100',
             'poids_moyen_naissance' => 'nullable|numeric|min:0|max:200',
             'etat_sante' => 'required|in:Excellent,Bon,Moyen,Faible',
             'observations' => 'nullable|string|max:1000',
-            'date_sevrage_prevue' => 'nullable|date|after:date_naissance',
-            'date_vaccination_prevue' => 'nullable|date|after:date_naissance',
+            'date_sevrage_prevue' => 'nullable|date|after:date_mise_bas',
+            'date_vaccination_prevue' => 'nullable|date|after:date_mise_bas',
             'sex_verified' => 'nullable|boolean',
-            // ✅ Validate rabbits array for sync
-            'rabbits' => 'nullable|array',
+            // ✅ Lapereaux with sex verification
+            'rabbits' => 'required|array|min:1',
             'rabbits.*.id' => 'nullable|exists:lapereaux,id',
-            'rabbits.*.sex' => 'required|in:male,female',
             'rabbits.*.nom' => 'nullable|string|max:50',
-            'rabbits.*.code' => 'nullable|string|max:20|unique:lapereaux,code,' . ($rabbit['id'] ?? null),
+            'rabbits.*.sex' => 'required|in:male,female', // ✅ REQUIRED when editing after 10 days
             'rabbits.*.etat' => 'required|in:vivant,mort,vendu',
         ]);
+
+        // ✅ Check if sex verification is allowed (10+ days)
+        if (!$naissance->can_verify_sex && $request->has('sex_verified')) {
+            return back()->withErrors(['sex_verified' => 'La vérification du sexe n\'est possible qu\'après 10 jours.']);
+        }
 
         DB::beginTransaction();
         try {
             // Update Naissance
-            $validated['nb_vivant'] = count(array_filter($validated['rabbits'] ?? [], fn($r) => $r['etat'] === 'vivant'));
-            unset($validated['rabbits']);
-
             $wasUnverified = !$naissance->sex_verified;
             $naissance->update($validated);
 
-            // ✅ Sync Rabbits (Simple implementation: delete all and recreate or update by ID)
-            // For robustness, we'll update by ID if present, create if not.
+            // ✅ Sync Lapereaux
             $incomingRabbits = $request->input('rabbits', []);
             $existingIds = [];
 
@@ -185,60 +162,63 @@ class NaissanceController extends Controller
                         $existingIds[] = $lapereau->id;
                     }
                 } else {
-                    // Create new
+                    // Create new (with auto-generated code)
                     $rabbitData['naissance_id'] = $naissance->id;
-                    if (empty($rabbitData['code'])) {
-                        $rabbitData['code'] = 'LAP-' . strtoupper(uniqid());
-                    }
                     $newRabbit = Lapereau::create($rabbitData);
                     $existingIds[] = $newRabbit->id;
                 }
             }
 
             // Delete removed rabbits
-            Lapereau::where('naissance_id', $naissance->id)->whereNotIn('id', $existingIds)->delete();
+            Lapereau::where('naissance_id', $naissance->id)
+                ->whereNotIn('id', $existingIds)
+                ->delete();
 
+            // Mark as verified if checkbox checked
             if ($wasUnverified && $naissance->sex_verified) {
+                $naissance->markSexAsVerified();
+                
                 $this->notifyUser([
                     'type' => 'success',
                     'title' => '✅ Vérification de Portée Complétée',
-                    'message' => "La portée de {$naissance->femelle->nom} a été vérifiée avec succès",
+                    'message' => "La portée de {$naissance->femelle->nom} a été vérifiée ({$naissance->total_lapereaux} lapereaux)",
                     'action_url' => route('naissances.show', $naissance),
                 ]);
             }
 
             DB::commit();
-            return redirect()->route('naissances.index')->with('success', 'Naissance mise à jour avec succès !');
+            return redirect()->route('naissances.show', $naissance)
+                ->with('success', 'Naissance mise à jour !');
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Erreur: ' . $e->getMessage()]);
         }
     }
 
-    // ... (destroy, archive, restore methods remain similar)
-    public function destroy(Naissance $naissance)
-    {
+    public function destroy(Naissance $naissance) {
         $femelleName = $naissance->femelle->nom ?? 'Inconnue';
-        $naissance->delete(); // Cascade will delete lapereaux
+        $totalLapereaux = $naissance->total_lapereaux;
+        
+        $naissance->delete(); // Cascade deletes lapereaux
+
         $this->notifyUser([
             'type' => 'warning',
             'title' => '🗑️ Naissance Supprimée',
-            'message' => "La naissance de {$femelleName} a été supprimée",
+            'message' => "Naissance de {$femelleName} ({$totalLapereaux} lapereaux) supprimée",
             'action_url' => route('naissances.index'),
         ]);
-        return redirect()->route('naissances.index')->with('success', 'Naissance supprimée avec succès !');
+
+        return redirect()->route('naissances.index')
+            ->with('success', 'Naissance supprimée !');
     }
 
-    public function archive(Naissance $naissance)
-    {
-        // ... same as before
+    public function archive(Naissance $naissance) {
         $naissance->update(['is_archived' => true, 'archived_at' => now()]);
         return back()->with('success', 'Naissance archivée !');
     }
 
-    public function restore(Naissance $naissance)
-    {
-        // ... same as before
+    public function restore(Naissance $naissance) {
         $naissance->update(['is_archived' => false, 'archived_at' => null]);
         return back()->with('success', 'Naissance restaurée !');
     }
