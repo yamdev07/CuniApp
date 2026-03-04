@@ -113,8 +113,11 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         //Récupérer les dernières NAISSANCES (vert) 
-        $recentNaissances = Naissance::with('femelle')
-            ->where('nb_vivant', '>', 0)
+        // ✅ NEW - Use relationship-based filtering
+        $recentNaissances = Naissance::with(['femelle', 'lapereaux'])
+            ->whereHas('lapereaux', function ($q) {
+                $q->where('etat', 'vivant');
+            })
             ->latest('created_at')
             ->get()
             ->map(fn($n) => [
@@ -123,11 +126,11 @@ class DashboardController extends Controller
                 'desc' => sprintf(
                     '%s (%d nés)',
                     $n->femelle?->nom ?? 'Inconnue',
-                    $n->nb_vivant ?? 0
+                    $n->nb_vivant ?? 0  // ← Uses accessor, not column
                 ),
                 'time' => Carbon::parse($n->created_at)->diffForHumans(),
                 'date' => $n->created_at,
-                'url' => route('naissances.show', $n->id) ?? '#', // ✅ Route vers Naissance
+                'url' => route('naissances.show', $n->id) ?? '#',
             ]);
 
         // Récupérer les dernières saillies (violet) → inchangé
