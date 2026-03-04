@@ -1,134 +1,107 @@
 <?php
-// app/Models/Naissance.php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Carbon\Carbon;
 
-class Naissance extends Model
-{
-    use HasFactory;
-
+class Naissance extends Model {
     protected $table = 'naissances';
 
     protected $fillable = [
-        'femelle_id',
-        'saillie_id',
         'mise_bas_id',
-        'date_naissance',
-        'heure_naissance',
-        'lieu_naissance',
-        'nb_vivant', // Now calculated from children
         'poids_moyen_naissance',
-        'poids_total_portee',
         'etat_sante',
         'observations',
         'date_sevrage_prevue',
         'date_vaccination_prevue',
-        'user_id',
-        'is_archived',
-        'archived_at',
         'sex_verified',
         'sex_verified_at',
         'first_reminder_sent_at',
         'last_reminder_sent_at',
         'reminder_count',
-        // nb_mort_ne removed
+        'is_archived',
+        'archived_at',
     ];
 
     protected $casts = [
-        'date_naissance' => 'date',
-        'heure_naissance' => 'datetime:H:i',
-        'date_sevrage_prevue' => 'date',
-        'date_vaccination_prevue' => 'date',
-        'archived_at' => 'datetime',
+        'sex_verified' => 'boolean',
+        'is_archived' => 'boolean',
         'sex_verified_at' => 'datetime',
         'first_reminder_sent_at' => 'datetime',
         'last_reminder_sent_at' => 'datetime',
-        'is_archived' => 'boolean',
-        'sex_verified' => 'boolean',
-        'nb_vivant' => 'integer',
+        'archived_at' => 'datetime',
         'poids_moyen_naissance' => 'decimal:2',
-        'poids_total_portee' => 'decimal:2',
-        'reminder_count' => 'integer',
     ];
 
-    public function femelle(): BelongsTo
-    {
-        return $this->belongsTo(Femelle::class);
-    }
-    public function saillie(): BelongsTo
-    {
-        return $this->belongsTo(Saillie::class);
-    }
-    public function miseBas(): BelongsTo
-    {
+    public function miseBas(): BelongsTo {
         return $this->belongsTo(MiseBas::class);
     }
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
+
+    public function femelle(): HasOneThrough {
+        return $this->hasOneThrough(Femelle::class, MiseBas::class, 'id', 'id', 'mise_bas_id', 'femelle_id');
     }
 
-    // ✅ NEW: Relationship to individual rabbits
-    public function lapereaux(): HasMany
-    {
+    public function saillie(): HasOneThrough {
+        return $this->hasOneThrough(Saillie::class, MiseBas::class, 'id', 'id', 'mise_bas_id', 'saillie_id');
+    }
+
+    public function lapereaux(): HasMany {
         return $this->hasMany(Lapereau::class);
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_archived', false);
+    // ✅ CALCULATED: Get birth date from mise_bas
+    public function getDateNaissanceAttribute(): ?Carbon {
+        return $this->miseBas?->date_mise_bas;
     }
 
-    // ... (Keep existing scopes like PendingVerification, etc.)
-    public function scopePendingVerification($query)
-    {
-        return $query->where('sex_verified', false)->where('is_archived', false);
-    }
-
-    // ✅ UPDATED: Calculate nb_vivant based on children if not set
-    public function getNbVivantAttribute()
-    {
-        // If explicitly set, use it. Otherwise count alive children.
-        if ($this->attributes['nb_vivant'] > 0) {
-            return $this->attributes['nb_vivant'];
-        }
-        return $this->lapereaux()->where('etat', 'vivant')->count();
-    }
-
-    // ✅ UPDATED: Taux de survie based on children
-    public function getTauxSurvieAttribute(): float
-    {
-        $total = $this->lapereaux()->count();
-        if ($total == 0) return 0;
-        $vivants = $this->lapereaux()->where('etat', 'vivant')->count();
-        return round(($vivants / $total) * 100, 2);
-    }
-
-    public function getJoursAvantSevrageAttribute(): int
-    {
-        if (!$this->date_sevrage_prevue) return 0;
-        return max(0, $this->date_sevrage_prevue->diffInDays(now()));
-    }
-
-    public function getJoursDepuisNaissanceAttribute(): int
-    {
+    // ✅ CALCULATED: Days since birth
+    public function getJoursDepuisNaissanceAttribute(): int {
+        if (!$this->date_naissance) return 0;
         return $this->date_naissance->diffInDays(now());
     }
 
-    // ... (Keep other existing methods)
-    public function markSexAsVerified(): void
-    {
-        $this->update(['sex_verified' => true, 'sex_verified_at' => now()]);
+    // ✅ CALCULATED: Can verify sex? (after 10 days)
+    public function getCanVerifySexAttribute(): bool {
+        return $this->jours_depuis_naissance >= 10;
     }
 
-    public function scopeThisMonth($query)
-    {
-        return $query->whereMonth('date_naissance', now()->month)
-            ->whereYear('date_naissance', now()->year);
+    // ✅ CALCULATED: Total rabbits
+    public function getTotalLapereauxAttribute(): int {
+        return $this->lapereaux()->count();
+    }
+
+    // ✅ CALCULATED: Living rabbits
+    public function getNbVivantAttribute(): int {
+        return $this->lapereaux()->where('etat', 'vivant')->count();
+    }
+
+    // ✅ CALCULATED: Dead rabbits
+    public function getNbMortNeAttribute(): int {
+        return $this->lapereaux()->where('etat', 'mort')->count();
+    }
+
+    // ✅ SCOPE: Pending verification (not verified + older than 10 days)
+    public function scopePendingVerification($query) {
+        return $query->where('sex_verified', false)
+            ->where('is_archived', false)
+            ->whereHas('miseBas', function($q) {
+                $q->where('date_mise_bas', '<=', now()->subDays(10));
+            });
+    }
+
+    // ✅ SCOPE: Active births
+    public function scopeActive($query) {
+        return $query->where('is_archived', false);
+    }
+
+    // ✅ Mark sex as verified
+    public function markSexAsVerified(): void {
+        $this->update([
+            'sex_verified' => true,
+            'sex_verified_at' => now(),
+        ]);
     }
 }
