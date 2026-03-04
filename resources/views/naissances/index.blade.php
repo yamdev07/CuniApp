@@ -196,7 +196,7 @@
                         <strong>{{ $naissances->firstItem() }}</strong> à <strong>{{ $naissances->lastItem() }}</strong>
                         sur <strong>{{ $naissances->total() }}</strong> naissances
                     </div>
-                    <nav>{{ $naissances->links('vendor.pagination.bootstrap-5-sm') }}</nav>
+                    <nav>{{ $naissances->links('pagination.bootstrap-5-sm.blade.php') }}</nav>
                 </div>
             @endif
         </div>

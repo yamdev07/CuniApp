@@ -98,7 +98,7 @@
                 Affichage de <strong>{{ $misesBas->firstItem() }}</strong> à <strong>{{ $misesBas->lastItem() }}</strong> sur <strong>{{ $misesBas->total() }}</strong> mises bas 
             </div> 
             <nav> 
-                {{ $misesBas->links('vendor.pagination.bootstrap-5-sm') }} 
+                {{ $misesBas->links('pagination.bootstrap-5-sm.blade.php') }} 
             </nav> 
         </div> 
         @endif 

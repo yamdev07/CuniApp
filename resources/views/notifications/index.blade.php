@@ -142,7 +142,7 @@
 </div>
             @if($notifications->hasPages())
             <div class="px-4 py-3 border-t border-gray-200">
-                {{ $notifications->links('vendor.pagination.bootstrap-5-sm') }}
+                {{ $notifications->links('pagination.bootstrap-5-sm.blade.php') }}
             </div>
             @endif
         </div>

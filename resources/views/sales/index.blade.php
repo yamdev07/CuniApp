@@ -185,7 +185,7 @@
                         <strong class="text-dark dark:text-gray-100">{{ $sales->lastItem() }}</strong> sur <strong
                             class="text-dark dark:text-gray-100">{{ $sales->total() }}</strong> ventes
                     </div>
-                    <nav>{{ $sales->links('vendor.pagination.bootstrap-5-sm') }}</nav>
+                    <nav>{{ $sales->links('pagination.bootstrap-5-sm.blade.php') }}</nav>
                 </div>
             @endif
         </div>

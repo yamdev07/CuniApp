@@ -96,7 +96,7 @@
                 Affichage de <strong>{{ $saillies->firstItem() }}</strong> à <strong>{{ $saillies->lastItem() }}</strong> sur <strong>{{ $saillies->total() }}</strong> saillies
             </div>
             <nav>
-                {{ $saillies->links('vendor.pagination.bootstrap-5-sm') }}
+                {{ $saillies->links('pagination.bootstrap-5-sm.blade.php') }}
             </nav>
         </div>
         @endif
