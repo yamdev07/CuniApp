@@ -104,7 +104,7 @@
                         @forelse($naissances as $naissance)
                             <tr class="border-bottom border-light">
                                 <td class="ps-4 fw-semibold text-dark">
-                                    {{ $naissance->date_naissance->format('d/m/Y') }}
+                                    {{ $naissance->date_naissance ? \Carbon\Carbon::parse($naissance->date_naissance)->format('d/m/Y') : '-' }}
                                     @if ($naissance->heure_naissance)
                                         <small class="text-muted">({{ $naissance->heure_naissance->format('H:i') }})</small>
                                     @endif

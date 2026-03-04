@@ -18,10 +18,10 @@ class ActiviteController extends Controller
         // Récupérer TOUTES les activités fusionnées
 
         // Naissances (vert) → remplace MiseBas
-        $naissances = Naissance::with('femelle')
-            ->where('nb_vivant', '>', 0) //Seulement les naissances avec vivants
-            ->latest('date_naissance')
+        $naissances = Naissance::with(['femelle', 'miseBas'])
             ->get()
+            ->filter(fn($n) => $n->nb_vivant > 0)
+            ->sortByDesc(fn($n) => $n->date_naissance)
             ->map(fn($n) => [
                 'type' => 'green',
                 'title' => 'Naissance enregistrée',
