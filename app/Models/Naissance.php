@@ -125,7 +125,7 @@ class Naissance extends Model
         return round(($this->nb_vivant / $total) * 100, 2);
     }
 
-    // ✅ UPDATE the pendingVerification scope
+    // ✅ UPDATE the pendingVerification scope to use relationship
     public function scopePendingVerification($query)
     {
         return $query->where('sex_verified', false)
