@@ -61,12 +61,12 @@ class LapinController extends Controller {
                 'type' => 'success',
                 'title' => 'Succès !',
                 'message' => "Mâle '{$male->nom}' créé avec succès.",
-                'action_url' => route('males.index'),
+                'action_url' => route('lapins.index'),
                 'duration' => 6000,
                 'timestamp' => now()->toIso8601String()
             ]);
 
-            return redirect()->route('males.index')
+            return redirect()->route('lapins.index')
                 ->with('success', 'Mâle créé avec succès.');
         } else {
             $femelle = Femelle::create([
@@ -89,12 +89,12 @@ class LapinController extends Controller {
                 'type' => 'success',
                 'title' => 'Succès !',
                 'message' => "Femelle '{$femelle->nom}' créée avec succès.",
-                'action_url' => route('femelles.index'),
+                'action_url' => route('lapins.index'),
                 'duration' => 6000,
                 'timestamp' => now()->toIso8601String()
             ]);
 
-            return redirect()->route('femelles.index')
+            return redirect()->route('lapins.index')
                 ->with('success', 'Femelle créée avec succès.');
         }
     }

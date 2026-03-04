@@ -764,6 +764,55 @@
                 grid-template-columns: 1fr;
             }
         }
+
+
+        .legend-dot.orange {
+            background-color: #f59e0b;
+            /* Un orange vif et professionnel */
+        }
+
+        /* Optionnel : ajout d'une petite animation pour que le point de sexage clignote légèrement */
+        .legend-dot.orange {
+            box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Dans votre fichier CSS ou balise <style> */
+        .legend-dot.blue {
+            background-color: #3b82f6;
+            /* Bleu */
+        }
+
+        .cal-day.event.blue {
+            background-color: #dbeafe !important;
+            border: 2px solid #3b82f6;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        /* Tooltip natif stylisé (optionnel) */
+        .cal-day[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .timeline-dot.amber {
+            background: var(--accent-orange);
+        }
+
+        .timeline-dot.cyan {
+            background: var(--accent-cyan);
+        }
     </style>
 
     <div class="cuniapp-dashboard">
@@ -783,7 +832,7 @@
                     </div>
                 </div>
                 <div class="header-controls">
-    
+
                     <a href="{{ route('lapins.create') }}" class="ctrl-btn primary">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -792,16 +841,36 @@
                     </a>
                 </div>
             </div>
+
             <div class="metrics-grid">
                 @php
+
+                    $formatMetrics = function ($percent) {
+                        return [
+                            'change' => ($percent >= 0 ? '+' : '') . number_format($percent, 1) . '%',
+                            'trend' => $percent > 0 ? 'up' : ($percent < 0 ? 'down' : 'neutral'),
+                        ];
+                    };
+
+                    $maleStats = $formatMetrics($malePercent);
+                    $femaleStats = $formatMetrics($femalePercent);
+                    $saillieStats = $formatMetrics($sailliePercent);
+                    $miseBasStats = $formatMetrics($miseBasPercent);
+
+                    $totalPercent =
+                        $oldMales + $oldFemelles > 0
+                            ? (($nbMales + $nbFemelles - ($oldMales + $oldFemelles)) / ($oldMales + $oldFemelles)) * 100
+                            : 0;
+                    $totalStats = $formatMetrics($totalPercent);
+
                     $metricsData = [
                         [
                             'icon' => 'total',
                             'value' => $nbMales + $nbFemelles,
                             'label' => 'Total Lapins',
                             'type' => 'primary',
-                            'change' => '+8.2%',
-                            'trend' => 'up',
+                            'change' => $totalStats['change'],
+                            'trend' => $totalStats['trend'],
                             'route' => 'lapins.index',
                         ],
                         [
@@ -809,8 +878,8 @@
                             'value' => $nbMales,
                             'label' => 'Mâles',
                             'type' => 'blue',
-                            'change' => '+5.1%',
-                            'trend' => 'up',
+                            'change' => $maleStats['change'],
+                            'trend' => $maleStats['trend'],
                             'route' => 'males.index',
                         ],
                         [
@@ -818,8 +887,8 @@
                             'value' => $nbFemelles,
                             'label' => 'Femelles',
                             'type' => 'pink',
-                            'change' => '+12%',
-                            'trend' => 'up',
+                            'change' => $femaleStats['change'],
+                            'trend' => $femaleStats['trend'],
                             'route' => 'femelles.index',
                         ],
                         [
@@ -827,8 +896,8 @@
                             'value' => $nbSaillies,
                             'label' => 'Saillies',
                             'type' => 'purple',
-                            'change' => '-3.1%',
-                            'trend' => 'down',
+                            'change' => $saillieStats['change'],
+                            'trend' => $saillieStats['trend'],
                             'route' => 'saillies.index',
                         ],
                         [
@@ -836,8 +905,8 @@
                             'value' => $nbMisesBas,
                             'label' => 'Portées',
                             'type' => 'green',
-                            'change' => '+15%',
-                            'trend' => 'up',
+                            'change' => $miseBasStats['change'],
+                            'trend' => $miseBasStats['trend'],
                             'route' => 'mises-bas.index',
                         ],
                         [
@@ -854,7 +923,7 @@
                             'value' => number_format($totalRevenue, 0, ',', ' '),
                             'label' => 'CA Total',
                             'type' => 'purple',
-                            'change' => '+12%',
+                            'change' => '+0%', // Tu pourras ajouter $revenuePercent au controller plus tard
                             'trend' => 'up',
                             'route' => 'sales.index',
                         ],
@@ -982,14 +1051,12 @@
                                                 <path d="M12 14v8M9 19h6" />
                                             </svg>
                                         @elseif($card['icon'] === 'breed')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path
                                                     d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                             </svg>
                                         @else
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <polygon
                                                     points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                             </svg>
@@ -1051,7 +1118,6 @@
                 </div>
             </div>
 
-            <!-- Right Column -->
             <div class="sidebar-col">
                 <!-- Calendar -->
                 <div class="widget calendar-widget">
@@ -1063,29 +1129,60 @@
                             <button class="cal-btn" id="nextMonth">›</button>
                         </div>
                     </div>
+
+                    <!-- ✅ GRILLE DU CALENDRIER (élément essentiel) -->
                     <div class="calendar-body" id="calendarGrid"></div>
+
+                    <!-- Légende -->
                     <div class="calendar-legend">
-                        <div class="legend-row"><span class="legend-dot purple"></span><span>Saillies</span></div>
-                        <div class="legend-row"><span class="legend-dot green"></span><span>Naissances</span></div>
+                        <div class="legend-row">
+                            <span class="legend-dot purple"></span>
+                            <span>Saillies</span>
+                        </div>
+                        <div class="legend-row">
+                            <span class="legend-dot green"></span>
+                            <span>Naissances</span>
+                        </div>
+                        <div class="legend-row">
+                            <span class="legend-dot blue"></span>
+                            <span>Détermination sexe (J+10)</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Activity Timeline -->
                 <div class="widget activity-widget">
                     <div class="widget-head">
-                        <h3>Activité</h3><button class="text-link">Tout voir</button>
+                        <h3>Activité récente</h3>
+                        <a href="{{ route('activites.index') }}" class="text-link">Tout voir</a>
                     </div>
+
                     <div class="timeline">
-                        @foreach ([['type' => 'green', 'title' => 'Mise bas enregistrée', 'desc' => 'Femelle #245 - 6 lapereaux', 'time' => 'Il y a 2h'], ['type' => 'purple', 'title' => 'Saillie programmée', 'desc' => 'F#245 × M#112', 'time' => 'Hier 15:30'], ['type' => 'orange', 'title' => 'Vaccination requise', 'desc' => '3 lapins concernés', 'time' => '23 août'], ['type' => 'blue', 'title' => 'Rapport généré', 'desc' => 'Stats mensuelles', 'time' => '20 août']] as $item)
-                            <div class="timeline-item">
-                                <div class="timeline-dot {{ $item['type'] }}"></div>
+                        @forelse($timelineActivities as $activity)
+                            <a href="{{ $activity['url'] }}" class="timeline-item"
+                                style="text-decoration: none; color: inherit;">
+                                <div class="timeline-dot {{ $activity['type'] }}"></div>
                                 <div class="timeline-content">
-                                    <div class="timeline-title">{{ $item['title'] }}</div>
-                                    <div class="timeline-desc">{{ $item['desc'] }}</div>
-                                    <div class="timeline-time">{{ $item['time'] }}</div>
+                                    <div class="timeline-title">{{ $activity['title'] }}</div>
+                                    <div class="timeline-desc">{{ $activity['desc'] }}</div>
+                                    <div class="timeline-time">{{ $activity['time'] }}</div>
                                 </div>
+                            </a>
+                        @empty
+                            <!-- État vide -->
+                            <div class="text-center py-6 text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-sm">Aucune activité récente</p>
+                                <a href="{{ route('saillies.create') }}"
+                                    class="text-primary text-xs font-medium hover:underline mt-2 inline-block">
+                                    + Enregistrer une saillie
+                                </a>
                             </div>
-                        @endforeach
+                        @endforelse
                     </div>
                 </div>
 
@@ -1138,56 +1235,132 @@
             const currentMonthSpan = document.getElementById('currentMonth');
             const prevMonthBtn = document.getElementById('prevMonth');
             const nextMonthBtn = document.getElementById('nextMonth');
+
+            // ✅ Récupération des événements depuis Laravel
+            const events = @json($events);
+
             let currentDate = new Date();
             const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre',
                 'Octobre', 'Novembre', 'Décembre'
             ];
             const weekdays = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
+            // ✅ Fonction utilitaire pour formater une date en YYYY-MM-DD
+            function formatDateKey(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+
+            // ✅ Fonction pour récupérer les événements d'une date donnée
+            function getEventsForDate(dateKey) {
+                const result = [];
+
+                // Saillies
+                if (events.saillies) {
+                    events.saillies.forEach(e => {
+                        if (e.date === dateKey) result.push({
+                            type: 'purple',
+                            label: e.label
+                        });
+                    });
+                }
+
+                // Naissances
+                if (events.naissances) {
+                    events.naissances.forEach(e => {
+                        if (e.date === dateKey) result.push({
+                            type: 'green',
+                            label: e.label
+                        });
+                    });
+                }
+
+                // ✅ Sexuations (J+10)
+                if (events.sexuations) {
+                    events.sexuations.forEach(e => {
+                        if (e.date === dateKey) result.push({
+                            type: 'blue',
+                            label: e.label
+                        });
+                    });
+                }
+
+                return result;
+            }
+
             function renderCalendar(date) {
                 calendarGrid.innerHTML = '';
+
+                // En-tête des jours
                 weekdays.forEach(day => {
                     const dayEl = document.createElement('div');
                     dayEl.className = 'cal-day header';
                     dayEl.textContent = day;
                     calendarGrid.appendChild(dayEl);
                 });
+
                 const year = date.getFullYear();
                 const month = date.getMonth();
                 const firstDay = new Date(year, month, 1).getDay();
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const today = new Date();
                 const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
                 currentMonthSpan.textContent = `${months[month]} ${year}`;
+
+                // Jours vides avant le 1er du mois
                 for (let i = 0; i < startDay; i++) {
                     calendarGrid.appendChild(document.createElement('div'));
                 }
+
+                // Jours du mois
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayEl = document.createElement('div');
                     dayEl.className = 'cal-day';
                     dayEl.textContent = day;
+
+                    // Jour actuel
                     if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                         dayEl.classList.add('today');
                     }
-                    if ([5, 12, 18].includes(day)) {
-                        dayEl.classList.add('event', 'purple');
+
+                    // ✅ Vérification des événements pour ce jour
+                    const dateKey = formatDateKey(new Date(year, month, day));
+                    const dayEvents = getEventsForDate(dateKey);
+
+                    if (dayEvents.length > 0) {
+                        dayEl.classList.add('event');
+
+                        // Couleur principale (priorité: sexuation > naissance > saillie)
+                        const priority = ['blue', 'green', 'purple'];
+                        const mainEvent = dayEvents.find(e => priority.includes(e.type)) || dayEvents[0];
+                        dayEl.classList.add(mainEvent.type);
+
+                        // ✅ Tooltip avec tous les événements du jour
+                        // ✅ Tooltip simple en texte (fonctionne avec l'attribut title natif)
+                        const tooltipText = dayEvents.map(e => e.label).join(' | ');
+                        dayEl.setAttribute('title', tooltipText);
+                        dayEl.style.cursor = 'pointer';
                     }
-                    if ([8, 15, 22].includes(day)) {
-                        dayEl.classList.add('event', 'green');
-                    }
+
                     calendarGrid.appendChild(dayEl);
                 }
             }
+
+            // Gestion des boutons mois précédent/suivant
             prevMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 renderCalendar(currentDate);
             });
+
             nextMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() + 1);
                 renderCalendar(currentDate);
             });
-            renderCalendar(currentDate);
 
+            // Animation des éléments au chargement
             setTimeout(() => {
                 document.querySelectorAll('.progress-bar').forEach(bar => {
                     const width = bar.style.width;
@@ -1208,6 +1381,9 @@
                     el.style.transform = 'translateY(0)';
                 }, index * 50);
             });
+
+            // ✅ Rendu initial
+            renderCalendar(currentDate);
         });
     </script>
 @endsection

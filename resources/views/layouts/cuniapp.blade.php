@@ -180,7 +180,7 @@
               gap: 6px;
               flex: 1;
               justify-content: center;
-              overflow:visible;
+              overflow: visible;
               -webkit-overflow-scrolling: touch;
               scrollbar-width: none;
               -ms-overflow-style: none;
@@ -420,7 +420,7 @@
               max-width: 1600px;
               margin: 0 auto;
               padding: 28px;
-              min-height: calc(100vh - 220px);
+              /* min-height: calc(100vh - 220px); */
               flex: 1;
               width: 100%;
               min-width: 320px;
@@ -1024,11 +1024,6 @@
               gap: 20px;
           }
 
-          @media (max-width: 768px) {
-              .settings-grid {
-                  grid-template-columns: 1fr;
-              }
-          }
 
           .form-section {
               background: var(--surface-alt);
@@ -1051,123 +1046,6 @@
               color: var(--primary);
           }
 
-          /* ===== RESPONSIVE HEADER ===== */
-          @media (max-width: 1280px) {
-              .header-wrapper {
-                  padding: 0 2rem;
-              }
-
-              .brand-tagline {
-                  display: none !important;
-              }
-          }
-
-          @media (max-width: 1100px) {
-              .header-wrapper {
-                  padding: 0 1.5rem;
-                  height: 68px;
-              }
-
-              .nav-main-links {
-                  display: none;
-              }
-
-              .mobile-menu-trigger {
-                  display: block;
-              }
-
-              .user-trigger span {
-                  display: none;
-              }
-
-              .cuni-main {
-                  padding: 20px;
-              }
-
-              .footer-grid {
-                  grid-template-columns: 1fr 1fr;
-                  gap: 30px;
-              }
-          }
-
-          @media (max-width: 768px) {
-              .header-wrapper {
-                  padding: 0 1.25rem;
-                  height: 64px;
-              }
-
-              .brand-info {
-                  min-width: 0;
-              }
-
-              .brand-title {
-                  font-size: 1.05rem;
-              }
-
-              .cuni-main {
-                  padding: 16px;
-              }
-
-              .footer-grid {
-                  grid-template-columns: 1fr;
-                  gap: 30px;
-              }
-
-              .footer-bottom {
-                  flex-direction: column;
-                  text-align: center;
-              }
-
-              .footer-legal {
-                  justify-content: center;
-              }
-
-              .page-header {
-                  flex-direction: column;
-                  align-items: flex-start;
-              }
-
-              .page-title {
-                  font-size: 20px;
-              }
-
-              .card-header-custom {
-                  flex-direction: column;
-                  align-items: flex-start;
-                  gap: 12px;
-              }
-          }
-
-          @media (max-width: 480px) {
-              .header-wrapper {
-                  gap: 10px;
-              }
-
-              .cuniapp-logo {
-                  width: 40px;
-                  height: 40px;
-              }
-
-              .cuniapp-logo svg {
-                  width: 24px;
-                  height: 24px;
-              }
-
-              .brand-title {
-                  font-size: 1rem;
-              }
-
-              .notification-trigger {
-                  width: 38px;
-                  height: 38px;
-              }
-
-              .user-avatar {
-                  width: 30px;
-                  height: 30px;
-                  font-size: 13px;
-              }
-          }
 
           /* Dark mode specific overrides */
           .theme-dark .cuni-header {
@@ -1255,15 +1133,308 @@
               display: none;
           }
 
-          @media (max-width: 1100px) {
-              .d-md-none {
-                  display: block;
-              }
-          }
+         /* ===== UTILITAIRES RESPONSIVE ===== */
+.d-none {
+    display: none !important;
+}
+
+.d-md-none {
+    display: none;
+}
+
+.d-md-flex {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    .d-md-none {
+        display: block !important;
+    }
+    .d-md-flex {
+        display: none !important;
+    }
+    
+    /* Badge notification dans le menu mobile */
+    .mobile-nav-link .notification-badge {
+        position: static !important;
+        margin-left: auto;
+        font-size: 11px;
+        min-width: 18px;
+        height: 18px;
+    }
+
+    /* Avatar utilisateur dans le menu mobile */
+    .mobile-nav-link .user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+        margin-right: 8px;
+    }
+
+    /* Espacement pour les sous-liens de profil */
+    .mobile-nav-link[style*="padding-left: 52px"] {
+        padding-left: 52px !important;
+    }
+}
+
+@media (min-width: 1101px) {
+    .d-md-none {
+        display: none !important;
+    }
+    .d-md-flex {
+        display: flex !important;
+    }
+}
+
+/* ===== RESPONSIVE HEADER ===== */
+@media (max-width: 1280px) {
+    .header-wrapper {
+        padding: 0 2rem;
+    }
+
+    .brand-tagline {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .header-wrapper {
+        padding: 0 1.5rem;
+        height: 68px;
+    }
+
+    .nav-main-links {
+        display: none !important; /* ✅ Cache le menu desktop */
+    }
+
+    .mobile-menu-trigger {
+        display: block !important; /* ✅ Affiche le burger */
+    }
+
+    .user-trigger span {
+        display: none;
+    }
+
+    .cuni-main {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-wrapper {
+        padding: 0 1.25rem;
+        height: 64px;
+    }
+
+    .brand-info {
+        min-width: 0;
+    }
+
+    .brand-title {
+        font-size: 1.05rem;
+    }
+
+    .cuni-main {
+        padding: 16px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-legal {
+        justify-content: center;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .card-header-custom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-wrapper {
+        gap: 10px;
+    }
+
+    .cuniapp-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .cuniapp-logo svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .brand-title {
+        font-size: 1rem;
+    }
+
+    .notification-trigger {
+        width: 38px;
+        height: 38px;
+    }
+
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+}
+
+/* ===== FOOTER RESPONSIVE FIX ===== */
+@media (max-width: 1100px) {
+    .footer-container {
+        padding: 0 1.5rem;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-tagline {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 0 1.25rem;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px;
+    } 
+
+    .footer-brand {
+        grid-column: 1 / -1 !important;
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--surface-border);
+    }
+
+    .footer-logo {
+        justify-content: center;
+    }
+
+    .footer-tagline {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* ✅ Les 3 sections en 3 colonnes */
+    .footer-section {
+        grid-column: span 1;
+    }
+
+    /* ✅ Container pour les 3 colonnes */
+    .footer-grid > .footer-section {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .footer-links li a {
+        font-size: 0.8rem;
+        padding: 3px 0;
+    }
+
+    .footer-contact-item {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+        padding: 24px 0 0 0;
+    }
+
+    .footer-copyright {
+        font-size: 0.8rem;
+        order: 2;
+    }
+
+    .footer-legal {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        order: 1;
+    }
+
+    .footer-legal a {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 0 1rem;
+    }
+
+    .footer-logo-text {
+        font-size: 1.1rem;
+    }
+
+    .footer-logo-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* ✅ 3 colonnes même sur très petit écran */
+    .footer-grid > .footer-section {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .footer-section h4 {
+        font-size: 0.85rem;
+    }
+
+    .footer-links li a {
+        font-size: 0.75rem;
+    }
+
+    .footer-contact-item {
+        font-size: 0.75rem;
+    }
+}
       </style>
   </head>
 
   <body class="{{ auth()->check() && auth()->user()->theme === 'dark' ? 'theme-dark' : '' }}">
+
+
       <header class="cuni-header">
           <div class="header-wrapper">
               <div class="brand-identity">
@@ -1274,7 +1445,9 @@
                       </svg>
                   </a>
                   <div class="brand-info">
-                      <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
+                      <a href="{{ route('dashboard') }}">
+                          <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
+                      </a>
                       <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                   </div>
               </div>
@@ -1305,11 +1478,7 @@
                       <i class="bi bi-egg"></i>
                       <span>Mises Bas</span>
                   </a>
-                  <a href="{{ route('naissances.index') }}"
-                      class="nav-link {{ request()->routeIs('naissances.*') ? 'active' : '' }}">
-                      <i class="bi bi-egg-fill"></i>
-                      <span>Naissances</span>
-                  </a>
+
                   <!-- Replace this section in the nav-main-links -->
                   <div class="dropdown-container">
                       <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton">
@@ -1321,9 +1490,15 @@
                           <a href="{{ route('saillies.index') }}" class="dropdown-item-custom">
                               <i class="bi bi-heart"></i> Saillies
                           </a>
+                          <a href="{{ route('naissances.index') }}" class="dropdown-item-custom">
+                              <i class="bi bi-egg-fill"></i>
+                              Naissances </a>
                           <a href="{{ route('sales.index') }}" class="dropdown-item-custom">
                               <i class="bi bi-cart"></i> Ventes
                           </a>
+                          <a href="{{ route('activites.index') }}" class="dropdown-item-custom">
+                              <i class="bi bi-clock-history"></i>
+                              Activités </a>
                           <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                               <i class="bi bi-gear"></i> Paramètres
                           </a>
@@ -1336,7 +1511,7 @@
               </button>
 
               @auth
-                  <div class="nav-user-side">
+                  <div class="nav-user-side d-none d-md-flex">
                       <a href="{{ route('notifications.index') }}" class="notification-trigger">
                           <i class="bi bi-bell"></i>
                           @php
@@ -1442,26 +1617,50 @@
                           <span>Ventes</span>
                       </a>
                       <div class="mobile-nav-divider"></div>
+                      <a href="{{ route('activites.index') }}"
+                          class="mobile-nav-link {{ request()->routeIs('activites.*') ? 'active' : '' }}">
+                          <i class="bi bi-clock-history"></i>
+                          <span>Activités</span>
+                      </a>
+
                       <a href="{{ route('notifications.index') }}" class="mobile-nav-link">
                           <i class="bi bi-bell"></i>
                           <span>Notifications</span>
+                          @php
+                              $unread = \App\Models\Notification::where('user_id', auth()->id())
+                                  ->where('is_read', false)
+                                  ->count();
+                          @endphp
                           @if ($unread > 0)
-                              <span class="notification-badge"
-                                  style="position: static; margin-left: auto;">{{ $unread > 99 ? '99+' : $unread }}</span>
+                              <span class="notification-badge" style="position: static; margin-left: auto;">
+                                  {{ $unread > 99 ? '99+' : $unread }}
+                              </span>
                           @endif
                       </a>
                       <a href="{{ route('settings.index') }}" class="mobile-nav-link">
                           <i class="bi bi-gear"></i>
                           <span>Paramètres</span>
                       </a>
-                      <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
+                      {{-- <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
+                          <i class="bi bi-person"></i>
+                          <span>Mon Profil</span>
+                      </a> --}}
+
+                      <div class="mobile-nav-divider"></div>
+                      <div class="mobile-nav-link" style="cursor: default; background: var(--surface-alt);">
+                          <div class="user-avatar" style="width: 28px; height: 28px; font-size: 13px;">
+                              {{ substr(auth()->user()->name, 0, 1) }}
+                          </div>
+                          <span style="font-weight: 600;">{{ auth()->user()->name }}</span>
+                      </div>
+                      <a href="{{ route('profile.edit') }}" class="mobile-nav-link" style="padding-left: 52px;">
                           <i class="bi bi-person"></i>
                           <span>Mon Profil</span>
                       </a>
                       <div class="mobile-nav-divider"></div>
                       <form method="POST" action="{{ route('logout') }}">
                           @csrf
-                          <button type="submit" class="mobile-nav-link"
+                          <button type="submit" class1="mobile-nav-link"
                               style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: var(--accent-red);">
                               <i class="bi bi-box-arrow-right"></i>
                               <span>Déconnexion</span>
