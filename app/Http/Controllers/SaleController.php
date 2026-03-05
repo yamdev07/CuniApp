@@ -421,21 +421,42 @@ class SaleController extends Controller
      */
     public function markAsPaid(Sale $sale)
     {
+        // Check ownership
+        if ($sale->user_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé à cette vente');
+        }
+
         if ($sale->payment_status === 'paid') {
             return back()->with('warning', 'Cette vente est déjà payée !');
         }
 
+        // Update sale status
         $sale->update([
             'payment_status' => 'paid',
-            'amount_paid' => $sale->total_amount
+            'amount_paid' => $sale->total_amount,
         ]);
 
+        // Update rabbit statuses to 'vendu'
+        foreach ($sale->rabbits as $saleRabbit) {
+            if ($saleRabbit->rabbit_type === 'male') {
+                \App\Models\Male::where('id', $saleRabbit->rabbit_id)
+                    ->update(['etat' => 'Inactive']);
+            } elseif ($saleRabbit->rabbit_type === 'female') {
+                \App\Models\Femelle::where('id', $saleRabbit->rabbit_id)
+                    ->update(['etat' => 'Inactive']);
+            } elseif ($saleRabbit->rabbit_type === 'lapereau') {
+                \App\Models\Lapereau::where('id', $saleRabbit->rabbit_id)
+                    ->update(['etat' => 'vendu']);
+            }
+        }
+
+        // Create notification
         $this->notifyUser([
             'type' => 'success',
             'title' => '✅ Paiement Reçu',
             'message' => "Paiement complet reçu pour la vente #{$sale->id} (" .
                 number_format($sale->total_amount, 2, ',', ' ') . " FCFA)",
-            'action_url' => route('sales.show', $sale)
+            'action_url' => route('sales.show', $sale),
         ]);
 
         return back()->with('success', 'Paiement marqué comme reçu !');
