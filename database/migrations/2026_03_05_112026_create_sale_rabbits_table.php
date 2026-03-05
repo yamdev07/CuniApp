@@ -10,12 +10,21 @@ return new class extends Migration {
         Schema::create('sale_rabbits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sale_id')->constrained('sales')->onDelete('cascade');
+            
+            // ✅ Polymorphic relationship columns
             $table->string('rabbit_type'); // 'male', 'female', 'lapereau'
             $table->foreignId('rabbit_id'); // ID from males, femelles, or lapereaux table
+            
             $table->decimal('sale_price', 10, 2)->nullable(); // Individual sale price
             $table->timestamps();
             
+            // ✅ Indexes for performance
             $table->index(['sale_id', 'rabbit_type']);
+            
+            // ✅ CRITICAL: Compound index for polymorphic queries (morphTo)
+            $table->index(['rabbit_type', 'rabbit_id'], 'sale_rabbits_rabbit_poly_index');
+            
+            // ✅ Unique constraint to prevent duplicate rabbit in same sale
             $table->unique(['sale_id', 'rabbit_type', 'rabbit_id'], 'unique_sale_rabbit');
         });
     }
