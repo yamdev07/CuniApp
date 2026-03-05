@@ -1,18 +1,22 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-    public function up(): void {
+return new class extends Migration
+{
+    public function up(): void
+    {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->date('date_sale')->default(now());
             $table->integer('quantity')->default(1);
             $table->enum('type', ['male', 'female', 'lapereau', 'groupe'])->default('lapereau');
-            $table->string('category')->nullable(); // e.g., "5-8 semaines", "reproducteur"
+            $table->string('category')->nullable();
             $table->decimal('unit_price', 10, 2);
-            $table->decimal('total_amount', 10, 2)->storedAs('quantity * unit_price');
+            $table->decimal('total_amount', 10, 2)->default(0);
+            
             $table->string('buyer_name');
             $table->string('buyer_contact')->nullable();
             $table->string('buyer_address')->nullable();
@@ -24,7 +28,8 @@ return new class extends Migration {
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('sales');
     }
 };

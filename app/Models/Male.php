@@ -13,4 +13,11 @@ class Male extends Model
     protected $casts = [
         'date_naissance' => 'date',
     ];
+
+    // app/Models/Male.php (add this)
+    public function sales()
+    {
+        return $this->morphMany(SaleRabbit::class, 'rabbit', 'rabbit_type', 'rabbit_id')
+            ->where('rabbit_type', 'male');
+    }
 }

@@ -207,7 +207,9 @@
                         <strong>{{ $naissances->firstItem() }}</strong> à <strong>{{ $naissances->lastItem() }}</strong>
                         sur <strong>{{ $naissances->total() }}</strong> naissances
                     </div>
-                    <nav>{{ $naissances->links('pagination.bootstrap-5-sm') }}</nav>
+                    @if ($naissances->hasPages())
+                        {{ $naissances->links('pagination.bootstrap-5-sm') }}
+                    @endif
                 </div>
             @endif
         </div>

@@ -44,6 +44,7 @@ class SettingsController extends Controller
             'verification_interval_days' => 'nullable|integer|min:1|max:15',
         ]);
 
+
         $user = Auth::user();
 
         if ($request->has('theme')) {
@@ -77,6 +78,13 @@ class SettingsController extends Controller
         Setting::set('verification_initial_days', $request->verification_initial_days ?? 10, 'number', 'breeding', 'Délai initial de vérification (jours)');
         Setting::set('verification_reminder_days', $request->verification_reminder_days ?? 15, 'number', 'breeding', 'Délai premier rappel (jours)');
         Setting::set('verification_interval_days', $request->verification_interval_days ?? 5, 'number', 'breeding', 'Intervalle des rappels (jours)');
+
+        // In SettingsController@update method
+        Setting::set('default_price_male', $request->default_price_male ?? 25000, 'number', 'sales', 'Prix par défaut - Mâles');
+        Setting::set('default_price_female', $request->default_price_female ?? 30000, 'number', 'sales', 'Prix par défaut - Femelles');
+        Setting::set('default_price_lapereau', $request->default_price_lapereau ?? 15000, 'number', 'sales', 'Prix par défaut - Lapereaux');
+
+
 
         return redirect()->route('settings.index')
             ->with('success', 'Paramètres enregistrés avec succès !')

@@ -1,1 +1,1 @@
-lscat -d app/ database/migrations/ resources/ routes/ -f .env storage/logs/laravel.log package.json composer.json -C -H none -D test.txt
+lscat -d app/ database/migrations/ resources/ routes/ -f .env storage/logs/laravel.log -C -H none -D test.txt

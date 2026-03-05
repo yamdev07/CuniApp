@@ -106,9 +106,9 @@
                         <strong>{{ $femelles->lastItem() }}</strong> sur <strong>{{ $femelles->total() }}</strong>
                         femelles
                     </div>
-                    <nav>
+                    @if ($femelles->hasPages())
                         {{ $femelles->links('pagination.bootstrap-5-sm') }}
-                    </nav>
+                    @endif
                 </div>
             @endif
         </div>

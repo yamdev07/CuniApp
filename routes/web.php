@@ -337,22 +337,3 @@ Route::fallback(function () {
     }
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
-
-// ========================================================================
-// 📌 ROUTE MODEL BINDING - FIXED
-// ========================================================================
-// ✅ Only keep Sale binding (user-specific)
-// ❌ Removed male/femelle binding to prevent 404 conflicts
-// Controllers now use findOrFail() for explicit ID resolution
-
-Route::bind('sale', function ($value) {
-    return \App\Models\Sale::where('id', $value)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
-});
-
-// ========================================================================
-// ✅ ROUTE CACHING OPTIMIZATION
-// ========================================================================
-// 💡 PRODUCTION: Run `php artisan route:cache` after deployment
-// ⚠️ All routes use Controller@method syntax for cache compatibility

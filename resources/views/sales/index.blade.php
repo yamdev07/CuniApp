@@ -1,6 +1,22 @@
 @extends('layouts.cuniapp')
 @section('title', 'Ventes - CuniApp Élevage')
 @section('content')
+
+    @if (session('success'))
+        <div class="alert-cuni success" style="margin-bottom: 24px;">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>{{ session('success') }}</div>
+        </div>
+    @endif
+
+    @if (session('warning'))
+        <div class="alert-cuni warning" style="margin-bottom: 24px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>{{ session('warning') }}</div>
+        </div>
+    @endif
+
+
     <div class="page-header">
         <div>
             <h2 class="page-title">
@@ -17,7 +33,7 @@
         </a>
     </div>
 
-    <!-- Stats Cards - FIXED for Dark Mode -->
+    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="cuni-card">
             <div class="card-body p-4">
@@ -39,7 +55,8 @@
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Chiffre d'affaires</p>
                         <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
-                            {{ number_format($stats['total_revenue'], 2, ',', ' ') }} FCFA</p>
+                            {{ number_format($stats['total_revenue'], 2, ',', ' ') }} FCFA
+                        </p>
                     </div>
                     <div class="w-10 h-10 rounded-full flex items-center justify-center"
                         style="background: rgba(16, 185, 129, 0.1)">
@@ -54,7 +71,8 @@
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Ce mois-ci</p>
                         <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
-                            {{ number_format($stats['this_month'], 2, ',', ' ') }} FCFA</p>
+                            {{ number_format($stats['this_month'], 2, ',', ' ') }} FCFA
+                        </p>
                     </div>
                     <div class="w-10 h-10 rounded-full flex items-center justify-center"
                         style="background: rgba(139, 92, 246, 0.1)">
@@ -69,7 +87,8 @@
                     <div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Paiements en attente</p>
                         <p class="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
-                            {{ number_format($stats['pending_payments'], 2, ',', ' ') }} FCFA</p>
+                            {{ number_format($stats['pending_payments'], 2, ',', ' ') }} FCFA
+                        </p>
                     </div>
                     <div class="w-10 h-10 rounded-full flex items-center justify-center"
                         style="background: rgba(245, 158, 11, 0.1)">
@@ -104,7 +123,8 @@
                         @forelse($sales as $sale)
                             <tr class="border-bottom border-light dark:border-gray-700">
                                 <td class="ps-4 fw-semibold text-dark dark:text-gray-100">
-                                    {{ $sale->date_sale->format('d/m/Y') }}</td>
+                                    {{ $sale->date_sale->format('d/m/Y') }}
+                                </td>
                                 <td>
                                     <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
                                         {{ ucfirst($sale->type) }}{{ $sale->category ? " ({$sale->category})" : '' }}
@@ -113,7 +133,8 @@
                                 <td class="fw-semibold text-dark dark:text-gray-100">{{ $sale->quantity }}</td>
                                 <td class="text-dark dark:text-gray-100">{{ $sale->buyer_name }}</td>
                                 <td class="fw-bold text-primary dark:text-blue-400">
-                                    {{ number_format($sale->total_amount, 2, ',', ' ') }} FCFA</td>
+                                    {{ number_format($sale->total_amount, 2, ',', ' ') }} FCFA
+                                </td>
                                 <td>
                                     @if ($sale->payment_status === 'paid')
                                         <span class="badge"
@@ -138,14 +159,16 @@
                                         </a>
                                         @if ($sale->payment_status !== 'paid')
                                             <form action="{{ route('sales.mark-paid', $sale) }}" method="POST"
-                                                style="display:inline;">
+                                                id="mark-paid-form-{{ $sale->id }}" style="display:inline;">
                                                 @csrf
-                                                <button type="submit" class="btn-cuni sm primary"
-                                                    title="Marquer comme payé"
-                                                    onclick="return confirm('Marquer cette vente comme payée ?')">
-                                                    <i class="bi bi-cash-coin"></i>
-                                                </button>
+                                                @method('PATCH')
                                             </form>
+                                            <button type="button" class="btn-cuni sm primary" title="Marquer comme payé"
+                                                onclick="showModal('confirm', 'Confirmer le paiement', 'Voulez-vous vraiment marquer cette vente comme payée ?', function() {
+        document.getElementById('mark-paid-form-{{ $sale->id }}').submit();
+    })">
+                                                <i class="bi bi-cash-coin"></i>
+                                            </button>
                                         @endif
                                         <form action="{{ route('sales.destroy', $sale) }}" method="POST"
                                             style="display:inline;">
@@ -176,16 +199,20 @@
                     </tbody>
                 </table>
             </div>
-
             @if ($sales->hasPages())
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
                     <div class="text-muted dark:text-gray-400" style="font-size: 13px;">
                         Affichage de <strong class="text-dark dark:text-gray-100">{{ $sales->firstItem() }}</strong> à
-                        <strong class="text-dark dark:text-gray-100">{{ $sales->lastItem() }}</strong> sur <strong
-                            class="text-dark dark:text-gray-100">{{ $sales->total() }}</strong> ventes
+                        <strong class="text-dark dark:text-gray-100">{{ $sales->lastItem() }}</strong> sur
+                        <strong class="text-dark dark:text-gray-100">{{ $sales->total() }}</strong> ventes
                     </div>
-                    <nav>{{ $sales->links('pagination.bootstrap-5-sm') }}</nav>
+                    @if ($sales->hasPages())
+                        <div class="cuni-card"
+                            style="margin-top: 0; border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+                            {{ $sales->links('pagination.bootstrap-5-sm') }}
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>
@@ -193,7 +220,6 @@
 
     @push('styles')
         <style>
-            /* Dark Mode Text Support for Sales Page */
             .theme-dark .text-gray-500 {
                 color: #9CA3AF !important;
             }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
@@ -14,7 +15,7 @@ class NotificationController extends Controller
         $notifications = Notification::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(25);
-        
+
         $unreadCount = Notification::where('user_id', Auth::id())
             ->where('is_read', false)
             ->count();
@@ -26,16 +27,18 @@ class NotificationController extends Controller
     {
         $notification = Notification::where('user_id', Auth::id())
             ->findOrFail($id);
-        
+
         $notification->markAsRead();
-        
-        if ($notification->action_url && request()->wantsJson()) {
+
+        // Always return JSON for AJAX calls from dashboard
+        if ($notification->action_url) {
             return response()->json([
+                'success' => true,
                 'redirect' => $notification->action_url
             ]);
         }
-        
-        return back()->with('success', 'Notification marquée comme lue');
+
+        return response()->json(['success' => true]);
     }
 
     public function markAllAsRead()
@@ -46,7 +49,7 @@ class NotificationController extends Controller
                 'is_read' => true,
                 'read_at' => now()
             ]);
-        
+
         return back()->with('success', 'Toutes les notifications ont été marquées comme lues');
     }
 
@@ -55,7 +58,7 @@ class NotificationController extends Controller
         $notification = Notification::where('user_id', Auth::id())
             ->findOrFail($id);
         $notification->delete();
-        
+
         return back()->with('success', 'Notification supprimée');
     }
 }

@@ -104,9 +104,9 @@
                         Affichage de <strong>{{ $males->firstItem() }}</strong> à
                         <strong>{{ $males->lastItem() }}</strong> sur <strong>{{ $males->total() }}</strong> mâles
                     </div>
-                    <nav>
+                    @if ($males->hasPages())
                         {{ $males->links('pagination.bootstrap-5-sm') }}
-                    </nav>
+                    @endif
                 </div>
             @endif
         </div>

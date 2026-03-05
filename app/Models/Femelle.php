@@ -36,4 +36,11 @@ class Femelle extends Model
     {
         return $this->hasMany(Naissance::class);
     }
+
+    // app/Models/Femelle.php (add this)
+    public function sales()
+    {
+        return $this->morphMany(SaleRabbit::class, 'rabbit', 'rabbit_type', 'rabbit_id')
+            ->where('rabbit_type', 'female');
+    }
 }
