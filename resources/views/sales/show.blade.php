@@ -4,6 +4,20 @@
 @section('title', 'Détails Vente - CuniApp Élevage')
 
 @section('content')
+
+    @if (session('success'))
+        <div class="alert-cuni success" style="margin-bottom: 24px;">
+            <i class="bi bi-check-circle-fill"></i>
+            <div>{{ session('success') }}</div>
+        </div>
+    @endif
+
+    @if (session('warning'))
+        <div class="alert-cuni warning" style="margin-bottom: 24px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>{{ session('warning') }}</div>
+        </div>
+    @endif
     <div class="page-header">
         <div>
             <h2 class="page-title">
