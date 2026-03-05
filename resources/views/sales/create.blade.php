@@ -448,73 +448,187 @@
     @push('scripts')
         <script>
             (function() {
-                    // ============================================
-                    // GLOBAL PRICE MANAGEMENT
-                    // ============================================
+                // ============================================
+                // GLOBAL PRICE MANAGEMENT
+                // ============================================
 
-                    let globalPrices = {
-                        males: {{ \App\Models\Setting::get('default_price_male', 25000) }},
-                        females: {{ \App\Models\Setting::get('default_price_female', 30000) }},
-                        lapereaux: {{ \App\Models\Setting::get('default_price_lapereau', 15000) }}
-                    };
+                let globalPrices = {
+                    males: {{ \App\Models\Setting::get('default_price_male', 25000) }},
+                    females: {{ \App\Models\Setting::get('default_price_female', 30000) }},
+                    lapereaux: {{ \App\Models\Setting::get('default_price_lapereau', 15000) }}
+                };
 
-                    // Track custom prices (not from global)
-                    let customPrices = {};
+                // Track custom prices (not from global)
+                let customPrices = {};
 
-                    // Initialize global price inputs
-                    document.querySelectorAll('.global-price-input').forEach(input => {
-                        input.addEventListener('change', function() {
-                            const category = this.dataset.category;
-                            globalPrices[category] = parseFloat(this.value) || 0;
+                // Initialize global price inputs
+                document.querySelectorAll('.global-price-input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const category = this.dataset.category;
+                        globalPrices[category] = parseFloat(this.value) || 0;
 
-                            // Visual feedback
-                            this.style.borderColor = 'var(--accent-green)';
-                            setTimeout(() => {
-                                this.style.borderColor = '';
-                            }, 1000);
+                        // Visual feedback
+                        this.style.borderColor = 'var(--accent-green)';
+                        setTimeout(() => {
+                            this.style.borderColor = '';
+                        }, 1000);
 
-                            // Auto-apply if enabled
-                            if (document.getElementById('autoApplyGlobalPrice').checked) {
-                                applyGlobalPricesToSelected(category);
+                        // Auto-apply if enabled
+                        if (document.getElementById('autoApplyGlobalPrice').checked) {
+                            applyGlobalPricesToSelected(category);
+                        }
+                    });
+                });
+
+                function handleRabbitSelection(category, rabbitId) {
+                    const checkbox = document.querySelector(
+                        `input[name="selected_${category}[]"][value="${rabbitId}"]`
+                    );
+                    const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
+                    const priceInput = priceContainer?.querySelector('.rabbit-price');
+                    const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
+
+                    if (checkbox && priceContainer) {
+                        priceContainer.style.display = checkbox.checked ? 'block' : 'none';
+
+                        if (checkbox.checked && priceInput) {
+                            // ✅ CRITICAL: Always set a price value
+                            const customKey = `${category}-${rabbitId}`;
+                            if (customPrices[customKey] !== undefined) {
+                                priceInput.value = customPrices[customKey];
+                                markPriceAsCustom(category, rabbitId);
+                            } else {
+                                // ✅ Apply global price with validation
+                                priceInput.value = globalPrices[category] || 0;
+                                if (indicator) {
+                                    indicator.style.display = 'block';
+                                }
+                            }
+                            priceInput.focus();
+
+                            // ✅ Force validation visual feedback
+                            priceInput.classList.remove('error');
+                        }
+                    }
+                    calculateTotalAmount();
+                }
+
+                // Reset individual price to global
+                function resetToGlobalPrice(category, rabbitId) {
+                    const priceInput = document.querySelector(
+                        `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
+                    );
+                    const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
+
+                    if (priceInput) {
+                        priceInput.value = globalPrices[category];
+                        priceInput.style.borderColor = 'var(--accent-green)';
+                        priceInput.style.backgroundColor = 'var(--primary-subtle)';
+
+                        if (indicator) {
+                            indicator.style.display = 'block';
+                        }
+
+                        // Remove from custom prices
+                        delete customPrices[`${category}-${rabbitId}`];
+
+                        setTimeout(() => {
+                            priceInput.style.borderColor = '';
+                            priceInput.style.backgroundColor = '';
+                        }, 1000);
+
+                        calculateTotalAmount();
+
+                        showToast('Prix réinitialisé au prix global', 'success');
+                    }
+                }
+
+                // Mark price as custom (manually overridden)
+                function markPriceAsCustom(category, rabbitId) {
+                    const priceInput = document.querySelector(
+                        `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
+                    );
+                    const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
+
+                    if (priceInput) {
+                        const currentValue = parseFloat(priceInput.value) || 0;
+                        const globalValue = globalPrices[category];
+
+                        if (currentValue !== globalValue) {
+                            // Custom price
+                            customPrices[`${category}-${rabbitId}`] = currentValue;
+                            priceInput.style.borderColor = 'var(--accent-orange)';
+                            priceInput.style.backgroundColor = 'rgba(245, 158, 11, 0.05)';
+
+                            if (indicator) {
+                                indicator.style.display = 'none';
+                            }
+                        } else {
+                            // Same as global
+                            delete customPrices[`${category}-${rabbitId}`];
+                            priceInput.style.borderColor = 'var(--accent-green)';
+                            priceInput.style.backgroundColor = 'var(--primary-subtle)';
+
+                            if (indicator) {
+                                indicator.style.display = 'block';
+                            }
+                        }
+
+                        setTimeout(() => {
+                            if (currentValue === globalValue) {
+                                priceInput.style.borderColor = '';
+                                priceInput.style.backgroundColor = '';
+                            }
+                        }, 1000);
+                    }
+                }
+
+                // Apply global prices to all currently selected rabbits
+                function applyGlobalPricesToAll() {
+                    let count = 0;
+
+                    ['males', 'females', 'lapereaux'].forEach(category => {
+                        const checkboxes = document.querySelectorAll(
+                            `input[name="selected_${category}[]"]:checked`);
+                        checkboxes.forEach(checkbox => {
+                            const rabbitId = checkbox.value;
+                            const priceInput = document.querySelector(
+                                `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
+                            );
+                            const indicator = document.getElementById(
+                                `price-indicator-${category}-${rabbitId}`);
+
+                            if (priceInput) {
+                                priceInput.value = globalPrices[category];
+                                priceInput.style.borderColor = 'var(--accent-green)';
+                                priceInput.style.backgroundColor = 'var(--primary-subtle)';
+
+                                if (indicator) {
+                                    indicator.style.display = 'block';
+                                }
+
+                                delete customPrices[`${category}-${rabbitId}`];
+                                count++;
                             }
                         });
                     });
 
-                    function handleRabbitSelection(category, rabbitId) {
-                        const checkbox = document.querySelector(
-                            `input[name="selected_${category}[]"][value="${rabbitId}"]`
-                        );
-                        const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
-                        const priceInput = priceContainer?.querySelector('.rabbit-price');
-                        const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
+                    calculateTotalAmount();
 
-                        if (checkbox && priceContainer) {
-                            priceContainer.style.display = checkbox.checked ? 'block' : 'none';
-
-                            if (checkbox.checked && priceInput) {
-                                // ✅ CRITICAL: Always set a price value
-                                const customKey = `${category}-${rabbitId}`;
-                                if (customPrices[customKey] !== undefined) {
-                                    priceInput.value = customPrices[customKey];
-                                    markPriceAsCustom(category, rabbitId);
-                                } else {
-                                    // ✅ Apply global price with validation
-                                    priceInput.value = globalPrices[category] || 0;
-                                    if (indicator) {
-                                        indicator.style.display = 'block';
-                                    }
-                                }
-                                priceInput.focus();
-
-                                // ✅ Force validation visual feedback
-                                priceInput.classList.remove('error');
-                            }
-                        }
-                        calculateTotalAmount();
+                    if (count > 0) {
+                        showToast(`${count} prix mis à jour avec les prix globaux`, 'success');
+                    } else {
+                        showToast('Aucun lapin sélectionné', 'info');
                     }
+                }
 
-                    // Reset individual price to global
-                    function resetToGlobalPrice(category, rabbitId) {
+                // Apply global prices to selected rabbits in specific category
+                function applyGlobalPricesToSelected(category) {
+                    const checkboxes = document.querySelectorAll(`input[name="selected_${category}[]"]:checked`);
+                    let count = 0;
+
+                    checkboxes.forEach(checkbox => {
+                        const rabbitId = checkbox.value;
                         const priceInput = document.querySelector(
                             `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
                         );
@@ -522,308 +636,194 @@
 
                         if (priceInput) {
                             priceInput.value = globalPrices[category];
-                            priceInput.style.borderColor = 'var(--accent-green)';
-                            priceInput.style.backgroundColor = 'var(--primary-subtle)';
-
                             if (indicator) {
                                 indicator.style.display = 'block';
                             }
-
-                            // Remove from custom prices
                             delete customPrices[`${category}-${rabbitId}`];
-
-                            setTimeout(() => {
-                                priceInput.style.borderColor = '';
-                                priceInput.style.backgroundColor = '';
-                            }, 1000);
-
-                            calculateTotalAmount();
-
-                            showToast('Prix réinitialisé au prix global', 'success');
+                            count++;
                         }
-                    }
-
-                    // Mark price as custom (manually overridden)
-                    function markPriceAsCustom(category, rabbitId) {
-                        const priceInput = document.querySelector(
-                            `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
-                        );
-                        const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
-
-                        if (priceInput) {
-                            const currentValue = parseFloat(priceInput.value) || 0;
-                            const globalValue = globalPrices[category];
-
-                            if (currentValue !== globalValue) {
-                                // Custom price
-                                customPrices[`${category}-${rabbitId}`] = currentValue;
-                                priceInput.style.borderColor = 'var(--accent-orange)';
-                                priceInput.style.backgroundColor = 'rgba(245, 158, 11, 0.05)';
-
-                                if (indicator) {
-                                    indicator.style.display = 'none';
-                                }
-                            } else {
-                                // Same as global
-                                delete customPrices[`${category}-${rabbitId}`];
-                                priceInput.style.borderColor = 'var(--accent-green)';
-                                priceInput.style.backgroundColor = 'var(--primary-subtle)';
-
-                                if (indicator) {
-                                    indicator.style.display = 'block';
-                                }
-                            }
-
-                            setTimeout(() => {
-                                if (currentValue === globalValue) {
-                                    priceInput.style.borderColor = '';
-                                    priceInput.style.backgroundColor = '';
-                                }
-                            }, 1000);
-                        }
-                    }
-
-                    // Apply global prices to all currently selected rabbits
-                    function applyGlobalPricesToAll() {
-                        let count = 0;
-
-                        ['males', 'females', 'lapereaux'].forEach(category => {
-                            const checkboxes = document.querySelectorAll(
-                                `input[name="selected_${category}[]"]:checked`);
-                            checkboxes.forEach(checkbox => {
-                                const rabbitId = checkbox.value;
-                                const priceInput = document.querySelector(
-                                    `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
-                                );
-                                const indicator = document.getElementById(
-                                    `price-indicator-${category}-${rabbitId}`);
-
-                                if (priceInput) {
-                                    priceInput.value = globalPrices[category];
-                                    priceInput.style.borderColor = 'var(--accent-green)';
-                                    priceInput.style.backgroundColor = 'var(--primary-subtle)';
-
-                                    if (indicator) {
-                                        indicator.style.display = 'block';
-                                    }
-
-                                    delete customPrices[`${category}-${rabbitId}`];
-                                    count++;
-                                }
-                            });
-                        });
-
-                        calculateTotalAmount();
-
-                        if (count > 0) {
-                            showToast(`${count} prix mis à jour avec les prix globaux`, 'success');
-                        } else {
-                            showToast('Aucun lapin sélectionné', 'info');
-                        }
-                    }
-
-                    // Apply global prices to selected rabbits in specific category
-                    function applyGlobalPricesToSelected(category) {
-                        const checkboxes = document.querySelectorAll(`input[name="selected_${category}[]"]:checked`);
-                        let count = 0;
-
-                        checkboxes.forEach(checkbox => {
-                            const rabbitId = checkbox.value;
-                            const priceInput = document.querySelector(
-                                `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
-                            );
-                            const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
-
-                            if (priceInput) {
-                                priceInput.value = globalPrices[category];
-                                if (indicator) {
-                                    indicator.style.display = 'block';
-                                }
-                                delete customPrices[`${category}-${rabbitId}`];
-                                count++;
-                            }
-                        });
-
-                        if (count > 0) {
-                            calculateTotalAmount();
-                        }
-                    }
-
-                    // Save global prices as default in settings
-                    function saveGlobalPricesAsDefault() {
-                        const prices = {
-                            default_price_male: parseFloat(document.getElementById('globalPriceMales').value) || 0,
-                            default_price_female: parseFloat(document.getElementById('globalPriceFemales').value) || 0,
-                            default_price_lapereau: parseFloat(document.getElementById('globalPriceLapereaux').value) || 0,
-                        };
-
-                        fetch('{{ route('settings.update') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify(prices)
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                showToast('Prix par défaut enregistrés avec succès!', 'success');
-                            })
-                            .catch(error => {
-                                showToast('Erreur lors de l\'enregistrement', 'error');
-                                console.error('Error:', error);
-                            });
-                    }
-
-                    // ============================================
-                    // 1. TAB SWITCHING (Mâles / Femelles / Lapereaux)
-                    // ============================================
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove(
-                                'active'));
-                            this.classList.add('active');
-                            document.getElementById(this.dataset.tab).classList.add('active');
-                        });
                     });
 
-                    // ============================================
-                    // 2. FILTER RABBITS BY SEARCH
-                    // ============================================
-                    function filterRabbits(category, searchTerm) {
-                        const grid = document.getElementById(category + 'Grid');
-                        const cards = grid.querySelectorAll('.rabbit-card');
-                        let visibleCount = 0;
-
-                        cards.forEach(card => {
-                            const checkbox = card.querySelector('.rabbit-checkbox');
-                            const code = checkbox.dataset.code.toLowerCase();
-                            const name = checkbox.dataset.name.toLowerCase();
-
-                            if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm.toLowerCase())) {
-                                card.style.display = 'flex';
-                                visibleCount++;
-                            } else {
-                                card.style.display = 'none';
-                            }
-                        });
-
-                        document.getElementById(category + 'Count').textContent = visibleCount;
-                    }
-
-                    // ============================================
-                    // 3. TOGGLE SELECT ALL
-                    // ============================================
-                    function toggleSelectAll(category, select = true) {
-                        const grid = document.getElementById(category + 'Grid');
-                        const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
-
-                        checkboxes.forEach(checkbox => {
-                            if (checkbox.closest('.rabbit-card').style.display !== 'none') {
-                                checkbox.checked = select;
-                                const rabbitId = checkbox.value;
-                                handleRabbitSelection(category, rabbitId);
-                            }
-                        });
-
+                    if (count > 0) {
                         calculateTotalAmount();
                     }
+                }
 
-                    // ============================================
-                    // 5. CALCULATE TOTAL FROM INDIVIDUAL PRICES
-                    // ============================================
-                    function calculateTotalAmount() {
-                        let total = 0;
-                        let selectedCount = 0;
-                        let missingPrices = 0;
+                // Save global prices as default in settings
+                function saveGlobalPricesAsDefault() {
+                    const prices = {
+                        default_price_male: parseFloat(document.getElementById('globalPriceMales').value) || 0,
+                        default_price_female: parseFloat(document.getElementById('globalPriceFemales').value) || 0,
+                        default_price_lapereau: parseFloat(document.getElementById('globalPriceLapereaux').value) || 0,
+                    };
 
-                        // Sum all checked rabbit prices
-                        document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
-                            selectedCount++;
-                            const card = checkbox.closest('.rabbit-card');
-                            const priceInput = card.querySelector('.rabbit-price');
-
-                            if (priceInput && priceInput.value) {
-                                total += parseFloat(priceInput.value) || 0;
-                            } else if (checkbox.checked) {
-                                missingPrices++;
-                            }
+                    fetch('{{ route('settings.update') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify(prices)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            showToast('Prix par défaut enregistrés avec succès!', 'success');
+                        })
+                        .catch(error => {
+                            showToast('Erreur lors de l\'enregistrement', 'error');
+                            console.error('Error:', error);
                         });
+                }
 
-                        // Update counts by category
-                        const males = document.querySelectorAll('input[name="selected_males[]"]:checked').length;
-                        const females = document.querySelectorAll('input[name="selected_females[]"]:checked').length;
-                        const lapereaux = document.querySelectorAll('input[name="selected_lapereaux[]"]:checked').length;
+                // ============================================
+                // 1. TAB SWITCHING (Mâles / Femelles / Lapereaux)
+                // ============================================
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove(
+                            'active'));
+                        this.classList.add('active');
+                        document.getElementById(this.dataset.tab).classList.add('active');
+                    });
+                });
 
-                        document.getElementById('selectedMalesCount').textContent = males;
-                        document.getElementById('selectedFemalesCount').textContent = females;
-                        document.getElementById('selectedLapereauxCount').textContent = lapereaux;
-                        document.getElementById('selectedSummary').textContent = selectedCount + ' lapin(s) sélectionné(s)';
+                // ============================================
+                // 2. FILTER RABBITS BY SEARCH
+                // ============================================
+                function filterRabbits(category, searchTerm) {
+                    const grid = document.getElementById(category + 'Grid');
+                    const cards = grid.querySelectorAll('.rabbit-card');
+                    let visibleCount = 0;
 
-                        // Update total display
-                        document.getElementById('totalAmountDisplay').textContent =
-                            total.toLocaleString('fr-FR', {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0
-                            }) + ' FCFA';
+                    cards.forEach(card => {
+                        const checkbox = card.querySelector('.rabbit-checkbox');
+                        const code = checkbox.dataset.code.toLowerCase();
+                        const name = checkbox.dataset.name.toLowerCase();
 
-                        // Show warning if prices are missing
-                        const warningDiv = document.getElementById('quantityMismatchWarning');
-                        const submitBtn = document.getElementById('submitBtn');
+                        if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm.toLowerCase())) {
+                            card.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
 
-                        if (missingPrices > 0 && selectedCount > 0) {
-                            warningDiv.style.display = 'block';
-                            warningDiv.innerHTML = `
+                    document.getElementById(category + 'Count').textContent = visibleCount;
+                }
+
+                // ============================================
+                // 3. TOGGLE SELECT ALL
+                // ============================================
+                function toggleSelectAll(category, select = true) {
+                    const grid = document.getElementById(category + 'Grid');
+                    const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
+
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.closest('.rabbit-card').style.display !== 'none') {
+                            checkbox.checked = select;
+                            const rabbitId = checkbox.value;
+                            handleRabbitSelection(category, rabbitId);
+                        }
+                    });
+
+                    calculateTotalAmount();
+                }
+
+                // ============================================
+                // 5. CALCULATE TOTAL FROM INDIVIDUAL PRICES
+                // ============================================
+                function calculateTotalAmount() {
+                    let total = 0;
+                    let selectedCount = 0;
+                    let missingPrices = 0;
+
+                    // Sum all checked rabbit prices
+                    document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
+                        selectedCount++;
+                        const card = checkbox.closest('.rabbit-card');
+                        const priceInput = card.querySelector('.rabbit-price');
+
+                        if (priceInput && priceInput.value) {
+                            total += parseFloat(priceInput.value) || 0;
+                        } else if (checkbox.checked) {
+                            missingPrices++;
+                        }
+                    });
+
+                    // Update counts by category
+                    const males = document.querySelectorAll('input[name="selected_males[]"]:checked').length;
+                    const females = document.querySelectorAll('input[name="selected_females[]"]:checked').length;
+                    const lapereaux = document.querySelectorAll('input[name="selected_lapereaux[]"]:checked').length;
+
+                    document.getElementById('selectedMalesCount').textContent = males;
+                    document.getElementById('selectedFemalesCount').textContent = females;
+                    document.getElementById('selectedLapereauxCount').textContent = lapereaux;
+                    document.getElementById('selectedSummary').textContent = selectedCount + ' lapin(s) sélectionné(s)';
+
+                    // Update total display
+                    document.getElementById('totalAmountDisplay').textContent =
+                        total.toLocaleString('fr-FR', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        }) + ' FCFA';
+
+                    // Show warning if prices are missing
+                    const warningDiv = document.getElementById('quantityMismatchWarning');
+                    const submitBtn = document.getElementById('submitBtn');
+
+                    if (missingPrices > 0 && selectedCount > 0) {
+                        warningDiv.style.display = 'block';
+                        warningDiv.innerHTML = `
             <i class="bi bi-exclamation-triangle" style="color: var(--accent-orange);"></i>
             <span style="color: var(--accent-orange); font-weight: 600;">
                 Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants)!
             </span>
         `;
-                            submitBtn.disabled = true;
-                        } else {
-                            warningDiv.style.display = 'none';
-                            submitBtn.disabled = selectedCount === 0;
-                        }
+                        submitBtn.disabled = true;
+                    } else {
+                        warningDiv.style.display = 'none';
+                        submitBtn.disabled = selectedCount === 0;
                     }
+                }
 
-                    // ============================================
-                    // 6. FORM SUBMISSION VALIDATION
-                    // ============================================
-                    document.getElementById('saleForm').addEventListener('submit', function(e) {
-                        const selectedCount = document.querySelectorAll('.rabbit-checkbox:checked').length;
-                        let missingPrices = 0;
+                // ============================================
+                // 6. FORM SUBMISSION VALIDATION
+                // ============================================
+                document.getElementById('saleForm').addEventListener('submit', function(e) {
+                    const selectedCount = document.querySelectorAll('.rabbit-checkbox:checked').length;
+                    let missingPrices = 0;
 
-                        document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
-                            const card = checkbox.closest('.rabbit-card');
-                            const priceInput = card.querySelector('.rabbit-price');
+                    document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
+                        const card = checkbox.closest('.rabbit-card');
+                        const priceInput = card.querySelector('.rabbit-price');
 
-                            if (!priceInput || !priceInput.value || parseFloat(priceInput.value) <= 0) {
-                                missingPrices++;
-                            }
-                        });
-
-                        if (selectedCount === 0) {
-                            e.preventDefault();
-                            alert('⚠️ Veuillez sélectionner au moins un lapin à vendre.');
-                            return;
-                        }
-
-                        if (missingPrices > 0) {
-                            e.preventDefault();
-                            alert(
-                                `⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).`
-                            );
-                            return;
+                        if (!priceInput || !priceInput.value || parseFloat(priceInput.value) <= 0) {
+                            missingPrices++;
                         }
                     });
 
-                    // ============================================
-                    // TOAST NOTIFICATION
-                    // ============================================
-                    function showToast(message, type = 'info') {
-                        const toast = document.createElement('div');
-                        toast.style.cssText = `
+                    if (selectedCount === 0) {
+                        e.preventDefault();
+                        alert('⚠️ Veuillez sélectionner au moins un lapin à vendre.');
+                        return;
+                    }
+
+                    if (missingPrices > 0) {
+                        e.preventDefault();
+                        alert(
+                            `⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).`
+                        );
+                        return;
+                    }
+                });
+
+                // ============================================
+                // TOAST NOTIFICATION
+                // ============================================
+                function showToast(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    toast.style.cssText = `
         position: fixed;
         bottom: 100px;
         right: 30px;
@@ -841,29 +841,29 @@
         max-width: 400px;
     `;
 
-                        const icon = type === 'success' ? 'check-circle-fill' : (type === 'error' ? 'x-circle-fill' :
-                            'info-circle-fill');
-                        const color = type === 'success' ? 'var(--accent-green)' : (type === 'error' ? 'var(--accent-red)' :
-                            'var(--primary)');
+                    const icon = type === 'success' ? 'check-circle-fill' : (type === 'error' ? 'x-circle-fill' :
+                        'info-circle-fill');
+                    const color = type === 'success' ? 'var(--accent-green)' : (type === 'error' ? 'var(--accent-red)' :
+                        'var(--primary)');
 
-                        toast.innerHTML = `
+                    toast.innerHTML = `
         <i class="bi bi-${icon}" style="color: ${color}; font-size: 20px;"></i>
         <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
     `;
 
-                        document.body.appendChild(toast);
+                    document.body.appendChild(toast);
 
-                        setTimeout(() => {
-                            toast.style.animation = 'slideOutRight 0.3s ease';
-                            setTimeout(() => toast.remove(), 300);
-                        }, 3000);
-                    }
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOutRight 0.3s ease';
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
 
-                    // Add animation styles
-                    if (!document.getElementById('cuniapp-animations-style')) {
-                        const animationStyle = document.createElement('style');
-                        animationStyle.id = 'cuniapp-animations-style';
-                        animationStyle.textContent = `
+                // Add animation styles
+                if (!document.getElementById('cuniapp-animations-style')) {
+                    const animationStyle = document.createElement('style');
+                    animationStyle.id = 'cuniapp-animations-style';
+                    animationStyle.textContent = `
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -882,24 +882,25 @@
             box-shadow: var(--shadow-md);
         }
     `;
-                        document.head.appendChild(style);
+                    document.head.appendChild(animationStyle);
+                }
 
-                        // ============================================
-                        // 7. INITIALIZE ON PAGE LOAD
-                        // ============================================
-                        window.addEventListener('DOMContentLoaded', () => {
-                            // Initialize counts
-                            filterRabbits('males', '');
-                            filterRabbits('females', '');
-                            filterRabbits('lapereaux', '');
+                // ============================================
+                // 7. INITIALIZE ON PAGE LOAD
+                // ============================================
+                window.addEventListener('DOMContentLoaded', () => {
+                    // Initialize counts
+                    filterRabbits('males', '');
+                    filterRabbits('females', '');
+                    filterRabbits('lapereaux', '');
 
-                            // Disable submit button initially
-                            document.getElementById('submitBtn').disabled = true;
+                    // Disable submit button initially
+                    document.getElementById('submitBtn').disabled = true;
 
-                            // Show welcome toast
-                            showToast('💡 Astuce: Définissez vos prix globaux pour gagner du temps!', 'info');
-                        });
-                    })();
+                    // Show welcome toast
+                    showToast('💡 Astuce: Définissez vos prix globaux pour gagner du temps!', 'info');
+                });
+            })();
         </script>
     @endpush
 
