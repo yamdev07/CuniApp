@@ -46,31 +46,16 @@ class SaleController extends Controller
      */
     public function create()
     {
-        // Load available rabbits by category
-        $males = Male::where('etat', 'Active')
-            ->whereDoesntHave('sales', function ($q) {
-                $q->whereHas('sale', function ($sq) {
-                    $sq->where('payment_status', '!=', 'cancelled');
-                });
-            })
+        // ✅ FIXED: Include ALL male states (like FemelleController does)
+        $males = Male::orderBy('nom')->get();
+
+        // ✅ Females - Keep as is (good)
+        $femelles = Femelle::whereIn('etat', ['Active', 'Vide', 'Allaitante'])
             ->orderBy('nom')
             ->get();
 
-        $femelles = Femelle::where('etat', 'Active')
-            ->whereDoesntHave('sales', function ($q) {
-                $q->whereHas('sale', function ($sq) {
-                    $sq->where('payment_status', '!=', 'cancelled');
-                });
-            })
-            ->orderBy('nom')
-            ->get();
-
-        $lapereaux = Lapereau::where('etat', 'vivant')
-            ->whereDoesntHave('sales', function ($q) {
-                $q->whereHas('sale', function ($sq) {
-                    $sq->where('payment_status', '!=', 'cancelled');
-                });
-            })
+        // ✅ Lapereaux - Keep as is (good)
+        $lapereaux = Lapereau::whereIn('etat', ['vivant', 'vendu'])
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
             ->get();
@@ -312,17 +297,17 @@ class SaleController extends Controller
         // ✅ LOAD RABBITS WITH THE SALE
         $sale->load(['rabbits.rabbit']);
 
-        // ✅ Load available rabbits by category
-        $males = Male::where('etat', 'Active')
-            ->whereDoesntHave('sales', function ($q) use ($sale) {
-                $q->whereHas('sale', function ($sq) use ($sale) {
-                    $sq->where('payment_status', '!=', 'cancelled')
-                        ->where('id', '!=', $sale->id); // Exclude current sale
-                });
-            })
+        // ✅ FIXED: Load ALL available males (no etat filter)
+        $males = Male::whereDoesntHave('sales', function ($q) use ($sale) {
+            $q->whereHas('sale', function ($sq) use ($sale) {
+                $sq->where('payment_status', '!=', 'cancelled')
+                    ->where('id', '!=', $sale->id);
+            });
+        })
             ->orderBy('nom')
             ->get();
 
+        // ✅ Females - Keep as is
         $femelles = Femelle::where('etat', 'Active')
             ->whereDoesntHave('sales', function ($q) use ($sale) {
                 $q->whereHas('sale', function ($sq) use ($sale) {
@@ -333,6 +318,7 @@ class SaleController extends Controller
             ->orderBy('nom')
             ->get();
 
+        // ✅ Lapereaux - Keep as is
         $lapereaux = Lapereau::where('etat', 'vivant')
             ->whereDoesntHave('sales', function ($q) use ($sale) {
                 $q->whereHas('sale', function ($sq) use ($sale) {
