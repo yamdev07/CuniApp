@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- Section: Prix --}}
             <div class="form-section" style="margin-top: 24px;">
                 <h4 class="section-subtitle">
@@ -85,13 +85,12 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- ✅ Section: Sélection des Lapins --}}
             <div class="form-section" style="margin-top: 24px; border: 2px solid var(--primary-subtle);">
                 <h4 class="section-subtitle">
                     <i class="bi bi-collection"></i> Sélection des Lapins à Vendre
                 </h4>
-                
                 <div class="alert-box info" style="margin-bottom: 16px;">
                     <i class="bi bi-info-circle-fill"></i>
                     <div>
@@ -99,11 +98,21 @@
                         <ul style="margin: 8px 0 0 16px; padding: 0;">
                             <li>Sélectionnez les lapins spécifiques à vendre par catégorie</li>
                             <li>Utilisez la recherche pour filtrer les lapins</li>
-                            <li>Le bouton "Tout sélectionner" sélectionne tous les lapins visibles</li>
+                            <li>Le nombre total de lapins sélectionnés doit correspondre à la quantité</li>
                         </ul>
                     </div>
                 </div>
-                
+
+                {{-- Quantity Input --}}
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">Quantité totale de lapins à vendre *</label>
+                    <input type="number" name="quantity" id="totalQuantity" class="form-control" required min="1" value="{{ old('quantity', 1) }}">
+                    <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
+                        <i class="bi bi-info-circle"></i> Nombre total de lapins dans cette vente
+                    </small>
+                    <div id="quantityValidation" class="validation-message" style="display: none; margin-top: 8px;"></div>
+                </div>
+
                 {{-- Tabs for categories --}}
                 <div class="tabs-container" style="margin-bottom: 20px;">
                     <button type="button" class="tab-btn active" data-tab="males-tab">
@@ -116,13 +125,11 @@
                         <i class="bi bi-egg-fill"></i> Lapereaux (<span id="lapereauxCount">0</span>)
                     </button>
                 </div>
-                
+
                 {{-- ✅ Mâles Tab --}}
                 <div class="tab-content active" id="males-tab">
                     <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-                        <input type="text" class="form-control" placeholder="Rechercher un mâle..." 
-                               id="searchMales" style="flex: 1; min-width: 250px;"
-                               onkeyup="filterRabbits('males', this.value)">
+                        <input type="text" class="form-control" placeholder="Rechercher un mâle..." id="searchMales" style="flex: 1; min-width: 250px;" onkeyup="filterRabbits('males', this.value)">
                         <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('males')">
                             <i class="bi bi-check-square"></i> Tout sélectionner
                         </button>
@@ -142,13 +149,11 @@
                         @endforeach
                     </div>
                 </div>
-                
+
                 {{-- ✅ Femelles Tab --}}
                 <div class="tab-content" id="females-tab">
                     <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-                        <input type="text" class="form-control" placeholder="Rechercher une femelle..." 
-                               id="searchFemales" style="flex: 1; min-width: 250px;"
-                               onkeyup="filterRabbits('females', this.value)">
+                        <input type="text" class="form-control" placeholder="Rechercher une femelle..." id="searchFemales" style="flex: 1; min-width: 250px;" onkeyup="filterRabbits('females', this.value)">
                         <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('females')">
                             <i class="bi bi-check-square"></i> Tout sélectionner
                         </button>
@@ -168,13 +173,11 @@
                         @endforeach
                     </div>
                 </div>
-                
+
                 {{-- ✅ Lapereaux Tab --}}
                 <div class="tab-content" id="lapereaux-tab">
                     <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-                        <input type="text" class="form-control" placeholder="Rechercher un lapereau..." 
-                               id="searchLapereaux" style="flex: 1; min-width: 250px;"
-                               onkeyup="filterRabbits('lapereaux', this.value)">
+                        <input type="text" class="form-control" placeholder="Rechercher un lapereau..." id="searchLapereaux" style="flex: 1; min-width: 250px;" onkeyup="filterRabbits('lapereaux', this.value)">
                         <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('lapereaux')">
                             <i class="bi bi-check-square"></i> Tout sélectionner
                         </button>
@@ -194,7 +197,7 @@
                         @endforeach
                     </div>
                 </div>
-                
+
                 {{-- Selected Summary --}}
                 <div style="margin-top: 24px; padding: 16px; background: var(--primary-subtle); border-radius: var(--radius-lg);">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -208,9 +211,13 @@
                             <span style="font-size: 13px;">🟨 Lapereaux: <strong id="selectedLapereauxCount">0</strong></span>
                         </div>
                     </div>
+                    <div id="quantityMismatchWarning" style="margin-top: 12px; padding: 12px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius); display: none;">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--accent-orange);"></i>
+                        <span style="color: var(--accent-orange); font-weight: 600;">Le nombre de lapins sélectionnés ne correspond pas à la quantité définie!</span>
+                    </div>
                 </div>
             </div>
-            
+
             {{-- Section: Paiement --}}
             <div class="form-section" style="margin-top: 24px;">
                 <h4 class="section-subtitle">
@@ -231,7 +238,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- Section: Notes --}}
             <div class="form-section" style="margin-top: 24px;">
                 <h4 class="section-subtitle">
@@ -242,9 +249,9 @@
                     <textarea name="notes" class="form-control" rows="3" placeholder="Informations complémentaires...">{{ old('notes') }}</textarea>
                 </div>
             </div>
-            
+
             <div style="margin-top: 32px; display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
-                <button type="submit" class="btn-cuni primary">
+                <button type="submit" class="btn-cuni primary" id="submitBtn">
                     <i class="bi bi-check-circle"></i> Enregistrer la vente
                 </button>
                 <a href="{{ route('sales.index') }}" class="btn-cuni secondary">
@@ -316,6 +323,28 @@ function updateSelectedSummary() {
     document.getElementById('selectedLapereauxCount').textContent = lapereaux;
     document.getElementById('selectedSummary').textContent = total + ' lapin(s) sélectionné(s)';
     
+    // Check quantity match
+    const quantityInput = document.getElementById('totalQuantity');
+    const quantity = parseInt(quantityInput.value) || 0;
+    const warningDiv = document.getElementById('quantityMismatchWarning');
+    const validationDiv = document.getElementById('quantityValidation');
+    
+    if (quantity > 0 && total !== quantity) {
+        warningDiv.style.display = 'block';
+        validationDiv.style.display = 'block';
+        validationDiv.className = 'validation-message error';
+        validationDiv.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Vous avez sélectionné ' + total + ' lapin(s) mais la quantité est de ' + quantity + '</span>';
+        document.getElementById('submitBtn').disabled = true;
+    } else if (quantity > 0 && total === quantity) {
+        warningDiv.style.display = 'none';
+        validationDiv.style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+    } else {
+        warningDiv.style.display = 'none';
+        validationDiv.style.display = 'none';
+        document.getElementById('submitBtn').disabled = false;
+    }
+    
     // Update total amount
     const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
     const totalAmount = total * unitPrice;
@@ -329,10 +358,38 @@ document.querySelectorAll('.rabbit-checkbox').forEach(checkbox => {
 
 document.getElementById('unitPrice').addEventListener('input', updateSelectedSummary);
 
+document.getElementById('totalQuantity').addEventListener('input', updateSelectedSummary);
+
 // Initialize counts
 filterRabbits('males', '');
 filterRabbits('females', '');
 filterRabbits('lapereaux', '');
+
+// Form submission validation
+document.getElementById('saleForm').addEventListener('submit', function(e) {
+    const quantity = parseInt(document.getElementById('totalQuantity').value) || 0;
+    const total = document.querySelectorAll('input[name="selected_males[]"]:checked').length +
+                  document.querySelectorAll('input[name="selected_females[]"]:checked').length +
+                  document.querySelectorAll('input[name="selected_lapereaux[]"]:checked').length;
+    
+    if (quantity === 0) {
+        e.preventDefault();
+        alert('Veuillez spécifier une quantité de lapins à vendre.');
+        return;
+    }
+    
+    if (total === 0) {
+        e.preventDefault();
+        alert('Veuillez sélectionner au moins un lapin à vendre.');
+        return;
+    }
+    
+    if (total !== quantity) {
+        e.preventDefault();
+        alert('Le nombre de lapins sélectionnés (' + total + ') ne correspond pas à la quantité définie (' + quantity + ').');
+        return;
+    }
+});
 </script>
 @endpush
 
@@ -342,6 +399,7 @@ filterRabbits('lapereaux', '');
     gap: 4px;
     border-bottom: 1px solid var(--surface-border);
 }
+
 .tab-btn {
     padding: 10px 16px;
     font-size: 13px;
@@ -353,27 +411,47 @@ filterRabbits('lapereaux', '');
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .tab-btn.active {
     color: var(--primary);
     border-bottom-color: var(--primary);
     background: var(--primary-subtle);
 }
+
 .tab-content {
     display: none;
     padding: 16px 0;
 }
+
 .tab-content.active {
     display: block;
 }
+
 .rabbit-card:hover {
     border-color: var(--primary);
     background: var(--primary-subtle);
 }
+
 .rabbit-checkbox {
     width: 18px;
     height: 18px;
     accent-color: var(--primary);
     cursor: pointer;
+}
+
+.validation-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+}
+
+.validation-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 </style>
 @endsection
