@@ -192,9 +192,9 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un mâle..."
                                 id="searchMales" style="flex: 1; min-width: 250px;"
-                                onkeyup="filterRabbits('males', this.value)">
-                            <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('males')">
-                                <i class="bi bi-check-square"></i> Tout sélectionner
+                                onkeyup="debouncedSearch('males', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('males')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
                             </button>
                             <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('males', false)">
                                 <i class="bi bi-square"></i> Tout déselectionner
@@ -202,46 +202,19 @@
                         </div>
                         <div class="rabbit-selection-grid" id="malesGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
-                            @foreach ($males as $male)
-                                <label class="rabbit-card"
-                                    style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--surface-alt); border: 1px solid var(--surface-border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <input type="checkbox" name="selected_males[]" value="{{ $male->id }}"
-                                            class="rabbit-checkbox" data-category="males"
-                                            data-code="{{ $male->code }}" data-name="{{ $male->nom }}"
-                                            onchange="handleRabbitSelection('males', {{ $male->id }})">
-                                        <div style="flex: 1;">
-                                            <div style="font-weight: 600;">{{ $male->nom }}</div>
-                                            <div style="font-size: 12px; color: var(--text-tertiary);">
-                                                {{ $male->code }} • {{ $male->race ?? 'Non spécifié' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- ✅ Individual Price Input with Global Indicator --}}
-                                    <div class="price-input-container" id="price-males-{{ $male->id }}"
-                                        style="display: none; margin-top: 8px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                            <label style="font-size: 11px; color: var(--text-secondary); flex: 1;">Prix
-                                                individuel (FCFA)</label>
-                                            <button type="button" class="btn-reset-price"
-                                                onclick="resetToGlobalPrice('males', {{ $male->id }})"
-                                                title="Réinitialiser au prix global"
-                                                style="background: var(--primary-subtle); border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: var(--primary); cursor: pointer;">
-                                                <i class="bi bi-arrow-counterclockwise"></i> Prix global
-                                            </button>
-                                        </div>
-                                        <input type="number" name="male_prices[]" class="form-control rabbit-price"
-                                            data-category="males" data-rabbit-id="{{ $male->id }}" placeholder="0"
-                                            min="0" step="100"
-                                            onchange="calculateTotalAmount(); markPriceAsCustom('males', {{ $male->id }})"
-                                            style="padding: 8px; font-size: 13px;">
-                                        <div class="price-indicator" id="price-indicator-males-{{ $male->id }}"
-                                            style="font-size: 10px; color: var(--accent-green); margin-top: 4px; display: none;">
-                                            <i class="bi bi-check-circle"></i> Prix global appliqué
-                                        </div>
-                                    </div>
-                                </label>
-                            @endforeach
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+                            @include('sales.partials.rabbit-grid', [
+                                'rabbits' => $males,
+                                'type' => 'males',
+                                'soldIds' => [],
+                            ])
+                        </div>
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="malesPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $males->currentPage() }} sur {{ $males->lastPage() }} ({{ $males->total() }} mâles au
+                            total)
                         </div>
                     </div>
 
@@ -250,9 +223,9 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher une femelle..."
                                 id="searchFemales" style="flex: 1; min-width: 250px;"
-                                onkeyup="filterRabbits('females', this.value)">
-                            <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('females')">
-                                <i class="bi bi-check-square"></i> Tout sélectionner
+                                onkeyup="debouncedSearch('females', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('females')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
                             </button>
                             <button type="button" class="btn-cuni secondary"
                                 onclick="toggleSelectAll('females', false)">
@@ -261,46 +234,19 @@
                         </div>
                         <div class="rabbit-selection-grid" id="femalesGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
-                            @foreach ($femelles as $femelle)
-                                <label class="rabbit-card"
-                                    style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--surface-alt); border: 1px solid var(--surface-border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <input type="checkbox" name="selected_females[]" value="{{ $femelle->id }}"
-                                            class="rabbit-checkbox" data-category="females"
-                                            data-code="{{ $femelle->code }}" data-name="{{ $femelle->nom }}"
-                                            onchange="handleRabbitSelection('females', {{ $femelle->id }})">
-                                        <div style="flex: 1;">
-                                            <div style="font-weight: 600;">{{ $femelle->nom }}</div>
-                                            <div style="font-size: 12px; color: var(--text-tertiary);">
-                                                {{ $femelle->code }} • {{ $femelle->race ?? 'Non spécifié' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- ✅ Individual Price Input with Global Indicator --}}
-                                    <div class="price-input-container" id="price-females-{{ $femelle->id }}"
-                                        style="display: none; margin-top: 8px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                            <label style="font-size: 11px; color: var(--text-secondary); flex: 1;">Prix
-                                                individuel (FCFA)</label>
-                                            <button type="button" class="btn-reset-price"
-                                                onclick="resetToGlobalPrice('females', {{ $femelle->id }})"
-                                                title="Réinitialiser au prix global"
-                                                style="background: var(--primary-subtle); border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: var(--primary); cursor: pointer;">
-                                                <i class="bi bi-arrow-counterclockwise"></i> Prix global
-                                            </button>
-                                        </div>
-                                        <input type="number" name="female_prices[]" class="form-control rabbit-price"
-                                            data-category="females" data-rabbit-id="{{ $femelle->id }}" placeholder="0"
-                                            min="0" step="100"
-                                            onchange="calculateTotalAmount(); markPriceAsCustom('females', {{ $femelle->id }})"
-                                            style="padding: 8px; font-size: 13px;">
-                                        <div class="price-indicator" id="price-indicator-females-{{ $femelle->id }}"
-                                            style="font-size: 10px; color: var(--accent-green); margin-top: 4px; display: none;">
-                                            <i class="bi bi-check-circle"></i> Prix global appliqué
-                                        </div>
-                                    </div>
-                                </label>
-                            @endforeach
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+                            @include('sales.partials.rabbit-grid', [
+                                'rabbits' => $femelles,
+                                'type' => 'females',
+                                'soldIds' => [],
+                            ])
+                        </div>
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="femalesPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $femelles->currentPage() }} sur {{ $femelles->lastPage() }} ({{ $femelles->total() }}
+                            femelles au total)
                         </div>
                     </div>
 
@@ -309,9 +255,9 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un lapereau..."
                                 id="searchLapereaux" style="flex: 1; min-width: 250px;"
-                                onkeyup="filterRabbits('lapereaux', this.value)">
-                            <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('lapereaux')">
-                                <i class="bi bi-check-square"></i> Tout sélectionner
+                                onkeyup="debouncedSearch('lapereaux', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('lapereaux')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
                             </button>
                             <button type="button" class="btn-cuni secondary"
                                 onclick="toggleSelectAll('lapereaux', false)">
@@ -320,48 +266,19 @@
                         </div>
                         <div class="rabbit-selection-grid" id="lapereauxGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
-                            @foreach ($lapereaux as $lapereau)
-                                <label class="rabbit-card"
-                                    style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--surface-alt); border: 1px solid var(--surface-border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s ease;">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <input type="checkbox" name="selected_lapereaux[]" value="{{ $lapereau->id }}"
-                                            class="rabbit-checkbox" data-category="lapereaux"
-                                            data-code="{{ $lapereau->code }}"
-                                            data-name="{{ $lapereau->nom ?? 'Sans nom' }}"
-                                            onchange="handleRabbitSelection('lapereaux', {{ $lapereau->id }})">
-                                        <div style="flex: 1;">
-                                            <div style="font-weight: 600;">{{ $lapereau->nom ?? 'Sans nom' }}</div>
-                                            <div style="font-size: 12px; color: var(--text-tertiary);">
-                                                {{ $lapereau->code }} •
-                                                {{ $lapereau->naissance->miseBas->femelle->nom ?? 'N/A' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- ✅ Individual Price Input with Global Indicator --}}
-                                    <div class="price-input-container" id="price-lapereaux-{{ $lapereau->id }}"
-                                        style="display: none; margin-top: 8px;">
-                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                            <label style="font-size: 11px; color: var(--text-secondary); flex: 1;">Prix
-                                                individuel (FCFA)</label>
-                                            <button type="button" class="btn-reset-price"
-                                                onclick="resetToGlobalPrice('lapereaux', {{ $lapereau->id }})"
-                                                title="Réinitialiser au prix global"
-                                                style="background: var(--primary-subtle); border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: var(--primary); cursor: pointer;">
-                                                <i class="bi bi-arrow-counterclockwise"></i> Prix global
-                                            </button>
-                                        </div>
-                                        <input type="number" name="lapereau_prices[]" class="form-control rabbit-price"
-                                            data-category="lapereaux" data-rabbit-id="{{ $lapereau->id }}"
-                                            placeholder="0" min="0" step="100"
-                                            onchange="calculateTotalAmount(); markPriceAsCustom('lapereaux', {{ $lapereau->id }})"
-                                            style="padding: 8px; font-size: 13px;">
-                                        <div class="price-indicator" id="price-indicator-lapereaux-{{ $lapereau->id }}"
-                                            style="font-size: 10px; color: var(--accent-green); margin-top: 4px; display: none;">
-                                            <i class="bi bi-check-circle"></i> Prix global appliqué
-                                        </div>
-                                    </div>
-                                </label>
-                            @endforeach
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+                            @include('sales.partials.rabbit-grid', [
+                                'rabbits' => $lapereaux,
+                                'type' => 'lapereaux',
+                                'soldIds' => [],
+                            ])
+                        </div>
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="lapereauxPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $lapereaux->currentPage() }} sur {{ $lapereaux->lastPage() }}
+                            ({{ $lapereaux->total() }} lapereaux au total)
                         </div>
                     </div>
 
@@ -691,42 +608,138 @@
                 // ============================================
                 // 2. FILTER RABBITS BY SEARCH
                 // ============================================
-                function filterRabbits(category, searchTerm) {
-                    const grid = document.getElementById(category + 'Grid');
-                    const cards = grid.querySelectorAll('.rabbit-card');
-                    let visibleCount = 0;
+                // ✅ NEW: Debounced Search (Server-side)
+                let searchTimeouts = {};
 
-                    cards.forEach(card => {
-                        const checkbox = card.querySelector('.rabbit-checkbox');
-                        const code = checkbox.dataset.code.toLowerCase();
-                        const name = checkbox.dataset.name.toLowerCase();
+                function debouncedSearch(type, searchTerm) {
+                    clearTimeout(searchTimeouts[type]);
+                    searchTimeouts[type] = setTimeout(() => {
+                        loadRabbits(type, 1, searchTerm);
+                    }, 300);
+                }
 
-                        if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm.toLowerCase())) {
-                            card.style.display = 'flex';
-                            visibleCount++;
-                        } else {
-                            card.style.display = 'none';
+                // ✅ NEW: Load Rabbits via AJAX
+                function loadRabbits(type, page = 1, search = '') {
+                    const gridId = type + 'Grid';
+                    const grid = document.getElementById(gridId);
+                    const paginationInfo = document.getElementById(type + 'PaginationInfo');
+
+                    if (!grid) return;
+
+                    grid.style.opacity = '0.5';
+                    grid.style.pointerEvents = 'none';
+
+                    fetch('{{ route('sales.load-rabbits') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                type: type,
+                                page: page,
+                                search: search
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                grid.innerHTML = data.html;
+                                if (paginationInfo) {
+                                    paginationInfo.innerHTML =
+                                        `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${data.pagination.total} ${type} au total)`;
+                                }
+                                // Re-initialize price inputs for new elements
+                                initializePriceInputs(type);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error))
+                        .finally(() => {
+                            grid.style.opacity = '1';
+                            grid.style.pointerEvents = 'auto';
+                        });
+                }
+
+                // ✅ NEW: Load More Button Handler
+                function loadMoreRabbits(button) {
+                    const type = button.dataset.type;
+                    const page = button.dataset.page;
+                    const grid = document.getElementById(type + 'Grid');
+
+                    button.disabled = true;
+                    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Chargement...';
+
+                    fetch('{{ route('sales.load-rabbits') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                type: type,
+                                page: page,
+                                search: document.getElementById('search' + type.charAt(0).toUpperCase() + type
+                                    .slice(1)).value
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                button.remove(); // Remove old button
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = data.html;
+                                // Append new cards
+                                tempDiv.querySelectorAll('.rabbit-card').forEach(card => grid.appendChild(card));
+                                // Append new load more button if exists
+                                const newBtn = tempDiv.querySelector('.load-more-btn');
+                                if (newBtn) grid.appendChild(newBtn);
+                                // Update info
+                                const paginationInfo = document.getElementById(type + 'PaginationInfo');
+                                if (paginationInfo) {
+                                    paginationInfo.innerHTML =
+                                        `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${data.pagination.total} ${type} au total)`;
+                                }
+                                initializePriceInputs(type);
+                            }
+                        })
+                        .finally(() => {
+                            button.disabled = false;
+                        });
+                }
+
+                // ✅ NEW: Initialize Prices for Dynamically Loaded Rabbits
+                function initializePriceInputs(type) {
+                    const category = type.replace('s', '');
+                    const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]`);
+                    checkboxes.forEach(checkbox => {
+                        const rabbitId = checkbox.value;
+                        const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
+                        const priceInput = priceContainer?.querySelector('.rabbit-price');
+                        if (checkbox.checked && priceInput) {
+                            priceInput.value = globalPrices[category] || 0;
+                            priceContainer.style.display = 'block';
                         }
                     });
-
-                    document.getElementById(category + 'Count').textContent = visibleCount;
                 }
 
                 // ============================================
                 // 3. TOGGLE SELECT ALL
                 // ============================================
+                // ✅ UPDATED: Toggle Select All
                 function toggleSelectAll(category, select = true) {
                     const grid = document.getElementById(category + 'Grid');
                     const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
 
                     checkboxes.forEach(checkbox => {
+                        // Only toggle visible cards
                         if (checkbox.closest('.rabbit-card').style.display !== 'none') {
                             checkbox.checked = select;
                             const rabbitId = checkbox.value;
-                            handleRabbitSelection(category, rabbitId);
+                            handleRabbitSelection(category.replace('s', ''), rabbitId);
                         }
                     });
-
                     calculateTotalAmount();
                 }
 
@@ -901,169 +914,6 @@
                     showToast('💡 Astuce: Définissez vos prix globaux pour gagner du temps!', 'info');
                 });
             })();
-        </script>
-
-        {{-- Add this to the @push('scripts') section in sales/create.blade.php --}}
-
-        <script>
-            // Debounced search to avoid too many requests
-            let searchTimeouts = {};
-
-            function debouncedSearch(type, searchTerm) {
-                clearTimeout(searchTimeouts[type]);
-                searchTimeouts[type] = setTimeout(() => {
-                    loadRabbits(type, 1, searchTerm);
-                }, 300);
-            }
-
-            // Load rabbits via AJAX
-            function loadRabbits(type, page = 1, search = '') {
-                const gridId = type + 'Grid';
-                const grid = document.getElementById(gridId);
-                const paginationInfo = document.getElementById(type + 'PaginationInfo');
-
-                // Show loading state
-                grid.style.opacity = '0.5';
-                grid.style.pointerEvents = 'none';
-
-                fetch('{{ route('sales.load-rabbits') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            type: type,
-                            page: page,
-                            search: search,
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Replace grid content
-                            grid.innerHTML = data.html;
-
-                            // Update pagination info
-                            if (paginationInfo) {
-                                paginationInfo.innerHTML = `Page ${data.pagination.current_page} sur ${data.pagination.last_page} 
-                    (${data.pagination.total} ${type} au total)`;
-                            }
-
-                            // Re-initialize price inputs for newly loaded rabbits
-                            initializePriceInputs(type);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading rabbits:', error);
-                        showToast('Erreur lors du chargement des lapins', 'error');
-                    })
-                    .finally(() => {
-                        grid.style.opacity = '1';
-                        grid.style.pointerEvents = 'auto';
-                    });
-            }
-
-            // Load more rabbits (infinite scroll style)
-            function loadMoreRabbits(button) {
-                const type = button.dataset.type;
-                const page = button.dataset.page;
-                const gridId = type + 'Grid';
-                const grid = document.getElementById(gridId);
-
-                button.disabled = true;
-                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Chargement...';
-
-                fetch('{{ route('sales.load-rabbits') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            type: type,
-                            page: page,
-                            search: document.getElementById('search' + type.charAt(0).toUpperCase() + type.slice(1))
-                                .value,
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Remove load more button
-                            button.remove();
-
-                            // Append new rabbits to grid
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = data.html;
-                            const newCards = tempDiv.querySelectorAll('.rabbit-card');
-
-                            newCards.forEach(card => {
-                                grid.appendChild(card);
-                            });
-
-                            // Add new load more button if there are more pages
-                            if (data.pagination.has_more) {
-                                const newLoadMoreBtn = tempDiv.querySelector('.load-more-btn');
-                                if (newLoadMoreBtn) {
-                                    grid.appendChild(newLoadMoreBtn);
-                                }
-                            }
-
-                            // Update pagination info
-                            const paginationInfo = document.getElementById(type + 'PaginationInfo');
-                            if (paginationInfo) {
-                                paginationInfo.innerHTML = `Page ${data.pagination.current_page} sur ${data.pagination.last_page} 
-                    (${data.pagination.total} ${type} au total)`;
-                            }
-
-                            // Re-initialize price inputs
-                            initializePriceInputs(type);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading more rabbits:', error);
-                        showToast('Erreur lors du chargement', 'error');
-                    })
-                    .finally(() => {
-                        button.disabled = false;
-                    });
-            }
-
-            // Initialize price inputs for newly loaded rabbits
-            function initializePriceInputs(type) {
-                const category = type.replace('s', '');
-                const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]`);
-
-                checkboxes.forEach(checkbox => {
-                    const rabbitId = checkbox.value;
-                    const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
-                    const priceInput = priceContainer?.querySelector('.rabbit-price');
-
-                    if (checkbox.checked && priceInput) {
-                        priceInput.value = globalPrices[category] || 0;
-                        priceContainer.style.display = 'block';
-                    }
-                });
-            }
-
-            // Update toggleSelectAll to work with paginated data
-            function toggleSelectAll(type, select = true) {
-                const grid = document.getElementById(type + 'Grid');
-                const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
-
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.closest('.rabbit-card').style.display !== 'none') {
-                        checkbox.checked = select;
-                        const rabbitId = checkbox.value;
-                        handleRabbitSelection(type.replace('s', ''), rabbitId);
-                    }
-                });
-
-                calculateTotalAmount();
-            }
         </script>
     @endpush
 
