@@ -856,4 +856,5 @@
     window.initializePriceInputs = initializePriceInputs;
 })();
 </script>
+@endpush
 @endsection
