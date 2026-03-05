@@ -252,6 +252,11 @@ class SaleController extends Controller
      */
     public function update(Request $request, Sale $sale)
     {
+        // ✅ Check ownership
+        if ($sale->user_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé à cette vente');
+        }
+
         $validated = $request->validate([
             'date_sale' => 'required|date',
             'quantity' => 'required|integer|min:1',

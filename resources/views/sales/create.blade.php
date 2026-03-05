@@ -350,7 +350,9 @@
 
     @push('scripts')
         <script>
-            // Tab switching
+            // ============================================
+            // 1. TAB SWITCHING (Mâles / Femelles / Lapereaux)
+            // ============================================
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -360,7 +362,9 @@
                 });
             });
 
-            // Filter rabbits
+            // ============================================
+            // 2. FILTER RABBITS BY SEARCH
+            // ============================================
             function filterRabbits(category, searchTerm) {
                 const grid = document.getElementById(category + 'Grid');
                 const cards = grid.querySelectorAll('.rabbit-card');
@@ -379,11 +383,12 @@
                     }
                 });
 
-                // Update count
                 document.getElementById(category + 'Count').textContent = visibleCount;
             }
 
-            // Toggle select all
+            // ============================================
+            // 3. TOGGLE SELECT ALL
+            // ============================================
             function toggleSelectAll(category, select = true) {
                 const grid = document.getElementById(category + 'Grid');
                 const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
@@ -391,95 +396,130 @@
                 checkboxes.forEach(checkbox => {
                     if (checkbox.closest('.rabbit-card').style.display !== 'none') {
                         checkbox.checked = select;
+                        const rabbitId = checkbox.value;
+                        updatePriceInputVisibility(category, rabbitId);
+                    }
+                });
+                calculateTotalAmount();
+            }
+
+            // ============================================
+            // 4. SHOW/HIDE PRICE INPUT WHEN CHECKBOX TOGGLED
+            // ============================================
+            function updatePriceInputVisibility(category, rabbitId) {
+                const checkbox = document.querySelector(
+                    `input[name="selected_${category}[]"][value="${rabbitId}"]`
+                );
+                const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
+
+                if (checkbox && priceContainer) {
+                    priceContainer.style.display = checkbox.checked ? 'block' : 'none';
+                    if (checkbox.checked) {
+                        const priceInput = priceContainer.querySelector('input');
+                        if (priceInput) priceInput.focus();
+                    }
+                }
+                calculateTotalAmount();
+            }
+
+            // ============================================
+            // 5. CALCULATE TOTAL FROM INDIVIDUAL PRICES
+            // ============================================
+            function calculateTotalAmount() {
+                let total = 0;
+                let selectedCount = 0;
+                let missingPrices = 0;
+
+                // Sum all checked rabbit prices
+                document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
+                    selectedCount++;
+                    const card = checkbox.closest('.rabbit-card');
+                    const priceInput = card.querySelector('.rabbit-price');
+
+                    if (priceInput && priceInput.value) {
+                        total += parseFloat(priceInput.value) || 0;
+                    } else if (checkbox.checked) {
+                        missingPrices++;
                     }
                 });
 
-                updateSelectedSummary();
-            }
-
-            // Update selected summary
-            function updateSelectedSummary() {
+                // Update counts by category
                 const males = document.querySelectorAll('input[name="selected_males[]"]:checked').length;
                 const females = document.querySelectorAll('input[name="selected_females[]"]:checked').length;
                 const lapereaux = document.querySelectorAll('input[name="selected_lapereaux[]"]:checked').length;
-                const total = males + females + lapereaux;
 
                 document.getElementById('selectedMalesCount').textContent = males;
                 document.getElementById('selectedFemalesCount').textContent = females;
                 document.getElementById('selectedLapereauxCount').textContent = lapereaux;
-                document.getElementById('selectedSummary').textContent = total + ' lapin(s) sélectionné(s)';
+                document.getElementById('selectedSummary').textContent = selectedCount + ' lapin(s) sélectionné(s)';
 
-                // Check quantity match
-                const quantityInput = document.getElementById('totalQuantity');
-                const quantity = parseInt(quantityInput.value) || 0;
+                // Update total display
+                document.getElementById('totalAmountDisplay').textContent =
+                    total.toLocaleString('fr-FR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + ' FCFA';
+
+                // Show warning if prices are missing
                 const warningDiv = document.getElementById('quantityMismatchWarning');
-                const validationDiv = document.getElementById('quantityValidation');
+                const submitBtn = document.getElementById('submitBtn');
 
-                if (quantity > 0 && total !== quantity) {
+                if (missingPrices > 0 && selectedCount > 0) {
                     warningDiv.style.display = 'block';
-                    validationDiv.style.display = 'block';
-                    validationDiv.className = 'validation-message error';
-                    validationDiv.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Vous avez sélectionné ' + total +
-                        ' lapin(s) mais la quantité est de ' + quantity + '</span>';
-                    document.getElementById('submitBtn').disabled = true;
-                } else if (quantity > 0 && total === quantity) {
-                    warningDiv.style.display = 'none';
-                    validationDiv.style.display = 'none';
-                    document.getElementById('submitBtn').disabled = false;
+                    warningDiv.innerHTML = `
+            <i class="bi bi-exclamation-triangle" style="color: var(--accent-orange);"></i>
+            <span style="color: var(--accent-orange); font-weight: 600;">
+                Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants)!
+            </span>
+        `;
+                    submitBtn.disabled = true;
                 } else {
                     warningDiv.style.display = 'none';
-                    validationDiv.style.display = 'none';
-                    document.getElementById('submitBtn').disabled = false;
+                    submitBtn.disabled = selectedCount === 0;
                 }
-
-                // Update total amount
-                const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
-                const totalAmount = total * unitPrice;
-                document.getElementById('totalAmountDisplay').value = totalAmount.toLocaleString('fr-FR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }) + ' FCFA';
             }
 
-            // Add event listeners
-            document.querySelectorAll('.rabbit-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', updateSelectedSummary);
+            // ============================================
+            // 6. FORM SUBMISSION VALIDATION
+            // ============================================
+            document.getElementById('saleForm').addEventListener('submit', function(e) {
+                const selectedCount = document.querySelectorAll('.rabbit-checkbox:checked').length;
+                let missingPrices = 0;
+
+                document.querySelectorAll('.rabbit-checkbox:checked').forEach(checkbox => {
+                    const card = checkbox.closest('.rabbit-card');
+                    const priceInput = card.querySelector('.rabbit-price');
+
+                    if (!priceInput || !priceInput.value || parseFloat(priceInput.value) <= 0) {
+                        missingPrices++;
+                    }
+                });
+
+                if (selectedCount === 0) {
+                    e.preventDefault();
+                    alert('⚠️ Veuillez sélectionner au moins un lapin à vendre.');
+                    return;
+                }
+
+                if (missingPrices > 0) {
+                    e.preventDefault();
+                    alert(
+                    `⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).`);
+                    return;
+                }
             });
 
-            document.getElementById('unitPrice').addEventListener('input', updateSelectedSummary);
+            // ============================================
+            // 7. INITIALIZE ON PAGE LOAD
+            // ============================================
+            window.addEventListener('DOMContentLoaded', () => {
+                // Initialize counts
+                filterRabbits('males', '');
+                filterRabbits('females', '');
+                filterRabbits('lapereaux', '');
 
-            document.getElementById('totalQuantity').addEventListener('input', updateSelectedSummary);
-
-            // Initialize counts
-            filterRabbits('males', '');
-            filterRabbits('females', '');
-            filterRabbits('lapereaux', '');
-
-            // Form submission validation
-            document.getElementById('saleForm').addEventListener('submit', function(e) {
-                const quantity = parseInt(document.getElementById('totalQuantity').value) || 0;
-                const total = document.querySelectorAll('input[name="selected_males[]"]:checked').length +
-                    document.querySelectorAll('input[name="selected_females[]"]:checked').length +
-                    document.querySelectorAll('input[name="selected_lapereaux[]"]:checked').length;
-
-                if (quantity === 0) {
-                    e.preventDefault();
-                    alert('Veuillez spécifier une quantité de lapins à vendre.');
-                    return;
-                }
-
-                if (total === 0) {
-                    e.preventDefault();
-                    alert('Veuillez sélectionner au moins un lapin à vendre.');
-                    return;
-                }
-
-                if (total !== quantity) {
-                    e.preventDefault();
-                    alert('Le nombre de lapins sélectionnés (' + total + ') ne correspond pas à la quantité définie (' +
-                        quantity + ').');
-                    return;
-                }
+                // Disable submit button initially
+                document.getElementById('submitBtn').disabled = true;
             });
         </script>
     @endpush
