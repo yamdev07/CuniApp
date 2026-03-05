@@ -38,7 +38,30 @@ class SaleController extends Controller
      */
     public function create()
     {
-        return view('sales.create');
+        // Load available rabbits by category
+        $males = Male::where('etat', 'Active')
+            ->whereDoesntHave('sales', function ($q) {
+                $q->where('payment_status', '!=', 'cancelled');
+            })
+            ->orderBy('nom')
+            ->get();
+
+        $femelles = Femelle::where('etat', 'Active')
+            ->whereDoesntHave('sales', function ($q) {
+                $q->where('payment_status', '!=', 'cancelled');
+            })
+            ->orderBy('nom')
+            ->get();
+
+        $lapereaux = Lapereau::where('etat', 'vivant')
+            ->whereDoesntHave('sales', function ($q) {
+                $q->where('payment_status', '!=', 'cancelled');
+            })
+            ->with('naissance.miseBas.femelle')
+            ->orderBy('code')
+            ->get();
+
+        return view('sales.create', compact('males', 'femelles', 'lapereaux'));
     }
 
     /**
@@ -86,8 +109,8 @@ class SaleController extends Controller
         $this->notifyUser([
             'type' => $sale->payment_status === 'paid' ? 'success' : ($sale->payment_status === 'partial' ? 'info' : 'warning'),
             'title' => '💰 Nouvelle Vente Enregistrée',
-            'message' => "Vente #{$sale->id}: {$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " . 
-                        number_format($sale->total_amount, 2, ',', ' ') . " FCFA - {$statusLabels[$sale->payment_status]}",
+            'message' => "Vente #{$sale->id}: {$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
+                number_format($sale->total_amount, 2, ',', ' ') . " FCFA - {$statusLabels[$sale->payment_status]}",
             'action_url' => route('sales.show', $sale)
         ]);
 
@@ -174,8 +197,8 @@ class SaleController extends Controller
         $this->notifyUser([
             'type' => 'info',
             'title' => '✏️ Vente Modifiée',
-            'message' => "Vente #{$sale->id} mise à jour: {$sale->quantity} {$typeLabel} - " . 
-                        number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
+            'message' => "Vente #{$sale->id} mise à jour: {$sale->quantity} {$typeLabel} - " .
+                number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
             'action_url' => route('sales.show', $sale)
         ]);
 
@@ -205,9 +228,9 @@ class SaleController extends Controller
     public function destroy(Sale $sale)
     {
         $typeLabel = $this->getTypeLabel($sale->type);
-        $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " . 
-                    number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
-        
+        $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
+            number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
+
         $sale->delete();
 
         // ✅ NOTIFICATION 5: Sale Deleted
@@ -241,8 +264,8 @@ class SaleController extends Controller
         $this->notifyUser([
             'type' => 'success',
             'title' => '✅ Paiement Reçu',
-            'message' => "Paiement complet reçu pour la vente #{$sale->id} (" . 
-                        number_format($sale->total_amount, 2, ',', ' ') . " FCFA) - {$sale->buyer_name}",
+            'message' => "Paiement complet reçu pour la vente #{$sale->id} (" .
+                number_format($sale->total_amount, 2, ',', ' ') . " FCFA) - {$sale->buyer_name}",
             'action_url' => route('sales.show', $sale)
         ]);
 
@@ -281,9 +304,9 @@ class SaleController extends Controller
         $this->notifyUser([
             'type' => $remaining > 0 ? 'info' : 'success',
             'title' => $remaining > 0 ? '💵 Paiement Partiel Reçu' : '✅ Paiement Final Reçu',
-            'message' => "Vente #{$sale->id}: +" . 
-                        number_format($newAmount - $oldAmount, 2, ',', ' ') . " FCFA reçus. " . 
-                        ($remaining > 0 ? "Solde restant: " . number_format($remaining, 2, ',', ' ') . " FCFA" : "Solde soldé !"),
+            'message' => "Vente #{$sale->id}: +" .
+                number_format($newAmount - $oldAmount, 2, ',', ' ') . " FCFA reçus. " .
+                ($remaining > 0 ? "Solde restant: " . number_format($remaining, 2, ',', ' ') . " FCFA" : "Solde soldé !"),
             'action_url' => route('sales.show', $sale)
         ]);
 
@@ -304,8 +327,7 @@ class SaleController extends Controller
 
         $sale->update([
             'payment_status' => $newStatus,
-            'amount_paid' => $newStatus === 'paid' ? $sale->total_amount : 
-                            ($newStatus === 'pending' ? 0 : $sale->amount_paid)
+            'amount_paid' => $newStatus === 'paid' ? $sale->total_amount : ($newStatus === 'pending' ? 0 : $sale->amount_paid)
         ]);
 
         $statusLabels = [
@@ -377,7 +399,7 @@ class SaleController extends Controller
      */
     private function getTypeLabel(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'male' => 'mâle(s)',
             'female' => 'femelle(s)',
             'lapereau' => 'lapereau(x)',
