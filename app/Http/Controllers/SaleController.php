@@ -328,6 +328,8 @@ class SaleController extends Controller
     /**
      * Update the specified sale
      */
+    // app/Http/Controllers/SaleController.php
+
     public function update(Request $request, Sale $sale)
     {
         // ✅ Check ownership
@@ -335,65 +337,184 @@ class SaleController extends Controller
             abort(403, 'Accès non autorisé à cette vente');
         }
 
+        // ✅ VALIDATION: Match what the edit form actually sends
         $validated = $request->validate([
             'date_sale' => 'required|date',
-            'quantity' => 'required|integer|min:1',
-            'type' => 'required|in:male,female,lapereau,groupe',
-            'category' => 'nullable|string',
-            'unit_price' => 'required|numeric|min:0',
             'buyer_name' => 'required|string|max:255',
             'buyer_contact' => 'nullable|string|max:100',
             'buyer_address' => 'nullable|string',
             'notes' => 'nullable|string',
             'payment_status' => 'required|in:paid,pending,partial',
-            'amount_paid' => 'nullable|numeric|min:0'
+            'amount_paid' => 'nullable|numeric|min:0',
+
+            // ✅ Rabbit selections with individual prices
+            'selected_males' => 'nullable|array',
+            'selected_males.*' => 'exists:males,id',
+            'male_prices' => 'nullable|array',
+            'male_prices.*' => 'nullable|numeric|min:0',
+
+            'selected_females' => 'nullable|array',
+            'selected_females.*' => 'exists:femelles,id',
+            'female_prices' => 'nullable|array',
+            'female_prices.*' => 'nullable|numeric|min:0',
+
+            'selected_lapereaux' => 'nullable|array',
+            'selected_lapereaux.*' => 'exists:lapereaux,id',
+            'lapereau_prices' => 'nullable|array',
+            'lapereau_prices.*' => 'nullable|numeric|min:0',
+        ], [
+            'male_prices.*.numeric' => 'Le prix doit être un nombre valide',
+            'female_prices.*.numeric' => 'Le prix doit être un nombre valide',
+            'lapereau_prices.*.numeric' => 'Le prix doit être un nombre valide',
         ]);
 
-        $oldTotal = $sale->total_amount;
-        $validated['total_amount'] = $validated['quantity'] * $validated['unit_price'];
+        // ✅ Get selected rabbits
+        $selectedMales = $request->input('selected_males', []);
+        $selectedFemales = $request->input('selected_females', []);
+        $selectedLapereaux = $request->input('selected_lapereaux', []);
+        $malePrices = $request->input('male_prices', []);
+        $femalePrices = $request->input('female_prices', []);
+        $lapereauPrices = $request->input('lapereau_prices', []);
 
-        // Track payment status change
-        $statusChanged = ($sale->payment_status !== $validated['payment_status']);
-        $oldStatus = $sale->payment_status;
-        $newStatus = $validated['payment_status'];
+        $totalQuantity = count($selectedMales) + count($selectedFemales) + count($selectedLapereaux);
 
+        // ✅ Validation: At least one rabbit must be selected
+        if ($totalQuantity === 0) {
+            return back()->withErrors([
+                'rabbits' => 'Vous devez sélectionner au moins un lapin pour cette vente.'
+            ])->withInput();
+        }
+
+        // ✅ VALIDATION: Ensure all selected rabbits have prices > 0
+        $missingPrices = [];
+        foreach ($selectedMales as $index => $maleId) {
+            $price = isset($malePrices[$index]) ? (float) $malePrices[$index] : null;
+            if (empty($price) || $price <= 0) {
+                $missingPrices[] = "Mâle #{$maleId}";
+            }
+        }
+        foreach ($selectedFemales as $index => $femaleId) {
+            $price = isset($femalePrices[$index]) ? (float) $femalePrices[$index] : null;
+            if (empty($price) || $price <= 0) {
+                $missingPrices[] = "Femelle #{$femaleId}";
+            }
+        }
+        foreach ($selectedLapereaux as $index => $lapereauId) {
+            $price = isset($lapereauPrices[$index]) ? (float) $lapereauPrices[$index] : null;
+            if (empty($price) || $price <= 0) {
+                $missingPrices[] = "Lapereau #{$lapereauId}";
+            }
+        }
+
+        if (!empty($missingPrices)) {
+            return back()->withErrors([
+                'prices' => '⚠️ Prix manquants ou invalides pour: ' . implode(', ', array_slice($missingPrices, 0, 5))
+            ])->withInput();
+        }
+
+        // ✅ Calculate total amount from INDIVIDUAL prices
+        $totalAmount = 0;
+        foreach ($selectedMales as $index => $maleId) {
+            $totalAmount += (float) ($malePrices[$index] ?? 0);
+        }
+        foreach ($selectedFemales as $index => $femaleId) {
+            $totalAmount += (float) ($femalePrices[$index] ?? 0);
+        }
+        foreach ($selectedLapereaux as $index => $lapereauId) {
+            $totalAmount += (float) ($lapereauPrices[$index] ?? 0);
+        }
+
+        $validated['total_amount'] = $totalAmount;
+        $validated['quantity'] = $totalQuantity;
+
+        // Set amount_paid based on payment status
         if ($validated['payment_status'] === 'paid') {
-            $validated['amount_paid'] = $validated['total_amount'];
+            $validated['amount_paid'] = $totalAmount;
         } elseif ($validated['payment_status'] === 'partial') {
             $validated['amount_paid'] = $validated['amount_paid'] ?? $sale->amount_paid;
         } else {
             $validated['amount_paid'] = 0;
         }
 
-        $sale->update($validated);
+        DB::beginTransaction();
+        try {
+            // ✅ Track payment status change for notification
+            $statusChanged = ($sale->payment_status !== $validated['payment_status']);
+            $oldStatus = $sale->payment_status;
+            $newStatus = $validated['payment_status'];
+            $oldTotal = $sale->total_amount;
 
-        // ✅ NOTIFICATION 3: Sale Updated
-        $typeLabel = $this->getTypeLabel($sale->type);
-        $this->notifyUser([
-            'type' => 'info',
-            'title' => '✏️ Vente Modifiée',
-            'message' => "Vente #{$sale->id} mise à jour: {$sale->quantity} {$typeLabel} - " .
-                number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
-            'action_url' => route('sales.show', $sale)
-        ]);
+            // ✅ Update sale
+            $sale->update($validated);
 
-        // ✅ NOTIFICATION 4: Payment Status Changed
-        if ($statusChanged) {
-            $statusLabels = [
-                'paid' => '✅ Payé',
-                'pending' => '⏳ En attente',
-                'partial' => '💵 Paiement partiel'
-            ];
+            // ✅ Delete old sale_rabbits
+            $sale->rabbits()->delete();
+
+            // ✅ Link selected males with INDIVIDUAL prices
+            foreach ($selectedMales as $index => $maleId) {
+                SaleRabbit::create([
+                    'sale_id' => $sale->id,
+                    'rabbit_type' => 'male',
+                    'rabbit_id' => $maleId,
+                    'sale_price' => $malePrices[$index] ?? 0,
+                ]);
+                Male::where('id', $maleId)->update(['etat' => 'Inactive']);
+            }
+
+            // ✅ Link selected females with INDIVIDUAL prices
+            foreach ($selectedFemales as $index => $femaleId) {
+                SaleRabbit::create([
+                    'sale_id' => $sale->id,
+                    'rabbit_type' => 'female',
+                    'rabbit_id' => $femaleId,
+                    'sale_price' => $femalePrices[$index] ?? 0,
+                ]);
+                Femelle::where('id', $femaleId)->update(['etat' => 'Inactive']);
+            }
+
+            // ✅ Link selected lapereaux with INDIVIDUAL prices
+            foreach ($selectedLapereaux as $index => $lapereauId) {
+                SaleRabbit::create([
+                    'sale_id' => $sale->id,
+                    'rabbit_type' => 'lapereau',
+                    'rabbit_id' => $lapereauId,
+                    'sale_price' => $lapereauPrices[$index] ?? 0,
+                ]);
+                Lapereau::where('id', $lapereauId)->update(['etat' => 'vendu']);
+            }
+
+            // ✅ NOTIFICATION: Sale Updated
             $this->notifyUser([
-                'type' => $newStatus === 'paid' ? 'success' : ($newStatus === 'partial' ? 'info' : 'warning'),
-                'title' => '💳 Statut de Paiement Mis à Jour',
-                'message' => "Vente #{$sale->id}: {$statusLabels[$oldStatus]} → {$statusLabels[$newStatus]}",
+                'type' => 'info',
+                'title' => '✏️ Vente Modifiée',
+                'message' => "Vente #{$sale->id} mise à jour: {$totalQuantity} lapin(s) - " . number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
                 'action_url' => route('sales.show', $sale)
             ]);
-        }
 
-        return redirect()->route('sales.index')
-            ->with('success', 'Vente mise à jour avec succès !');
+            // ✅ NOTIFICATION: Payment Status Changed
+            if ($statusChanged) {
+                $statusLabels = [
+                    'paid' => '✅ Payé',
+                    'pending' => '⏳ En attente',
+                    'partial' => '💵 Paiement partiel'
+                ];
+                $this->notifyUser([
+                    'type' => $newStatus === 'paid' ? 'success' : ($newStatus === 'partial' ? 'info' : 'warning'),
+                    'title' => '💳 Statut de Paiement Mis à Jour',
+                    'message' => "Vente #{$sale->id}: {$statusLabels[$oldStatus]} → {$statusLabels[$newStatus]}",
+                    'action_url' => route('sales.show', $sale)
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('sales.index')
+                ->with('success', 'Vente mise à jour avec succès !');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withErrors(['error' => 'Erreur lors de la mise à jour: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**
