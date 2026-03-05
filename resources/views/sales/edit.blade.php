@@ -705,7 +705,7 @@
                     btn.addEventListener('click', function() {
                         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove(
-                        'active'));
+                            'active'));
                         this.classList.add('active');
                         document.getElementById(this.dataset.tab).classList.add('active');
                     });
@@ -823,7 +823,8 @@
                     if (missingPrices > 0) {
                         e.preventDefault();
                         alert(
-                            `⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).`);
+                            `⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).`
+                            );
                         return;
                     }
 
@@ -928,6 +929,17 @@
 
                     showToast('💡 Vous pouvez modifier les prix individuellement', 'info');
                 });
+                // Add this BEFORE the closing })(); in your script
+                window.handleRabbitSelection = handleRabbitSelection;
+                window.toggleSelectAll = toggleSelectAll;
+                window.filterRabbits = filterRabbits;
+                window.calculateTotalAmount = calculateTotalAmount;
+                window.markPriceAsCustom = markPriceAsCustom;
+                window.resetToGlobalPrice = resetToGlobalPrice;
+                window.applyGlobalPricesToAll = applyGlobalPricesToAll;
+                window.applyGlobalPricesToSelected = applyGlobalPricesToSelected;
+                window.saveGlobalPricesAsDefault = saveGlobalPricesAsDefault;
+                window.showToast = showToast;
             })();
         </script>
     @endsection
