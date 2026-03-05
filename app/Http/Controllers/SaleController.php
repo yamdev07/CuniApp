@@ -46,14 +46,18 @@ class SaleController extends Controller
      */
     public function create()
     {
-        $males = Male::where('etat', 'Active')->orderBy('nom')->get();
+        // ✅ FIXED: Include both uppercase and lowercase status values
+        $males = Male::whereIn('etat', ['Active', 'active'])
+            ->orderBy('nom')
+            ->get();
 
-        // ✅ FIXED: Include all available female states
+        // ✅ Females (already correct)
         $femelles = Femelle::whereIn('etat', ['Active', 'Vide', 'Allaitante'])
             ->orderBy('nom')
             ->get();
 
-        $lapereaux = Lapereau::where('etat', 'vivant')
+        // ✅ FIXED: More inclusive lapereaux query
+        $lapereaux = Lapereau::whereIn('etat', ['vivant', 'vendu'])
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
             ->get();
