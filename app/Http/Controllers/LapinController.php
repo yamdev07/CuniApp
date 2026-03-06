@@ -277,6 +277,50 @@ class LapinController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        // Chercher dans les deux tables
+        $male = Male::find($id);
+        $femelle = Femelle::find($id);
+
+        if ($male) {
+            $lapin = (object) [
+                'id' => $male->id,
+                'type' => 'male',
+                'code' => $male->code,
+                'nom' => $male->nom,
+                'race' => $male->race,
+                'origine' => $male->origine,
+                'date_naissance' => $male->date_naissance,
+                'etat' => $male->etat,
+                'created_at' => $male->created_at,
+                'updated_at' => $male->updated_at,
+            ];
+            $model = $male;
+        } elseif ($femelle) {
+            $lapin = (object) [
+                'id' => $femelle->id,
+                'type' => 'femelle',
+                'code' => $femelle->code,
+                'nom' => $femelle->nom,
+                'race' => $femelle->race,
+                'origine' => $femelle->origine,
+                'date_naissance' => $femelle->date_naissance,
+                'etat' => $femelle->etat,
+                'created_at' => $femelle->created_at,
+                'updated_at' => $femelle->updated_at,
+            ];
+            $model = $femelle;
+        } else {
+            abort(404, 'Lapin non trouvé');
+        }
+
+        return view('lapins.show', compact('lapin', 'model'));
+    }
+
+    /**
      * Check if a lapereau code is available (AJAX)
      */
     public function checkCode(Request $request)

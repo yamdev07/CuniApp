@@ -66,6 +66,8 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="action-buttons">
+                                         <a href="{{ route('femelles.show', $femelle->id) }}" class="btn-cuni sm secondary"
+                                            title="Détails"><i class="bi bi-eye"></i></a>
                                         <a href="{{ route('femelles.edit', $femelle->id) }}" class="btn-cuni sm secondary"
                                             title="Modifier">
                                             <i class="bi bi-pencil"></i>

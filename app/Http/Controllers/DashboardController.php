@@ -76,17 +76,27 @@ class DashboardController extends Controller
                 ->toArray(),
 
             // ✅ NEW CODE (use accessors)
-            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+            // ✅ Dans DashboardController.php - Section 'naissances'
+            'naissances' => \App\Models\Naissance::select('id', 'mise_bas_id')
+                ->with('miseBas.femelle')
                 ->whereHas('miseBas', function ($q) {
                     $q->whereNotNull('date_mise_bas');
                 })
                 ->get()
                 ->filter(fn($n) => $n->nb_vivant > 0)
                 ->map(fn($n) => [
-                    'date' => $n->date_naissance?->format('Y-m-d'),
-                    'label' => sprintf('Naissance: %s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0)
+                    'date' => $n->miseBas?->date_mise_bas
+                        ? \Carbon\Carbon::parse($n->miseBas->date_mise_bas)->format('Y-m-d')
+                        : null,
+                    'label' => sprintf(
+                        'Naissance: %s (%d nés)',
+                        $n->miseBas?->femelle?->nom ?? 'Inconnue',
+                        $n->nb_vivant
+                    )
                 ])
-                ->toArray(),
+                ->filter(fn($e) => $e['date'] !== null)  // ← Supprimer les entrées sans date
+                ->values()  // ← Réindexer le tableau
+                ->toArray(),  // ← Convertir en tableau PHP
 
             //  Sexuations (bleu) → J+10, SEULEMENT si nb_vivant > 0
             'sexuations' => \App\Models\Naissance::with('miseBas.femelle')

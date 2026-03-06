@@ -2728,34 +2728,6 @@
                         Suivez vos reproductions, naissances et performances en toute simplicité.
                     </p>
 
-                    <!-- Social Media Links -->
-                    <div class="footer-social">
-                        <a href="#" class="social-link" title="Facebook">
-                            <i class="bi bi-facebook"></i>
-                        </a>
-                        <a href="#" class="social-link" title="Twitter">
-                            <i class="bi bi-twitter-x"></i>
-                        </a>
-                        <a href="#" class="social-link" title="Instagram">
-                            <i class="bi bi-instagram"></i>
-                        </a>
-                        <a href="#" class="social-link" title="LinkedIn">
-                            <i class="bi bi-linkedin"></i>
-                        </a>
-                        <a href="#" class="social-link" title="WhatsApp">
-                            <i class="bi bi-whatsapp"></i>
-                        </a>
-                    </div>
-
-                    <!-- Simplified App Download Buttons (NO TEXT) -->
-                    <div class="footer-app-buttons">
-                        <a href="#" class="app-store-btn" title="App Store">
-                            <i class="bi bi-apple"></i>
-                        </a>
-                        <a href="#" class="app-store-btn" title="Google Play">
-                            <i class="bi bi-google-play"></i>
-                        </a>
-                    </div>
                 </div>
 
                 <!-- Navigation Section -->
@@ -2782,14 +2754,14 @@
                             <a href="{{ route('notifications.index') }}">
                                 <i class="bi bi-chevron-right"></i>
                                 Notifications
-                                @php
+                                {{-- @php
                                     $unread = \App\Models\Notification::where('user_id', auth()->id() ?? 0)
                                         ->where('is_read', false)
                                         ->count();
                                 @endphp
                                 @if ($unread > 0)
                                     <span class="badge-notification">{{ $unread > 99 ? '99+' : $unread }}</span>
-                                @endif
+                                @endif --}}
                             </a>
                         </li>
                         <li>
@@ -2876,10 +2848,11 @@
                             </div>
                         </div>
                         <div class="footer-contact-item">
-                            <i class="bi bi-telephone-fill"></i>
+                            <i class="bi bi-whatsapp"></i>
                             <div>
-                                <strong>Téléphone</strong>
-                                <a href="tel:+2290152415241">+229 01 52 41 52 41</a>
+                                <strong>WhatsApp</strong>
+                                <a href="https://www.linkedin.com/company/anyxtech-sarl/" _target>+229 01 52 41 52
+                                    41</a>
                             </div>
                         </div>
                         <div class="footer-contact-item">
@@ -2889,42 +2862,19 @@
                                 <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
                             </div>
                         </div>
-                        <div class="footer-contact-item">
-                            <i class="bi bi-clock-fill"></i>
-                            <div>
-                                <strong>Support</strong>
-                                <span>Lun - Ven: 8h00 - 18h00</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Quick Stats Widget (Authenticated Only) -->
-                    @auth
-                        <div class="footer-quick-stats">
-                            <h5>
-                                <i class="bi bi-graph-up"></i>
-                                Aperçu Rapide
-                            </h5>
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <span class="stat-value">{{ \App\Models\Femelle::count() }}</span>
-                                    <span class="stat-label">Femelles</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">{{ \App\Models\Male::count() }}</span>
-                                    <span class="stat-label">Mâles</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">{{ \App\Models\Saillie::count() }}</span>
-                                    <span class="stat-label">Saillies</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-value">{{ \App\Models\Naissance::active()->count() }}</span>
-                                    <span class="stat-label">Naissances</span>
-                                </div>
+                        <div class="footer-contact-item">
+                            <i class="bi bi-linkedin"></i>
+                            <div>
+                                <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank"
+                                    rel="noopener noreferrer"> <strong> LinkedIn</strong>
+
+                                </a>
                             </div>
                         </div>
-                    @endauth
+                    
+
+                    </div>
                 </div>
             </div>
 

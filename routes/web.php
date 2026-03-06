@@ -225,6 +225,10 @@ Route::middleware('auth')->group(function () {
 
         // Historique des activités
         Route::get('/activites', [ActiviteController::class, 'index'])->name('activites.index');
+        // Suppression d'activités (AJAX)
+        Route::post('/activities/{id}/delete', [App\Http\Controllers\ActiviteController::class, 'destroy'])
+            ->name('activities.destroy')
+            ->middleware(['auth', 'verified']);
     });
 
     // ========================================================================

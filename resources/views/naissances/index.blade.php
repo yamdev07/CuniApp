@@ -91,9 +91,7 @@
                         <tr>
                             <th class="ps-4 text-uppercase text-muted fw-semibold small">Date</th>
                             <th class="text-uppercase text-muted fw-semibold small">Femelle</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Vivants</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Mort-nés</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Total</th>
+                            <th class="text-uppercase text-muted fw-semibold small">Lapereaux</th>
                             <th class="text-uppercase text-muted fw-semibold small">Santé</th>
                             <th class="text-uppercase text-muted fw-semibold small">Vérification</th>
                             <th class="text-uppercase text-muted fw-semibold small">Sevrage</th>
@@ -104,7 +102,7 @@
                         @forelse($naissances as $naissance)
                             <tr class="border-bottom border-light">
                                 <td class="ps-4 fw-semibold text-dark">
-                                    {{-- ✅ FIXED: Proper null-safe access with Carbon check --}}
+                                    {{-- FIXED: Proper null-safe access with Carbon check --}}
                                     @if ($naissance->miseBas?->date_mise_bas)
                                         {{ \Carbon\Carbon::parse($naissance->miseBas->date_mise_bas)->format('d/m/Y') }}
                                     @else
@@ -113,7 +111,7 @@
 
                                     @if ($naissance->heure_naissance)
                                         <small class="text-muted">
-                                            ({{ // ✅ heure_naissance is a TIME string, not Carbon
+                                            ({{ // heure_naissance is a TIME string, not Carbon
                                                 is_string($naissance->heure_naissance)
                                                     ? $naissance->heure_naissance
                                                     : \Carbon\Carbon::parse($naissance->heure_naissance)->format('H:i') }})
@@ -122,11 +120,8 @@
                                 </td>
                                 <td>{{ $naissance->femelle->nom ?? 'N/A' }}<small
                                         class="text-muted">({{ $naissance->femelle->code ?? '-' }})</small></td>
-                                <td><span class="badge"
-                                        style="background: rgba(16, 185, 129, 0.1); color: #10B981;">{{ $naissance->nb_vivant }}</span>
-                                </td>
-                                <td class="text-muted">{{ $naissance->nb_mort_ne }}</td>
-                                <td class="fw-semibold">{{ $naissance->nb_total }}</td>
+                               
+                                <td class="text-muted">{{ $naissance->nb_vivant }}</td>
                                 <td>
                                     @php
                                         $healthColors = [
@@ -165,7 +160,7 @@
                                             title="Détails"><i class="bi bi-eye"></i></a>
                                         <a href="{{ route('naissances.edit', $naissance) }}" class="btn-cuni sm secondary"
                                             title="Modifier"><i class="bi bi-pencil"></i></a>
-                                        @if (!$naissance->is_archived)
+                                        {{-- @if (!$naissance->is_archived)
                                             <form action="{{ route('naissances.archive', $naissance) }}" method="POST"
                                                 id="archive-form-{{ $naissance->id }}" style="display:inline;">
                                                 @csrf
@@ -175,7 +170,7 @@
                                                 onclick="showModal('confirm', 'Archiver cette naissance ?', 'Êtes-vous sûr de vouloir archiver cette naissance ? Cette action peut être annulée.', function() { document.getElementById('archive-form-{{ $naissance->id }}').submit(); })">
                                                 <i class="bi bi-archive"></i>
                                             </button>
-                                        @endif
+                                        @endif --}}
                                         <form action="{{ route('naissances.destroy', $naissance) }}" method="POST"
                                             style="display:inline;">
                                             @csrf @method('DELETE')

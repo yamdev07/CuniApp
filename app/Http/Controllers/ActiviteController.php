@@ -10,19 +10,21 @@ use App\Models\Femelle;
 use App\Models\MiseBas;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class ActiviteController extends Controller
 {
     public function index()
     {
-        // Récupérer TOUTES les activités fusionnées
-
         // Naissances (vert) → remplace MiseBas
         $naissances = Naissance::with(['femelle', 'miseBas'])
             ->get()
             ->filter(fn($n) => $n->nb_vivant > 0)
             ->sortByDesc(fn($n) => $n->date_naissance)
             ->map(fn($n) => [
+                'id' => $n->id,              
+                'model_type' => 'naissance',
                 'type' => 'green',
                 'title' => 'Naissance enregistrée',
                 'desc' => sprintf(
@@ -41,6 +43,8 @@ class ActiviteController extends Controller
             ->latest('date_saillie')
             ->get()
             ->map(fn($s) => [
+                'id' => $s->id,              
+                'model_type' => 'saillie',
                 'type' => 'purple',
                 'title' => 'Saillie programmée',
                 'desc' => ($s->femelle?->nom ?? "F#{$s->femelle_id}") .
@@ -72,6 +76,8 @@ class ActiviteController extends Controller
         $ventes = Sale::latest('created_at')
             ->get()
             ->map(fn($v) => [
+                'id' => $v->id,              
+                'model_type' => 'sale',
                 'type' => 'blue',
                 'title' => 'Vente enregistrée',
                 'desc' => number_format($v->total_amount, 0, ',', ' ') . ' FCFA',
@@ -89,6 +95,8 @@ class ActiviteController extends Controller
         // Mâles enregistrés
         $nouveauxMales = Male::latest('created_at')->limit(10)->get()
             ->map(fn($m) => [
+                'id' => $m->id,              
+                'model_type' => 'male',
                 'type' => 'cyan',
                 'title' => 'Mâle enregistré',
                 'desc' => "{$m->nom} ({$m->code}) - {$m->race}",
@@ -101,6 +109,8 @@ class ActiviteController extends Controller
         // Femelles enregistrées
         $nouvellesFemelles = Femelle::latest('created_at')->limit(10)->get()
             ->map(fn($f) => [
+                'id' => $f->id,              
+                'model_type' => 'femelle',
                 'type' => 'cyan',
                 'title' => 'Femelle enregistrée',
                 'desc' => "{$f->nom} ({$f->code}) - {$f->race}",
@@ -119,6 +129,8 @@ class ActiviteController extends Controller
             ->limit(10)
             ->get()
             ->map(fn($m) => [
+                'id' => $m->id,              
+                'model_type' => 'mise_bas',
                 'type' => 'amber',
                 'title' => ' Mise bas enregistrée',
                 'desc' => sprintf(
@@ -178,4 +190,80 @@ class ActiviteController extends Controller
             'lastPage' => ceil($allActivities->count() / $perPage),
         ]);
     }
+
+
+    /**
+ * Supprimer une activité (AJAX)
+ */
+public function destroy(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer',
+        'model_type' => 'required|in:naissance,saillie,sale,male,femelle,mise_bas',
+    ]);
+
+    $id = $request->id;
+    $modelType = $request->model_type;
+
+    DB::beginTransaction();
+    try {
+        $modelName = '';
+
+        switch ($modelType) {
+            case 'naissance':
+                $model = Naissance::findOrFail($id);
+                $modelName = "Naissance #{$id}";
+                break;
+
+            case 'saillie':
+                $model = Saillie::findOrFail($id);
+                $modelName = "Saillie #{$id}";
+                break;
+
+            case 'sale':
+                $model = Sale::findOrFail($id);
+                $modelName = "Vente #{$id}";
+                break;
+
+            case 'male':
+                $model = Male::findOrFail($id);
+                $modelName = "Mâle {$model->nom}";
+                break;
+
+            case 'femelle':
+                $model = Femelle::findOrFail($id);
+                $modelName = "Femelle {$model->nom}";
+                break;
+
+            case 'mise_bas':
+                $model = MiseBas::findOrFail($id);
+                $modelName = "Mise bas #{$id}";
+                break;
+
+            default:
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Type de modèle invalide'
+                ], 400);
+        }
+
+        $model->delete(); // ✅ Suppression effective
+        DB::commit();
+
+        // ✅ Réponse SIMPLE : juste un message de succès
+        return response()->json([
+            'success' => true,
+            'message' => 'Suppression réussie'  // ← Message court et clair
+        ], 200);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        // ✅ En production : ne pas exposer le message d'erreur complet
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la suppression'
+        ], 500);
+    }
+}
 }
