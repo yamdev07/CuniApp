@@ -192,9 +192,15 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un mâle..."
                                 id="searchMales" style="flex: 1; min-width: 250px;"
+<<<<<<< HEAD
                                 onkeyup="debouncedSearch('males', this.value)">
                             <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('males')">
                                 <i class="bi bi-check-square"></i> Tout sélectionner
+=======
+                                onkeyup="debouncedSearch('males', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('males')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             </button>
                             <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('males', false)">
                                 <i class="bi bi-square"></i> Tout déselectionner
@@ -202,16 +208,29 @@
                         </div>
                         <div class="rabbit-selection-grid" id="malesGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
+<<<<<<< HEAD
+=======
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             @include('sales.partials.rabbit-grid', [
                                 'rabbits' => $males,
                                 'type' => 'males',
                                 'soldIds' => [],
                             ])
                         </div>
+<<<<<<< HEAD
                         <div class="pagination-info" id="malesPaginationInfo"
                             style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
                             Page {{ $males->currentPage() }} sur {{ $males->lastPage() }}
                             ({{ $totalCounts['males'] ?? $males->total() }} mâles au total)
+=======
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="malesPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $males->currentPage() }} sur {{ $males->lastPage() }} ({{ $males->total() }} mâles au
+                            total)
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                         </div>
                     </div>
 
@@ -220,9 +239,15 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher une femelle..."
                                 id="searchFemales" style="flex: 1; min-width: 250px;"
+<<<<<<< HEAD
                                 onkeyup="debouncedSearch('females', this.value)">
                             <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('females')">
                                 <i class="bi bi-check-square"></i> Tout sélectionner
+=======
+                                onkeyup="debouncedSearch('females', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('females')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             </button>
                             <button type="button" class="btn-cuni secondary"
                                 onclick="toggleSelectAll('females', false)">
@@ -231,16 +256,29 @@
                         </div>
                         <div class="rabbit-selection-grid" id="femalesGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
+<<<<<<< HEAD
+=======
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             @include('sales.partials.rabbit-grid', [
                                 'rabbits' => $femelles,
                                 'type' => 'females',
                                 'soldIds' => [],
                             ])
                         </div>
+<<<<<<< HEAD
                         <div class="pagination-info" id="femalesPaginationInfo"
                             style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
                             Page {{ $femelles->currentPage() }} sur {{ $femelles->lastPage() }}
                             ({{ $totalCounts['females'] ?? $femelles->total() }} femelles au total)
+=======
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="femalesPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $femelles->currentPage() }} sur {{ $femelles->lastPage() }} ({{ $femelles->total() }}
+                            femelles au total)
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                         </div>
                     </div>
 
@@ -249,9 +287,15 @@
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un lapereau..."
                                 id="searchLapereaux" style="flex: 1; min-width: 250px;"
+<<<<<<< HEAD
                                 onkeyup="debouncedSearch('lapereaux', this.value)">
                             <button type="button" class="btn-cuni secondary" onclick="toggleSelectAll('lapereaux')">
                                 <i class="bi bi-check-square"></i> Tout sélectionner
+=======
+                                onkeyup="debouncedSearch('lapereaux', this.value)" <button type="button"
+                                class="btn-cuni secondary" onclick="toggleSelectAll('lapereaux')">
+                            <i class="bi bi-check-square"></i> Tout sélectionner
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             </button>
                             <button type="button" class="btn-cuni secondary"
                                 onclick="toggleSelectAll('lapereaux', false)">
@@ -260,16 +304,29 @@
                         </div>
                         <div class="rabbit-selection-grid" id="lapereauxGrid"
                             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
+<<<<<<< HEAD
+=======
+                            {{-- ✅ REPLACED FOREACH WITH PARTIAL INCLUDE --}}
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             @include('sales.partials.rabbit-grid', [
                                 'rabbits' => $lapereaux,
                                 'type' => 'lapereaux',
                                 'soldIds' => [],
                             ])
                         </div>
+<<<<<<< HEAD
                         <div class="pagination-info" id="lapereauxPaginationInfo"
                             style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
                             Page {{ $lapereaux->currentPage() }} sur {{ $lapereaux->lastPage() }}
                             ({{ $totalCounts['lapereaux'] ?? $lapereaux->total() }} lapereaux au total)
+=======
+
+                        {{-- ✅ ADD PAGINATION INFO --}}
+                        <div class="pagination-info" id="lapereauxPaginationInfo"
+                            style="margin-top: 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">
+                            Page {{ $lapereaux->currentPage() }} sur {{ $lapereaux->lastPage() }}
+                            ({{ $lapereaux->total() }} lapereaux au total)
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                         </div>
                     </div>
 
@@ -648,6 +705,10 @@
                 // ============================================
                 // 2. FILTER RABBITS BY SEARCH (AJAX)
                 // ============================================
+<<<<<<< HEAD
+=======
+                // ✅ NEW: Debounced Search (Server-side)
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 let searchTimeouts = {};
 
                 function debouncedSearch(type, searchTerm) {
@@ -657,7 +718,11 @@
                     }, 300);
                 }
 
+<<<<<<< HEAD
                 // ✅ FIXED: Load Rabbits via AJAX with total count
+=======
+                // ✅ NEW: Load Rabbits via AJAX
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 function loadRabbits(type, page = 1, search = '') {
                     const gridId = type + 'Grid';
                     const grid = document.getElementById(gridId);
@@ -685,6 +750,7 @@
                         .then(data => {
                             if (data.success) {
                                 grid.innerHTML = data.html;
+<<<<<<< HEAD
 
                                 if (paginationInfo) {
                                     // ✅ Use total_count from response (TOTAL, not filtered)
@@ -704,6 +770,14 @@
 
                                 // Re-check selected rabbits and restore their state
                                 restoreSelectedRabbits(type);
+=======
+                                if (paginationInfo) {
+                                    paginationInfo.innerHTML =
+                                        `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${data.pagination.total} ${type} au total)`;
+                                }
+                                // Re-initialize price inputs for new elements
+                                initializePriceInputs(type);
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                             }
                         })
                         .catch(error => console.error('Error:', error))
@@ -713,6 +787,7 @@
                         });
                 }
 
+<<<<<<< HEAD
                 // ✅ Restore selected state after AJAX load
                 function restoreSelectedRabbits(type) {
                     const category = type.replace('s', '');
@@ -802,11 +877,75 @@
                             priceContainer.style.display = 'block';
                         }
                     });
+=======
+                // ✅ NEW: Load More Button Handler
+                function loadMoreRabbits(button) {
+                    const type = button.dataset.type;
+                    const page = button.dataset.page;
+                    const grid = document.getElementById(type + 'Grid');
+
+                    button.disabled = true;
+                    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Chargement...';
+
+                    fetch('{{ route('sales.load-rabbits') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                type: type,
+                                page: page,
+                                search: document.getElementById('search' + type.charAt(0).toUpperCase() + type
+                                    .slice(1)).value
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                button.remove(); // Remove old button
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = data.html;
+                                // Append new cards
+                                tempDiv.querySelectorAll('.rabbit-card').forEach(card => grid.appendChild(card));
+                                // Append new load more button if exists
+                                const newBtn = tempDiv.querySelector('.load-more-btn');
+                                if (newBtn) grid.appendChild(newBtn);
+                                // Update info
+                                const paginationInfo = document.getElementById(type + 'PaginationInfo');
+                                if (paginationInfo) {
+                                    paginationInfo.innerHTML =
+                                        `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${data.pagination.total} ${type} au total)`;
+                                }
+                                initializePriceInputs(type);
+                            }
+                        })
+                        .finally(() => {
+                            button.disabled = false;
+                        });
+                }
+
+                // ✅ NEW: Initialize Prices for Dynamically Loaded Rabbits
+                function initializePriceInputs(type) {
+                    const category = type.replace('s', '');
+                    const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]`);
+                    checkboxes.forEach(checkbox => {
+                        const rabbitId = checkbox.value;
+                        const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
+                        const priceInput = priceContainer?.querySelector('.rabbit-price');
+                        if (checkbox.checked && priceInput) {
+                            priceInput.value = globalPrices[category] || 0;
+                            priceContainer.style.display = 'block';
+                        }
+                    });
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 }
 
                 // ============================================
                 // 3. TOGGLE SELECT ALL
                 // ============================================
+                // ✅ UPDATED: Toggle Select All
                 function toggleSelectAll(category, select = true) {
                     const grid = document.getElementById(category + 'Grid');
                     const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
@@ -819,7 +958,6 @@
                             handleRabbitSelection(category.replace('s', ''), rabbitId);
                         }
                     });
-
                     calculateTotalAmount();
                 }
 

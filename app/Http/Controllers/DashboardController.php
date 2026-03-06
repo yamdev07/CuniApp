@@ -75,37 +75,38 @@ class DashboardController extends Controller
                 ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
 
-            // ✅ NEW CODE (use accessors)
-            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
-                ->whereHas('miseBas', function ($q) {
-                    $q->whereNotNull('date_mise_bas');
-                })
+            // ✅ Naissances (vert) → SEULEMENT si nb_vivant > 0
+            'naissances' => \App\Models\Naissance::select('id', 'date_naissance', 'femelle_id', 'nb_vivant')
+                ->with('femelle')
+                ->whereNotNull('date_naissance')
+                ->where('nb_vivant', '>', 0) // ✅ FILTRE : uniquement les vivants
                 ->get()
-                ->filter(fn($n) => $n->nb_vivant > 0)
                 ->map(fn($n) => [
-                    'date' => $n->date_naissance?->format('Y-m-d'),
+                    'date' => \Carbon\Carbon::parse($n->date_naissance)->format('Y-m-d'),
+
                     'label' => sprintf('Naissance: %s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0)
                 ])
                 ->toArray(),
 
             //  Sexuations (bleu) → J+10, SEULEMENT si nb_vivant > 0
-            'sexuations' => \App\Models\Naissance::with('miseBas.femelle')
-                ->whereHas('miseBas', function ($q) {
-                    $q->whereNotNull('date_mise_bas');
-                })
-                ->where('sex_verified', false)
+            'sexuations' => \App\Models\Naissance::with('femelle')
+                ->whereNotNull('date_naissance')
+                ->where('nb_vivant', '>', 0) // ✅ FILTRE : uniquement les vivants
+                ->where('sex_verified', false) // Optionnel : seulement les non-vérifiées
                 ->get()
-                ->filter(fn($n) => $n->nb_vivant > 0)
                 ->map(function ($n) {
-                    $nomAffiche = $n->femelle?->nom ?? $n->femelle?->tag ?? null;
-                    $dateNaissance = $n->miseBas?->date_mise_bas;
+                    $nomAffiche = $n->femelle?->nom
+                        ?? $n->femelle?->tag
+                        ?? null;
+
                     return [
-                        'date' => $dateNaissance ? \Carbon\Carbon::parse($dateNaissance)->addDays(10)->format('Y-m-d') : null,
-                        'label' => $nomAffiche ? "Sexage: {$nomAffiche} (#{$n->id})" : "Sexage: Portée #{$n->id}",
+                        'date' => \Carbon\Carbon::parse($n->date_naissance)->addDays(10)->format('Y-m-d'),
+                        'label' => $nomAffiche
+                            ? "Sexage: {$nomAffiche} (#{$n->id})"
+                            : "Sexage: Portée #{$n->id}",
                         'type' => 'sexuation'
                     ];
                 })
-                ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
         ];
 
@@ -113,11 +114,8 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         //Récupérer les dernières NAISSANCES (vert) 
-        // ✅ NEW - Use relationship-based filtering
-        $recentNaissances = Naissance::with(['femelle', 'lapereaux'])
-            ->whereHas('lapereaux', function ($q) {
-                $q->where('etat', 'vivant');
-            })
+        $recentNaissances = Naissance::with('femelle')
+            ->where('nb_vivant', '>', 0)
             ->latest('created_at')
             ->get()
             ->map(fn($n) => [
@@ -126,11 +124,11 @@ class DashboardController extends Controller
                 'desc' => sprintf(
                     '%s (%d nés)',
                     $n->femelle?->nom ?? 'Inconnue',
-                    $n->nb_vivant ?? 0  // ← Uses accessor, not column
+                    $n->nb_vivant ?? 0
                 ),
                 'time' => Carbon::parse($n->created_at)->diffForHumans(),
                 'date' => $n->created_at,
-                'url' => route('naissances.show', $n->id) ?? '#',
+                'url' => route('naissances.show', $n->id) ?? '#', // ✅ Route vers Naissance
             ]);
 
         // Récupérer les dernières saillies (violet) → inchangé
@@ -241,4 +239,6 @@ class DashboardController extends Controller
             'timelineActivities'
         ));
     }
+
+
 }

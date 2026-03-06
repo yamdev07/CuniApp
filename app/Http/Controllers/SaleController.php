@@ -298,11 +298,21 @@ class SaleController extends Controller
 
         $sale->load(['rabbits.rabbit']);
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
         // ✅ PAGINATED: Load available rabbits
         $soldMaleIds = $sale->rabbits()->where('rabbit_type', 'male')->pluck('rabbit_id')->toArray();
         $soldFemaleIds = $sale->rabbits()->where('rabbit_type', 'female')->pluck('rabbit_id')->toArray();
         $soldLapereauIds = $sale->rabbits()->where('rabbit_type', 'lapereau')->pluck('rabbit_id')->toArray();
 
+<<<<<<< HEAD
+=======
+=======
+        // ✅ FIXED: Load ALL available males (no etat filter)
+>>>>>>> main
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
         $males = Male::whereDoesntHave('sales', function ($q) use ($sale) {
             $q->whereHas('sale', function ($sq) use ($sale) {
                 $sq->where('payment_status', '!=', 'cancelled')
@@ -731,13 +741,20 @@ class SaleController extends Controller
         };
     }
 
+<<<<<<< HEAD
+=======
+    // ✅ NEW: AJAX endpoint for loading more rabbits
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
     public function loadRabbits(Request $request)
     {
         $request->validate([
             'type' => 'required|in:males,females,lapereaux',
             'page' => 'nullable|integer|min:1',
             'search' => 'nullable|string|max:100',
+<<<<<<< HEAD
             'count_only' => 'nullable|boolean',  // ✅ NEW: For getting total count without HTML
+=======
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
         ]);
 
         $page = $request->get('page', 1);
@@ -753,6 +770,10 @@ class SaleController extends Controller
                             ->orWhere('code', 'LIKE', "%{$search}%");
                     });
                 }
+<<<<<<< HEAD
+=======
+                $rabbits = $query->paginate($perPage, ['*'], 'page', $page);
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 break;
 
             case 'females':
@@ -764,6 +785,10 @@ class SaleController extends Controller
                             ->orWhere('code', 'LIKE', "%{$search}%");
                     });
                 }
+<<<<<<< HEAD
+=======
+                $rabbits = $query->paginate($perPage, ['*'], 'page', $page);
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 break;
 
             case 'lapereaux':
@@ -776,12 +801,17 @@ class SaleController extends Controller
                             ->orWhere('code', 'LIKE', "%{$search}%");
                     });
                 }
+<<<<<<< HEAD
+=======
+                $rabbits = $query->paginate($perPage, ['*'], 'page', $page);
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
                 break;
 
             default:
                 return response()->json(['error' => 'Invalid type'], 400);
         }
 
+<<<<<<< HEAD
         // ✅ NEW: If count_only requested, return just the count (for search filtering)
         if ($request->boolean('count_only')) {
             return response()->json([
@@ -793,6 +823,8 @@ class SaleController extends Controller
         // ✅ Standard pagination
         $rabbits = $query->paginate($perPage, ['*'], 'page', $page);
 
+=======
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
         return response()->json([
             'success' => true,
             'html' => view('sales.partials.rabbit-grid', [
@@ -805,9 +837,14 @@ class SaleController extends Controller
                 'last_page' => $rabbits->lastPage(),
                 'has_more' => $rabbits->hasMorePages(),
                 'next_page' => $rabbits->currentPage() + 1,
+<<<<<<< HEAD
                 'total' => $rabbits->total(),  // ✅ Total across ALL pages
             ],
             'total_count' => $query->count(),  // ✅ ADDED: For displaying total in tab
+=======
+                'total' => $rabbits->total(),
+            ]
+>>>>>>> a5f04f579910b129ca1584b6c433d5edd73ae076
         ]);
     }
 }
