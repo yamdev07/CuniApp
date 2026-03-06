@@ -943,6 +943,23 @@
                     // Expose to global scope for inline handlers
                     window.filterRabbits = filterRabbits;
                 });
+
+
+                // Expose functions to global scope for inline HTML handlers
+                window.toggleSelectAll = toggleSelectAll;
+                window.debouncedSearch = debouncedSearch;
+                window.handleRabbitSelection = handleRabbitSelection;
+                window.loadMoreRabbits = loadMoreRabbits;
+                window.calculateTotalAmount = calculateTotalAmount;
+                window.markPriceAsCustom = markPriceAsCustom;
+                window.resetToGlobalPrice = resetToGlobalPrice;
+                window.applyGlobalPricesToAll = applyGlobalPricesToAll;
+                window.applyGlobalPricesToSelected = applyGlobalPricesToSelected;
+                window.saveGlobalPricesAsDefault = saveGlobalPricesAsDefault;
+                window.showToast = showToast;
+                window.loadRabbits = loadRabbits;
+                window.initializePriceInputs = initializePriceInputs;
+                window.filterRabbits = filterRabbits;
             })();
         </script>
     @endpush
