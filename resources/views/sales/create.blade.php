@@ -898,6 +898,32 @@
                     document.head.appendChild(animationStyle);
                 }
 
+                // Add client-side filterRabbits function and expose to window
+                function filterRabbits(category, searchTerm) {
+                    const grid = document.getElementById(category + 'Grid');
+                    const cards = grid.querySelectorAll('.rabbit-card');
+                    let visibleCount = 0;
+
+                    cards.forEach(card => {
+                        const checkbox = card.querySelector('.rabbit-checkbox');
+                        if (!checkbox) return;
+
+                        const code = checkbox.dataset.code?.toLowerCase() || '';
+                        const name = checkbox.dataset.name?.toLowerCase() || '';
+
+                        if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm
+                                .toLowerCase())) {
+                            card.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    const countEl = document.getElementById(category + 'Count');
+                    if (countEl) countEl.textContent = visibleCount;
+                }
+
                 // ============================================
                 // 7. INITIALIZE ON PAGE LOAD
                 // ============================================
@@ -912,33 +938,6 @@
 
                     // Show welcome toast
                     showToast('💡 Astuce: Définissez vos prix globaux pour gagner du temps!', 'info');
-
-
-                    // Add client-side filterRabbits function and expose to window
-                    function filterRabbits(category, searchTerm) {
-                        const grid = document.getElementById(category + 'Grid');
-                        const cards = grid.querySelectorAll('.rabbit-card');
-                        let visibleCount = 0;
-
-                        cards.forEach(card => {
-                            const checkbox = card.querySelector('.rabbit-checkbox');
-                            if (!checkbox) return;
-
-                            const code = checkbox.dataset.code?.toLowerCase() || '';
-                            const name = checkbox.dataset.name?.toLowerCase() || '';
-
-                            if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm
-                                    .toLowerCase())) {
-                                card.style.display = 'flex';
-                                visibleCount++;
-                            } else {
-                                card.style.display = 'none';
-                            }
-                        });
-
-                        const countEl = document.getElementById(category + 'Count');
-                        if (countEl) countEl.textContent = visibleCount;
-                    }
 
                     // Expose to global scope for inline handlers
                     window.filterRabbits = filterRabbits;
