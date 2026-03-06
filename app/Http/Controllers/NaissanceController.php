@@ -18,7 +18,6 @@ class NaissanceController extends Controller
     public function index(Request $request)
     {
         $query = Naissance::with(['miseBas.femelle', 'lapereaux'])
-            ->active()
             ->latest();
 
         // ✅ Search functionality
@@ -43,9 +42,8 @@ class NaissanceController extends Controller
         $naissances = $query->paginate(15);
 
         $stats = [
-            'total' => Naissance::active()->count(),
-            'this_month' => Naissance::active()
-                ->whereHas(
+            'total' => Naissance::count(),
+            'this_month' => Naissance::whereHas(
                     'miseBas',
                     fn($q) =>
                     $q->whereMonth('date_mise_bas', now()->month)
@@ -406,17 +404,5 @@ class NaissanceController extends Controller
 
         return redirect()->route('naissances.index')
             ->with('success', 'Naissance supprimée !');
-    }
-
-    public function archive(Naissance $naissance)
-    {
-        $naissance->update(['is_archived' => true, 'archived_at' => now()]);
-        return back()->with('success', 'Naissance archivée !');
-    }
-
-    public function restore(Naissance $naissance)
-    {
-        $naissance->update(['is_archived' => false, 'archived_at' => null]);
-        return back()->with('success', 'Naissance restaurée !');
     }
 }

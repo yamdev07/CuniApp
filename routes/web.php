@@ -187,8 +187,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/naissances/{naissance}/edit', [NaissanceController::class, 'edit'])->name('naissances.edit');
         Route::put('/naissances/{naissance}', [NaissanceController::class, 'update'])->name('naissances.update');
         Route::delete('/naissances/{naissance}', [NaissanceController::class, 'destroy'])->name('naissances.destroy');
-        Route::patch('/naissances/{naissance}/archive', [NaissanceController::class, 'archive'])->name('naissances.archive');
-        Route::patch('/naissances/{naissance}/restore', [NaissanceController::class, 'restore'])->name('naissances.restore');
 
         // Sales CRUD
         Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
