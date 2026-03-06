@@ -256,11 +256,20 @@ class NaissanceController extends Controller
         $naissance->load(['miseBas.femelle', 'lapereaux']);
         $canVerifySex = $naissance->can_verify_sex;
 
+        // ✅ ADD THIS: Calculate days until sex verification is allowed
+        $daysUntilVerification = max(0, 10 - $naissance->jours_depuis_naissance);
+
         // ✅ Get max allowed from mise_bas
         $maxAllowed = $naissance->max_allowed_lapereaux;
         $currentCount = $naissance->lapereaux()->count();
 
-        return view('naissances.edit', compact('naissance', 'canVerifySex', 'maxAllowed', 'currentCount'));
+        return view('naissances.edit', compact(
+            'naissance',
+            'canVerifySex',
+            'daysUntilVerification',  // ✅ ADD THIS
+            'maxAllowed',
+            'currentCount'
+        ));
     }
 
     public function update(Request $request, Naissance $naissance)
