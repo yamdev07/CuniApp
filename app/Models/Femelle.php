@@ -34,7 +34,14 @@ class Femelle extends Model
 
     public function naissances()
     {
-        return $this->hasMany(Naissance::class);
+        return $this->hasManyThrough(
+            Naissance::class,     // Final model we want to access
+            MiseBas::class,       // Intermediate model
+            'femelle_id',         // Foreign key on mises_bas table (links to femelles)
+            'mise_bas_id',        // Foreign key on naissances table (links to mises_bas)
+            'id',                 // Local key on femelles table
+            'id'                  // Local key on mises_bas table
+        );
     }
 
     // app/Models/Femelle.php (add this)

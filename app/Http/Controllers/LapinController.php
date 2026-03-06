@@ -292,4 +292,25 @@ class LapinController extends Controller
 
         return response()->json(['available' => $isUnique]);
     }
+
+    /**
+     * Display the specified rabbit (unified view for male/female).
+     */
+    public function show($id)
+    {
+        // Try to find in both tables
+        $male = Male::find($id);
+        $femelle = Femelle::find($id);
+
+        if ($male) {
+            // Redirect to male show page for full details
+            return redirect()->route('males.show', $male->id);
+        } elseif ($femelle) {
+            // Redirect to femelle show page for full details
+            return redirect()->route('femelles.show', $femelle->id);
+        }
+
+        // If not found in either table
+        abort(404, 'Lapin non trouvé');
+    }
 }
