@@ -1,6 +1,8 @@
 {{-- resources/views/naissances/create.blade.php --}}
 @extends('layouts.cuniapp')
+
 @section('title', 'Nouvelle Naissance - CuniApp Élevage')
+
 @section('content')
 <div class="page-header">
     <div>
@@ -15,6 +17,7 @@
     </div>
 </div>
 
+{{-- ✅ ERROR DISPLAY WITH FRENCH MESSAGES --}}
 @if ($errors->any())
 <div class="alert-cuni error">
     <i class="bi bi-exclamation-triangle-fill"></i>
@@ -22,7 +25,17 @@
         <strong>Erreurs de validation</strong>
         <ul style="margin: 8px 0 0 20px; padding: 0;">
             @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
+            <li>
+                @if(str_contains($error, 'validation.unique'))
+                    ❌ Ce code existe déjà dans la base de données
+                @elseif(str_contains($error, 'validation.required'))
+                    ⚠️ Ce champ est obligatoire
+                @elseif(str_contains($error, 'validation.'))
+                    {{ str_replace('validation.', '', $error) }}
+                @else
+                    {{ $error }}
+                @endif
+            </li>
             @endforeach
         </ul>
     </div>
@@ -47,7 +60,7 @@
                             <option value="">-- Sélectionner une mise bas --</option>
                             @foreach($misesBas as $mb)
                             <option value="{{ $mb->id }}" 
-                                {{ (old('mise_bas_id') == $mb->id || (isset($miseBas) && $miseBas->id == $mb->id)) ? 'selected' : '' }}>
+                                    {{ (old('mise_bas_id') == $mb->id || (isset($miseBas) && $miseBas->id == $mb->id)) ? 'selected' : '' }}>
                                 {{ $mb->femelle->nom }} ({{ $mb->femelle->code }}) - {{ $mb->date_mise_bas->format('d/m/Y') }}
                                 @if($mb->nb_vivant || $mb->nb_mort_ne)
                                     ({{ $mb->nb_vivant }} vivants + {{ $mb->nb_mort_ne }} morts-nés)
@@ -90,7 +103,7 @@
                     <div class="form-group">
                         <label class="form-label">Poids moyen à la naissance (g)</label>
                         <input type="number" step="0.01" name="poids_moyen_naissance" class="form-control" 
-                            value="{{ old('poids_moyen_naissance') }}" min="0" max="200">
+                               value="{{ old('poids_moyen_naissance') }}" min="0" max="200">
                         <small style="color: var(--text-tertiary); font-size: 12px;">
                             <i class="bi bi-info-circle"></i> Moyenne de la portée (optionnel)
                         </small>
@@ -98,7 +111,7 @@
                     <div class="form-group">
                         <label class="form-label">Date de sevrage prévue</label>
                         <input type="date" name="date_sevrage_prevue" class="form-control" 
-                            value="{{ old('date_sevrage_prevue') }}">
+                               value="{{ old('date_sevrage_prevue') }}">
                         <small style="color: var(--text-tertiary); font-size: 12px;">
                             <i class="bi bi-info-circle"></i> Recommandé: 6 semaines après la naissance
                         </small>
@@ -115,11 +128,12 @@
                 <div class="alert-box warning" style="margin-bottom: 16px;">
                     <i class="bi bi-exclamation-triangle-fill"></i>
                     <div>
-                        <strong>Important:</strong> 
+                        <strong>Important:</strong>
                         <ul style="margin: 8px 0 0 16px; padding: 0;">
                             <li>Le sexe ne peut être vérifié qu'après 10 jours</li>
                             <li>Le nombre de lapereaux ne doit pas dépasser celui de la mise bas</li>
                             <li>Chaque lapereau a son propre poids et état de santé</li>
+                            <li>✨ <strong>Les codes sont auto-générés mais modifiables</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -142,7 +156,7 @@
             </div>
 
             <div style="margin-top: 32px; display: flex; gap: 12px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
-                <button type="submit" class="btn-cuni primary">
+                <button type="submit" class="btn-cuni primary" id="submitBtn">
                     <i class="bi bi-check-circle"></i> Enregistrer
                 </button>
                 <a href="{{ route('naissances.index') }}" class="btn-cuni secondary">
@@ -158,6 +172,12 @@
 let rabbitCount = 0;
 let maxAllowed = 0;
 
+// ✅ Generate auto code function
+function generateAutoCode() {
+    const year = new Date().getFullYear();
+    return `LAP-${year}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+}
+
 function addRabbitRow(data = {}) {
     // ✅ Check max allowed
     if (maxAllowed > 0) {
@@ -167,28 +187,31 @@ function addRabbitRow(data = {}) {
             return;
         }
     }
-
+    
     rabbitCount++;
     const container = document.getElementById('rabbitsContainer');
     const row = document.createElement('div');
     row.className = 'rabbit-row';
     row.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; padding: 10px; background: var(--surface-alt); border-radius: var(--radius); align-items: end;';
     
+    // ✅ FIXED: Code is NOT readonly, auto-generated but editable
+    const autoCode = data.code || generateAutoCode();
+    
     row.innerHTML = `
         <div>
             <label class="form-label" style="font-size: 12px;">Code *</label>
-            <input type="text" name="rabbits[${rabbitCount}][code]" class="form-control rabbit-code" 
-                value="${data.code || 'Auto-généré'}" 
-                ${!data.code ? 'readonly style="background: var(--gray-100); color: var(--text-tertiary);"' : ''}
-                placeholder="LAP-2026-0001"
-                data-check-url="{{ route('lapins.check-code') }}">
-            <small style="color: var(--primary); font-size: 10px;">✨ Modifiable si unique</small>
+            <input type="text" 
+                   name="rabbits[${rabbitCount}][code]" 
+                   class="form-control rabbit-code" 
+                   value="${autoCode}" 
+                   placeholder="LAP-2026-0001" 
+                   data-check-url="{{ route('lapins.check-code') }}">
+            <small style="color: var(--primary); font-size: 10px;">✨ Modifiable - sera vérifié automatiquement</small>
             <div class="code-validation" style="font-size: 10px; margin-top: 2px;"></div>
         </div>
         <div>
             <label class="form-label" style="font-size: 12px;">Nom</label>
-            <input type="text" name="rabbits[${rabbitCount}][nom]" class="form-control" 
-                value="${data.nom || ''}" placeholder="Ex: Toto">
+            <input type="text" name="rabbits[${rabbitCount}][nom]" class="form-control" value="${data.nom || ''}" placeholder="Ex: Toto">
             <small style="color: var(--text-tertiary); font-size: 10px;">Pour identification</small>
         </div>
         <div>
@@ -210,9 +233,7 @@ function addRabbitRow(data = {}) {
         </div>
         <div>
             <label class="form-label" style="font-size: 12px;">Poids (g)</label>
-            <input type="number" step="0.01" name="rabbits[${rabbitCount}][poids_naissance]" 
-                class="form-control" value="${data.poids_naissance || ''}" 
-                min="0" max="200" placeholder="50-80g">
+            <input type="number" step="0.01" name="rabbits[${rabbitCount}][poids_naissance]" class="form-control" value="${data.poids_naissance || ''}" min="0" max="200" placeholder="50-80g">
         </div>
         <div>
             <label class="form-label" style="font-size: 12px;">Santé</label>
@@ -233,33 +254,56 @@ function addRabbitRow(data = {}) {
     
     // ✅ Add code validation listener
     const codeInput = row.querySelector('.rabbit-code');
-    if (codeInput && !codeInput.readOnly) {
+    if (codeInput) {
         setupCodeValidation(codeInput);
     }
 }
 
+// ✅ Real-time code validation with AJAX
 function setupCodeValidation(codeInput) {
     let validationTimeout;
+    let lastCheckedValue = '';
+    
     codeInput.addEventListener('input', function() {
         clearTimeout(validationTimeout);
         const validationDiv = this.parentElement.querySelector('.code-validation');
         validationDiv.innerHTML = '';
         
-        if (this.value.length < 3 || this.value === 'Auto-généré') return;
+        // Skip if empty or unchanged
+        if (this.value.length < 3 || this.value === lastCheckedValue) return;
+        
+        lastCheckedValue = this.value;
         
         validationTimeout = setTimeout(() => {
-            fetch(`{{ route('lapins.check-code') }}?code=${encodeURIComponent(this.value)}`)
+            const checkUrl = this.dataset.checkUrl;
+            
+            fetch(`${checkUrl}?code=${encodeURIComponent(this.value)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (!data.available) {
                         validationDiv.innerHTML = '<span style="color: var(--accent-red);">❌ Code existe déjà</span>';
                         this.style.borderColor = 'var(--accent-red)';
+                        this.setCustomValidity('Ce code existe déjà');
                     } else {
                         validationDiv.innerHTML = '<span style="color: var(--accent-green);">✅ Code disponible</span>';
                         this.style.borderColor = 'var(--accent-green)';
+                        this.setCustomValidity('');
                     }
+                })
+                .catch(error => {
+                    console.error('Validation error:', error);
+                    validationDiv.innerHTML = '<span style="color: var(--accent-orange);">⚠️ Impossible de vérifier</span>';
+                    this.style.borderColor = 'var(--accent-orange)';
                 });
-        }, 500);
+        }, 500); // Debounce 500ms
+    });
+    
+    // ✅ Validate on blur (when user leaves field)
+    codeInput.addEventListener('blur', function() {
+        if (this.value.length >= 3) {
+            // Trigger final validation
+            this.dispatchEvent(new Event('input'));
+        }
     });
 }
 
@@ -301,7 +345,6 @@ document.getElementById('miseBasSelect')?.addEventListener('change', function() 
         maxAllowed = 0;
         document.getElementById('maxAllowedDisplay').style.display = 'none';
     }
-    
     updateTotalLapereaux();
 });
 
@@ -310,17 +353,56 @@ window.addEventListener('DOMContentLoaded', () => {
     addRabbitRow();
     addRabbitRow();
     addRabbitRow();
+    
+    // ✅ Trigger mise_bas change to load max allowed if pre-selected
+    const miseBasSelect = document.getElementById('miseBasSelect');
+    if (miseBasSelect && miseBasSelect.value) {
+        miseBasSelect.dispatchEvent(new Event('change'));
+    }
 });
 
 function showToast(message, type = 'info') {
     const toast = document.createElement('div');
-    toast.style.cssText = `position: fixed; bottom: 100px; right: 30px; background: var(--surface); 
-        border: 1px solid var(--surface-border); border-left: 4px solid ${type === 'success' ? 'var(--accent-green)' : 'var(--accent-orange)'}; 
-        padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 9999;`;
+    toast.style.cssText = `position: fixed; bottom: 100px; right: 30px; background: var(--surface); border: 1px solid var(--surface-border); border-left: 4px solid ${type === 'success' ? 'var(--accent-green)' : 'var(--accent-orange)'}; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 9999;`;
     toast.innerHTML = `<span style="color: var(--text-primary);">${message}</span>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
 }
+
+// ✅ Form submission validation
+document.getElementById('naissanceForm')?.addEventListener('submit', function(e) {
+    const invalidCodes = [];
+    document.querySelectorAll('.rabbit-code').forEach(input => {
+        if (input.value && input.style.borderColor === 'var(--accent-red)') {
+            invalidCodes.push(input.value);
+        }
+    });
+    
+    if (invalidCodes.length > 0) {
+        e.preventDefault();
+        showToast(`⚠️ ${invalidCodes.length} code(s) existent déjà! Veuillez les modifier.`, 'error');
+        return false;
+    }
+    
+    // Check if any required fields are empty
+    const requiredSelects = document.querySelectorAll('select[required]');
+    let hasEmpty = false;
+    requiredSelects.forEach(select => {
+        if (!select.value) {
+            hasEmpty = true;
+            select.style.borderColor = 'var(--accent-red)';
+        } else {
+            select.style.borderColor = 'var(--gray-300)';
+        }
+    });
+    
+    if (hasEmpty) {
+        e.preventDefault();
+        showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
+        return false;
+    }
+});
 </script>
 @endpush
+
 @endsection
