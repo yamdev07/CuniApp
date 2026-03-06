@@ -68,6 +68,8 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="action-buttons">
+                                         <a href="{{ route('lapins.show', $femelle->id) }}" class="btn-cuni sm secondary"
+                                            title="Détails"><i class="bi bi-eye"></i></a>
                                         <a href="{{ route('lapins.edit', $femelle->id) }}" class="btn-cuni sm secondary"
                                             title="Modifier">
                                             <i class="bi bi-pencil"></i>
@@ -120,6 +122,8 @@
                                 </td>
                                 <td class="pe-4">
                                     <div class="action-buttons">
+                                         <a href="{{ route('males.show', $m->id) }}" class="btn-cuni sm secondary"
+                                            title="Détails"><i class="bi bi-eye"></i></a>
                                         <a href="{{ route('lapins.edit', $m->id) }}" class="btn-cuni sm secondary"
                                             title="Modifier">
                                             <i class="bi bi-pencil"></i>
