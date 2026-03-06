@@ -25,18 +25,14 @@ class Naissance extends Model
         'first_reminder_sent_at',
         'last_reminder_sent_at',
         'reminder_count',
-        'is_archived',
-        'archived_at',
         'heure_naissance' => 'string',
     ];
 
     protected $casts = [
         'sex_verified' => 'boolean',
-        'is_archived' => 'boolean',
         'sex_verified_at' => 'datetime',
         'first_reminder_sent_at' => 'datetime',
         'last_reminder_sent_at' => 'datetime',
-        'archived_at' => 'datetime',
         'poids_moyen_naissance' => 'decimal:2',
         'date_sevrage_prevue' => 'date',
         'date_vaccination_prevue' => 'date',
@@ -133,7 +129,6 @@ class Naissance extends Model
     public function scopePendingVerification($query)
     {
         return $query->where('sex_verified', false)
-            ->where('is_archived', false)
             ->whereHas('miseBas', function ($q) {
                 $q->where('date_mise_bas', '<=', now()->subDays(10));
             });
@@ -142,7 +137,6 @@ class Naissance extends Model
     // ✅ SCOPE: Active births
     public function scopeActive($query)
     {
-        return $query->where('is_archived', false);
     }
 
     // ✅ Mark sex as verified
