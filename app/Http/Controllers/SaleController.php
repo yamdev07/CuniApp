@@ -46,11 +46,15 @@ class SaleController extends Controller
      */
     public function create()
     {
-        // ✅ PAGINATED: Load rabbits with pagination (20 per page)
-        $males = Male::orderBy('nom')->paginate(20, ['*'], 'males_page');
+        // ✅ FIXED: Include ALL male states (like FemelleController does)
+        $males = Male::orderBy('nom')->get();
+
+        // ✅ Females - Keep as is (good)
         $femelles = Femelle::whereIn('etat', ['Active', 'Vide', 'Allaitante'])
             ->orderBy('nom')
-            ->paginate(20, ['*'], 'females_page');
+            ->get();
+
+        // ✅ Lapereaux - Keep as is (good)
         $lapereaux = Lapereau::whereIn('etat', ['vivant', 'vendu'])
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
@@ -291,11 +295,15 @@ class SaleController extends Controller
 
         $sale->load(['rabbits.rabbit']);
 
+<<<<<<< HEAD
         // ✅ PAGINATED: Load available rabbits
         $soldMaleIds = $sale->rabbits()->where('rabbit_type', 'male')->pluck('rabbit_id')->toArray();
         $soldFemaleIds = $sale->rabbits()->where('rabbit_type', 'female')->pluck('rabbit_id')->toArray();
         $soldLapereauIds = $sale->rabbits()->where('rabbit_type', 'lapereau')->pluck('rabbit_id')->toArray();
 
+=======
+        // ✅ FIXED: Load ALL available males (no etat filter)
+>>>>>>> main
         $males = Male::whereDoesntHave('sales', function ($q) use ($sale) {
             $q->whereHas('sale', function ($sq) use ($sale) {
                 $sq->where('payment_status', '!=', 'cancelled')
@@ -305,6 +313,7 @@ class SaleController extends Controller
             ->orderBy('nom')
             ->paginate(20, ['*'], 'males_page');
 
+        // ✅ Females - Keep as is
         $femelles = Femelle::where('etat', 'Active')
             ->whereDoesntHave('sales', function ($q) use ($sale) {
                 $q->whereHas('sale', function ($sq) use ($sale) {
@@ -315,6 +324,7 @@ class SaleController extends Controller
             ->orderBy('nom')
             ->paginate(20, ['*'], 'females_page');
 
+        // ✅ Lapereaux - Keep as is
         $lapereaux = Lapereau::where('etat', 'vivant')
             ->whereDoesntHave('sales', function ($q) use ($sale) {
                 $q->whereHas('sale', function ($sq) use ($sale) {
