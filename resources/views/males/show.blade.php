@@ -26,7 +26,7 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Main Info - 2/3 width -->
+    <!-- Main Info - Takes 2/3 width on large screens -->
     <div class="lg:col-span-2">
         <div class="cuni-card">
             <div class="card-header-custom">
@@ -91,7 +91,7 @@
                 @endphp
                 <div class="grid grid-cols-2 gap-4">
                     <div style="text-align: center; padding: 16px; background: var(--surface-alt); border-radius: var(--radius-lg);">
-                        <div style="font-size: 24px; font-weight: 700; color: var(--primary);">{{ $sailliesCount }}</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--accent-pink);">{{ $sailliesCount }}</div>
                         <div style="font-size: 12px; color: var(--text-tertiary);">Saillies</div>
                     </div>
                     <div style="text-align: center; padding: 16px; background: var(--surface-alt); border-radius: var(--radius-lg);">
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <!-- Sidebar: Actions & Metadata - 1/3 width -->
+    <!-- Sidebar: Actions & Metadata -->
     <div>
         <!-- Quick Actions -->
         <div class="cuni-card">
@@ -145,14 +145,14 @@
             </div>
         </div>
 
-        <!-- Delete Warning Card -->
+        <!-- Delete Warning - Styled like Female -->
         <div class="cuni-card" style="margin-top: 24px; border-left: 4px solid var(--accent-red);">
             <div class="card-body">
                 <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
                     <i class="bi bi-exclamation-triangle" style="color: var(--accent-red);"></i>
                     <strong>Attention:</strong> La suppression est irréversible.
                 </p>
-                <form action="{{ route('males.destroy', $male) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ?')">
+                <form action="{{ route('males.destroy', $male) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce mâle ? Cette action ne peut pas être annulée.')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn-cuni danger" style="width: 100%;">

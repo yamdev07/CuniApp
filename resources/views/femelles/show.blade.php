@@ -1,8 +1,6 @@
 {{-- resources/views/femelles/show.blade.php --}}
 @extends('layouts.cuniapp')
-
 @section('title', 'Détails Femelle - CuniApp Élevage')
-
 @section('content')
 <div class="page-header">
     <div>
@@ -144,6 +142,23 @@
                         <i class="bi bi-egg-fill"></i> Voir les naissances
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Delete Warning - Consistent Style -->
+        <div class="cuni-card" style="margin-top: 24px; border-left: 4px solid var(--accent-red);">
+            <div class="card-body">
+                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                    <i class="bi bi-exclamation-triangle" style="color: var(--accent-red);"></i>
+                    <strong>Attention:</strong> La suppression est irréversible.
+                </p>
+                <form action="{{ route('femelles.destroy', $femelle) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette femelle ? Cette action ne peut pas être annulée.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-cuni danger" style="width: 100%;">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </button>
+                </form>
             </div>
         </div>
     </div>
