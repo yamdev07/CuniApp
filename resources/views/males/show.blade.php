@@ -25,15 +25,19 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Main Info - Takes 2/3 width on large screens -->
-    <div class="lg:col-span-2">
-        <div class="cuni-card">
+{{-- ✅ FIXED: Added w-full to grid container --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+    {{-- Main Info - Takes 2/3 width on large screens --}}
+    {{-- ✅ FIXED: Added w-full to column --}}
+    <div class="lg:col-span-2 w-full">
+        {{-- ✅ FIXED: Added w-full to card --}}
+        <div class="cuni-card w-full">
             <div class="card-header-custom">
                 <h3 class="card-title"><i class="bi bi-info-circle"></i> Informations Principales</h3>
             </div>
             <div class="card-body">
-                <div class="settings-grid">
+                {{-- ✅ FIXED: Added w-full to settings-grid --}}
+                <div class="settings-grid w-full">
                     <div class="form-group">
                         <label class="form-label">Code</label>
                         <p class="fw-semibold" style="font-family: 'JetBrains Mono', monospace;">{{ $male->code }}</p>
@@ -80,8 +84,9 @@
             </div>
         </div>
 
-        <!-- Reproduction History -->
-        <div class="cuni-card" style="margin-top: 24px;">
+        {{-- Reproduction History --}}
+        {{-- ✅ FIXED: Added w-full to card --}}
+        <div class="cuni-card w-full" style="margin-top: 24px;">
             <div class="card-header-custom">
                 <h3 class="card-title"><i class="bi bi-heart"></i> Historique de Reproduction</h3>
             </div>
@@ -89,7 +94,7 @@
                 @php
                     $sailliesCount = \App\Models\Saillie::where('male_id', $male->id)->count();
                 @endphp
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4 w-full">
                     <div style="text-align: center; padding: 16px; background: var(--surface-alt); border-radius: var(--radius-lg);">
                         <div style="font-size: 24px; font-weight: 700; color: var(--accent-pink);">{{ $sailliesCount }}</div>
                         <div style="font-size: 12px; color: var(--text-tertiary);">Saillies</div>
@@ -105,10 +110,12 @@
         </div>
     </div>
 
-    <!-- Sidebar: Actions & Metadata -->
-    <div>
-        <!-- Quick Actions -->
-        <div class="cuni-card">
+    {{-- Sidebar: Actions & Metadata --}}
+    {{-- ✅ FIXED: Added w-full to sidebar column --}}
+    <div class="w-full">
+        {{-- Quick Actions --}}
+        {{-- ✅ FIXED: Added w-full to card --}}
+        <div class="cuni-card w-full">
             <div class="card-header-custom">
                 <h3 class="card-title"><i class="bi bi-lightning"></i> Actions Rapides</h3>
             </div>
@@ -126,8 +133,9 @@
             </div>
         </div>
 
-        <!-- Metadata -->
-        <div class="cuni-card" style="margin-top: 24px;">
+        {{-- Metadata --}}
+        {{-- ✅ FIXED: Added w-full to card --}}
+        <div class="cuni-card w-full" style="margin-top: 24px;">
             <div class="card-header-custom">
                 <h3 class="card-title"><i class="bi bi-info-circle"></i> Métadonnées</h3>
             </div>
@@ -145,8 +153,9 @@
             </div>
         </div>
 
-        <!-- Delete Warning - Styled like Female -->
-        <div class="cuni-card" style="margin-top: 24px; border-left: 4px solid var(--accent-red);">
+        {{-- Delete Warning - Styled like Female --}}
+        {{-- ✅ FIXED: Added w-full to card --}}
+        <div class="cuni-card w-full" style="margin-top: 24px; border-left: 4px solid var(--accent-red);">
             <div class="card-body">
                 <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
                     <i class="bi bi-exclamation-triangle" style="color: var(--accent-red);"></i>

@@ -510,6 +510,7 @@
             box-shadow: var(--shadow);
             margin-bottom: 24px;
             overflow: hidden;
+            width:100%;
         }
 
         .card-header-custom {
@@ -1022,6 +1023,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
+            width:100%;
         }
 
 
