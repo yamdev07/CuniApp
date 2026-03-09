@@ -103,6 +103,7 @@
             border: 1px solid var(--surface-border);
             transition: all 0.2s ease;
             position: relative;
+            width: max-content;
         }
 
         .metric-card:hover {
@@ -768,15 +769,12 @@
 
         .legend-dot.orange {
             background-color: #f59e0b;
-            /* Un orange vif et professionnel */
         }
 
-        /* Optionnel : ajout d'une petite animation pour que le point de sexage clignote légèrement */
         .legend-dot.orange {
             box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
         }
 
-        /* Dans votre fichier CSS ou balise <style> */
         .legend-dot.blue {
             background-color: #3b82f6;
             /* Bleu */
@@ -789,35 +787,92 @@
             font-weight: 600;
         }
 
-        /* Tooltip natif stylisé (optionnel) */
-        .cal-day[title]:hover::after {
-            content: attr(title);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        content: attr(title);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1f2937;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .timeline-dot.amber {
+        */ .timeline-dot.amber {
             background: var(--accent-orange);
         }
 
         .timeline-dot.cyan {
             background: var(--accent-cyan);
         }
+
+        /* TOOLTIP STYLISÉ - FOND NOIR EN DESSOUS */
+        .cal-day.event[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--surface);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            /* white-space: nowrap; */
+            z-index: 1000;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            opacity: 0;
+            animation: tooltipSlideUp 0.25s ease forwards;
+            max-width: 400px !important;
+            min-width: 200px;
+            width: max-content;
+            text-align: left;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            height: max-content;
+        }
+
+        /* Flèche vers le haut */
+        .cal-day.event[data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 7px solid transparent;
+            border-bottom-color: blue;
+            z-index: 1001;
+            opacity: 0;
+            animation: tooltipSlideUp 0.25s ease forwards;
+        }
+
+        /* ✅ Animation fluide */
+        @keyframes tooltipSlideUp {
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(4px);
+            }
+        }
+
+        /* ✅ Effet hover sur la date */
+        .cal-day.event[data-tooltip]:hover {
+            box-shadow: 0 0 0 2px var(--primary), 0 6px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            transform: scale(1.05);
+        }
     </style>
 
     <div class="cuniapp-dashboard">
         <!-- Header Section -->
-        <header class="dash-header">
+        {{-- <header class="dash-header">
             <div class="header-wrapper-dash">
                 <div class="brand-identity-dash">
                     <div class="cuniapp-logo-dash">
@@ -923,8 +978,175 @@
                             'value' => number_format($totalRevenue, 0, ',', ' '),
                             'label' => 'CA Total',
                             'type' => 'purple',
-                            'change' => '+0%', // Tu pourras ajouter $revenuePercent au controller plus tard
+                            'change' => '+0%',
                             'trend' => 'up',
+                            'route' => 'sales.index',
+                        ],
+                    ];
+                @endphp
+                @foreach ($metricsData as $metric)
+                    <a href="{{ Route::has($metric['route']) ? route($metric['route']) : '#' }}">
+                        <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
+                            <div class="metric-icon">
+                                @if ($metric['icon'] === 'total')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                                        <circle cx="17" cy="7" r="2" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                    </svg>
+                                @elseif($metric['icon'] === 'male')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="10" cy="14" r="6" />
+                                        <path d="M16 8h6V2M22 2l-8.5 8.5" />
+                                    </svg>
+                                @elseif($metric['icon'] === 'female')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="8" r="6" />
+                                        <path d="M12 14v8M9 19h6" />
+                                    </svg>
+                                @elseif($metric['icon'] === 'breed')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                    </svg>
+                                @elseif($metric['icon'] === 'birth')
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                @else
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                        <line x1="12" y1="9" x2="12" y2="13" />
+                                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                                    </svg>
+                                @endif
+                            </div>
+                            <div class="metric-data">
+                                <div class="metric-value">{{ $metric['value'] }}</div>
+                                <div class="metric-label">{{ $metric['label'] }}</div>
+                                <div class="metric-trend {{ $metric['trend'] }}">
+                                    <span
+                                        class="trend-arrow">{{ $metric['trend'] === 'up' ? '↗' : ($metric['trend'] === 'down' ? '↘' : '→') }}</span>
+                                    {{ $metric['change'] }}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </header> --}}
+
+        <header class="dash-header">
+            <div class="header-wrapper-dash">
+                <div class="brand-identity-dash">
+                    <div class="cuniapp-logo-dash">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                            <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
+                        </svg>
+                    </div>
+                    <div class="brand-text-dash">
+                        <h1>CuniApp <span class="subtitle-accent">Élevage</span></h1>
+                        <p class="brand-tagline-dash">Gestion intelligente de votre cheptel</p>
+                    </div>
+                </div>
+                <div class="header-controls">
+
+                    <a href="{{ route('lapins.create') }}" class="ctrl-btn primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg> Nouvelle entrée
+                    </a>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                @php
+
+                    $formatMetrics = function ($percent) {
+                        return [
+                            'change' => ($percent >= 0 ? '+' : '') . number_format($percent, 1) . '%',
+                            'trend' => $percent > 0 ? 'up' : ($percent < 0 ? 'down' : 'neutral'),
+                        ];
+                    };
+
+                    $maleStats = $formatMetrics($malePercent);
+                    $femaleStats = $formatMetrics($femalePercent);
+                    $saillieStats = $formatMetrics($sailliePercent);
+                    $miseBasStats = $formatMetrics($miseBasPercent);
+
+                    $totalPercent =
+                        $oldMales + $oldFemelles > 0
+                            ? (($nbMales + $nbFemelles - ($oldMales + $oldFemelles)) / ($oldMales + $oldFemelles)) * 100
+                            : 0;
+                    $totalStats = $formatMetrics($totalPercent);
+
+                    $metricsData = [
+                        [
+                            'icon' => 'total',
+                            'value' => $nbMales + $nbFemelles,
+                            'label' => 'Total Lapins',
+                            'type' => 'primary',
+                            'change' => $totalStats['change'],
+                            'trend' => $totalStats['trend'],
+                            'route' => 'lapins.index',
+                        ],
+                        [
+                            'icon' => 'male',
+                            'value' => $nbMales,
+                            'label' => 'Mâles',
+                            'type' => 'blue',
+                            'change' => $maleStats['change'],
+                            'trend' => $maleStats['trend'],
+                            'route' => 'males.index',
+                        ],
+                        [
+                            'icon' => 'female',
+                            'value' => $nbFemelles,
+                            'label' => 'Femelles',
+                            'type' => 'pink',
+                            'change' => $femaleStats['change'],
+                            'trend' => $femaleStats['trend'],
+                            'route' => 'femelles.index',
+                        ],
+                        [
+                            'icon' => 'breed',
+                            'value' => $nbSaillies,
+                            'label' => 'Saillies',
+                            'type' => 'purple',
+                            'change' => $saillieStats['change'],
+                            'trend' => $saillieStats['trend'],
+                            'route' => 'saillies.index',
+                        ],
+                        [
+                            'icon' => 'birth',
+                            'value' => $nbMisesBas,
+                            'label' => 'Portées',
+                            'type' => 'green',
+                            'change' => $miseBasStats['change'],
+                            'trend' => $miseBasStats['trend'],
+                            'route' => 'mises-bas.index',
+                        ],
+                        [
+                            'icon' => 'alert',
+                            'value' => 3,
+                            'label' => 'Alertes',
+                            'type' => 'orange',
+                            'change' => '0%',
+                            'trend' => 'neutral',
+                            'route' => '',
+                        ],
+                        [
+                            'icon' => 'sales',
+                            'value' => number_format($totalRevenue, 0, ',', ' ') . ' FCFA', // ← Format avec devise
+                            'label' => 'CA Total',
+                            'type' => 'purple',
+                            'change' => $salesStats['change'], 
+                            'trend' => $salesStats['trend'],
                             'route' => 'sales.index',
                         ],
                     ];
@@ -1232,7 +1454,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarGrid = document.getElementById('calendarGrid');
@@ -1315,10 +1536,6 @@
                 currentMonthSpan.textContent = `${months[month]} ${year}`;
 
                 // Jours vides avant le 1er du mois
-                for (let i = 0; i < startDay; i++) {
-                    calendarGrid.appendChild(document.createElement('div'));
-                }
-
                 // Jours du mois
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayEl = document.createElement('div');
@@ -1334,6 +1551,7 @@
                     const dateKey = formatDateKey(new Date(year, month, day));
                     const dayEvents = getEventsForDate(dateKey);
 
+                    // ✅ Dans renderCalendar(), pour les jours avec événements
                     if (dayEvents.length > 0) {
                         dayEl.classList.add('event');
 
@@ -1342,13 +1560,14 @@
                         const mainEvent = dayEvents.find(e => priority.includes(e.type)) || dayEvents[0];
                         dayEl.classList.add(mainEvent.type);
 
-                        // ✅ Tooltip avec tous les événements du jour
-                        // ✅ Tooltip simple en texte (fonctionne avec l'attribut title natif)
+                        // ✅ Tooltip avec TOUS les événements du jour
                         const tooltipText = dayEvents.map(e => e.label).join(' | ');
-                        dayEl.setAttribute('title', tooltipText);
+
+                        // 🎯 UTILISER data-tooltip (PAS title)
+                        dayEl.setAttribute('data-tooltip', tooltipText);
+                        dayEl.removeAttribute('title'); // ← Important pour éviter le tooltip natif
                         dayEl.style.cursor = 'pointer';
                     }
-
                     calendarGrid.appendChild(dayEl);
                 }
             }

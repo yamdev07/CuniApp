@@ -22,11 +22,37 @@ class DashboardController extends Controller
 
         // Chiffre d'affaires
         try {
-            $totalRevenue = Sale::sum('total_amount');
+            // Total CA (ventes payées uniquement)
+            $totalRevenue = Sale::where('payment_status', 'paid')->sum('total_amount');
+
+            // CA de la semaine actuelle (pour le pourcentage)
+            $startOfWeek = Carbon::now()->startOfWeek();
+            $endOfWeek = Carbon::now()->endOfWeek();
+            $revenueThisWeek = Sale::where('payment_status', 'paid')
+                ->whereBetween('date_sale', [$startOfWeek, $endOfWeek])
+                ->sum('total_amount');
+
+            // CA de la semaine dernière
+            $startLastWeek = Carbon::now()->subWeek()->startOfWeek();
+            $endLastWeek = Carbon::now()->subWeek()->endOfWeek();
+            $revenueLastWeek = Sale::where('payment_status', 'paid')
+                ->whereBetween('date_sale', [$startLastWeek, $endLastWeek])
+                ->sum('total_amount');
+
+            // Calcul du pourcentage d'évolution du CA
+            $revenuePercent = $revenueLastWeek > 0
+                ? (($revenueThisWeek - $revenueLastWeek) / $revenueLastWeek) * 100
+                : ($revenueThisWeek > 0 ? 100 : 0);
+
         } catch (\Exception $e) {
             $totalRevenue = 0;
+            $revenuePercent = 0;
         }
 
+        $salesStats = [
+            'change' => ($revenuePercent >= 0 ? '+' : '') . number_format($revenuePercent, 1) . '%',
+            'trend' => $revenuePercent > 0 ? 'up' : ($revenuePercent < 0 ? 'down' : 'neutral'),
+        ];
         // Calcul des pourcentages d'évolution
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
@@ -48,7 +74,6 @@ class DashboardController extends Controller
         $femelles = Femelle::latest()->paginate(10);
 
 
-        // Événements pour le calendrier
         // Événements pour le calendrier
         $events = [
             // Saillies (violet)
@@ -86,6 +111,7 @@ class DashboardController extends Controller
 
                     'label' => sprintf('Naissance: %s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0)
                 ])
+                ->values()
                 ->toArray(),
 
             //  Sexuations (bleu) → J+10, SEULEMENT si nb_vivant > 0
@@ -107,6 +133,8 @@ class DashboardController extends Controller
                         'type' => 'sexuation'
                     ];
                 })
+                ->filter(fn($e) => $e['date'] !== null)
+                ->values()
                 ->toArray(),
         ];
 
@@ -236,7 +264,8 @@ class DashboardController extends Controller
             'femelles',
             'totalRevenue',
             'events',
-            'timelineActivities'
+            'timelineActivities',
+            'salesStats'
         ));
     }
 

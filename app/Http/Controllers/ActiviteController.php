@@ -33,6 +33,8 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($n->created_at)->diffForHumans(),
                 'date' => $n->created_at,
                 'url' => route('naissances.show', $n->id),
+                'id' => $n->id,  // ← ✅ AJOUTER CETTE LIGNE
+
                 'icon' => 'bi-egg-fill',
             ]);
 
@@ -49,24 +51,9 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($s->created_at)->diffForHumans(),
                 'date' => $s->created_at,
                 'url' => route('saillies.show', $s->id),
+                'id' => $s->id,
                 'icon' => 'bi-heart',
             ]);
-
-        // Alertes : naissances incomplètes (orange) → basé sur Naissance
-        // $alertes = Naissance::whereNull('femelle_id')
-        //     ->orWhereDoesntHave('femelle')
-        //     ->latest('created_at')
-        //     ->limit(10)
-        //     ->get()
-        //     ->map(fn($n) => [
-        //         'type' => 'orange',
-        //         'title' => '⚠️ Naissance incomplète',
-        //         'desc' => "Naissance #{$n->id} sans femelle associée",
-        //         'time' => Carbon::parse($n->created_at)->diffForHumans(),
-        //         'date' => $n->created_at,
-        //         'url' => route('naissances.edit', $n->id),
-        //         'icon' => 'bi-exclamation-triangle',
-        //     ]);
 
         // Ventes (bleu)
         $ventes = Sale::latest('created_at')
@@ -78,6 +65,7 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($v->created_at)->diffForHumans(),
                 'date' => $v->created_at,
                 'url' => route('sales.show', $v->id),
+                'id' => $v->id,
                 'icon' => 'bi-cart-check',
             ]);
 
@@ -95,6 +83,8 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($m->created_at)->diffForHumans(),
                 'date' => $m->created_at,
                 'url' => route('males.show', $m->id),
+                'id' => $m->id,
+                'model' => 'male',
                 'icon' => 'bi-arrow-up-right-square',
             ]);
 
@@ -107,6 +97,8 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($f->created_at)->diffForHumans(),
                 'date' => $f->created_at,
                 'url' => route('femelles.show', $f->id),
+                'id' => $f->id,
+                'model' => 'female',
                 'icon' => 'bi-arrow-down-right-square',
             ]);
 
@@ -130,6 +122,7 @@ class ActiviteController extends Controller
                 'time' => Carbon::parse($m->created_at)->diffForHumans(),
                 'date' => $m->created_at,
                 'url' => route('mises-bas.show', $m->id),
+                'id' => $m->id,
                 'icon' => 'bi-egg',
             ]);
 
@@ -177,5 +170,67 @@ class ActiviteController extends Controller
             'perPage' => $perPage,
             'lastPage' => ceil($allActivities->count() / $perPage),
         ]);
+    }
+
+
+    /**
+     * Supprimer une activité
+     */
+    public function destroy(Request $request, string $type, int $id)
+    {
+        // Gestion spéciale pour les nouveaux lapins (cyan)
+        if ($type === 'cyan') {
+            $model = $request->get('model');
+
+            if ($model === 'male') {
+                $male = \App\Models\Male::find($id);
+                if ($male) {
+                    $male->delete();
+                    return back()->with('success', '✅ Mâle supprimé avec succès !');
+                }
+            } elseif ($model === 'female') {
+                $femelle = \App\Models\Femelle::find($id);
+                if ($femelle) {
+                    $femelle->delete();
+                    return back()->with('success', '✅ Femelle supprimée avec succès !');
+                }
+            }
+            return back()->with('error', '❌ Lapin non trouvé');
+        }
+
+        // Mapping type → Modèle pour les autres activités
+        $models = [
+            'green' => \App\Models\Naissance::class,   // Naissances
+            'purple' => \App\Models\Saillie::class,     // Saillies
+            'blue' => \App\Models\Sale::class,          // Ventes
+            'amber' => \App\Models\MiseBas::class,      // Mises Bas
+        ];
+
+        if (!isset($models[$type])) {
+            return back()->with('error', '❌ Type d\'activité non valide');
+        }
+
+        $model = $models[$type];
+        $record = $model::find($id);
+
+        if (!$record) {
+            return back()->with('error', '❌ Activité non trouvée');
+        }
+
+        // Vérification des permissions
+        if (isset($record->user_id) && $record->user_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $record->delete();
+
+        $messages = [
+            'green' => '✅ Naissance supprimée avec succès !',
+            'purple' => '✅ Saillie supprimée avec succès !',
+            'blue' => '✅ Vente supprimée avec succès !',
+            'amber' => '✅ Mise bas supprimée avec succès !',
+        ];
+
+        return back()->with('success', $messages[$type] ?? '✅ Activité supprimée !');
     }
 }
