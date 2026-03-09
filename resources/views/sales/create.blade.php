@@ -92,9 +92,9 @@
                                 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">
                                 <i class="bi bi-arrow-up-right-square" style="color: #3B82F6;"></i> Prix Mâles (FCFA)
                             </label>
-                            <input type="number" id="globalPriceMales" class="form-control global-price-input"
-                                data-category="males"
-                                value="{{ old('global_price_males', \App\Models\Setting::get('default_price_male', 25000)) }}"
+                            <input type="number" id="globalPriceMale" class="form-control global-price-input"
+                                data-category="male"
+                                value="{{ old('global_price_male', \App\Models\Setting::get('default_price_male', 25000)) }}"
                                 min="0" step="100" placeholder="25000"
                                 style="font-weight: 600; font-size: 16px; border-color: #3B82F6;">
                             <small style="color: var(--text-tertiary); font-size: 11px; margin-top: 4px; display: block;">
@@ -109,16 +109,15 @@
                                 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">
                                 <i class="bi bi-arrow-down-right-square" style="color: #EC4899;"></i> Prix Femelles (FCFA)
                             </label>
-                            <input type="number" id="globalPriceFemales" class="form-control global-price-input"
-                                data-category="females"
-                                value="{{ old('global_price_females', \App\Models\Setting::get('default_price_female', 30000)) }}"
+                            <input type="number" id="globalPriceFemale" class="form-control global-price-input"
+                                data-category="female"
+                                value="{{ old('global_price_female', \App\Models\Setting::get('default_price_female', 30000)) }}"
                                 min="0" step="100" placeholder="30000"
                                 style="font-weight: 600; font-size: 16px; border-color: #EC4899;">
                             <small style="color: var(--text-tertiary); font-size: 11px; margin-top: 4px; display: block;">
                                 Défaut:
                                 {{ number_format(\App\Models\Setting::get('default_price_female', 30000), 0, ',', ' ') }}
-                                FCFA
-                            </small>
+                                FCFA </small>
                         </div>
                         {{-- Global Price: Lapereaux --}}
                         <div class="global-price-card"
@@ -127,16 +126,15 @@
                                 style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; display: block;">
                                 <i class="bi bi-egg-fill" style="color: #10B981;"></i> Prix Lapereaux (FCFA)
                             </label>
-                            <input type="number" id="globalPriceLapereaux" class="form-control global-price-input"
-                                data-category="lapereaux"
-                                value="{{ old('global_price_lapereaux', \App\Models\Setting::get('default_price_lapereau', 15000)) }}"
+                            <input type="number" id="globalPriceLapereau" class="form-control global-price-input"
+                                data-category="lapereau"
+                                value="{{ old('global_price_lapereau', \App\Models\Setting::get('default_price_lapereau', 15000)) }}"
                                 min="0" step="100" placeholder="15000"
                                 style="font-weight: 600; font-size: 16px; border-color: #10B981;">
                             <small style="color: var(--text-tertiary); font-size: 11px; margin-top: 4px; display: block;">
                                 Défaut:
                                 {{ number_format(\App\Models\Setting::get('default_price_lapereau', 15000), 0, ',', ' ') }}
-                                FCFA
-                            </small>
+                                FCFA </small>
                         </div>
                     </div>
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -187,7 +185,7 @@
                         </button>
                     </div>
 
-                    {{-- ✅ Mâles Tab with Individual Prices --}}
+                    {{-- ✅ Mâles Tab --}}
                     <div class="tab-content active" id="males-tab">
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un mâle..."
@@ -215,7 +213,7 @@
                         </div>
                     </div>
 
-                    {{-- ✅ Femelles Tab with Individual Prices --}}
+                    {{-- ✅ Femelles Tab --}}
                     <div class="tab-content" id="females-tab">
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher une femelle..."
@@ -244,7 +242,7 @@
                         </div>
                     </div>
 
-                    {{-- ✅ Lapereaux Tab with Individual Prices --}}
+                    {{-- ✅ Lapereaux Tab --}}
                     <div class="tab-content" id="lapereaux-tab">
                         <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
                             <input type="text" class="form-control" placeholder="Rechercher un lapereau..."
@@ -366,9 +364,9 @@
                 // GLOBAL PRICE MANAGEMENT
                 // ============================================
                 let globalPrices = {
-                    males: {{ \App\Models\Setting::get('default_price_male', 25000) }},
-                    females: {{ \App\Models\Setting::get('default_price_female', 30000) }},
-                    lapereaux: {{ \App\Models\Setting::get('default_price_lapereau', 15000) }}
+                    male: {{ \App\Models\Setting::get('default_price_male', 25000) }},
+                    female: {{ \App\Models\Setting::get('default_price_female', 30000) }},
+                    lapereau: {{ \App\Models\Setting::get('default_price_lapereau', 15000) }}
                 };
 
                 // Track custom prices (not from global)
@@ -382,16 +380,27 @@
                 };
 
                 // ============================================
-                // HELPER: Map category (singular) to Set key (plural)
+                // HELPER: Get category from tab type
                 // ============================================
-                function getSelectedRabbitsKey(category) {
-                    // French plural mapping
-                    const pluralMap = {
+                function getCategoryFromType(type) {
+                    const map = {
+                        'males': 'male',
+                        'females': 'female',
+                        'lapereaux': 'lapereau'
+                    };
+                    return map[type] || type.replace('s', '');
+                }
+
+                // ============================================
+                // HELPER: Get plural type from category
+                // ============================================
+                function getTypeFromCategory(category) {
+                    const map = {
                         'male': 'males',
                         'female': 'females',
-                        'lapereau': 'lapereaux' // ← Critical fix: lapereau → lapereaux
+                        'lapereau': 'lapereaux'
                     };
-                    return pluralMap[category] || category + 's';
+                    return map[category] || category + 's';
                 }
 
                 // Initialize global price inputs
@@ -413,23 +422,24 @@
                     });
                 });
 
-                function handleRabbitSelection(category, rabbitId) {
+                // ============================================
+                // HANDLE RABBIT SELECTION
+                // ============================================
+                function handleRabbitSelection(type, rabbitId) {
+                    const category = getCategoryFromType(type);
                     const checkbox = document.querySelector(
-                        `input[name="selected_${category}[]"][value="${rabbitId}"]`
+                        `input[name="selected_${type}[]"][value="${rabbitId}"]`
                     );
                     const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
                     const priceInput = priceContainer?.querySelector('.rabbit-price');
                     const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
 
                     if (checkbox && priceContainer) {
-                        // ✅ FIX: Get correct key for selectedRabbits (French plural mapping)
-                        const rabbitsKey = category === 'lapereau' ? 'lapereaux' : category + 's';
-
                         // Track selection across pagination
                         if (checkbox.checked) {
-                            selectedRabbits[rabbitsKey].add(rabbitId);
+                            selectedRabbits[type].add(rabbitId);
                         } else {
-                            selectedRabbits[rabbitsKey].delete(rabbitId);
+                            selectedRabbits[type].delete(rabbitId);
                             delete customPrices[`${category}-${rabbitId}`];
                         }
 
@@ -450,6 +460,7 @@
                                     indicator.style.display = 'block';
                                 }
                             }
+
                             priceInput.focus();
                             priceInput.classList.remove('error');
                         }
@@ -459,36 +470,9 @@
                     calculateTotalAmount();
                 }
 
-                // Reset individual price to global
-                function resetToGlobalPrice(category, rabbitId) {
-                    const priceInput = document.querySelector(
-                        `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
-                    );
-                    const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
-
-                    if (priceInput) {
-                        priceInput.value = globalPrices[category];
-                        priceInput.style.borderColor = 'var(--accent-green)';
-                        priceInput.style.backgroundColor = 'var(--primary-subtle)';
-
-                        if (indicator) {
-                            indicator.style.display = 'block';
-                        }
-
-                        // Remove from custom prices
-                        delete customPrices[`${category}-${rabbitId}`];
-
-                        setTimeout(() => {
-                            priceInput.style.borderColor = '';
-                            priceInput.style.backgroundColor = '';
-                        }, 1000);
-
-                        calculateTotalAmount();
-                        showToast('Prix réinitialisé au prix global', 'success');
-                    }
-                }
-
-                // Mark price as custom (manually overridden)
+                // ============================================
+                // MARK PRICE AS CUSTOM
+                // ============================================
                 function markPriceAsCustom(category, rabbitId) {
                     const priceInput = document.querySelector(
                         `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
@@ -504,7 +488,6 @@
                             customPrices[`${category}-${rabbitId}`] = currentValue;
                             priceInput.style.borderColor = 'var(--accent-orange)';
                             priceInput.style.backgroundColor = 'rgba(245, 158, 11, 0.05)';
-
                             if (indicator) {
                                 indicator.style.display = 'none';
                             }
@@ -513,7 +496,6 @@
                             delete customPrices[`${category}-${rabbitId}`];
                             priceInput.style.borderColor = 'var(--accent-green)';
                             priceInput.style.backgroundColor = 'var(--primary-subtle)';
-
                             if (indicator) {
                                 indicator.style.display = 'block';
                             }
@@ -528,47 +510,35 @@
                     }
                 }
 
-                // ✅ FIXED: Apply global prices to ALL currently selected rabbits (across all pages)
-                // ✅ FIXED: Apply global prices to ALL currently selected rabbits (across all pages)
+                // ============================================
+                // APPLY GLOBAL PRICES TO ALL SELECTED
+                // ============================================
                 function applyGlobalPricesToAll() {
                     let count = 0;
+                    let appliedCount = 0;
 
-                    // ✅ FIXED: Use correct category mappings
-                    const categories = [{
-                            singular: 'male',
-                            plural: 'males'
-                        },
-                        {
-                            singular: 'female',
-                            plural: 'females'
-                        },
-                        {
-                            singular: 'lapereau',
-                            plural: 'lapereaux'
-                        } // ← Critical fix
-                    ];
+                    // Process each category
+                    ['males', 'females', 'lapereaux'].forEach(type => {
+                        const category = getCategoryFromType(type);
+                        const globalPrice = globalPrices[category];
 
-                    categories.forEach(({
-                        singular,
-                        plural
-                    }) => {
-                        // Apply to ALL selected rabbits (including those not currently visible)
-                        selectedRabbits[plural].forEach(rabbitId => {
+                        // Get ALL selected rabbits for this type (including paginated ones)
+                        selectedRabbits[type].forEach(rabbitId => {
                             const priceInput = document.querySelector(
-                                `.rabbit-price[data-category="${singular}"][data-rabbit-id="${rabbitId}"]`
+                                `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
                             );
                             const indicator = document.getElementById(
-                                `price-indicator-${singular}-${rabbitId}`
-                            );
+                                `price-indicator-${category}-${rabbitId}`);
+                            const priceContainer = document.getElementById(`price-${category}-${rabbitId}`);
 
                             if (priceInput) {
-                                // ✅ Make sure container is visible
-                                const priceContainer = priceInput.closest('.price-input-container');
+                                // Make sure container is visible
                                 if (priceContainer) {
                                     priceContainer.style.display = 'block';
                                 }
 
-                                priceInput.value = globalPrices[singular];
+                                // Set the price
+                                priceInput.value = globalPrice;
                                 priceInput.style.borderColor = 'var(--accent-green)';
                                 priceInput.style.backgroundColor = 'var(--primary-subtle)';
 
@@ -576,7 +546,30 @@
                                     indicator.style.display = 'block';
                                 }
 
-                                delete customPrices[`${singular}-${rabbitId}`];
+                                // Remove from custom prices
+                                delete customPrices[`${category}-${rabbitId}`];
+
+                                appliedCount++;
+                            }
+                        });
+
+                        // Also apply to currently visible checkboxes
+                        const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]:checked`);
+                        checkboxes.forEach(checkbox => {
+                            const rabbitId = checkbox.value;
+                            const priceInput = document.querySelector(
+                                `.rabbit-price[data-category="${category}"][data-rabbit-id="${rabbitId}"]`
+                            );
+                            const indicator = document.getElementById(
+                                `price-indicator-${category}-${rabbitId}`);
+
+                            if (priceInput && priceInput.value != globalPrice) {
+                                priceInput.value = globalPrice;
+                                priceInput.style.borderColor = 'var(--accent-green)';
+                                if (indicator) {
+                                    indicator.style.display = 'block';
+                                }
+                                delete customPrices[`${category}-${rabbitId}`];
                                 count++;
                             }
                         });
@@ -584,19 +577,19 @@
 
                     calculateTotalAmount();
 
-                    if (count > 0) {
-                        showToast(`${count} prix mis à jour avec les prix globaux`, 'success');
+                    if (appliedCount > 0 || count > 0) {
+                        showToast(`${appliedCount + count} prix mis à jour avec les prix globaux`, 'success');
                     } else {
                         showToast('Aucun lapin sélectionné', 'warning');
                     }
                 }
 
-                // Apply global prices to selected rabbits in specific category
+                // ============================================
+                // APPLY GLOBAL PRICES TO SPECIFIC CATEGORY
+                // ============================================
                 function applyGlobalPricesToSelected(category) {
-                    // ✅ FIXED: Get correct Set key
-                    const setKey = getSelectedRabbitsKey(category);
-
-                    const checkboxes = document.querySelectorAll(`input[name="selected_${category}[]"]:checked`);
+                    const type = getTypeFromCategory(category);
+                    const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]:checked`);
                     let count = 0;
 
                     checkboxes.forEach(checkbox => {
@@ -607,12 +600,6 @@
                         const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
 
                         if (priceInput) {
-                            // ✅ Make sure container is visible
-                            const priceContainer = priceInput.closest('.price-input-container');
-                            if (priceContainer) {
-                                priceContainer.style.display = 'block';
-                            }
-
                             priceInput.value = globalPrices[category] || 0;
                             if (indicator) {
                                 indicator.style.display = 'block';
@@ -627,12 +614,14 @@
                     }
                 }
 
-                // ✅ FIXED: Save global prices as default in settings
+                // ============================================
+                // SAVE GLOBAL PRICES AS DEFAULT
+                // ============================================
                 function saveGlobalPricesAsDefault() {
                     const prices = {
-                        default_price_male: parseFloat(document.getElementById('globalPriceMales').value) || 0,
-                        default_price_female: parseFloat(document.getElementById('globalPriceFemales').value) || 0,
-                        default_price_lapereau: parseFloat(document.getElementById('globalPriceLapereaux').value) || 0,
+                        default_price_male: parseFloat(document.getElementById('globalPriceMale').value) || 0,
+                        default_price_female: parseFloat(document.getElementById('globalPriceFemale').value) || 0,
+                        default_price_lapereau: parseFloat(document.getElementById('globalPriceLapereau').value) || 0,
                     };
 
                     fetch('{{ route('settings.update') }}', {
@@ -665,20 +654,20 @@
                 }
 
                 // ============================================
-                // 1. TAB SWITCHING
+                // TAB SWITCHING
                 // ============================================
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.addEventListener('click', function() {
                         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove(
-                            'active'));
+                        'active'));
                         this.classList.add('active');
                         document.getElementById(this.dataset.tab).classList.add('active');
                     });
                 });
 
                 // ============================================
-                // 2. FILTER RABBITS BY SEARCH (AJAX)
+                // SEARCH RABBITS (AJAX)
                 // ============================================
                 let searchTimeouts = {};
 
@@ -689,7 +678,6 @@
                     }, 300);
                 }
 
-                // ✅ FIXED: Load Rabbits via AJAX with total count
                 function loadRabbits(type, page = 1, search = '') {
                     const gridId = type + 'Grid';
                     const grid = document.getElementById(gridId);
@@ -719,22 +707,21 @@
                                 grid.innerHTML = data.html;
 
                                 if (paginationInfo) {
-                                    // ✅ Use total_count from response (TOTAL, not filtered)
                                     const totalCount = data.total_count || data.pagination.total;
                                     paginationInfo.innerHTML =
                                         `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${totalCount} ${type} au total)`;
                                 }
 
-                                // ✅ Update tab count with TOTAL (not filtered)
+                                // Update tab count
                                 const countEl = document.getElementById(type + 'Count');
                                 if (countEl && data.total_count !== undefined) {
                                     countEl.textContent = data.total_count;
                                 }
 
-                                // Re-initialize price inputs for new elements
+                                // Re-initialize price inputs
                                 initializePriceInputs(type);
 
-                                // Re-check selected rabbits and restore their state
+                                // Restore selected state
                                 restoreSelectedRabbits(type);
                             }
                         })
@@ -745,86 +732,27 @@
                         });
                 }
 
-                // ✅ Restore selected state after AJAX load
+                // ============================================
+                // RESTORE SELECTED STATE AFTER AJAX
+                // ============================================
                 function restoreSelectedRabbits(type) {
-                    // Convert type (e.g., "males") to singular category (e.g., "male")
-                    const categoryMap = {
-                        'males': 'male',
-                        'females': 'female',
-                        'lapereaux': 'lapereau' // ← Critical fix
-                    };
-
-                    const category = categoryMap[type] || type.replace('s', '');
-                    const setKey = getSelectedRabbitsKey(category); // ✅ Use helper
-
-                    selectedRabbits[setKey].forEach(rabbitId => {
+                    selectedRabbits[type].forEach(rabbitId => {
                         const checkbox = document.querySelector(
                             `input[name="selected_${type}[]"][value="${rabbitId}"]`
                         );
                         if (checkbox && !checkbox.checked) {
                             checkbox.checked = true;
-                            handleRabbitSelection(category, rabbitId);
+                            const category = getCategoryFromType(type);
+                            handleRabbitSelection(type, rabbitId);
                         }
                     });
                 }
 
-                // ✅ Load More Button Handler
-                function loadMoreRabbits(button) {
-                    const type = button.dataset.type;
-                    const page = button.dataset.page;
-                    const grid = document.getElementById(type + 'Grid');
-
-                    button.disabled = true;
-                    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Chargement...';
-
-                    fetch('{{ route('sales.load-rabbits') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                type: type,
-                                page: page,
-                                search: document.getElementById('search' + type.charAt(0).toUpperCase() + type
-                                    .slice(1)).value
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                button.remove(); // Remove old button
-
-                                const tempDiv = document.createElement('div');
-                                tempDiv.innerHTML = data.html;
-
-                                // Append new cards
-                                tempDiv.querySelectorAll('.rabbit-card').forEach(card => grid.appendChild(card));
-
-                                // Append new load more button if exists
-                                const newBtn = tempDiv.querySelector('.load-more-btn');
-                                if (newBtn) grid.appendChild(newBtn);
-
-                                // Update info
-                                const paginationInfo = document.getElementById(type + 'PaginationInfo');
-                                if (paginationInfo) {
-                                    paginationInfo.innerHTML =
-                                        `Page ${data.pagination.current_page} sur ${data.pagination.last_page} (${data.pagination.total} ${type} au total)`;
-                                }
-
-                                initializePriceInputs(type);
-                                restoreSelectedRabbits(type);
-                            }
-                        })
-                        .finally(() => {
-                            button.disabled = false;
-                        });
-                }
-
-                // ✅ Initialize Prices for Dynamically Loaded Rabbits
+                // ============================================
+                // INITIALIZE PRICE INPUTS
+                // ============================================
                 function initializePriceInputs(type) {
-                    const category = type.replace('s', '');
+                    const category = getCategoryFromType(type);
                     const checkboxes = document.querySelectorAll(`input[name="selected_${type}[]"]`);
 
                     checkboxes.forEach(checkbox => {
@@ -833,7 +761,6 @@
                         const priceInput = priceContainer?.querySelector('.rabbit-price');
 
                         if (checkbox.checked && priceInput) {
-                            // Check if we have a custom price stored
                             const customKey = `${category}-${rabbitId}`;
                             if (customPrices[customKey] !== undefined) {
                                 priceInput.value = customPrices[customKey];
@@ -846,18 +773,10 @@
                 }
 
                 // ============================================
-                // 3. TOGGLE SELECT ALL
+                // TOGGLE SELECT ALL
                 // ============================================
-                // ✅ FIXED: Proper plural-to-singular mapping
                 function toggleSelectAll(type, select = true) {
-                    // Map plural tab type to singular category for handleRabbitSelection
-                    const categoryMap = {
-                        'males': 'male',
-                        'females': 'female',
-                        'lapereaux': 'lapereau'
-                    };
-                    const category = categoryMap[type] || type.replace(/s$/, ''); // fallback
-
+                    const category = getCategoryFromType(type);
                     const grid = document.getElementById(type + 'Grid');
                     const checkboxes = grid.querySelectorAll('.rabbit-checkbox');
 
@@ -866,48 +785,23 @@
                         if (checkbox.closest('.rabbit-card').style.display !== 'none') {
                             checkbox.checked = select;
                             const rabbitId = checkbox.value;
-                            handleRabbitSelection(category, rabbitId); // ✅ Pass correct singular category
+
+                            if (select) {
+                                selectedRabbits[type].add(rabbitId);
+                            } else {
+                                selectedRabbits[type].delete(rabbitId);
+                                delete customPrices[`${category}-${rabbitId}`];
+                            }
+
+                            handleRabbitSelection(type, rabbitId);
                         }
                     });
+
                     calculateTotalAmount();
                 }
 
                 // ============================================
-                // 4. CLIENT-SIDE FILTER (for quick filtering)
-                // ============================================
-                function filterRabbits(category, searchTerm) {
-                    const grid = document.getElementById(category + 'Grid');
-                    const cards = grid.querySelectorAll('.rabbit-card');
-                    let visibleCount = 0;
-
-                    cards.forEach(card => {
-                        const checkbox = card.querySelector('.rabbit-checkbox');
-                        if (!checkbox) return;
-
-                        const code = checkbox.dataset.code?.toLowerCase() || '';
-                        const name = checkbox.dataset.name?.toLowerCase() || '';
-
-                        if (code.includes(searchTerm.toLowerCase()) || name.includes(searchTerm.toLowerCase())) {
-                            card.style.display = 'flex';
-                            visibleCount++;
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-
-                    // ✅ Update count to show filtered results (temporarily)
-                    const countEl = document.getElementById(category + 'Count');
-                    if (countEl) {
-                        // Store original count if not already stored
-                        if (!countEl.dataset.originalCount) {
-                            countEl.dataset.originalCount = countEl.textContent;
-                        }
-                        countEl.textContent = visibleCount;
-                    }
-                }
-
-                // ============================================
-                // 5. CALCULATE TOTAL FROM INDIVIDUAL PRICES
+                // CALCULATE TOTAL AMOUNT
                 // ============================================
                 function calculateTotalAmount() {
                     let total = 0;
@@ -966,9 +860,9 @@
                 }
 
                 // ============================================
-                // 6. FORM SUBMISSION VALIDATION
+                // FORM SUBMISSION VALIDATION
                 // ============================================
-                document.getElementById('saleForm').addEventListener('submit', function(e) {
+                document.getElementById('saleForm')?.addEventListener('submit', function(e) {
                     const selectedCount = document.querySelectorAll('.rabbit-checkbox:checked').length;
                     let missingPrices = 0;
 
@@ -983,15 +877,15 @@
 
                     if (selectedCount === 0) {
                         e.preventDefault();
-                        alert('⚠️ Veuillez sélectionner au moins un lapin à vendre.');
+                        showToast('⚠️ Veuillez sélectionner au moins un lapin à vendre.', 'error');
                         return;
                     }
 
                     if (missingPrices > 0) {
                         e.preventDefault();
-                        alert(`⚠️ Veuillez entrer un prix pour chaque lapin sélectionné (${missingPrices} prix manquants).
-
-💡 ASTUCE: Cliquez sur "Appliquer à TOUS les sélectionnés" pour appliquer automatiquement les prix globaux!`);
+                        showToast(
+                            `⚠️ ${missingPrices} prix manquants! Cliquez sur "Appliquer à TOUS les sélectionnés"`,
+                            'error');
                         return;
                     }
                 });
@@ -1050,10 +944,6 @@
                 from { transform: translateX(0); opacity: 1; }
                 to { transform: translateX(100%); opacity: 0; }
             }
-            .btn-reset-price:hover {
-                background: var(--primary) !important;
-                color: white !important;
-            }
             .rabbit-card:hover {
                 border-color: var(--primary);
                 transform: translateY(-2px);
@@ -1064,46 +954,41 @@
                 }
 
                 // ============================================
-                // 7. INITIALIZE ON PAGE LOAD
+                // INITIALIZE ON PAGE LOAD
                 // ============================================
                 window.addEventListener('DOMContentLoaded', () => {
-                    // Initialize counts with TOTAL from database (not filtered)
-                    filterRabbits('males', '');
-                    filterRabbits('females', '');
-                    filterRabbits('lapereaux', '');
-
-                    // ✅ Initialize price inputs for all existing rabbits
+                    // Initialize counts
                     ['males', 'females', 'lapereaux'].forEach(type => {
                         initializePriceInputs(type);
                     });
 
                     // Disable submit button initially
-                    document.getElementById('submitBtn').disabled = true;
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                    }
 
                     // Show welcome toast
                     showToast(
                         '💡 Astuce: Sélectionnez des lapins et les prix globaux s\'appliqueront automatiquement!',
                         'info');
 
-                    // ✅ Calculate initial total
+                    // Calculate initial total
                     calculateTotalAmount();
                 });
 
-                // Expose functions to global scope for inline HTML handlers
+                // Expose functions to global scope
                 window.toggleSelectAll = toggleSelectAll;
                 window.debouncedSearch = debouncedSearch;
                 window.handleRabbitSelection = handleRabbitSelection;
-                window.loadMoreRabbits = loadMoreRabbits;
                 window.calculateTotalAmount = calculateTotalAmount;
                 window.markPriceAsCustom = markPriceAsCustom;
-                window.resetToGlobalPrice = resetToGlobalPrice;
                 window.applyGlobalPricesToAll = applyGlobalPricesToAll;
                 window.applyGlobalPricesToSelected = applyGlobalPricesToSelected;
                 window.saveGlobalPricesAsDefault = saveGlobalPricesAsDefault;
                 window.showToast = showToast;
                 window.loadRabbits = loadRabbits;
                 window.initializePriceInputs = initializePriceInputs;
-                window.filterRabbits = filterRabbits;
                 window.restoreSelectedRabbits = restoreSelectedRabbits;
             })();
         </script>
@@ -1172,10 +1057,6 @@
         .global-price-input:focus {
             border-color: var(--primary) !important;
             box-shadow: 0 0 0 3px var(--primary-subtle) !important;
-        }
-
-        .btn-reset-price {
-            transition: all 0.2s ease;
         }
 
         .price-indicator {
