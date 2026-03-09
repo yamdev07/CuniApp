@@ -20,6 +20,9 @@ class User extends Authenticatable
         'notifications_dashboard',
         'theme',      // ✅ ADD THIS
         'language',   // ✅ ADD THIS
+        'google_id',
+        'google_token',
+        'google_refresh_token',
     ];
 
     protected $hidden = [

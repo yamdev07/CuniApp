@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -17,10 +18,16 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Note: Registration & Login routes are now in routes/web.php 
 | for custom verification flow
+|--------------------------------------------------------------------------
 */
 
 // ==================== GUEST ROUTES ====================
 Route::middleware('guest')->group(function () {
+    // ✅ Google Social Login
+    Route::get('/customer/social-login/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])
+        ->name('social-login.google.redirect');
+    Route::get('/customer/social-login/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
+        ->name('social-login.google.callback');
     // ❌ Registration moved to web.php for custom verification flow
     // Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     // Route::post('register', [RegisteredUserController::class, 'store']);

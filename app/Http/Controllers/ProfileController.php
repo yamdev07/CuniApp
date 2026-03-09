@@ -54,12 +54,12 @@ class ProfileController extends Controller
             }
 
             $user->password = $request->new_password;
+            
+            // Re-login solely after password change to maintain session
+            Auth::guard('web')->login($user);
         }
 
         $user->save();
-
-        // Maintien de la session active même après modification du mot de passe
-        Auth::guard('web')->login($user);
 
         // Envoi de la notification mail (sans données sensibles)
         $user->notify(new ProfileUpdatedNotification());

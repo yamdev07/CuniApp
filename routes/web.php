@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +72,12 @@ Route::middleware('guest')->group(function () {
     // Authentication Routes
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+
+    // ✅ Google Social Login
+    Route::get('/customer/social-login/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])
+        ->name('social-login.google.redirect');
+    Route::get('/customer/social-login/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
+        ->name('social-login.google.callback');
 
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);

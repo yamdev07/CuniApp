@@ -22,4 +22,4 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-test.txt
+test.txt/app/Http/Controllers/Auth/googleAuth.json

@@ -116,10 +116,12 @@ class SettingsController extends Controller
                     ->with('active_tab', 'profile-tab');
             }
             $user->password = $request->new_password;
+            
+            // Log in again ONLY if password changed
+            Auth::guard('web')->login($user);
         }
 
         $user->save();
-        Auth::guard('web')->login($user);
         $user->notify(new ProfileUpdatedNotification());
 
         return redirect()->to(route('settings.index'))

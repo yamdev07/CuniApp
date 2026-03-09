@@ -1132,7 +1132,7 @@
                             <div class="divider"><span>ou continuer avec</span></div>
 
                             <div class="social-login">
-                                <button type="button" class="btn-social google">
+                                <button type="button" onclick="window.location='{{ route('social-login.google.redirect') }}'" class="btn-social google">
                                     <i class="bi bi-google"></i>
                                     <span>Google</span>
                                 </button>
@@ -1322,7 +1322,7 @@
                             <div class="divider"><span>ou s'inscrire avec</span></div>
 
                             <div class="social-login">
-                                <button type="button" class="btn-social google">
+                                <button type="button" onclick="window.location='{{ route('social-login.google.redirect') }}'" class="btn-social google">
                                     <i class="bi bi-google"></i>
                                     <span>Google</span>
                                 </button>
