@@ -18,6 +18,7 @@
         </a>
     </div>
 
+
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <div class="cuni-card">
             <div class="card-body p-3 text-center">
@@ -86,6 +87,31 @@
         </div>
     </div>
 
+    {{-- Messages de feedback --}}
+    @if (session('success'))
+        <div class="alert alert-success"
+            style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ session('success') }}</span>
+            <button onclick="this.parentElement.remove()"
+                style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-error"
+            style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ session('error') }}</span>
+            <button onclick="this.parentElement.remove()"
+                style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    @endif
+
     {{-- Liste des activités --}}
     <div class="cuni-card">
         <div class="card-header-custom">
@@ -99,27 +125,54 @@
         <div class="card-body">
             <div class="timeline" style="max-height: none;">
                 @forelse($activities as $activity)
-                    <a href="{{ $activity['url'] }}" class="timeline-item" style="text-decoration: none; color: inherit;">
-                        <div class="timeline-dot {{ $activity['type'] }}"></div>
-                        <div class="timeline-content" style="flex: 1;">
-                            <div class="timeline-title">
-                                @if (isset($activity['icon']))
-                                    <i class="bi {{ $activity['icon'] }}" style="margin-right: 6px;"></i>
-                                @endif
-                                {{ $activity['title'] }}
+                    {{-- ✅ CONTENEUR pour activité + bouton (nécessaire pour le hover) --}}
+                    <div class="timeline-item-group"
+                        style="display: flex; align-items: flex-start; gap: 12px; position: relative; padding: 4px 0;">
+
+                        {{-- 🔗 Lien vers l'activité --}}
+                        <a href="{{ $activity['url'] }}" class="timeline-item"
+                            style="text-decoration: none; color: inherit; flex: 1; display: flex; gap: 12px; padding: 12px; border-radius: var(--radius); transition: background 0.2s;">
+
+                            <div class="timeline-dot {{ $activity['type'] }}"></div>
+                            <div class="timeline-content" style="flex: 1;">
+                                <div class="timeline-title">
+                                    @if (isset($activity['icon']))
+                                        <i class="bi {{ $activity['icon'] }}" style="margin-right: 6px;"></i>
+                                    @endif
+                                    {{ $activity['title'] }}
+                                </div>
+                                <div class="timeline-desc">{{ $activity['desc'] }}</div>
+                                <div class="timeline-time">
+                                    <i class="bi bi-clock"></i> {{ $activity['time'] }}
+                                    @if ($activity['date'])
+                                        <span class="ml-2 text-gray-400">
+                                            ({{ \Carbon\Carbon::parse($activity['date'])->format('d/m/Y H:i') }})
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="timeline-desc">{{ $activity['desc'] }}</div>
-                            <div class="timeline-time">
-                                <i class="bi bi-clock"></i> {{ $activity['time'] }}
-                                @if ($activity['date'])
-                                    <span class="ml-2 text-gray-400">
-                                        ({{ \Carbon\Carbon::parse($activity['date'])->format('d/m/Y H:i') }})
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                        <i class="bi bi-chevron-right text-gray-400"></i>
-                    </a>
+                            <i class="bi bi-chevron-right text-gray-400"></i>
+                        </a>
+
+                        {{-- 🗑️ Bouton de suppression - TOUJOURS VISIBLE --}}
+                        @if (isset($activity['id']) && $activity['id'])
+                            <form
+                                action="{{ route('activites.destroy', [
+                                    'type' => $activity['type'],
+                                    'id' => $activity['id'],
+                                    'model' => $activity['model'] ?? null,
+                                ]) }}"
+                                method="POST" class="delete-form" style="margin: 0; display: flex; align-items: center;"
+                                onsubmit="return confirm(' Supprimer définitivement cette activité ?\n\nCette action est irréversible.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-delete-activity" title="Supprimer cette activité"
+                                    style="background: none; border: none; cursor: pointer; padding: 8px; border-radius: 6px; display: flex; align-items: center;">
+                                    <i class="bi bi-trash text-sm"></i>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
                 @empty
                     <div class="text-center py-12 text-gray-500">
                         <i class="bi bi-inbox text-4xl mb-4 opacity-40"></i>
@@ -242,6 +295,78 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+
+
+        /* ✅ Conteneur activité + bouton */
+        /* .timeline-item-group {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        position: relative;
+        padding: 4px 0;
+    } */
+
+        /* ✅ Bouton de suppression - TOUJOURS VISIBLE et ROUGE */
+        .btn-delete-activity {
+            opacity: 1 !important;
+            /* ← Toujours visible */
+            transform: translateX(0) !important;
+            /* ← Pas de décalage */
+            transition: all 0.2s ease;
+            color: var(--accent-red) !important;
+            /* ← Rouge par défaut */
+            background: rgba(239, 68, 68, 0.1) !important;
+            /* ← Fond rouge clair */
+        }
+
+        /* ✅ Effet hover (plus foncé au survol) */
+        .btn-delete-activity:hover {
+            color: #dc2626 !important;
+            /* ← Rouge plus foncé */
+            background: rgba(239, 68, 68, 0.2) !important;
+            transform: scale(1.1);
+        }
+
+        /* ✅ Conteneur activité + bouton */
+        .timeline-item-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+            padding: 4px 0;
+        }
+
+
+        /* ✅ Bouton de suppression - caché par défaut */
+        /* .btn-delete-activity {
+        opacity: 0 !important;
+        transform: translateX(10px) !important;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    } */
+
+        /* ✅ Affiche le bouton au survol du GROUPE */
+        .timeline-item-group:hover .btn-delete-activity {
+            opacity: 1 !important;
+            transform: translateX(0) !important;
+        }
+
+        /* ✅ Effet hover sur le bouton */
+        /* .btn-delete-activity:hover {
+        color: var(--accent-red) !important;
+        background: rgba(239, 68, 68, 0.1) !important;
+    } */
+
+        /* ✅ Animation de suppression */
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .timeline-item-group.removing {
+            animation: fadeOut 0.3s ease forwards;
         }
     </style>
 @endsection

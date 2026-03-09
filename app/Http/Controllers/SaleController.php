@@ -71,7 +71,7 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
-        // ✅ VALIDATION: Accept arrays for individual prices (nullable to allow empty strings)
+        // ✅ VALIDATION: Accept arrays for individual prices
         $validated = $request->validate([
             'date_sale' => 'required|date',
             'buyer_name' => 'required|string|max:255',
@@ -81,7 +81,7 @@ class SaleController extends Controller
             'payment_status' => 'required|in:paid,pending,partial',
             'amount_paid' => 'nullable|numeric|min:0',
 
-            // ✅ Rabbit selections with individual prices (nullable to handle empty strings)
+            // ✅ Rabbit selections with individual prices
             'selected_males' => 'nullable|array',
             'selected_males.*' => 'exists:males,id',
             'male_prices' => 'nullable|array',
@@ -97,9 +97,6 @@ class SaleController extends Controller
             'lapereau_prices' => 'nullable|array',
             'lapereau_prices.*' => 'nullable|numeric|min:0',
         ], [
-            'selected_males.array' => 'Les mâles sélectionnés doivent être un tableau',
-            'selected_females.array' => 'Les femelles sélectionnées doivent être un tableau',
-            'selected_lapereaux.array' => 'Les lapereaux sélectionnés doivent être un tableau',
             'male_prices.*.numeric' => 'Le prix doit être un nombre valide',
             'male_prices.*.min' => 'Le prix doit être supérieur à 0',
             'female_prices.*.numeric' => 'Le prix doit être un nombre valide',
@@ -112,6 +109,7 @@ class SaleController extends Controller
         $selectedMales = $request->input('selected_males', []);
         $selectedFemales = $request->input('selected_females', []);
         $selectedLapereaux = $request->input('selected_lapereaux', []);
+
         $malePrices = $request->input('male_prices', []);
         $femalePrices = $request->input('female_prices', []);
         $lapereauPrices = $request->input('lapereau_prices', []);
@@ -127,7 +125,6 @@ class SaleController extends Controller
 
         // ✅ VALIDATION: Ensure all selected rabbits have prices > 0
         $missingPrices = [];
-        $invalidPrices = [];
 
         foreach ($selectedMales as $index => $maleId) {
             $price = isset($malePrices[$index]) ? (float) $malePrices[$index] : null;
@@ -152,8 +149,7 @@ class SaleController extends Controller
 
         if (!empty($missingPrices)) {
             return back()->withErrors([
-                'prices' => '⚠️ Prix manquants ou invalides pour: ' . implode(', ', array_slice($missingPrices, 0, 5))
-                    . (count($missingPrices) > 5 ? ' et ' . (count($missingPrices) - 5) . ' autres...' : '')
+                'prices' => '⚠️ Prix manquants ou invalides pour: ' . implode(', ', array_slice($missingPrices, 0, 5)) . (count($missingPrices) > 5 ? ' et ' . (count($missingPrices) - 5) . ' autres...' : '')
             ])->withInput();
         }
 
@@ -233,8 +229,7 @@ class SaleController extends Controller
             $this->notifyUser([
                 'type' => $sale->payment_status === 'paid' ? 'success' : 'warning',
                 'title' => '💰 Nouvelle Vente Enregistrée',
-                'message' => "Vente #{$sale->id}: {$totalQuantity} lapin(s) à {$sale->buyer_name} pour "
-                    . number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
+                'message' => "Vente #{$sale->id}: {$totalQuantity} lapin(s) à {$sale->buyer_name} pour " . number_format($sale->total_amount, 2, ',', ' ') . " FCFA",
                 'action_url' => route('sales.show', $sale)
             ]);
 

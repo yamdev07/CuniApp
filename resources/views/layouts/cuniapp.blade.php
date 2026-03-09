@@ -510,7 +510,7 @@
             box-shadow: var(--shadow);
             margin-bottom: 24px;
             overflow: hidden;
-            width:100%;
+            width: 100%;
         }
 
         .card-header-custom {
@@ -1023,7 +1023,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            width:100%;
+            width: 100%;
         }
 
 
@@ -2754,16 +2754,15 @@
                         </li>
                         <li>
                             <a href="{{ route('notifications.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Notifications
-                                {{-- @php
+                                <i class="bi bi-chevron-right"></i> Notifications
+                                @php
                                     $unread = \App\Models\Notification::where('user_id', auth()->id() ?? 0)
                                         ->where('is_read', false)
                                         ->count();
                                 @endphp
                                 @if ($unread > 0)
                                     <span class="badge-notification">{{ $unread > 99 ? '99+' : $unread }}</span>
-                                @endif --}}
+                                @endif
                             </a>
                         </li>
                         <li>
@@ -2864,61 +2863,59 @@
                                 <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
                             </div>
                         </div>
-
-                        <div class="footer-contact-item">
-                            <i class="bi bi-linkedin"></i>
-                            <div>
-                                <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank"
-                                    rel="noopener noreferrer"> <strong> LinkedIn</strong>
-
-                                </a>
-                            </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <i class="bi bi-linkedin"></i>
+                        <div>
+                            <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank"
+                                rel="noopener noreferrer">
+                                <strong>LinkedIn</strong>
+                            </a>
                         </div>
-
-
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="footer-copyright">
-                    <p>
-                        &copy; {{ date('Y') }}
-                        <a href="{{ route('dashboard') }}">CuniApp Élevage</a>.
-                        Tous droits réservés.
-                    </p>
-                    <p class="footer-version">
-                        Version {{ config('app.version', '1.0.0') }}
-                        <span class="separator">•</span>
-                        <span class="build-info">Build {{ date('Y.m.d') }}</span>
-                    </p>
-                </div>
-
-                <div class="footer-legal">
-                    <a href="{{ route('privacy') }}">
-                        <i class="bi bi-shield-check"></i>
-                        Confidentialité
-                    </a>
-                    <a href="{{ route('terms') }}">
-                        <i class="bi bi-file-text"></i>
-                        Conditions
-                    </a>
-                    <a href="{{ route('contact') }}">
-                        <i class="bi bi-headset"></i>
-                        Support
-                    </a>
-                    <a href="{{ route('health.check') }}" target="_blank">
-                        <i class="bi bi-activity"></i>
-                        État du système
-                    </a>
-                </div>
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>
+                    &copy; {{ date('Y') }}
+                    <a href="{{ route('dashboard') }}">CuniApp Élevage</a>.
+                    Tous droits réservés.
+                </p>
+                <p class="footer-version">
+                    Version {{ config('app.version', '1.0.0') }}
+                    <span class="separator">•</span>
+                    <span class="build-info">Build {{ date('Y.m.d') }}</span>
+                </p>
             </div>
 
-            <!-- Back to Top Button -->
-            <button id="backToTop" class="back-to-top" title="Retour en haut">
-                <i class="bi bi-arrow-up-short"></i>
-            </button>
+            <div class="footer-legal">
+                <a href="{{ route('privacy') }}">
+                    <i class="bi bi-shield-check"></i>
+                    Confidentialité
+                </a>
+                <a href="{{ route('terms') }}">
+                    <i class="bi bi-file-text"></i>
+                    Conditions
+                </a>
+                <a href="{{ route('contact') }}">
+                    <i class="bi bi-headset"></i>
+                    Support
+                </a>
+                <a href="{{ route('health.check') }}" target="_blank">
+                    <i class="bi bi-activity"></i>
+                    État du système
+                </a>
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button id="backToTop" class="back-to-top" title="Retour en haut">
+            <i class="bi bi-arrow-up-short"></i>
+        </button>
         </div>
     </footer>
 

@@ -1,260 +1,377 @@
+{{-- resources/views/sales/show.blade.php --}}
 @extends('layouts.cuniapp')
-@section('title', 'Ventes - CuniApp Élevage')
+
+@section('title', 'Détails Vente - CuniApp Élevage')
+
 @section('content')
+@if (session('success'))
+<div class="alert-cuni success" style="margin-bottom: 24px;">
+    <i class="bi bi-check-circle-fill"></i>
+    <div>{{ session('success') }}</div>
+</div>
+@endif
 
-    @if (session('success'))
-        <div class="alert-cuni success" style="margin-bottom: 24px;">
-            <i class="bi bi-check-circle-fill"></i>
-            <div>{{ session('success') }}</div>
+@if (session('warning'))
+<div class="alert-cuni warning" style="margin-bottom: 24px;">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <div>{{ session('warning') }}</div>
+</div>
+@endif
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">
+            <i class="bi bi-receipt"></i> Détails de la Vente #{{ $sale->id }}
+        </h2>
+        <div class="breadcrumb">
+            <a href="{{ route('dashboard') }}">Tableau de bord</a>
+            <span>/</span>
+            <a href="{{ route('sales.index') }}">Ventes</a>
+            <span>/</span>
+            <span>#{{ $sale->id }}</span>
         </div>
-    @endif
-
-    @if (session('warning'))
-        <div class="alert-cuni warning" style="margin-bottom: 24px;">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <div>{{ session('warning') }}</div>
-        </div>
-    @endif
-
-
-    <div class="page-header">
-        <div>
-            <h2 class="page-title">
-                <i class="bi bi-cart-check-fill"></i> Gestion des Ventes
-            </h2>
-            <div class="breadcrumb">
-                <a href="{{ route('dashboard') }}">Tableau de bord</a>
-                <span>/</span>
-                <span>Ventes</span>
-            </div>
-        </div>
-        <a href="{{ route('sales.create') }}" class="btn-cuni primary">
-            <i class="bi bi-plus-lg"></i> Nouvelle vente
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ route('sales.edit', $sale) }}" class="btn-cuni primary">
+            <i class="bi bi-pencil"></i> Modifier
+        </a>
+        <a href="{{ route('sales.index') }}" class="btn-cuni secondary">
+            <i class="bi bi-arrow-left"></i> Retour
         </a>
     </div>
+</div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Info -->
+    <div class="lg:col-span-2">
         <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total des ventes</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">{{ $stats['total_sales'] }}</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(59, 130, 246, 0.1)">
-                        <i class="bi bi-cart text-blue-500 text-lg"></i>
-                    </div>
-                </div>
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-info-circle"></i> Informations Principales</h3>
             </div>
-        </div>
-        <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Chiffre d'affaires</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
-                            {{ number_format($stats['total_revenue'], 2, ',', ' ') }} FCFA
+            <div class="card-body">
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label class="form-label">Date de vente</label>
+                        <p class="fw-semibold">{{ $sale->date_sale->format('d/m/Y') }}</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Acheteur</label>
+                        <p class="fw-semibold">{{ $sale->buyer_name }}</p>
+                    </div>
+                    @if ($sale->buyer_contact)
+                    <div class="form-group">
+                        <label class="form-label">Contact</label>
+                        <p>{{ $sale->buyer_contact }}</p>
+                    </div>
+                    @endif
+                    @if ($sale->buyer_address)
+                    <div class="form-group">
+                        <label class="form-label">Adresse</label>
+                        <p>{{ nl2br(e($sale->buyer_address)) }}</p>
+                    </div>
+                    @endif
+                    <div class="form-group">
+                        <label class="form-label">Montant total</label>
+                        <p class="fw-bold" style="color: var(--primary); font-size: 1.2rem;">
+                            {{ number_format($sale->total_amount, 2, ',', ' ') }} FCFA
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(16, 185, 129, 0.1)">
-                        <i class="bi bi-currency-euro text-green-500 text-lg"></i>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Ce mois-ci</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
-                            {{ number_format($stats['this_month'], 2, ',', ' ') }} FCFA
-                        </p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(139, 92, 246, 0.1)">
-                        <i class="bi bi-graph-up text-purple-500 text-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="cuni-card">
-            <div class="card-body p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Paiements en attente</p>
-                        <p class="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
-                            {{ number_format($stats['pending_payments'], 2, ',', ' ') }} FCFA
-                        </p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(245, 158, 11, 0.1)">
-                        <i class="bi bi-hourglass-split text-amber-500 text-lg"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="cuni-card">
-        <div class="card-header-custom">
-            <h3 class="card-title">
-                <i class="bi bi-list-ul"></i> Historique des ventes
-            </h3>
+        {{-- ✅ Rabbit Category Breakdown --}}
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title">
+                    <i class="bi bi-graph-up"></i> Résumé de la Vente
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-cols-3 gap-4">
+                    <div style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius);">
+                        <div style="font-size: 24px; font-weight: 700; color: #3B82F6;">
+                            {{ $sale->rabbits->where('rabbit_type', 'male')->count() }}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Mâles</div>
+                    </div>
+                    <div style="text-align: center; padding: 16px; background: rgba(236, 72, 153, 0.1); border-radius: var(--radius);">
+                        <div style="font-size: 24px; font-weight: 700; color: #EC4899;">
+                            {{ $sale->rabbits->where('rabbit_type', 'female')->count() }}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Femelles</div>
+                    </div>
+                    <div style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius);">
+                        <div style="font-size: 24px; font-weight: 700; color: #10B981;">
+                            {{ $sale->rabbits->where('rabbit_type', 'lapereau')->count() }}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Lapereaux</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light dark:bg-gray-800">
-                        <tr>
-                            <th class="ps-4 text-uppercase text-muted fw-semibold small">Date</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Article</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Quantité</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Acheteur</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Montant</th>
-                            <th class="text-uppercase text-muted fw-semibold small">Statut</th>
-                            <th class="pe-4 text-end text-uppercase text-muted fw-semibold small">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($sales as $sale)
-                            <tr class="border-bottom border-light dark:border-gray-700">
-                                <td class="ps-4 fw-semibold text-dark dark:text-gray-100">
-                                    {{ $sale->date_sale->format('d/m/Y') }}
-                                </td>
+
+        {{-- ✅ Lapins Associés avec Recherche et Pagination --}}
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title">
+                    <i class="bi bi-collection"></i> Lapins Vendus ({{ $sale->rabbits->count() }})
+                </h3>
+            </div>
+            <div class="card-body">
+                {{-- Search & Filters --}}
+                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <form method="GET" action="{{ route('sales.show', $sale) }}" style="display: flex; gap: 12px; flex: 1; min-width: 300px;">
+                        <input type="text" name="search_rabbit" class="form-control" placeholder="Rechercher par nom ou code..." value="{{ request('search_rabbit') }}" style="flex: 1;">
+                        <button type="submit" class="btn-cuni primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        @if (request('search_rabbit'))
+                        <a href="{{ route('sales.show', $sale) }}" class="btn-cuni secondary">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        @endif
+                    </form>
+                    <select name="filter_category" class="form-select" style="width: auto;" onchange="this.form.submit()">
+                        <option value="{{ route('sales.show', $sale) }}">Toutes les catégories</option>
+                        <option value="{{ route('sales.show', $sale) }}?filter_category=male" {{ request('filter_category') == 'male' ? 'selected' : '' }}>Mâles</option>
+                        <option value="{{ route('sales.show', $sale) }}?filter_category=female" {{ request('filter_category') == 'female' ? 'selected' : '' }}>Femelles</option>
+                        <option value="{{ route('sales.show', $sale) }}?filter_category=lapereau" {{ request('filter_category') == 'lapereau' ? 'selected' : '' }}>Lapereaux</option>
+                    </select>
+                </div>
+
+                @if ($rabbits->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Type</th>
+                                <th>Code</th>
+                                <th>Nom</th>
+                                <th>Prix Individuel</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="saleRabbitsTable">
+                            @foreach ($rabbits as $saleRabbit)
+                            <tr class="rabbit-row" data-category="{{ $saleRabbit->rabbit_type }}" data-code="{{ $saleRabbit->rabbit?->code ?? '' }}" data-name="{{ $saleRabbit->rabbit?->nom ?? '' }}">
                                 <td>
+                                    @if ($saleRabbit->rabbit_type === 'male')
                                     <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
-                                        {{ ucfirst($sale->type) }}{{ $sale->category ? " ({$sale->category})" : '' }}
+                                        <i class="bi bi-arrow-up-right-square"></i> Mâle
                                     </span>
-                                </td>
-                                <td class="fw-semibold text-dark dark:text-gray-100">{{ $sale->quantity }}</td>
-                                <td class="text-dark dark:text-gray-100">{{ $sale->buyer_name }}</td>
-                                <td class="fw-bold text-primary dark:text-blue-400">
-                                    {{ number_format($sale->total_amount, 2, ',', ' ') }} FCFA
-                                </td>
-                                <td>
-                                    @if ($sale->payment_status === 'paid')
-                                        <span class="badge"
-                                            style="background: rgba(16, 185, 129, 0.1); color: #10B981;">Payé</span>
-                                    @elseif($sale->payment_status === 'partial')
-                                        <span class="badge"
-                                            style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">Partiel</span>
+                                    @elseif($saleRabbit->rabbit_type === 'female')
+                                    <span class="badge" style="background: rgba(236, 72, 153, 0.1); color: #EC4899;">
+                                        <i class="bi bi-arrow-down-right-square"></i> Femelle
+                                    </span>
                                     @else
-                                        <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">En
-                                            attente</span>
+                                    <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                                        <i class="bi bi-egg-fill"></i> Lapereau
+                                    </span>
                                     @endif
                                 </td>
-                                <td class="pe-4">
-                                    <div class="action-buttons">
-                                        <a href="{{ route('sales.show', $sale) }}" class="btn-cuni sm secondary"
-                                            title="Détails">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="{{ route('sales.edit', $sale) }}" class="btn-cuni sm secondary"
-                                            title="Modifier">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        @if ($sale->payment_status !== 'paid')
-                                            <form action="{{ route('sales.mark-paid', $sale) }}" method="POST"
-                                                id="mark-paid-form-{{ $sale->id }}" style="display:inline;">
-                                                @csrf
-                                                @method('PATCH')
-                                            </form>
-                                            <button type="button" class="btn-cuni sm primary" title="Marquer comme payé"
-                                                onclick="showModal('confirm', 'Confirmer le paiement', 'Voulez-vous vraiment marquer cette vente comme payée ?', function() {
-        document.getElementById('mark-paid-form-{{ $sale->id }}').submit();
-    })">
-                                                <i class="bi bi-cash-coin"></i>
-                                            </button>
-                                        @endif
-                                        <form action="{{ route('sales.destroy', $sale) }}" method="POST"
-                                            style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-cuni sm danger" title="Supprimer"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente ?')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+                                <td class="fw-semibold" style="font-family: 'JetBrains Mono', monospace;">
+                                    {{ $saleRabbit->rabbit?->code ?? 'N/A' }}
+                                </td>
+                                <td>{{ $saleRabbit->rabbit?->nom ?? 'N/A' }}</td>
+                                <td style="font-weight: 600; color: var(--primary);">
+                                    {{ number_format($saleRabbit->sale_price ?? 0, 2, ',', ' ') }} FCFA
+                                </td>
+                                <td>
+                                    @if ($saleRabbit->rabbit_type === 'male')
+                                    <a href="{{ route('males.show', $saleRabbit->rabbit_id) }}" class="btn-cuni sm secondary" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @elseif($saleRabbit->rabbit_type === 'female')
+                                    <a href="{{ route('femelles.show', $saleRabbit->rabbit_id) }}" class="btn-cuni sm secondary" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @else
+                                    <a href="{{ route('lapins.edit', $saleRabbit->rabbit_id) }}" class="btn-cuni sm secondary" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    @endif
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7">
-                                    <div class="table-empty-state">
-                                        <i class="bi bi-cart-x" style="font-size: 3rem; color: var(--text-tertiary);"></i>
-                                        <p class="mt-3 text-gray-600 dark:text-gray-400">Aucune vente enregistrée pour le
-                                            moment</p>
-                                        <a href="{{ route('sales.create') }}" class="btn-cuni primary mt-3">
-                                            <i class="bi bi-plus-lg"></i> Enregistrer une première vente
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if ($sales->hasPages())
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
-                    <div class="text-muted dark:text-gray-400" style="font-size: 13px;">
-                        Affichage de <strong class="text-dark dark:text-gray-100">{{ $sales->firstItem() }}</strong> à
-                        <strong class="text-dark dark:text-gray-100">{{ $sales->lastItem() }}</strong> sur
-                        <strong class="text-dark dark:text-gray-100">{{ $sales->total() }}</strong> ventes
-                    </div>
-                    @if ($sales->hasPages())
-                        <div class="cuni-card"
-                            style="margin-top: 0; border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
-                            {{ $sales->links('pagination.bootstrap-5-sm') }}
-                        </div>
-                    @endif
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            @endif
+
+                {{-- ✅ Pagination Links --}}
+                @if ($rabbits->hasPages())
+                <div style="margin-top: 20px;">
+                    {{ $rabbits->appends(request()->query())->links('pagination.bootstrap-5-sm') }}
+                </div>
+                @endif
+
+                @else
+                <p class="text-muted text-center" style="padding: 40px;">
+                    <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5;"></i><br>
+                    Aucun lapin associé à cette vente.
+                </p>
+                @endif
+            </div>
         </div>
+
+        @if ($sale->notes)
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-sticky-note"></i> Notes</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-600">{{ nl2br(e($sale->notes)) }}</p>
+            </div>
+        </div>
+        @endif
     </div>
 
-    @push('styles')
-        <style>
-            .theme-dark .text-gray-500 {
-                color: #9CA3AF !important;
-            }
+    <!-- Sidebar: Buyer & Payment -->
+    <div>
+        <!-- Buyer Info -->
+        <div class="cuni-card">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-person"></i> Acheteur</h3>
+            </div>
+            <div class="card-body">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-sm text-gray-500">Nom</label>
+                        <p class="font-semibold">{{ $sale->buyer_name }}</p>
+                    </div>
+                    @if ($sale->buyer_contact)
+                    <div>
+                        <label class="text-sm text-gray-500">Contact</label>
+                        <p class="font-semibold">{{ $sale->buyer_contact }}</p>
+                    </div>
+                    @endif
+                    @if ($sale->buyer_address)
+                    <div>
+                        <label class="text-sm text-gray-500">Adresse</label>
+                        <p class="font-semibold">{{ nl2br(e($sale->buyer_address)) }}</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
 
-            .theme-dark .text-gray-600 {
-                color: #9CA3AF !important;
-            }
+        <!-- Payment Status -->
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-credit-card"></i> Paiement</h3>
+            </div>
+            <div class="card-body">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm text-gray-500">Statut</label>
+                        <p>
+                            @if ($sale->payment_status === 'paid')
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                                <i class="bi bi-check-circle"></i> Payé
+                            </span>
+                            @elseif($sale->payment_status === 'partial')
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                                <i class="bi bi-hourglass-split"></i> Partiel
+                            </span>
+                            @else
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                                <i class="bi bi-clock"></i> En attente
+                            </span>
+                            @endif
+                        </p>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500">Montant versé</label>
+                        <p class="font-semibold">{{ number_format($sale->amount_paid, 2, ',', ' ') }} FCFA</p>
+                    </div>
+                    @if ($sale->balance > 0)
+                    <div>
+                        <label class="text-sm text-gray-500">Solde restant</label>
+                        <p class="font-semibold" style="color: var(--accent-orange);">
+                            {{ number_format($sale->balance, 2, ',', ' ') }} FCFA
+                        </p>
+                    </div>
+                    @endif
+                </div>
 
-            .theme-dark .text-gray-800 {
-                color: #F3F4F6 !important;
-            }
+                {{-- Payment Actions --}}
+                @if ($sale->payment_status !== 'paid')
+                <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
+                    <form action="{{ route('sales.mark-paid', $sale) }}" method="POST" id="mark-paid-form-show-{{ $sale->id }}" style="margin-bottom: 12px;">
+                        @csrf
+                        @method('PATCH')
+                    </form>
+                    <button type="button" class="btn-cuni primary" style="width: 100%; margin-bottom: 12px;" onclick="showModal('confirm', 'Confirmer le paiement', 'Voulez-vous vraiment marquer cette vente comme payée ?', function() { document.getElementById('mark-paid-form-show-{{ $sale->id }}').submit(); })">
+                        <i class="bi bi-cash-coin"></i> Marquer comme payé
+                    </button>
 
-            .theme-dark .text-gray-100 {
-                color: #F9FAFB !important;
-            }
+                    {{-- Partial Payment Button --}}
+                    <a href="{{ route('sales.edit', $sale) }}#payment-section" class="btn-cuni secondary" style="width: 100%;">
+                        <i class="bi bi-receipt"></i> Enregistrer paiement partiel
+                    </a>
 
-            .theme-dark .text-amber-600 {
-                color: #FCD34D !important;
-            }
+                    {{-- Change Status Dropdown --}}
+                    <div style="margin-top: 12px;">
+                        <form action="{{ route('sales.change-status', $sale) }}" method="POST">
+                            @csrf
+                            <select name="payment_status" class="form-select" style="margin-bottom: 8px;" onchange="this.form.submit()">
+                                <option value="pending" {{ $sale->payment_status === 'pending' ? 'selected' : '' }}>En attente</option>
+                                <option value="partial" {{ $sale->payment_status === 'partial' ? 'selected' : '' }}>Paiement partiel</option>
+                                <option value="paid" {{ $sale->payment_status === 'paid' ? 'selected' : '' }}>Payé</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
 
-            .theme-dark .text-primary {
-                color: #60A5FA !important;
-            }
+        <!-- Metadata -->
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-info-circle"></i> Métadonnées</h3>
+            </div>
+            <div class="card-body">
+                <div class="space-y-2" style="font-size: 13px;">
+                    <div>
+                        <span class="text-gray-500">Créée par:</span>
+                        <span class="fw-semibold">{{ $sale->user->name ?? 'N/A' }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Créée le:</span>
+                        <span class="fw-semibold">{{ $sale->created_at->format('d/m/Y H:i') }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Dernière mise à jour:</span>
+                        <span class="fw-semibold">{{ $sale->updated_at->format('d/m/Y H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            .theme-dark .text-muted {
-                color: #9CA3AF !important;
-            }
-
-            .theme-dark .fw-semibold {
-                color: #E5E7EB !important;
-            }
-
-            .theme-dark .badge {
-                opacity: 0.95;
-            }
-        </style>
-    @endpush
+@push('scripts')
+<script>
+function filterSaleRabbits() {
+    const searchTerm = document.getElementById('searchRabbits')?.value.toLowerCase() || '';
+    const categoryFilter = document.getElementById('filterCategory')?.value || '';
+    const rows = document.querySelectorAll('#saleRabbitsTable .rabbit-row');
+    
+    rows.forEach(row => {
+        const category = row.dataset.category;
+        const code = row.dataset.code.toLowerCase();
+        const name = row.dataset.name.toLowerCase();
+        const matchesSearch = code.includes(searchTerm) || name.includes(searchTerm);
+        const matchesCategory = !categoryFilter || category === categoryFilter;
+        
+        if (matchesSearch && matchesCategory) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+@endpush
 @endsection

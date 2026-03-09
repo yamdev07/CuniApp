@@ -1190,9 +1190,8 @@
                 <div class="widget alerts-widget">
                     <div class="widget-head">
                         <h3>Notifications</h3>
-                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
-                            Voir tout <i class="bi bi-arrow-right"></i>
-                        </a>
+                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1"> Voir tout
+                            <i class="bi bi-arrow-right"></i> </a>
                     </div>
                     <div class="alerts-list">
                         @php
@@ -1203,22 +1202,19 @@
                                 ->get();
                         @endphp
                         @forelse($recentNotifs as $notif)
-                            <a href="#" class="alert-row {{ $notif->type }}"
-                                onclick="handleNotificationClick(event, {{ $notif->id }}, '{{ $notif->action_url ?? '' }}')"
-                                style="cursor: pointer; text-decoration: none; color: inherit;">
+                            <a href="{{ route('notifications.read', $notif->id) }}"
+                                class="alert-row {{ $notif->type }}">
                                 <div class="alert-indicator"></div>
                                 <div class="alert-text">
                                     <div class="alert-title flex items-center gap-2">
-                                        <i class="bi {{ $notif->icon }} text-sm"></i>
-                                        {{ Str::limit($notif->title, 40) }}
+                                        <i class="bi {{ $notif->icon }} text-sm"></i> {{ $notif->title }}
                                     </div>
                                     <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
                                 </div>
                                 @if (!$notif->is_read)
                                     <span class="badge"
                                         style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
-                                        Nouveau
-                                    </span>
+                                        Nouveau </span>
                                 @endif
                             </a>
                         @empty
@@ -1386,43 +1382,7 @@
                 }, index * 50);
             });
 
-            // ✅ Rendu initial
             renderCalendar(currentDate);
         });
     </script>
-
-    @push('scripts')
-        <script>
-            function handleNotificationClick(event, notificationId, actionUrl) {
-                event.preventDefault();
-
-                // Mark as read via AJAX
-                fetch(`/notifications/${notificationId}/read`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({})
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Redirect if action_url exists
-                        if (actionUrl && actionUrl !== '') {
-                            window.location.href = actionUrl;
-                        } else {
-                            // Refresh to update UI
-                            window.location.reload();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error marking notification as read:', error);
-                        // Fallback: redirect anyway
-                        if (actionUrl && actionUrl !== '') {
-                            window.location.href = actionUrl;
-                        }
-                    });
-            }
-        </script>
-    @endpush
 @endsection
