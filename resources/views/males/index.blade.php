@@ -20,8 +20,25 @@
             Ajouter un mâle
         </a>
     </div>
-
-
+        <form method="GET" action="{{ route('males.index') }}" class="mb-4">
+            <div class="d-flex gap-2">
+                <div class="flex-grow-1">
+                    <input type="text" 
+                        name="search" 
+                        value="{{ request()->get('search') }}"
+                        class="form-control" 
+                        placeholder="Rechercher par nom, code ou race...">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+                
+                <a href="{{ route('males.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Effacer
+                </a>
+            </div>
+        </form>
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
