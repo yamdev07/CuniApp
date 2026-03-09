@@ -400,7 +400,6 @@
                     });
                 });
 
-                // ✅ FIXED: Handle rabbit selection - Show price input when checked
                 function handleRabbitSelection(category, rabbitId) {
                     const checkbox = document.querySelector(
                         `input[name="selected_${category}[]"][value="${rabbitId}"]`
@@ -410,37 +409,35 @@
                     const indicator = document.getElementById(`price-indicator-${category}-${rabbitId}`);
 
                     if (checkbox && priceContainer) {
+                        // ✅ FIX: Get correct key for selectedRabbits
+                        const rabbitsKey = category === 'lapereau' ? 'lapereaux' : category + 's';
+
                         // Track selection across pagination
                         if (checkbox.checked) {
-                            selectedRabbits[category + 's'].add(rabbitId);
+                            selectedRabbits[rabbitsKey].add(rabbitId);
                         } else {
-                            selectedRabbits[category + 's'].delete(rabbitId);
+                            selectedRabbits[rabbitsKey].delete(rabbitId);
                             delete customPrices[`${category}-${rabbitId}`];
                         }
 
-                        // ✅ Show/hide price container based on checkbox state
+                        // Show/hide price container based on checkbox state
                         priceContainer.style.display = checkbox.checked ? 'block' : 'none';
 
                         if (checkbox.checked && priceInput) {
                             const customKey = `${category}-${rabbitId}`;
-
-                            // Use custom price if exists, otherwise apply global
                             if (customPrices[customKey] !== undefined) {
                                 priceInput.value = customPrices[customKey];
                                 markPriceAsCustom(category, rabbitId);
                             } else {
-                                // ✅ Apply global price
                                 priceInput.value = globalPrices[category] || 0;
                                 if (indicator) {
                                     indicator.style.display = 'block';
                                 }
                             }
-
                             priceInput.focus();
                             priceInput.classList.remove('error');
                         }
                     }
-
                     calculateTotalAmount();
                 }
 
@@ -639,7 +636,7 @@
                     btn.addEventListener('click', function() {
                         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove(
-                        'active'));
+                            'active'));
                         this.classList.add('active');
                         document.getElementById(this.dataset.tab).classList.add('active');
                     });
