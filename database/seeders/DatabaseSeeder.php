@@ -49,9 +49,9 @@ class DatabaseSeeder extends Seeder
     private function clearDatabase(): void
     {
         $this->command->info('🧹 Cleaning existing data...');
-        
+
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        
+
         $tables = [
             'payment_transactions',
             'subscriptions',
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
         }
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
-        
+
         $this->command->info('');
     }
 
@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->command->info('📊 DATABASE SUMMARY:');
         $this->command->info('');
-        
+
         $stats = [
             '👥 Users' => \App\Models\User::count(),
             '🐰 Mâles' => \App\Models\Male::count(),
