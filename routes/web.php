@@ -100,7 +100,7 @@ Route::middleware('guest')->group(function () {
 // ========================================================================
 
 Route::middleware('auth')->group(function () {
-    
+
     // Standard Laravel Email Verification Flow
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
@@ -124,9 +124,9 @@ Route::middleware('auth')->group(function () {
     // ====================================================================
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)
     // ====================================================================
-    
+
     Route::middleware('verified')->group(function () {
-        
+
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -138,23 +138,23 @@ Route::middleware('auth')->group(function () {
         // ================================================================
         // 💳 SUBSCRIPTION ROUTES (No subscription check - users need to access these)
         // ================================================================
-        
+
         Route::prefix('subscription')->name('subscription.')->group(function () {
             // View available plans
             Route::get('/plans', [SubscriptionController::class, 'index'])->name('plans');
-            
+
             // Show subscription form for selected plan
             Route::get('/subscribe', [SubscriptionController::class, 'create'])->name('subscribe');
-            
+
             // Process subscription request
             Route::post('/purchase', [SubscriptionController::class, 'store'])->name('purchase');
-            
+
             // Show subscription status/details
             Route::get('/status', [SubscriptionController::class, 'show'])->name('status');
-            
+
             // Renew existing subscription
             Route::post('/renew', [SubscriptionController::class, 'renew'])->name('renew');
-            
+
             // Cancel subscription
             Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
         });
@@ -162,23 +162,23 @@ Route::middleware('auth')->group(function () {
         // ================================================================
         // 💰 PAYMENT ROUTES (No subscription check - users need to pay)
         // ================================================================
-        
+
         Route::prefix('payment')->name('payment.')->group(function () {
             // Initiate payment process
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
-            
+
             // Process payment with selected provider
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
-            
+
             // Payment provider callback
             Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
-            
+
             // Payment webhook handler
             Route::post('/webhook/{provider}', [PaymentController::class, 'webhook'])->name('webhook');
-            
+
             // Verify payment status
             Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
-            
+
             // Manual payment confirmation (Admin)
             Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
         });
@@ -187,9 +187,9 @@ Route::middleware('auth')->group(function () {
         // 🛡️ PROTECTED CRUD ROUTES (Require active subscription)
         // Apply CheckSubscription middleware here
         // ================================================================
-        
+
         Route::middleware('check.subscription')->group(function () {
-            
+
             // ================================================================
             // ✅ MÂLES - Complete CRUD
             // ================================================================
@@ -285,12 +285,12 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{sale}/edit', [SaleController::class, 'edit'])->name('edit');
                 Route::put('/{sale}', [SaleController::class, 'update'])->name('update');
                 Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('destroy');
-                
+
                 // Payment Management
                 Route::patch('/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])->name('mark-paid');
                 Route::post('/{sale}/partial-payment', [SaleController::class, 'recordPartialPayment'])->name('partial-payment');
                 Route::post('/{sale}/change-status', [SaleController::class, 'changePaymentStatus'])->name('change-status');
-                
+
                 // Bulk Operations
                 Route::delete('/bulk-delete', [SaleController::class, 'bulkDelete'])->name('bulk-delete');
                 Route::get('/export', [SaleController::class, 'export'])->name('export');
@@ -301,9 +301,9 @@ Route::middleware('auth')->group(function () {
         // ================================================================
         // ✅ SETTINGS & NOTIFICATIONS (Require subscription)
         // ================================================================
-        
+
         Route::middleware('check.subscription')->group(function () {
-            
+
             // Settings Management
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/', [SettingsController::class, 'index'])->name('index');
@@ -331,9 +331,9 @@ Route::middleware('auth')->group(function () {
         // ================================================================
         // 👑 ADMIN ROUTES (Require admin role)
         // ================================================================
-        
+
         Route::prefix('admin')->name('admin.')->middleware('check.admin')->group(function () {
-            
+
             // Subscription Management
             Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
                 Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
@@ -350,7 +350,7 @@ Route::middleware('auth')->group(function () {
     // ========================================================================
     // 🔍 UTILITY ROUTES (Available to authenticated users)
     // ========================================================================
-    
+
     Route::middleware(['auth', 'verified'])->group(function () {
         // Search Endpoints
         Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');

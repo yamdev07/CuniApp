@@ -38,6 +38,14 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Relationship: User has many subscriptions
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(\App\Models\Subscription::class);
+    }
+
     public function hasActiveSubscription(): bool
     {
         return $this->subscriptions()
