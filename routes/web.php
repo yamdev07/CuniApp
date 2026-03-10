@@ -242,6 +242,7 @@ Route::middleware('auth')->group(function () {
         // Search Endpoints
         Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
         Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
+        
     });
 });
 

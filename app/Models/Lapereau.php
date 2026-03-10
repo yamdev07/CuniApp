@@ -56,7 +56,8 @@ class Lapereau extends Model
     {
         parent::boot();
         static::creating(function ($lapereau) {
-            if (empty($lapereau->code)) {
+            // ✅ Only auto-generate if code is empty AND not in seeding mode
+            if (empty($lapereau->code) && !self::isSeeding()) {
                 $lapereau->code = self::generateUniqueCode();
             }
         });
@@ -117,5 +118,12 @@ class Lapereau extends Model
     {
         return $this->morphMany(SaleRabbit::class, 'rabbit', 'rabbit_type', 'rabbit_id')
             ->where('rabbit_type', 'lapereau');
+    }
+
+    // ✅ Add this method to check if we're in seeding mode
+    public static function isSeeding(): bool
+    {
+        return app()->runningInConsole() &&
+            debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3)[2]['function'] ?? '' === 'seed';
     }
 }
