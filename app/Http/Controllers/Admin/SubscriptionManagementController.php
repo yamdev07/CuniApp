@@ -88,6 +88,9 @@ class SubscriptionManagementController extends Controller
     /**
      * Manually activate subscription
      */
+    /**
+     * Manually activate subscription
+     */
     public function activate(Request $request)
     {
         $request->validate([
@@ -99,7 +102,8 @@ class SubscriptionManagementController extends Controller
         $user = User::findOrFail($request->user_id);
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
 
-        $durationMonths = $request->duration_months ?? $plan->duration_months;
+        // ✅ FIX: Cast to integer to prevent Carbon TypeError
+        $durationMonths = (int) ($request->duration_months ?? $plan->duration_months);
 
         DB::beginTransaction();
         try {
@@ -114,7 +118,7 @@ class SubscriptionManagementController extends Controller
                 'subscription_plan_id' => $plan->id,
                 'status' => 'active',
                 'start_date' => now(),
-                'end_date' => now()->addMonths($durationMonths),
+                'end_date' => now()->addMonths($durationMonths), // ✅ Now receives int
                 'price' => $plan->price,
                 'payment_method' => 'manual',
                 'payment_reference' => 'MANUAL-' . strtoupper(uniqid()),
@@ -145,6 +149,7 @@ class SubscriptionManagementController extends Controller
                 ->with('success', 'Abonnement activé avec succès pour ' . $user->name);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->route('admin.subscriptions.index')
                 ->with('error', 'Erreur: ' . $e->getMessage());
         }
