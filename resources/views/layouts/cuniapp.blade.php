@@ -2558,6 +2558,17 @@
                             <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
                         @endif
                     </a>
+
+                    {{-- 💳 SUBSCRIPTION STATUS BADGE --}} {{-- ✅ ADD THIS --}}
+                    @if (!auth()->user()->hasActiveSubscription() && auth()->user()->role !== 'admin')
+                        <a href="{{ route('subscription.plans') }}" class="notification-trigger"
+                            style="border-color: var(--accent-orange);">
+                            <i class="bi bi-credit-card" style="color: var(--accent-orange);"></i>
+                            <span class="notification-badge" style="background: var(--accent-orange);">!</span>
+                        </a>
+                    @endif
+                    {{-- END SUBSCRIPTION BADGE --}}
+
                     <div class="user-profile-dropdown">
                         <div class="user-trigger" onclick="toggleUserDropdown(event)">
                             <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
