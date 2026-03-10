@@ -2539,6 +2539,18 @@
                         </a>
                     </div>
                 </div>
+                {{-- 💳 SUBSCRIPTION LINK - Visible for non-admin users without subscription --}}
+                @if (auth()->check() && auth()->user()->role !== 'admin')
+                    <a href="{{ route('subscription.plans') }}"
+                        class="nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}"
+                        style="{{ auth()->user()->hasActiveSubscription() ? '' : 'color: var(--accent-orange);' }}">
+                        <i class="bi bi-credit-card"></i>
+                        <span>Abonnement</span>
+                        @if (!auth()->user()->hasActiveSubscription())
+                            <span class="notification-badge" style="background: var(--accent-orange);">!</span>
+                        @endif
+                    </a>
+                @endif
             </nav>
 
             <button class="mobile-menu-trigger d-md-none" onclick="toggleMobileNav()" aria-label="Menu">
@@ -2605,6 +2617,21 @@
                                     <span id="theme-text">{{ $themeLabel }}</span>
                                 </div>
                             </a>
+
+                            {{-- 👑 ADMIN SUBSCRIPTION MANAGEMENT --}}
+                            @if (auth()->check() && auth()->user()->role === 'admin')
+                                <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+                                <div class="dropdown-header" style="background: var(--surface-alt);">
+                                    <span style="font-size: 12px; color: var(--text-tertiary);">👑 Administration</span>
+                                </div>
+                                <a href="{{ route('admin.subscriptions.index') }}" class="dropdown-item-custom">
+                                    <i class="bi bi-shield-lock"></i> Gestion Abonnements
+                                </a>
+                                <a href="{{ route('admin.subscriptions.transactions') }}" class="dropdown-item-custom">
+                                    <i class="bi bi-receipt"></i> Transactions
+                                </a>
+                            @endif
+
                             <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -2687,6 +2714,42 @@
                         <i class="bi bi-gear"></i>
                         <span>Paramètres</span>
                     </a>
+
+                    {{-- 💳 SUBSCRIPTION LINK - Mobile Navigation --}}
+                    @if (auth()->check() && auth()->user()->role !== 'admin')
+                        <div class="mobile-nav-divider"></div>
+                        <a href="{{ route('subscription.plans') }}"
+                            class="mobile-nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}"
+                            style="{{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Abonnement</span>
+                            @if (!auth()->user()->hasActiveSubscription())
+                                <span class="notification-badge"
+                                    style="background: var(--accent-orange); position: static; margin-left: auto;">!</span>
+                            @endif
+                        </a>
+                    @endif
+
+                    {{-- 👑 ADMIN SUBSCRIPTION LINK - Mobile Navigation --}}
+                    @if (auth()->check() && auth()->user()->role === 'admin')
+                        <div class="mobile-nav-divider"></div>
+                        <div class="mobile-nav-link" style="cursor: default; background: var(--surface-alt);">
+                            <i class="bi bi-shield-lock" style="color: var(--accent-purple);"></i>
+                            <span style="font-weight: 600;">👑 Administration</span>
+                        </div>
+                        <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"
+                            style="padding-left: 52px;">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Gestion Abonnements</span>
+                        </a>
+                        <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"
+                            style="padding-left: 52px;">
+                            <i class="bi bi-receipt"></i>
+                            <span>Transactions</span>
+                        </a>
+                    @endif
+                    {{-- END SUBSCRIPTION MOBILE LINKS --}}
+
                     {{-- <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
                         <i class="bi bi-person"></i>
                         <span>Mon Profil</span>
@@ -2788,6 +2851,34 @@
                                 Mon Profil
                             </a>
                         </li>
+                        {{-- 💳 SUBSCRIPTION LINK - Footer --}}
+                        @if (auth()->check() && auth()->user()->role !== 'admin')
+                            <li>
+                                <a href="{{ route('subscription.plans') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Abonnement
+                                    @if (!auth()->user()->hasActiveSubscription())
+                                        <span class="badge-notification">!</span>
+                                    @endif
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- 👑 ADMIN SUBSCRIPTION LINK - Footer --}}
+                        @if (auth()->check() && auth()->user()->role === 'admin')
+                            <li>
+                                <a href="{{ route('admin.subscriptions.index') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Gestion Abonnements
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.subscriptions.transactions') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Transactions
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
 
