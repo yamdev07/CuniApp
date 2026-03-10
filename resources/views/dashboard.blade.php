@@ -103,6 +103,7 @@
             border: 1px solid var(--surface-border);
             transition: all 0.2s ease;
             position: relative;
+            width: max-content;
         }
 
         .metric-card:hover {
@@ -536,8 +537,14 @@
 
         .cal-day.today {
             background: var(--primary);
+
+        }
+
+        .theme-dark .cal-day.today {
             color: var(--white);
         }
+
+
 
         .cal-day.event::after {
             content: '';
@@ -768,15 +775,12 @@
 
         .legend-dot.orange {
             background-color: #f59e0b;
-            /* Un orange vif et professionnel */
         }
 
-        /* Optionnel : ajout d'une petite animation pour que le point de sexage clignote légèrement */
         .legend-dot.orange {
             box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
         }
 
-        /* Dans votre fichier CSS ou balise <style> */
         .legend-dot.blue {
             background-color: #3b82f6;
             /* Bleu */
@@ -789,9 +793,8 @@
             font-weight: 600;
         }
 
-        /* Tooltip natif stylisé (optionnel) */
-        .cal-day[title]:hover::after {
-            content: attr(title);
+        content: {
+            attr(title);
             position: absolute;
             bottom: 100%;
             left: 50%;
@@ -813,10 +816,75 @@
         .timeline-dot.cyan {
             background: var(--accent-cyan);
         }
+
+        .theme-dark .cal-day.event[data-tooltip]:hover::after {
+            /* color: var(--surface); */
+            color: #ffffff;
+        }
+
+        /* TOOLTIP STYLISÉ - FOND NOIR EN DESSOUS */
+        .cal-day.event[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--surface);
+            /* color: #ffffff;  */
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            /* white-space: nowrap; */
+            z-index: 1000;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            opacity: 0;
+            animation: tooltipSlideUp 0.25s ease forwards;
+            max-width: 400px !important;
+            min-width: 200px;
+            width: max-content;
+            text-align: left;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            height: max-content;
+        }
+
+        /* Flèche vers le haut */
+        .cal-day.event[data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 7px solid transparent;
+            border-bottom-color: blue;
+            z-index: 1001;
+            opacity: 0;
+            animation: tooltipSlideUp 0.25s ease forwards;
+        }
+
+        /* ✅ Animation fluide */
+        @keyframes tooltipSlideUp {
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(4px);
+            }
+        }
+
+        /* ✅ Effet hover sur la date */
+        .cal-day.event[data-tooltip]:hover {
+            box-shadow: 0 0 0 2px var(--primary), 0 6px 20px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            transform: scale(1.05);
+        }
     </style>
 
     <div class="cuniapp-dashboard">
-        <!-- Header Section -->
+
+
         <header class="dash-header">
             <div class="header-wrapper-dash">
                 <div class="brand-identity-dash">
@@ -920,11 +988,11 @@
                         ],
                         [
                             'icon' => 'sales',
-                            'value' => number_format($totalRevenue, 0, ',', ' '),
+                            'value' => number_format($totalRevenue, 0, ',', ' ') . ' FCFA', // ← Format avec devise
                             'label' => 'CA Total',
                             'type' => 'purple',
-                            'change' => '+0%', // Tu pourras ajouter $revenuePercent au controller plus tard
-                            'trend' => 'up',
+                            'change' => $salesStats['change'],
+                            'trend' => $salesStats['trend'],
                             'route' => 'sales.index',
                         ],
                     ];
@@ -1190,8 +1258,9 @@
                 <div class="widget alerts-widget">
                     <div class="widget-head">
                         <h3>Notifications</h3>
-                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1"> Voir tout
-                            <i class="bi bi-arrow-right"></i> </a>
+                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
+                            Voir tout <i class="bi bi-arrow-right"></i>
+                        </a>
                     </div>
                     <div class="alerts-list">
                         @php
@@ -1202,19 +1271,22 @@
                                 ->get();
                         @endphp
                         @forelse($recentNotifs as $notif)
-                            <a href="{{ route('notifications.read', $notif->id) }}"
-                                class="alert-row {{ $notif->type }}">
+                            <a href="#" class="alert-row {{ $notif->type }}"
+                                onclick="handleNotificationClick(event, {{ $notif->id }}, '{{ $notif->action_url ?? '' }}')"
+                                style="cursor: pointer; text-decoration: none; color: inherit;">
                                 <div class="alert-indicator"></div>
                                 <div class="alert-text">
                                     <div class="alert-title flex items-center gap-2">
-                                        <i class="bi {{ $notif->icon }} text-sm"></i> {{ $notif->title }}
+                                        <i class="bi {{ $notif->icon }} text-sm"></i>
+                                        {{ Str::limit($notif->title, 40) }}
                                     </div>
                                     <div class="alert-time">{{ $notif->created_at->diffForHumans() }}</div>
                                 </div>
                                 @if (!$notif->is_read)
                                     <span class="badge"
                                         style="background: rgba(239, 68, 68, 0.1); color: #EF4444; font-size: 11px; padding: 2px 8px;">
-                                        Nouveau </span>
+                                        Nouveau
+                                    </span>
                                 @endif
                             </a>
                         @empty
@@ -1228,7 +1300,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarGrid = document.getElementById('calendarGrid');
@@ -1311,10 +1382,6 @@
                 currentMonthSpan.textContent = `${months[month]} ${year}`;
 
                 // Jours vides avant le 1er du mois
-                for (let i = 0; i < startDay; i++) {
-                    calendarGrid.appendChild(document.createElement('div'));
-                }
-
                 // Jours du mois
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dayEl = document.createElement('div');
@@ -1330,6 +1397,7 @@
                     const dateKey = formatDateKey(new Date(year, month, day));
                     const dayEvents = getEventsForDate(dateKey);
 
+                    // ✅ Dans renderCalendar(), pour les jours avec événements
                     if (dayEvents.length > 0) {
                         dayEl.classList.add('event');
 
@@ -1338,13 +1406,14 @@
                         const mainEvent = dayEvents.find(e => priority.includes(e.type)) || dayEvents[0];
                         dayEl.classList.add(mainEvent.type);
 
-                        // ✅ Tooltip avec tous les événements du jour
-                        // ✅ Tooltip simple en texte (fonctionne avec l'attribut title natif)
+                        // ✅ Tooltip avec TOUS les événements du jour
                         const tooltipText = dayEvents.map(e => e.label).join(' | ');
-                        dayEl.setAttribute('title', tooltipText);
+
+                        // 🎯 UTILISER data-tooltip (PAS title)
+                        dayEl.setAttribute('data-tooltip', tooltipText);
+                        dayEl.removeAttribute('title'); // ← Important pour éviter le tooltip natif
                         dayEl.style.cursor = 'pointer';
                     }
-
                     calendarGrid.appendChild(dayEl);
                 }
             }
@@ -1382,7 +1451,43 @@
                 }, index * 50);
             });
 
+            // ✅ Rendu initial
             renderCalendar(currentDate);
         });
     </script>
+
+    @push('scripts')
+        <script>
+            function handleNotificationClick(event, notificationId, actionUrl) {
+                event.preventDefault();
+
+                // Mark as read via AJAX
+                fetch(`/notifications/${notificationId}/read`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Redirect if action_url exists
+                        if (actionUrl && actionUrl !== '') {
+                            window.location.href = actionUrl;
+                        } else {
+                            // Refresh to update UI
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error marking notification as read:', error);
+                        // Fallback: redirect anyway
+                        if (actionUrl && actionUrl !== '') {
+                            window.location.href = actionUrl;
+                        }
+                    });
+            }
+        </script>
+    @endpush
 @endsection
