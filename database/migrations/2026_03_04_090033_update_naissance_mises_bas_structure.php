@@ -104,11 +104,14 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Rollback lapereaux
+        // Rollback lapereaux - FIXED: Handle NULL values safely
         Schema::table('lapereaux', function (Blueprint $table) {
+            // First, update any NULL sex values to a safe default
+            DB::statement("UPDATE lapereaux SET sex = 'male' WHERE sex IS NULL");
+
             $table->string('code')->nullable()->change();
             $table->string('nom')->nullable()->change();
-            $table->enum('sex', ['male', 'female'])->nullable(false)->change();
+            $table->enum('sex', ['male', 'female'])->nullable()->change(); // ← Keep nullable for rollback
             $table->foreignId('naissance_id')->nullable()->change();
         });
 
