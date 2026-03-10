@@ -16,22 +16,22 @@ class MaleController extends Controller
     public function index(Request $request)
     {
         $query = Male::query();
-        
+
         // Filtre de recherche
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nom', 'LIKE', "%{$search}%")
-                  ->orWhere('code', 'LIKE', "%{$search}%")
-                  ->orWhere('race', 'LIKE', "%{$search}%");
+                    ->orWhere('code', 'LIKE', "%{$search}%")
+                    ->orWhere('race', 'LIKE', "%{$search}%");
             });
         }
-        
+
         // Filtre par état
         if ($request->filled('etat')) {
             $query->where('etat', $request->get('etat'));
         }
-        
+
         $males = $query->latest()->paginate(10);
         return view('males.index', compact('males'));
     }
