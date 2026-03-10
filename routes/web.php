@@ -233,6 +233,9 @@ Route::middleware('auth')->group(function () {
         // Historique des activités
         Route::get('/activites', [ActiviteController::class, 'index'])->name('activites.index');
         Route::delete('/activites/{type}/{id}', [App\Http\Controllers\ActiviteController::class, 'destroy'])->name('activites.destroy');
+
+
+        
     });
 
     // ========================================================================

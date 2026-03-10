@@ -16,22 +16,22 @@ class MaleController extends Controller
     public function index(Request $request)
     {
         $query = Male::query();
-        
+
         // Filtre de recherche
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nom', 'LIKE', "%{$search}%")
-                  ->orWhere('code', 'LIKE', "%{$search}%")
-                  ->orWhere('race', 'LIKE', "%{$search}%");
+                    ->orWhere('code', 'LIKE', "%{$search}%")
+                    ->orWhere('race', 'LIKE', "%{$search}%");
             });
         }
-        
+
         // Filtre par état
         if ($request->filled('etat')) {
             $query->where('etat', $request->get('etat'));
         }
-        
+
         $males = $query->latest()->paginate(10);
         return view('males.index', compact('males'));
     }
@@ -219,5 +219,24 @@ class MaleController extends Controller
     {
         $exists = Male::where('code', $request->code)->exists();
         return response()->json(['available' => !$exists]);
+    }
+
+
+    public function __construct()
+    {
+        // Skip for admin users
+        $this->middleware(function ($request, $next) {
+            if (auth()->check() && auth()->user()->role === 'admin') {
+                return $next($request);
+            }
+
+            if (!auth()->user()->hasActiveSubscription()) {
+                session(['intended_url' => $request->fullUrl()]);
+                return redirect()->route('subscription.plans')
+                    ->with('warning', 'Vous devez avoir un abonnement actif pour effectuer cette action.');
+            }
+
+            return $next($request);
+        })->except(['index', 'show']); // Allow viewing without subscription
     }
 }
