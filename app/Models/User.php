@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Models;
+<?php namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,11 +16,14 @@ class User extends Authenticatable
         'email_verified_at',
         'notifications_email',
         'notifications_dashboard',
-        'theme',      // ✅ ADD THIS
-        'language',   // ✅ ADD THIS
+        'theme',
+        'language',
         'google_id',
         'google_token',
         'google_refresh_token',
+        'role',                      // ✅ Ensure this exists
+        'subscription_status',       // ✅ Ensure this exists
+        'subscription_ends_at',      // ✅ Ensure this exists
     ];
 
     protected $hidden = [
@@ -35,6 +36,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'subscription_ends_at' => 'datetime',
+            'last_subscription_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
@@ -44,6 +49,25 @@ class User extends Authenticatable
     public function subscriptions()
     {
         return $this->hasMany(\App\Models\Subscription::class);
+    }
+
+    /**
+     * ✅ NEW: Relationship for payment transactions
+     */
+    public function paymentTransactions()
+    {
+        return $this->hasMany(\App\Models\PaymentTransaction::class);
+    }
+
+    /**
+     * Proper relationship for eager loading active subscription
+     */
+    public function activeSubscriptionRelation()
+    {
+        return $this->hasOne(\App\Models\Subscription::class)
+            ->where('status', 'active')
+            ->where('end_date', '>=', now())
+            ->latest('created_at');
     }
 
     public function hasActiveSubscription(): bool

@@ -2626,6 +2626,115 @@
             align-items: center !important;
             justify-content: center !important;
         }
+
+
+        /* ✅ MOBILE NAV OVERLAY - FIXED STYLING */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 72px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface) !important;
+            /* ✅ Force surface color */
+            z-index: 99;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .mobile-nav-overlay.active {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-bottom: 40px;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--text-primary) !important;
+            /* ✅ Force text color */
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            background: transparent !important;
+            /* ✅ Prevent white background */
+        }
+
+        .mobile-nav-link:hover {
+            background: var(--gray-50) !important;
+            color: var(--primary) !important;
+        }
+
+        .mobile-nav-link.active {
+            background: var(--primary-subtle) !important;
+            color: var(--primary) !important;
+        }
+
+        .mobile-nav-link i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            color: inherit;
+        }
+
+        .mobile-nav-divider {
+            height: 1px;
+            background: var(--surface-border);
+            margin: 16px 0;
+        }
+
+        /* ✅ DARK MODE SUPPORT FOR MOBILE NAV */
+        .theme-dark .mobile-nav-overlay {
+            background: var(--surface) !important;
+        }
+
+        .theme-dark .mobile-nav-link {
+            color: var(--text-primary) !important;
+        }
+
+        .theme-dark .mobile-nav-link:hover {
+            background: var(--surface-elevated) !important;
+        }
+
+        .theme-dark .mobile-nav-link.active {
+            background: var(--primary-subtle) !important;
+        }
+
+        /* ✅ NOTIFICATION BADGE IN MOBILE NAV */
+        .mobile-nav-link .notification-badge {
+            position: static !important;
+            margin-left: auto;
+            font-size: 11px;
+            min-width: 18px;
+            height: 18px;
+        }
+
+        /* ✅ THEME BADGE IN MOBILE NAV */
+        .theme-status-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.08);
+            color: var(--text-secondary);
+            text-transform: capitalize;
+            margin-left: auto;
+        }
+
+        .theme-dark .theme-status-badge {
+            background: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 
@@ -2727,6 +2836,34 @@
                                 @endif
                             </a>
                         @endif
+
+                        {{-- In the MORE dropdown, after the Abonnement link --}}
+                        @if (auth()->check() && auth()->user()->role !== 'admin')
+                            <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+
+                            {{-- View Plans --}}
+                            <a href="{{ route('subscription.plans') }}" class="dropdown-item-custom">
+                                <i class="bi bi-credit-card"></i>
+                                <span>Nos Offres</span>
+                            </a>
+
+                            {{-- ✅ VIEW STATUS (NEW) --}}
+                            <a href="{{ route('subscription.status') }}" class="dropdown-item-custom">
+                                <i class="bi bi-pie-chart"></i>
+                                <span>Mon Abonnement</span>
+                                @if (auth()->user()->hasActiveSubscription())
+                                    <span class="badge"
+                                        style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-size: 10px; margin-left: auto;">
+                                        Actif
+                                    </span>
+                                @else
+                                    <span class="badge"
+                                        style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red); font-size: 10px; margin-left: auto;">
+                                        Inactif
+                                    </span>
+                                @endif
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -2747,7 +2884,8 @@
             @auth
                 <div class="nav-user-side d-none d-md-flex" style="overflow: visible !important;">
                     {{-- Notifications --}}
-                    <a href="{{ route('notifications.index') }}" class="notification-trigger" style="position: relative;">
+                    <a href="{{ route('notifications.index') }}" class="notification-trigger"
+                        style="position: relative;">
                         <i class="bi bi-bell"></i>
                         @php
                             $unread = \App\Models\Notification::where('user_id', auth()->id())
@@ -2855,7 +2993,184 @@
         {{-- ✅ MOBILE NAV OVERLAY --}}
         @auth
             <div class="mobile-nav-overlay" id="mobileNavOverlay">
-                {{-- Mobile navigation content (keep existing) --}}
+                <div class="mobile-nav-links">
+                    {{-- Dashboard --}}
+                    <a href="{{ route('dashboard') }}"
+                        class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+
+                    {{-- Mâles --}}
+                    <a href="{{ route('males.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
+                        <i class="bi bi-arrow-up-right-square"></i>
+                        <span>Mâles</span>
+                    </a>
+
+                    {{-- Femelles --}}
+                    <a href="{{ route('femelles.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                        <i class="bi bi-arrow-down-right-square"></i>
+                        <span>Femelles</span>
+                    </a>
+
+                    {{-- Tous les Lapins --}}
+                    <a href="{{ route('lapins.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
+                        <i class="bi bi-collection"></i>
+                        <span>Tous les Lapins</span>
+                    </a>
+
+                    {{-- Mises Bas --}}
+                    <a href="{{ route('mises-bas.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
+                        <i class="bi bi-egg"></i>
+                        <span>Mises Bas</span>
+                    </a>
+
+                    {{-- ✅ MOBILE DIVIDER --}}
+                    <div class="mobile-nav-divider"></div>
+
+                    {{-- ✅ MORE SECTION (Saillies, Naissances, Ventes, Activités, Paramètres) --}}
+                    <div
+                        style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">
+                        Plus
+                    </div>
+
+                    <a href="{{ route('saillies.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
+                        <i class="bi bi-heart"></i>
+                        <span>Saillies</span>
+                    </a>
+
+                    <a href="{{ route('naissances.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('naissances.*') ? 'active' : '' }}">
+                        <i class="bi bi-egg-fill"></i>
+                        <span>Naissances</span>
+                    </a>
+
+                    <a href="{{ route('sales.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
+                        <i class="bi bi-cart"></i>
+                        <span>Ventes</span>
+                    </a>
+
+                    <a href="{{ route('activites.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('activites.*') ? 'active' : '' }}">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Activités</span>
+                    </a>
+
+                    <a href="{{ route('settings.index') }}"
+                        class="mobile-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                        <i class="bi bi-gear"></i>
+                        <span>Paramètres</span>
+                    </a>
+
+                    {{-- ✅ SUBSCRIPTION LINKS (Non-admin users only) --}}
+                    @if (auth()->check() && auth()->user()->role !== 'admin')
+                        <div class="mobile-nav-divider"></div>
+
+                        <div
+                            style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--accent-orange); text-transform: uppercase; letter-spacing: 0.5px;">
+                            💳 Abonnement
+                        </div>
+
+                        <a href="{{ route('subscription.plans') }}"
+                            class="mobile-nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}"
+                            style="{{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Nos Offres</span>
+                            @if (!auth()->user()->hasActiveSubscription())
+                                <span class="notification-badge"
+                                    style="position: static; margin-left: auto; min-width: 18px; height: 18px; font-size: 10px;">!</span>
+                            @endif
+                        </a>
+
+                        <a href="{{ route('subscription.status') }}" class="mobile-nav-link">
+                            <i class="bi bi-pie-chart"></i>
+                            <span>Mon Abonnement</span>
+                            @if (auth()->user()->hasActiveSubscription())
+                                <span class="badge"
+                                    style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-size: 10px; margin-left: auto;">Actif</span>
+                            @else
+                                <span class="badge"
+                                    style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red); font-size: 10px; margin-left: auto;">Inactif</span>
+                            @endif
+                        </a>
+                    @endif
+
+                    {{-- ✅ ADMIN LINKS (Admin users only) --}}
+                    @if (auth()->check() && auth()->user()->role === 'admin')
+                        <div class="mobile-nav-divider"></div>
+
+                        <div
+                            style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 0.5px;">
+                            👑 Administration
+                        </div>
+
+                        <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link">
+                            <i class="bi bi-shield-lock"></i>
+                            <span>Gestion Abonnements</span>
+                        </a>
+
+                        <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link">
+                            <i class="bi bi-receipt"></i>
+                            <span>Transactions</span>
+                        </a>
+                    @endif
+
+                    {{-- ✅ USER PROFILE SECTION --}}
+                    <div class="mobile-nav-divider"></div>
+
+                    <div
+                        style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px;">
+                        Compte
+                    </div>
+
+                    {{-- Notifications --}}
+                    <a href="{{ route('notifications.index') }}" class="mobile-nav-link">
+                        <i class="bi bi-bell"></i>
+                        <span>Notifications</span>
+                        @php
+                            $unread = \App\Models\Notification::where('user_id', auth()->id())
+                                ->where('is_read', false)
+                                ->count();
+                        @endphp
+                        @if ($unread > 0)
+                            <span class="notification-badge"
+                                style="position: static; margin-left: auto; min-width: 18px; height: 18px; font-size: 10px;">{{ $unread > 99 ? '99+' : $unread }}</span>
+                        @endif
+                    </a>
+
+                    {{-- Profile --}}
+                    <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
+                        <i class="bi bi-person"></i>
+                        <span>Mon Profil</span>
+                    </a>
+
+                    {{-- Theme Selector --}}
+                    <a href="{{ route('settings.index') }}#system-tab" class="mobile-nav-link">
+                        <i class="bi bi-palette"></i>
+                        <span>Thème</span>
+                        <span class="theme-status-badge" style="font-size: 10px; padding: 2px 6px; margin-left: auto;">
+                            {{ auth()->user()->theme ?? 'system' }}
+                        </span>
+                    </a>
+
+                    {{-- Logout --}}
+                    <div class="mobile-nav-divider"></div>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="mobile-nav-link"
+                            style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
+                            <i class="bi bi-box-arrow-right" style="color: var(--accent-red);"></i>
+                            <span style="color: var(--accent-red);">Déconnexion</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         @endauth
     </header>
