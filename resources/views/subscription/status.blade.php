@@ -18,12 +18,8 @@
     </div>
 
     @if ($subscription && $subscription->isActive())
-        {{-- Active Subscription Card --}}
         <div class="cuni-card mb-6"
-            style="
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-">
+            style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
             <div class="card-body" style="padding: 32px;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
                     <div>
@@ -46,32 +42,101 @@
                     </div>
                 </div>
 
+                {{-- ✅ FIXED RENEWAL BUTTON --}}
                 <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <form action="{{ route('subscription.renew') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="subscription_id" value="{{ $subscription->id }}">
-                        <input type="hidden" name="payment_method" value="momo">
-                        <button type="submit" class="btn-cuni"
-                            style="
-                    background: white;
-                    color: var(--primary);
-                    border: none;
-                ">
-                            <i class="bi bi-arrow-repeat"></i> Renouveler
-                        </button>
-                    </form>
-                    <button type="button" class="btn-cuni"
-                        style="
-                background: rgba(255,255,255,0.2);
-                color: white;
-                border: 1px solid rgba(255,255,255,0.3);
-            "
-                        onclick="showCancelModal()">
-                        <i class="bi bi-x-circle"></i> Annuler l'abonnement
+                    <button type="button" class="btn-cuni" style="background: white; color: var(--primary); border: none;"
+                        onclick="showRenewalModal()">
+                        <i class="bi bi-arrow-repeat"></i> Renouveler
                     </button>
+
+                    {{-- User CANNOT cancel - only admin can --}}
+                    @if (auth()->user()->role === 'admin')
+                        <button type="button" class="btn-cuni"
+                            style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);"
+                            onclick="showCancelModal()">
+                            <i class="bi bi-x-circle"></i> Annuler l'abonnement
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
+
+        {{-- ✅ RENEWAL MODAL --}}
+        <div id="renewalModal"
+            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
+            <div
+                style="background: var(--surface); border-radius: var(--radius-lg); max-width: 500px; width: 90%; padding: 32px;">
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">
+                    <i class="bi bi-arrow-repeat" style="color: var(--primary);"></i> Renouveler l'Abonnement
+                </h3>
+                <form action="{{ route('subscription.renew') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="subscription_id" value="{{ $subscription->id }}">
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Méthode de
+                            paiement</label>
+                        <select name="payment_method" class="form-select" required onchange="togglePhoneNumber(this.value)">
+                            <option value="momo">MTN MoMo</option>
+                            <option value="celtis">Celtis Cash</option>
+                            <option value="moov">Moov Pay</option>
+                            @if (auth()->user()->role === 'admin')
+                                <option value="manual">Manuel (Admin)</option>
+                            @endif
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 16px; display: none;" id="phoneNumberGroup">
+                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Numéro de
+                            téléphone</label>
+                        <input type="tel" name="phone_number" class="form-control" placeholder="+229 01 XX XX XX XX">
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+                        <button type="button" class="btn-cuni secondary"
+                            onclick="document.getElementById('renewalModal').style.display='none'">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn-cuni primary">
+                            <i class="bi bi-credit-card"></i> Payer {{ number_format($subscription->price, 0, ',', ' ') }}
+                            FCFA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @push('scripts')
+            <script>
+                function showRenewalModal() {
+                    document.getElementById('renewalModal').style.display = 'flex';
+                }
+
+                function togglePhoneNumber(method) {
+                    const phoneGroup = document.getElementById('phoneNumberGroup');
+                    if (['momo', 'celtis', 'moov'].includes(method)) {
+                        phoneGroup.style.display = 'block';
+                        phoneGroup.querySelector('input').required = true;
+                    } else {
+                        phoneGroup.style.display = 'none';
+                        phoneGroup.querySelector('input').required = false;
+                    }
+                }
+
+                function showCancelModal() {
+                    document.getElementById('cancelModal').style.display = 'flex';
+                }
+
+                // Close modals on outside click
+                document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            this.style.display = 'none';
+                        }
+                    });
+                });
+            </script>
+        @endpush
     @endif
 
     {{-- All Subscriptions History --}}
@@ -147,7 +212,7 @@
                     <i class="bi bi-exclamation-triangle" style="color: var(--accent-orange);"></i> Annuler l'abonnement
                 </h3>
                 <p style="color: var(--text-secondary); margin-bottom: 24px;">
-                    Êtes-vous sûr de vouloir annuler votre abonnement ? Vous aurez accès jusqu'à la fin de la période payée.
+                    Êtes-vous sûr de vouloir annuler votre abonnement ? Vous n'aurez plus accès !
                 </p>
                 <form action="{{ route('subscription.cancel') }}" method="POST">
                     @csrf

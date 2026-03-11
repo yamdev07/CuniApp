@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Events\Registered;
 
 class EmailVerificationCodeController extends Controller
 {
@@ -64,13 +65,30 @@ class EmailVerificationCodeController extends Controller
 
         $user = User::where('email', $email)->first();
         if (!$user) {
-            return redirect()->route('welcome')
-                ->withErrors(['email' => 'Utilisateur non trouvé.']);
+            $pendingRegistration = Cache::get("registration_pending_{$email}");
+            if ($pendingRegistration) {
+                // Create the user
+                $user = User::create([
+                    'name' => $pendingRegistration['name'],
+                    'email' => $pendingRegistration['email'],
+                    'password' => $pendingRegistration['password'],
+                    'email_verified_at' => now(), // ✅ Verify email immediately
+                ]);
+                
+                Cache::forget("registration_pending_{$email}");
+                event(new Registered($user));
+            } else {
+                return redirect()->route('welcome')
+                    ->with('verification_pending', true)
+                    ->with('verification_email', $email)
+                    ->withErrors(['email' => 'Données d\'inscription introuvables. Veuillez vous réinscrire.']);
+            }
+        } else {
+            // ✅ ONLY mark as verified - DO NOT LOG IN
+            $user->email_verified_at = now();
+            $user->save();
         }
 
-        // ✅ ONLY mark as verified - DO NOT LOG IN
-        $user->email_verified_at = now();
-        $user->save();
         Cache::forget("verification_code_{$email}");
         event(new Verified($user));
 
@@ -94,7 +112,7 @@ class EmailVerificationCodeController extends Controller
         $email = $request->email;
         $code = sprintf('%06d', mt_rand(0, 999999));
 
-        Cache::put("verification_code_{$email}", $code, 600);
+        Cache::put("verification_code_{$email}", $code, 1800);
 
         Mail::send('emails.verification-code', [
             'code' => $code,

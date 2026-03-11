@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,9 +11,12 @@ use Carbon\Carbon;
 
 class Naissance extends Model
 {
+    use BelongsToUser;
+
     protected $table = 'naissances';
 
     protected $fillable = [
+        'user_id',
         'mise_bas_id',
         'user_id',
         'poids_moyen_naissance',  // Garder pour moyenne de la portée

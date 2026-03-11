@@ -102,7 +102,6 @@ class PaymentController extends Controller
                     'message' => 'Échec du paiement: ' . $paymentResult['error']
                 ], 400);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment processing error: ' . $e->getMessage());
@@ -134,7 +133,7 @@ class PaymentController extends Controller
 
         // Mock payment processing (replace with actual API calls)
         // In production, implement actual API integration for each provider
-        
+
         switch ($provider) {
             case 'momo':
                 return $this->processMTNMoMo($transaction, $apiKey, $apiSecret, $environment);
@@ -158,9 +157,9 @@ class PaymentController extends Controller
     {
         // TODO: Implement actual MTN MoMo API integration
         // This is a mock implementation for demonstration
-        
-        $baseUrl = $environment === 'sandbox' 
-            ? 'https://sandbox.momodeveloper.mtn.com' 
+
+        $baseUrl = $environment === 'sandbox'
+            ? 'https://sandbox.momodeveloper.mtn.com'
             : 'https://ericssonbasicapi2.azure-api.net';
 
         // Mock successful payment
@@ -182,7 +181,7 @@ class PaymentController extends Controller
     private function processCeltisCash($transaction, $apiKey, $apiSecret, $environment)
     {
         // TODO: Implement actual Celtis Cash API integration
-        
+
         return [
             'success' => true,
             'error' => null,
@@ -200,7 +199,7 @@ class PaymentController extends Controller
     private function processMoovPay($transaction, $apiKey, $apiSecret, $environment)
     {
         // TODO: Implement actual Moov Pay API integration
-        
+
         return [
             'success' => true,
             'error' => null,
@@ -221,16 +220,14 @@ class PaymentController extends Controller
             return;
         }
 
-        $subscription->update([
-            'status' => 'active',
-            'payment_reference' => 'PAY-' . strtoupper(uniqid()),
-        ]);
-
-        // Update user subscription status
+        // ✅ Update user subscription status
         $subscription->user->update([
             'subscription_status' => 'active',
             'subscription_ends_at' => $subscription->end_date,
         ]);
+
+        // ✅ Send notification
+        $subscription->user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
     }
 
     /**
@@ -291,7 +288,7 @@ class PaymentController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         if (!$user->isAdmin()) {
             abort(403, 'Seuls les administrateurs peuvent confirmer manuellement les paiements.');
         }
@@ -314,7 +311,6 @@ class PaymentController extends Controller
 
             return redirect()->route('admin.subscriptions.index')
                 ->with('success', 'Paiement confirmé manuellement avec succès.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('admin.subscriptions.index')

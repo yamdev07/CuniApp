@@ -135,6 +135,7 @@
         }
 
         .brand-section {
+            position: relative;
             color: var(--white);
             animation: slideInLeft 1s ease-out;
         }
@@ -245,6 +246,7 @@
         }
 
         .auth-section {
+            position: relative;
             animation: slideInRight 1s ease-out;
         }
 
@@ -977,6 +979,129 @@
                 transform: translateY(0);
             }
         }
+
+        /* Custom Illustrations */
+        .steps-illustration {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out backwards;
+            animation-delay: 0.2s;
+        }
+
+        .step-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 24px 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step-item:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-image-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: var(--radius-xl);
+            background: var(--white);
+            padding: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .step-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: calc(var(--radius-xl) - 6px);
+        }
+
+        .step-item h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .step-item p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .farmer-popout {
+            position: absolute;
+            bottom: -50px;
+            right: -35px;
+            width: 100px;
+            height: 100px;
+            z-index: 100;
+            animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
+            pointer-events: none;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3) translateY(50px); }
+            50% { opacity: 1; transform: scale(1.05) translateY(-10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .farmer-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 6px solid var(--white);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            background: var(--white);
+        }
+
+        .farmer-badge {
+            position: absolute;
+            top: 5px;
+            right: -25px;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, #d97706 100%);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            transform: rotate(12deg);
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.5);
+            border: 2px solid var(--white);
+        }
+
+        @media (max-width: 968px) {
+            .farmer-popout {
+                display: none;
+            }
+            .steps-illustration {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+            .step-item {
+                padding: 16px 10px;
+            }
+            .step-image-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+        }
+        @media (max-width: 640px) {
+            .steps-illustration {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -998,24 +1123,36 @@
                 </div>
                 <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
                 <p class="brand-tagline">Gestion intelligente de votre cheptel lapin. Suivez vos reproductions, naissances et performances en toute simplicité.</p>
-                <ul class="features-list">
-                    <li>
-                        <i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></i>
-                        <span>Suivi complet des mâles et femelles</span>
-                    </li>
-                    <li>
-                        <i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></i>
-                        <span>Gestion des saillies et mises bas</span>
-                    </li>
-                    <li>
-                        <i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></i>
-                        <span>Tableau de bord analytique</span>
-                    </li>
-                    <li>
-                        <i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></i>
-                        <span>Alertes et notifications intelligentes</span>
-                    </li>
-                </ul>
+                <!-- 3 Step Illustration -->
+                <div class="steps-illustration">
+                    <div class="step-item">
+                        <div class="step-image-wrapper">
+                            <img src="{{ asset('images/step_1.png') }}" alt="Étape 1">
+                        </div>
+                        <h4>1. Identifier</h4>
+                        <p>Suivi complet des lapins</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-image-wrapper">
+                            <img src="{{ asset('images/step_2.png') }}" alt="Étape 2">
+                        </div>
+                        <h4>2. Reproduire</h4>
+                        <p>Gestion des saillies</p>
+                    </div>
+                    <div class="step-item" style="position: relative;">
+                        <div class="step-image-wrapper">
+                            <img src="{{ asset('images/step_3.png') }}" alt="Étape 3">
+                        </div>
+                        <h4>3. Analyser</h4>
+                        <p>Tableau de bord intelligent</p>
+
+                        <!-- Rabbit Farmer Pop-out -->
+                        <div class="farmer-popout">
+                            <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
+                            <div class="farmer-badge">Rejoignez-nous!</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Right Side - Auth Forms -->
@@ -1635,7 +1772,7 @@
             // ==================== VERIFICATION MODAL FUNCTIONS ====================
             let resendTimerInterval;
 
-            function closeVerificationModal() {
+            window.closeVerificationModal = function() {
                 document.getElementById('verificationOverlay').classList.remove('active');
             }
 
@@ -1699,7 +1836,7 @@
                 }, 1000);
             }
 
-            function resendVerificationCode(e) {
+            window.resendVerificationCode = function(e) {
                 e.preventDefault();
                 const email = document.getElementById('verificationEmailDisplay').textContent;
 
