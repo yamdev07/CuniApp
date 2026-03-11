@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/PaymentController.php
 
 namespace App\Http\Controllers;
 
@@ -7,11 +6,16 @@ use App\Models\PaymentTransaction;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\Setting;
+use App\Services\WebhookSignatureVerifier;
+use App\Notifications\PaymentSuccessfulNotification;
+use App\Notifications\PaymentFailedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -83,6 +87,9 @@ class PaymentController extends Controller
 
                 DB::commit();
 
+                // Send notification
+                $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Paiement réussi ! Votre abonnement est activé.',
@@ -97,6 +104,9 @@ class PaymentController extends Controller
 
                 DB::commit();
 
+                // Send notification
+                $transaction->user->notify(new PaymentFailedNotification($transaction));
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Échec du paiement: ' . $paymentResult['error']
@@ -105,7 +115,7 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment processing error: ' . $e->getMessage());
-
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du traitement du paiement'
@@ -131,9 +141,7 @@ class PaymentController extends Controller
             ];
         }
 
-        // Mock payment processing (replace with actual API calls)
-        // In production, implement actual API integration for each provider
-
+        // Process payment based on provider
         switch ($provider) {
             case 'momo':
                 return $this->processMTNMoMo($transaction, $apiKey, $apiSecret, $environment);
@@ -157,9 +165,8 @@ class PaymentController extends Controller
     {
         // TODO: Implement actual MTN MoMo API integration
         // This is a mock implementation for demonstration
-
-        $baseUrl = $environment === 'sandbox'
-            ? 'https://sandbox.momodeveloper.mtn.com'
+        $baseUrl = $environment === 'sandbox' 
+            ? 'https://sandbox.momodeveloper.mtn.com' 
             : 'https://ericssonbasicapi2.azure-api.net';
 
         // Mock successful payment
@@ -181,7 +188,6 @@ class PaymentController extends Controller
     private function processCeltisCash($transaction, $apiKey, $apiSecret, $environment)
     {
         // TODO: Implement actual Celtis Cash API integration
-
         return [
             'success' => true,
             'error' => null,
@@ -199,7 +205,6 @@ class PaymentController extends Controller
     private function processMoovPay($transaction, $apiKey, $apiSecret, $environment)
     {
         // TODO: Implement actual Moov Pay API integration
-
         return [
             'success' => true,
             'error' => null,
@@ -220,18 +225,18 @@ class PaymentController extends Controller
             return;
         }
 
-        // ✅ Update user subscription status
+        // Update user subscription status
         $subscription->user->update([
             'subscription_status' => 'active',
             'subscription_ends_at' => $subscription->end_date,
         ]);
 
-        // ✅ Send notification
+        // Send notification
         $subscription->user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
     }
 
     /**
-     * Handle payment provider callback
+     * ✅ HANDLE PAYMENT PROVIDER CALLBACK (SECURE)
      */
     public function callback(Request $request, $provider)
     {
@@ -244,17 +249,185 @@ class PaymentController extends Controller
     }
 
     /**
-     * Handle payment webhooks
+     * ✅ HANDLE PAYMENT WEBHOOKS (SECURE - WITH SIGNATURE VERIFICATION)
      */
     public function webhook(Request $request, $provider)
     {
-        Log::info("Payment webhook received from {$provider}", $request->all());
+        // ✅ STEP 1: Log webhook receipt immediately (for debugging)
+        $webhookId = uniqid('wh_');
+        Log::channel('webhooks')->info("Webhook received", [
+            'webhook_id' => $webhookId,
+            'provider' => $provider,
+            'ip' => $request->ip(),
+            'timestamp' => now()->toIso8601String(),
+        ]);
 
-        // Verify webhook signature
-        // Process webhook data
-        // Update transaction and subscription status
+        // ✅ STEP 2: Get raw payload for signature verification
+        $payload = $request->getContent();
+        $headers = $request->headers->all();
 
-        return response()->json(['status' => 'processed']);
+        // ✅ STEP 3: Extract signature from headers (provider-specific)
+        $signature = WebhookSignatureVerifier::extractSignature($provider, $headers);
+
+        if (!$signature) {
+            Log::channel('webhooks')->warning('Webhook: Missing signature', [
+                'webhook_id' => $webhookId,
+                'provider' => $provider,
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Missing signature',
+            ], 400);
+        }
+
+        // ✅ STEP 4: Verify webhook signature
+        $isValid = WebhookSignatureVerifier::verify($provider, $payload, $signature, $headers);
+
+        if (!$isValid) {
+            Log::channel('webhooks')->error('Webhook: Signature verification failed', [
+                'webhook_id' => $webhookId,
+                'provider' => $provider,
+                'ip' => $request->ip(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid signature',
+            ], 401);
+        }
+
+        Log::channel('webhooks')->info('Webhook: Signature verified', [
+            'webhook_id' => $webhookId,
+            'provider' => $provider,
+        ]);
+
+        // ✅ STEP 5: Process webhook based on provider
+        DB::beginTransaction();
+        try {
+            $webhookData = json_decode($payload, true);
+
+            // Process based on provider
+            $result = $this->processWebhookByProvider($provider, $webhookData, $headers);
+
+            DB::commit();
+
+            // ✅ STEP 6: Log successful processing
+            Log::channel('webhooks')->info('Webhook processed successfully', [
+                'webhook_id' => $webhookId,
+                'provider' => $provider,
+                'result' => $result,
+            ]);
+
+            return response()->json([
+                'status' => 'processed',
+                'webhook_id' => $webhookId,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // ✅ STEP 7: Log error
+            Log::channel('webhooks')->error('Webhook processing failed', [
+                'webhook_id' => $webhookId,
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Processing failed',
+            ], 500);
+        }
+    }
+
+    /**
+     * ✅ PROCESS WEBHOOK BY PROVIDER
+     */
+    private function processWebhookByProvider($provider, $data, $headers)
+    {
+        switch ($provider) {
+            case 'momo':
+                return $this->processMTNMoMoWebhook($data, $headers);
+            case 'celtis':
+                return $this->processCeltisCashWebhook($data, $headers);
+            case 'moov':
+                return $this->processMoovPayWebhook($data, $headers);
+            default:
+                throw new \Exception("Unsupported provider: {$provider}");
+        }
+    }
+
+    /**
+     * ✅ PROCESS MTN MOMO WEBHOOK
+     */
+    private function processMTNMoMoWebhook($data, $headers)
+    {
+        // Extract transaction ID from webhook data
+        $transactionId = $data['transaction_id'] ?? $data['reference_id'] ?? null;
+
+        if (!$transactionId) {
+            throw new \Exception('Missing transaction_id in webhook data');
+        }
+
+        // Find transaction
+        $transaction = PaymentTransaction::where('transaction_id', $transactionId)->firstOrFail();
+
+        // Update transaction status based on webhook data
+        $status = $data['status'] ?? 'UNKNOWN';
+
+        if ($status === 'SUCCESSFUL' || $status === 'COMPLETED') {
+            // ✅ Payment successful
+            $transaction->update([
+                'status' => 'completed',
+                'paid_at' => now(),
+                'provider_response' => $data,
+            ]);
+
+            // Activate subscription
+            if ($transaction->subscription) {
+                $this->activateSubscription($transaction->subscription);
+            }
+
+            // Send notification
+            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
+
+            return ['action' => 'payment_completed', 'transaction_id' => $transactionId];
+
+        } elseif ($status === 'FAILED' || $status === 'REJECTED') {
+            // ✅ Payment failed
+            $transaction->update([
+                'status' => 'failed',
+                'failure_reason' => $data['failure_reason'] ?? 'Payment failed',
+                'provider_response' => $data,
+            ]);
+
+            // Send notification
+            $transaction->user->notify(new PaymentFailedNotification($transaction));
+
+            return ['action' => 'payment_failed', 'transaction_id' => $transactionId];
+        }
+
+        return ['action' => 'status_updated', 'transaction_id' => $transactionId, 'status' => $status];
+    }
+
+    /**
+     * ✅ PROCESS CELTIS CASH WEBHOOK
+     */
+    private function processCeltisCashWebhook($data, $headers)
+    {
+        // Similar structure to MTN MoMo
+        return $this->processMTNMoMoWebhook($data, $headers);
+    }
+
+    /**
+     * ✅ PROCESS MOOV PAY WEBHOOK
+     */
+    private function processMoovPayWebhook($data, $headers)
+    {
+        // Similar structure to MTN MoMo
+        return $this->processMTNMoMoWebhook($data, $headers);
     }
 
     /**
@@ -288,7 +461,6 @@ class PaymentController extends Controller
         ]);
 
         $user = Auth::user();
-
         if (!$user->isAdmin()) {
             abort(403, 'Seuls les administrateurs peuvent confirmer manuellement les paiements.');
         }
