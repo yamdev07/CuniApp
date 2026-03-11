@@ -1041,10 +1041,10 @@
 
         .farmer-popout {
             position: absolute;
-            bottom: -50px;
-            left: -50px;
-            width: 150px;
-            height: 150px;
+            bottom: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
             z-index: 20;
             animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
             pointer-events: none;
@@ -1068,13 +1068,13 @@
 
         .farmer-badge {
             position: absolute;
-            top: 10px;
-            right: -5px;
+            top: 5px;
+            right: -25px;
             background: linear-gradient(135deg, var(--accent-orange) 0%, #d97706 100%);
             color: var(--white);
             font-weight: 700;
-            font-size: 11px;
-            padding: 4px 10px;
+            font-size: 10px;
+            padding: 3px 8px;
             border-radius: 20px;
             transform: rotate(12deg);
             box-shadow: 0 4px 10px rgba(245, 158, 11, 0.5);
@@ -1139,12 +1139,18 @@
                         <h4>2. Reproduire</h4>
                         <p>Gestion des saillies</p>
                     </div>
-                    <div class="step-item">
+                    <div class="step-item" style="position: relative;">
                         <div class="step-image-wrapper">
                             <img src="{{ asset('images/step_3.png') }}" alt="Étape 3">
                         </div>
                         <h4>3. Analyser</h4>
                         <p>Tableau de bord intelligent</p>
+
+                        <!-- Rabbit Farmer Pop-out -->
+                        <div class="farmer-popout">
+                            <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
+                            <div class="farmer-badge">Rejoignez-nous!</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1460,12 +1466,6 @@
                             </div>
                         </form>
                     </div>
-                </div>
-
-                <!-- Rabbit Farmer Pop-out -->
-                <div class="farmer-popout">
-                    <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
-                    <div class="farmer-badge">Rejoignez-nous!</div>
                 </div>
             </div>
         </div>
