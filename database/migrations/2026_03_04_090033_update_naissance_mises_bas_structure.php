@@ -104,42 +104,20 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Rollback lapereaux - FIXED: Handle NULL values safely
-        Schema::table('lapereaux', function (Blueprint $table) {
-            // First, update any NULL sex values to a safe default
-            DB::statement("UPDATE lapereaux SET sex = 'male' WHERE sex IS NULL");
-
-            $table->string('code')->nullable()->change();
-            $table->string('nom')->nullable()->change();
-            $table->enum('sex', ['male', 'female'])->nullable()->change(); // ← Keep nullable for rollback
-            $table->foreignId('naissance_id')->nullable()->change();
-        });
-
-        // Rollback naissances
         Schema::table('naissances', function (Blueprint $table) {
-            $table->foreignId('femelle_id')->nullable()->constrained('femelles')->onDelete('cascade');
-            $table->integer('nb_vivant')->default(0);
-            $table->integer('nb_mort_ne')->default(0);
-            $table->integer('nb_total')->storedAs('nb_vivant + nb_mort_ne');
-            $table->date('date_naissance')->nullable();
-            $table->time('heure_naissance')->nullable();
-            $table->string('lieu_naissance')->nullable();
-
-            try {
-                $table->dropForeign(['mise_bas_id']);
-            } catch (\Exception $e) {
-                DB::statement('ALTER TABLE naissances DROP FOREIGN KEY naissances_mise_bas_id_foreign');
+            // Guard against columns already existing (added by later migrations during rollback)
+            if (!Schema::hasColumn('naissances', 'nb_mort_ne')) {
+                $table->integer('nb_mort_ne')->default(0);
             }
-            $table->foreignId('mise_bas_id')->nullable()->constrained('mises_bas')->onDelete('set null')->change();
+            if (!Schema::hasColumn('naissances', 'nb_total')) {
+                $table->integer('nb_total')->storedAs('nb_vivant + nb_mort_ne');
+            }
         });
 
-        // Rollback mises_bas
-        Schema::table('mises_bas', function (Blueprint $table) {
-            $table->integer('nb_vivant')->default(0);
-            $table->integer('nb_mort_ne')->default(0);
-            $table->integer('nb_retire')->default(0);
-            $table->integer('nb_adopte')->default(0);
-            $table->foreignId('saillie_id')->nullable(false)->change();
+        Schema::table('lapereaux', function (Blueprint $table) {
+            $table->dropForeign(['naissance_id']);
+            $table->dropColumn(['naissance_id', 'sex', 'nom', 'code', 'etat']);
+            $table->foreignId('mise_bas_id')->nullable(false)->change();
         });
     }
 };

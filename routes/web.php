@@ -20,6 +20,10 @@ use App\Http\Controllers\NaissanceController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\SubscriptionManagementController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
@@ -30,17 +34,12 @@ use Illuminate\Support\Facades\Cache;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| This file contains all web-facing routes for the CuniApp Élevage application.
-| 
-| ⚠️ FIXED: Removed conflicting route model binding for male/femelle
-| ✅ Controllers now handle ID resolution with findOrFail()
-|
 */
 
 // ========================================================================
 // 🔓 PUBLIC ROUTES (No authentication required)
 // ========================================================================
+
 Route::get('/', function () {
     return redirect()->route('welcome');
 })->name('home');
@@ -68,17 +67,19 @@ Route::get('/terms', function () {
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
 // ========================================================================
+
 Route::middleware('guest')->group(function () {
     // Authentication Routes
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
-    // ✅ Google Social Login
+    // Google Social Login
     Route::get('/customer/social-login/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])
         ->name('social-login.google.redirect');
     Route::get('/customer/social-login/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
         ->name('social-login.google.callback');
 
+    // Registration
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
 
@@ -102,7 +103,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');    // ← Correspond au controller method
 
-    // ✅ EMAIL VERIFICATION CODE SYSTEM
+    // Email Verification Code System
     Route::post('/verification/code/verify', [EmailVerificationCodeController::class, 'verify'])->name('verification.code.verify');
     Route::post('/verification/code/resend', [EmailVerificationCodeController::class, 'resend'])->name('verification.code.resend');
     Route::post('/verification/send-code', [EmailVerificationCodeController::class, 'sendCode'])->name('verification.send-code');
@@ -111,13 +112,14 @@ Route::middleware('guest')->group(function () {
 // ========================================================================
 // 🔐 AUTHENTICATED ROUTES (Login required)
 // ========================================================================
+
 Route::middleware('auth')->group(function () {
+
     // Standard Laravel Email Verification Flow
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-
     Route::post('/email/verification-notification', function () {
         if (auth()->check() && auth()->user()) {
             auth()->user()->sendEmailVerificationNotification();
@@ -136,7 +138,9 @@ Route::middleware('auth')->group(function () {
     // ====================================================================
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)
     // ====================================================================
+
     Route::middleware('verified')->group(function () {
+
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -146,112 +150,221 @@ Route::middleware('auth')->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
         // ================================================================
-        // ✅ MÂLES - Complete CRUD (Fixed Route Order)
+        // 💳 SUBSCRIPTION ROUTES (No subscription check - users need to access these)
         // ================================================================
-        Route::get('/males/check-code', [MaleController::class, 'checkCode'])->name('males.check-code');
-        Route::get('/males', [MaleController::class, 'index'])->name('males.index');
-        Route::get('/males/create', [MaleController::class, 'create'])->name('males.create');
-        Route::post('/males', [MaleController::class, 'store'])->name('males.store');
-        Route::get('/males/{male}', [MaleController::class, 'show'])->name('males.show');
-        Route::get('/males/{male}/edit', [MaleController::class, 'edit'])->name('males.edit');
-        Route::put('/males/{male}', [MaleController::class, 'update'])->name('males.update');
-        Route::delete('/males/{male}', [MaleController::class, 'destroy'])->name('males.destroy');
-        Route::patch('/males/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('males.toggleEtat');
+
+        Route::prefix('subscription')->name('subscription.')->group(function () {
+            // View available plans
+            Route::get('/plans', [SubscriptionController::class, 'index'])->name('plans');
+
+            // Show subscription form for selected plan
+            Route::get('/subscribe', [SubscriptionController::class, 'create'])->name('subscribe');
+
+            // Process subscription request
+            Route::post('/purchase', [SubscriptionController::class, 'store'])->name('purchase');
+
+            // Show subscription status/details
+            Route::get('/status', [SubscriptionController::class, 'show'])->name('status');
+
+            // Renew existing subscription
+            Route::post('/renew', [SubscriptionController::class, 'renew'])->name('renew');
+
+            // Cancel subscription
+            Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
+        });
 
         // ================================================================
-        // ✅ FEMELLES - Complete CRUD (Fixed Route Order)
+        // 💰 PAYMENT ROUTES (No subscription check - users need to pay)
         // ================================================================
-        Route::get('/femelles/check-code', [FemelleController::class, 'checkCode'])->name('femelles.check-code');
-        Route::get('/femelles', [FemelleController::class, 'index'])->name('femelles.index');
-        Route::get('/femelles/create', [FemelleController::class, 'create'])->name('femelles.create');
-        Route::post('/femelles', [FemelleController::class, 'store'])->name('femelles.store');
-        Route::get('/femelles/{femelle}', [FemelleController::class, 'show'])->name('femelles.show');
-        Route::get('/femelles/{femelle}/edit', [FemelleController::class, 'edit'])->name('femelles.edit');
-        Route::put('/femelles/{femelle}', [FemelleController::class, 'update'])->name('femelles.update');
-        Route::delete('/femelles/{femelle}', [FemelleController::class, 'destroy'])->name('femelles.destroy');
-        Route::patch('/femelles/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('femelles.toggleEtat');
 
+        Route::prefix('payment')->name('payment.')->group(function () {
+            // Initiate payment process
+            Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
 
+            // Process payment with selected provider
+            Route::post('/process', [PaymentController::class, 'process'])->name('process');
 
-        // Saillies CRUD
-        Route::get('/saillies', [SaillieController::class, 'index'])->name('saillies.index');
-        Route::get('/saillies/create', [SaillieController::class, 'create'])->name('saillies.create');
-        Route::post('/saillies', [SaillieController::class, 'store'])->name('saillies.store');
-        Route::get('/saillies/{saillie}', [SaillieController::class, 'show'])->name('saillies.show');
-        Route::get('/saillies/{saillie}/edit', [SaillieController::class, 'edit'])->name('saillies.edit');
-        Route::put('/saillies/{saillie}', [SaillieController::class, 'update'])->name('saillies.update');
-        Route::delete('/saillies/{saillie}', [SaillieController::class, 'destroy'])->name('saillies.destroy');
-        Route::patch('/saillies/{saillie}/palpation', [SaillieController::class, 'updatePalpation'])->name('saillies.palpation.update');
+            // Payment provider callback
+            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
 
-        // Mises Bas CRUD
-        Route::get('/mises-bas', [MiseBasController::class, 'index'])->name('mises-bas.index');
-        Route::get('/mises-bas/create', [MiseBasController::class, 'create'])->name('mises-bas.create');
-        Route::post('/mises-bas', [MiseBasController::class, 'store'])->name('mises-bas.store');
-        Route::get('/mises-bas/{miseBas}', [MiseBasController::class, 'show'])->name('mises-bas.show');
-        Route::get('/mises-bas/{miseBas}/edit', [MiseBasController::class, 'edit'])->name('mises-bas.edit');
-        Route::put('/mises-bas/{miseBas}', [MiseBasController::class, 'update'])->name('mises-bas.update');
-        Route::delete('/mises-bas/{miseBas}', [MiseBasController::class, 'destroy'])->name('mises-bas.destroy');
+            // Payment webhook handler
+            Route::post('/webhook/{provider}', [PaymentController::class, 'webhook'])->name('webhook');
 
-        // Lapins Unified Management
-        Route::get('/lapins', [LapinController::class, 'index'])->name('lapins.index');
-        Route::get('/lapins/create', [LapinController::class, 'create'])->name('lapins.create');
-        Route::post('/lapins', [LapinController::class, 'store'])->name('lapins.store');
-        Route::get('/lapins/{id}', [LapinController::class, 'show'])->name('lapins.show');
-        Route::get('/lapins/{id}/edit', [LapinController::class, 'edit'])->name('lapins.edit');
-        Route::put('/lapins/{id}', [LapinController::class, 'update'])->name('lapins.update');
-        Route::delete('/lapins/{id}', [LapinController::class, 'destroy'])->name('lapins.destroy');
-        Route::get('/lapins/check-code', [LapinController::class, 'checkCode'])->name('lapins.check-code');
+            // Verify payment status
+            Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
 
-        // Naissances CRUD
-        Route::get('/naissances', [NaissanceController::class, 'index'])->name('naissances.index');
-        Route::get('/naissances/create', [NaissanceController::class, 'create'])->name('naissances.create');
-        Route::post('/naissances', [NaissanceController::class, 'store'])->name('naissances.store');
-        Route::get('/naissances/{naissance}', [NaissanceController::class, 'show'])->name('naissances.show');
-        Route::get('/naissances/{naissance}/edit', [NaissanceController::class, 'edit'])->name('naissances.edit');
-        Route::put('/naissances/{naissance}', [NaissanceController::class, 'update'])->name('naissances.update');
-        Route::delete('/naissances/{naissance}', [NaissanceController::class, 'destroy'])->name('naissances.destroy');
+            // Manual payment confirmation (Admin)
+            Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
+        });
 
-        // Sales CRUD
-        Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
-        Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
-        Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
-        Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
-        Route::get('/sales/{sale}/edit', [SaleController::class, 'edit'])->name('sales.edit');
-        Route::put('/sales/{sale}', [SaleController::class, 'update'])->name('sales.update');
-        Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])->name('sales.destroy');
+        // ================================================================
+        // 🛡️ PROTECTED CRUD ROUTES (Require active subscription)
+        // Apply CheckSubscription middleware here
+        // ================================================================
 
-        // Payment Management
-        Route::patch('/sales/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])->name('sales.mark-paid');
-        Route::post('/sales/{sale}/partial-payment', [SaleController::class, 'recordPartialPayment'])->name('sales.partial-payment');
-        Route::post('/sales/{sale}/change-status', [SaleController::class, 'changePaymentStatus'])->name('sales.change-status');
+        Route::middleware('check.subscription')->group(function () {
 
-        // Bulk Operations
-        Route::delete('/sales/bulk-delete', [SaleController::class, 'bulkDelete'])->name('sales.bulk-delete');
-        Route::get('/sales/export', [SaleController::class, 'export'])->name('sales.export');
-        Route::post('/sales/load-rabbits', [SaleController::class, 'loadRabbits'])
-            ->name('sales.load-rabbits');
+            // ================================================================
+            // ✅ MÂLES - Complete CRUD
+            // ================================================================
+            Route::prefix('males')->name('males.')->group(function () {
+                Route::get('/check-code', [MaleController::class, 'checkCode'])->name('check-code');
+                Route::get('/', [MaleController::class, 'index'])->name('index');
+                Route::get('/create', [MaleController::class, 'create'])->name('create');
+                Route::post('/', [MaleController::class, 'store'])->name('store');
+                Route::get('/{male}', [MaleController::class, 'show'])->name('show');
+                Route::get('/{male}/edit', [MaleController::class, 'edit'])->name('edit');
+                Route::put('/{male}', [MaleController::class, 'update'])->name('update');
+                Route::delete('/{male}', [MaleController::class, 'destroy'])->name('destroy');
+                Route::patch('/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('toggleEtat');
+            });
 
-        // Settings Management
-        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-        Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
-        Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.updateProfile');
-        Route::get('/settings/export', [SettingsController::class, 'exportData'])->name('settings.export');
-        Route::post('/settings/clear-cache', [SettingsController::class, 'clearCache'])->name('settings.clear-cache');
+            // ================================================================
+            // ✅ FEMELLES - Complete CRUD
+            // ================================================================
+            Route::prefix('femelles')->name('femelles.')->group(function () {
+                Route::get('/check-code', [FemelleController::class, 'checkCode'])->name('check-code');
+                Route::get('/', [FemelleController::class, 'index'])->name('index');
+                Route::get('/create', [FemelleController::class, 'create'])->name('create');
+                Route::post('/', [FemelleController::class, 'store'])->name('store');
+                Route::get('/{femelle}', [FemelleController::class, 'show'])->name('show');
+                Route::get('/{femelle}/edit', [FemelleController::class, 'edit'])->name('edit');
+                Route::put('/{femelle}', [FemelleController::class, 'update'])->name('update');
+                Route::delete('/{femelle}', [FemelleController::class, 'destroy'])->name('destroy');
+                Route::patch('/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('toggleEtat');
+            });
 
-        // Notification System
-        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-        Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
-        Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+            // ================================================================
+            // ✅ SAILLIES - Complete CRUD
+            // ================================================================
+            Route::prefix('saillies')->name('saillies.')->group(function () {
+                Route::get('/', [SaillieController::class, 'index'])->name('index');
+                Route::get('/create', [SaillieController::class, 'create'])->name('create');
+                Route::post('/', [SaillieController::class, 'store'])->name('store');
+                Route::get('/{saillie}', [SaillieController::class, 'show'])->name('show');
+                Route::get('/{saillie}/edit', [SaillieController::class, 'edit'])->name('edit');
+                Route::put('/{saillie}', [SaillieController::class, 'update'])->name('update');
+                Route::delete('/{saillie}', [SaillieController::class, 'destroy'])->name('destroy');
+                Route::patch('/{saillie}/palpation', [SaillieController::class, 'updatePalpation'])->name('palpation.update');
+            });
 
-        // Historique des activités
-        Route::get('/activites', [ActiviteController::class, 'index'])->name('activites.index');
-        Route::delete('/activites/{type}/{id}', [App\Http\Controllers\ActiviteController::class, 'destroy'])->name('activites.destroy');
-    });
+            // ================================================================
+            // ✅ MISES BAS - Complete CRUD
+            // ================================================================
+            Route::prefix('mises-bas')->name('mises-bas.')->group(function () {
+                Route::get('/', [MiseBasController::class, 'index'])->name('index');
+                Route::get('/create', [MiseBasController::class, 'create'])->name('create');
+                Route::post('/', [MiseBasController::class, 'store'])->name('store');
+                Route::get('/{miseBas}', [MiseBasController::class, 'show'])->name('show');
+                Route::get('/{miseBas}/edit', [MiseBasController::class, 'edit'])->name('edit');
+                Route::put('/{miseBas}', [MiseBasController::class, 'update'])->name('update');
+                Route::delete('/{miseBas}', [MiseBasController::class, 'destroy'])->name('destroy');
+            });
+
+            // ================================================================
+            // ✅ LAPINS - Unified Management
+            // ================================================================
+            Route::prefix('lapins')->name('lapins.')->group(function () {
+                Route::get('/', [LapinController::class, 'index'])->name('index');
+                Route::get('/create', [LapinController::class, 'create'])->name('create');
+                Route::post('/', [LapinController::class, 'store'])->name('store');
+                Route::get('/{id}', [LapinController::class, 'show'])->name('show');
+                Route::get('/{id}/edit', [LapinController::class, 'edit'])->name('edit');
+                Route::put('/{id}', [LapinController::class, 'update'])->name('update');
+                Route::delete('/{id}', [LapinController::class, 'destroy'])->name('destroy');
+                Route::get('/check-code', [LapinController::class, 'checkCode'])->name('check-code');
+            });
+
+            // ================================================================
+            // ✅ NAISSANCES - Complete CRUD
+            // ================================================================
+            Route::prefix('naissances')->name('naissances.')->group(function () {
+                Route::get('/', [NaissanceController::class, 'index'])->name('index');
+                Route::get('/create', [NaissanceController::class, 'create'])->name('create');
+                Route::post('/', [NaissanceController::class, 'store'])->name('store');
+                Route::get('/{naissance}', [NaissanceController::class, 'show'])->name('show');
+                Route::get('/{naissance}/edit', [NaissanceController::class, 'edit'])->name('edit');
+                Route::put('/{naissance}', [NaissanceController::class, 'update'])->name('update');
+                Route::delete('/{naissance}', [NaissanceController::class, 'destroy'])->name('destroy');
+            });
+
+            // ================================================================
+            // ✅ SALES - Complete CRUD
+            // ================================================================
+            Route::prefix('sales')->name('sales.')->group(function () {
+                Route::get('/', [SaleController::class, 'index'])->name('index');
+                Route::get('/create', [SaleController::class, 'create'])->name('create');
+                Route::post('/', [SaleController::class, 'store'])->name('store');
+                Route::get('/{sale}', [SaleController::class, 'show'])->name('show');
+                Route::get('/{sale}/edit', [SaleController::class, 'edit'])->name('edit');
+                Route::put('/{sale}', [SaleController::class, 'update'])->name('update');
+                Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('destroy');
+
+                // Payment Management
+                Route::patch('/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])->name('mark-paid');
+                Route::post('/{sale}/partial-payment', [SaleController::class, 'recordPartialPayment'])->name('partial-payment');
+                Route::post('/{sale}/change-status', [SaleController::class, 'changePaymentStatus'])->name('change-status');
+
+                // Bulk Operations
+                Route::delete('/bulk-delete', [SaleController::class, 'bulkDelete'])->name('bulk-delete');
+                Route::get('/export', [SaleController::class, 'export'])->name('export');
+                Route::post('/load-rabbits', [SaleController::class, 'loadRabbits'])->name('load-rabbits');
+            });
+        }); // End CheckSubscription middleware group
+
+        // ================================================================
+        // ✅ SETTINGS & NOTIFICATIONS (Require subscription)
+        // ================================================================
+
+        Route::middleware('check.subscription')->group(function () {
+
+            // Settings Management
+            Route::prefix('settings')->name('settings.')->group(function () {
+                Route::get('/', [SettingsController::class, 'index'])->name('index');
+                Route::post('/', [SettingsController::class, 'update'])->name('update');
+                Route::post('/profile', [SettingsController::class, 'updateProfile'])->name('updateProfile');
+                Route::get('/export', [SettingsController::class, 'exportData'])->name('export');
+                Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clear-cache');
+            });
+
+            // Notification System
+            Route::prefix('notifications')->name('notifications.')->group(function () {
+                Route::get('/', [NotificationController::class, 'index'])->name('index');
+                Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+                Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
+                Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+            });
+
+            // Historique des activités
+            Route::prefix('activites')->name('activites.')->group(function () {
+                Route::get('/', [ActiviteController::class, 'index'])->name('index');
+                Route::delete('/{type}/{id}', [ActiviteController::class, 'destroy'])->name('destroy');
+            });
+        });
+
+        // ================================================================
+        // 👑 ADMIN ROUTES (Require admin role)
+        // ================================================================
+
+        Route::prefix('admin')->name('admin.')->middleware('check.admin')->group(function () {
+
+            // Subscription Management
+            Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+                Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
+                Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show');
+                Route::post('/activate', [SubscriptionManagementController::class, 'activate'])->name('activate');
+                Route::post('/deactivate', [SubscriptionManagementController::class, 'deactivate'])->name('deactivate');
+                Route::post('/extend', [SubscriptionManagementController::class, 'extend'])->name('extend');
+                Route::get('/transactions', [SubscriptionManagementController::class, 'transactions'])->name('transactions');
+                Route::get('/export', [SubscriptionManagementController::class, 'export'])->name('export');
+            });
+        });
+    }); // End verified middleware group
 
     // ========================================================================
     // 🔍 UTILITY ROUTES (Available to authenticated users)
     // ========================================================================
+
     Route::middleware(['auth', 'verified'])->group(function () {
         // Search Endpoints
         Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
@@ -262,6 +375,7 @@ Route::middleware('auth')->group(function () {
 // ========================================================================
 // 🌐 LOCALIZATION ROUTES
 // ========================================================================
+
 Route::middleware(['web'])->group(function () {
     Route::get('/lang/{locale}', function ($locale) {
         if (in_array($locale, ['fr', 'en'])) {
@@ -274,6 +388,7 @@ Route::middleware(['web'])->group(function () {
 // ========================================================================
 // 🤖 SYSTEM & SEO ROUTES
 // ========================================================================
+
 Route::get('/robots.txt', function () {
     return response("User-agent: *
 Disallow: /admin/
@@ -301,6 +416,7 @@ Route::get('/sitemap.xml', function () {
 // ========================================================================
 // 🔁 LEGACY ROUTE ALIASES
 // ========================================================================
+
 Route::redirect('/home', '/dashboard', 301);
 Route::redirect('/femelles/show/{id}', '/femelles/{id}', 301);
 Route::redirect('/males/show/{id}', '/males/{id}', 301);
@@ -315,6 +431,7 @@ Route::prefix('api/v1')->middleware('auth')->group(function () {
 // ========================================================================
 // 🚨 SYSTEM HEALTH CHECK ROUTES
 // ========================================================================
+
 Route::get('/health', function () {
     try {
         DB::connection()->getPdo();
@@ -341,6 +458,7 @@ Route::get('/ping', function () {
 // ========================================================================
 // 🛑 MAINTENANCE MODE HANDLING
 // ========================================================================
+
 Route::get('/maintenance', function () {
     if (!app()->isDownForMaintenance()) {
         return redirect()->route('dashboard');
@@ -351,6 +469,7 @@ Route::get('/maintenance', function () {
 // ========================================================================
 // ❌ CATCH-ALL ROUTE (404 Handling)
 // ========================================================================
+
 Route::fallback(function () {
     if (request()->wantsJson()) {
         return response()->json([

@@ -1,12 +1,10 @@
 <?php
-// database/seeders/DatabaseSeeder.php
 
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,37 +13,50 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('🚀 Starting CuniApp Élevage Database Seeding...');
-        $this->command->info('═══════════════════════════════════════════════════');
-        
-        // Disable foreign key constraints temporarily
-        Schema::disableForeignKeyConstraints();
-        
-        // Clear all tables (except migrations)
-        $this->cleanDatabase();
-        
-        // Re-enable foreign key constraints
-        Schema::enableForeignKeyConstraints();
-        
-        // Run the main CuniApp seeder
+        $this->command->info('');
+        $this->command->warn('╔══════════════════════════════════════════════════════════════╗');
+        $this->command->warn('║                                                              ║');
+        $this->command->warn('║          🐰 CUNIAPP ÉLEVAGE - DATABASE SEEDER 🐰            ║');
+        $this->command->warn('║                                                              ║');
+        $this->command->warn('║     Gestion Intelligente de Votre Élevage de Lapins         ║');
+        $this->command->warn('║                                                              ║');
+        $this->command->warn('╚══════════════════════════════════════════════════════════════╝');
+        $this->command->info('');
+
+        // Clear existing data (optional - comment out for production)
+        $this->clearDatabase();
+
+        // Run the main seeder
         $this->call([
-            CuniAppSeeder::class,
+            CuniAppDatabaseSeeder::class,
         ]);
-        
-        $this->command->info('═══════════════════════════════════════════════════');
-        $this->command->info('✅ Database seeding completed successfully!');
-        $this->command->info('═══════════════════════════════════════════════════');
+
+        $this->command->info('');
+        $this->command->warn('╔══════════════════════════════════════════════════════════════╗');
+        $this->command->warn('║                                                              ║');
+        $this->command->warn('║              ✅ SEEDING COMPLETED SUCCESSFULLY! ✅           ║');
+        $this->command->warn('║                                                              ║');
+        $this->command->warn('╚══════════════════════════════════════════════════════════════╝');
+        $this->command->info('');
+
+        // Display summary
+        $this->displaySummary();
     }
-    
+
     /**
-     * Clean all database tables
+     * Clear existing database tables
      */
-    private function cleanDatabase(): void
+    private function clearDatabase(): void
     {
-        $this->command->info('🧹 Cleaning database tables...');
-        
+        $this->command->info('🧹 Cleaning existing data...');
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
         $tables = [
-            'notifications',
+            'payment_transactions',
+            'subscriptions',
+            'subscription_plans',
+            'sale_rabbits',
             'sales',
             'lapereaux',
             'naissances',
@@ -53,29 +64,54 @@ class DatabaseSeeder extends Seeder
             'saillies',
             'femelles',
             'males',
+            'notifications',
             'settings',
-            'sessions',
-            'cache',
-            'cache_locks',
-            'jobs',
-            'job_batches',
-            'failed_jobs',
-            'password_reset_tokens',
             'users',
         ];
-        
+
         foreach ($tables as $table) {
-            try {
-                DB::table($table)->truncate();
-                $this->command->info("   ✓ Truncated: {$table}");
-            } catch (\Exception $e) {
-                $this->command->warn("   ⚠ Could not truncate: {$table}");
-            }
+            DB::table($table)->truncate();
+            $this->command->line("   ✓ Table <fg=blue>{$table}</fg=blue> cleared");
         }
-        
-        // Reset auto-increment counters
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $this->command->info('   ✓ Foreign key constraints disabled');
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
+        $this->command->info('');
+    }
+
+    /**
+     * Display seeding summary
+     */
+    private function displaySummary(): void
+    {
+        $this->command->info('📊 DATABASE SUMMARY:');
+        $this->command->info('');
+
+        $stats = [
+            '👥 Users' => \App\Models\User::count(),
+            '🐰 Mâles' => \App\Models\Male::count(),
+            '🐰 Femelles' => \App\Models\Femelle::count(),
+            '💕 Saillies' => \App\Models\Saillie::count(),
+            '🥚 Mises Bas' => \App\Models\MiseBas::count(),
+            '🐣 Naissances' => \App\Models\Naissance::count(),
+            '🐇 Lapereaux' => \App\Models\Lapereau::count(),
+            '💰 Ventes' => \App\Models\Sale::count(),
+            '📋 Plans' => \App\Models\SubscriptionPlan::count(),
+            '📝 Subscriptions' => \App\Models\Subscription::count(),
+        ];
+
+        foreach ($stats as $label => $count) {
+            $this->command->line("   <fg=green>{$label}:</fg=green> <fg=cyan>{$count}</fg=cyan>");
+        }
+
+        $this->command->info('');
+        $this->command->info('🔐 DEFAULT ADMIN CREDENTIALS:');
+        $this->command->info('   Email: <fg=yellow>admin@cuniapp.com</fg=yellow>');
+        $this->command->info('   Password: <fg=yellow>admin123</fg=yellow>');
+        $this->command->info('');
+        $this->command->info('🔐 DEFAULT USER CREDENTIALS:');
+        $this->command->info('   Email: <fg=yellow>user@cuniapp.com</fg=yellow>');
+        $this->command->info('   Password: <fg=yellow>user123</fg=yellow>');
+        $this->command->info('');
     }
 }

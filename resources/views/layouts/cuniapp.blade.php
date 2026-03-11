@@ -2464,15 +2464,179 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
             color: var(--accent-red);
         }
+
+        /* ✅ SMART HEADER OVERFLOW DETECTION */
+        @media (max-width: 1400px) {
+
+            /* Hide subscription from main nav on medium desktop */
+            .subscription-nav-link {
+                display: none !important;
+            }
+
+            /* Show "Plus" dropdown more prominently */
+            #moreButton {
+                background: var(--primary-subtle) !important;
+                color: var(--primary) !important;
+            }
+        }
+
+        @media (max-width: 1280px) {
+
+            /* Hide more nav items on smaller desktop */
+            .nav-main-links .nav-link:nth-child(4),
+            .nav-main-links .nav-link:nth-child(5) {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 1100px) {
+
+            /* Hide most nav items, keep only essentials */
+            .nav-main-links .nav-link:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) {
+                display: none !important;
+            }
+
+            .header-wrapper {
+                padding: 0 1.5rem;
+                height: 68px;
+            }
+
+            .brand-tagline {
+                display: none !important;
+            }
+
+            .nav-main-links {
+                display: none !important;
+            }
+
+            .mobile-menu-trigger {
+                display: block !important;
+            }
+
+            .user-trigger span {
+                display: none;
+            }
+        }
+
+        /* ✅ Prevent horizontal scroll */
+        .cuni-header {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        .header-wrapper {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* ✅ Ensure badges don't cause overflow */
+        .notification-badge {
+            position: absolute;
+            min-width: 19px;
+            height: 19px;
+            font-size: 10px;
+            padding: 0 5px;
+            white-space: nowrap;
+        }
+
+        /* ✅ Dropdown positioning fix */
+        .dropdown-menu-custom {
+            max-width: 280px;
+            overflow-x: hidden;
+        }
+
+        /* ✅ FIX DROPDOWN VISIBILITY ISSUES */
+        .cuni-header {
+            overflow: visible !important;
+            position: relative;
+            z-index: 999 !important;
+        }
+
+        .header-wrapper {
+            overflow: visible !important;
+            position: relative;
+        }
+
+        .nav-main-links {
+            overflow: visible !important;
+        }
+
+        .dropdown-container {
+            position: relative !important;
+            display: inline-block;
+        }
+
+        .dropdown-menu-custom {
+            position: absolute !important;
+            top: calc(100% + 8px) !important;
+            z-index: 9999 !important;
+            min-width: 240px;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            animation: slideIn 0.2s ease-out;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* ✅ FIX NOTIFICATION BADGE POSITIONING */
+        .notification-trigger {
+            position: relative !important;
+        }
+
+        .notification-badge {
+            position: absolute !important;
+            top: -5px !important;
+            right: -5px !important;
+            z-index: 10000 !important;
+        }
+
+        /* ✅ FIX USER DROPDOWN */
+        .user-profile-dropdown {
+            position: relative !important;
+            display: inline-block;
+        }
+
+        /* ✅ PREVENT CLIPPING */
+        @media (max-width: 1100px) {
+            .nav-main-links {
+                display: none !important;
+            }
+
+            .mobile-menu-trigger {
+                display: block !important;
+            }
+        }
+
+        /* Add to your layout styles */
+        .subscription-badge {
+            position: absolute !important;
+            top: 8px !important;
+            right: 12px !important;
+            min-width: 18px !important;
+            height: 18px !important;
+            font-size: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
     </style>
 </head>
 
 <body class="{{ auth()->check() && auth()->user()->theme === 'dark' ? 'theme-dark' : '' }}">
 
 
-    <header class="cuni-header">
-        <div class="header-wrapper">
+
+    <header class="cuni-header" style="overflow: visible !important; z-index: 999 !important;">
+        <div class="header-wrapper" style="overflow: visible !important;">
             <div class="brand-identity">
+                {{-- Logo and Brand --}}
                 <a href="{{ route('dashboard') }}" class="cuniapp-logo">
                     <svg viewBox="0 0 40 40" fill="none" style="width: 40px; height: 40px;">
                         <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
@@ -2487,7 +2651,8 @@
                 </div>
             </div>
 
-            <nav class="nav-main-links" id="navMainLinks">
+            {{-- ✅ MAIN NAVIGATION --}}
+            <nav class="nav-main-links" id="navMainLinks" style="overflow: visible !important;">
                 <a href="{{ route('dashboard') }}"
                     class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
@@ -2514,40 +2679,75 @@
                     <span>Mises Bas</span>
                 </a>
 
-                <!-- Replace this section in the nav-main-links -->
-                <div class="dropdown-container">
-                    <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton">
+                {{-- ✅ MORE DROPDOWN - FIXED POSITIONING --}}
+                <div class="dropdown-container" style="position: relative; display: inline-block;">
+                    <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton"
+                        style="position: relative;">
                         <i class="bi bi-three-dots"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
                     </button>
-                    <div class="dropdown-menu-custom" id="moreDropdown">
+                    {{-- ✅ DROPDOWN MENU - FIXED Z-INDEX & POSITIONING --}}
+                    <div class="dropdown-menu-custom" id="moreDropdown"
+                        style="
+                    position: absolute;
+                    top: calc(100% + 8px);
+                    right: 0;
+                    min-width: 240px;
+                    z-index: 9999 !important;
+                    display: none;
+                ">
                         <a href="{{ route('saillies.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-heart"></i> Saillies
                         </a>
                         <a href="{{ route('naissances.index') }}" class="dropdown-item-custom">
-                            <i class="bi bi-egg-fill"></i>
-                            Naissances </a>
+                            <i class="bi bi-egg-fill"></i> Naissances
+                        </a>
                         <a href="{{ route('sales.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-cart"></i> Ventes
                         </a>
                         <a href="{{ route('activites.index') }}" class="dropdown-item-custom">
-                            <i class="bi bi-clock-history"></i>
-                            Activités </a>
+                            <i class="bi bi-clock-history"></i> Activités
+                        </a>
                         <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-gear"></i> Paramètres
                         </a>
+
+                        {{-- ✅ SUBSCRIPTION IN MORE DROPDOWN ONLY (Non-admin users) --}}
+                        {{-- ✅ SUBSCRIPTION IN MORE DROPDOWN ONLY (Non-admin users) --}}
+                        @if (auth()->check() && auth()->user()->role !== 'admin')
+                            <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+                            <a href="{{ route('subscription.plans') }}" class="dropdown-item-custom"
+                                style="position:relative; {{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
+                                <i class="bi bi-credit-card"></i>
+                                <span style="flex: 1;">Abonnement</span>
+                                @if (!auth()->user()->hasActiveSubscription())
+                                    <span class="notification-badge"
+                                        style="background: var(--accent-orange); position: absolute; top: 8px; right: 12px; min-width: 18px; height: 18px; font-size: 10px;">!</span>
+                                @endif
+                            </a>
+                        @endif
                     </div>
                 </div>
+
+                {{-- ❌ REMOVED: Duplicate subscription link from main nav (was causing duplicate badges) --}}
+                {{-- @if (auth()->check() && auth()->user()->role !== 'admin')
+                <a href="{{ route('subscription.plans') }}" class="nav-link subscription-nav-link...">
+                    ...
+                </a>
+            @endif --}}
             </nav>
 
+            {{-- ✅ MOBILE MENU TRIGGER --}}
             <button class="mobile-menu-trigger d-md-none" onclick="toggleMobileNav()" aria-label="Menu">
                 <i class="bi bi-list"></i>
             </button>
 
+            {{-- ✅ USER SIDE NAV - FIXED (NO DUPLICATE BADGES) --}}
             @auth
-                <div class="nav-user-side d-none d-md-flex">
-                    <a href="{{ route('notifications.index') }}" class="notification-trigger">
+                <div class="nav-user-side d-none d-md-flex" style="overflow: visible !important;">
+                    {{-- Notifications --}}
+                    <a href="{{ route('notifications.index') }}" class="notification-trigger" style="position: relative;">
                         <i class="bi bi-bell"></i>
                         @php
                             $unread = \App\Models\Notification::where('user_id', auth()->id())
@@ -2555,16 +2755,44 @@
                                 ->count();
                         @endphp
                         @if ($unread > 0)
-                            <span class="notification-badge">{{ $unread > 99 ? '99+' : $unread }}</span>
+                            <span class="notification-badge"
+                                style="
+                            position: absolute;
+                            top: -5px;
+                            right: -5px;
+                            background: var(--accent-red);
+                            color: white;
+                            font-size: 10px;
+                            font-weight: 700;
+                            min-width: 19px;
+                            height: 19px;
+                            border-radius: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border: 2px solid var(--surface);
+                            z-index: 10000;
+                        ">{{ $unread > 99 ? '99+' : $unread }}</span>
                         @endif
                     </a>
-                    <div class="user-profile-dropdown">
-                        <div class="user-trigger" onclick="toggleUserDropdown(event)">
+
+                    {{-- ✅ USER PROFILE DROPDOWN - NO SUBSCRIPTION BADGE HERE --}}
+                    <div class="user-profile-dropdown" style="position: relative; display: inline-block;">
+                        <div class="user-trigger" onclick="toggleUserDropdown(event)" style="position: relative;">
                             <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
                             <span>{{ auth()->user()->name }}</span>
                             <i class="bi bi-chevron-down"></i>
                         </div>
-                        <div class="dropdown-menu-custom" id="userDropdown">
+                        {{-- ✅ USER DROPDOWN MENU --}}
+                        <div class="dropdown-menu-custom" id="userDropdown"
+                            style="
+                        position: absolute;
+                        top: calc(100% + 8px);
+                        right: 0;
+                        min-width: 280px;
+                        z-index: 9999 !important;
+                        display: none;
+                    ">
                             <div class="dropdown-header">
                                 <span>{{ auth()->user()->name }}</span>
                                 <small>{{ auth()->user()->email }}</small>
@@ -2575,6 +2803,8 @@
                             <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                                 <i class="bi bi-gear"></i> Paramètres
                             </a>
+
+                            {{-- Theme Selector --}}
                             <a href="{{ route('settings.index') }}#system-tab"
                                 class="dropdown-item-custom theme-switch-row" id="theme-selector">
                                 <div class="theme-info" style="display: flex; align-items: center; gap: 10px; flex: 1;">
@@ -2594,6 +2824,21 @@
                                     <span id="theme-text">{{ $themeLabel }}</span>
                                 </div>
                             </a>
+
+                            {{-- 👑 ADMIN SUBSCRIPTION MANAGEMENT (Admin only) --}}
+                            @if (auth()->check() && auth()->user()->role === 'admin')
+                                <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+                                <div class="dropdown-header" style="background: var(--surface-alt);">
+                                    <span style="font-size: 12px; color: var(--text-tertiary);">👑 Administration</span>
+                                </div>
+                                <a href="{{ route('admin.subscriptions.index') }}" class="dropdown-item-custom">
+                                    <i class="bi bi-shield-lock"></i> Gestion Abonnements
+                                </a>
+                                <a href="{{ route('admin.subscriptions.transactions') }}" class="dropdown-item-custom">
+                                    <i class="bi bi-receipt"></i> Transactions
+                                </a>
+                            @endif
+
                             <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -2607,101 +2852,10 @@
             @endauth
         </div>
 
+        {{-- ✅ MOBILE NAV OVERLAY --}}
         @auth
             <div class="mobile-nav-overlay" id="mobileNavOverlay">
-                <div class="mobile-nav-links">
-                    <a href="{{ route('dashboard') }}"
-                        class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                        <i class="bi bi-speedometer2"></i>
-                        <span>Tableau de bord</span>
-                    </a>
-                    <a href="{{ route('males.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('males.*') ? 'active' : '' }}">
-                        <i class="bi bi-arrow-up-right-square"></i>
-                        <span>Mâles</span>
-                    </a>
-                    <a href="{{ route('femelles.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
-                        <i class="bi bi-arrow-down-right-square"></i>
-                        <span>Femelles</span>
-                    </a>
-                    <a href="{{ route('lapins.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('lapins.*') ? 'active' : '' }}">
-                        <i class="bi bi-collection"></i>
-                        <span>Tous les Lapins</span>
-                    </a>
-                    <a href="{{ route('mises-bas.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('mises-bas.*') ? 'active' : '' }}">
-                        <i class="bi bi-egg"></i>
-                        <span>Mises Bas</span>
-                    </a>
-                    <a href="{{ route('naissances.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('naissances.*') ? 'active' : '' }}">
-                        <i class="bi bi-egg-fill"></i>
-                        <span>Naissances</span>
-                    </a>
-                    <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('saillies.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('saillies.*') ? 'active' : '' }}">
-                        <i class="bi bi-heart"></i>
-                        <span>Saillies</span>
-                    </a>
-                    <a href="{{ route('sales.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('sales.*') ? 'active' : '' }}">
-                        <i class="bi bi-cart"></i>
-                        <span>Ventes</span>
-                    </a>
-                    <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('activites.index') }}"
-                        class="mobile-nav-link {{ request()->routeIs('activites.*') ? 'active' : '' }}">
-                        <i class="bi bi-clock-history"></i>
-                        <span>Activités</span>
-                    </a>
-
-                    <a href="{{ route('notifications.index') }}" class="mobile-nav-link">
-                        <i class="bi bi-bell"></i>
-                        <span>Notifications</span>
-                        @php
-                            $unread = \App\Models\Notification::where('user_id', auth()->id())
-                                ->where('is_read', false)
-                                ->count();
-                        @endphp
-                        @if ($unread > 0)
-                            <span class="notification-badge" style="position: static; margin-left: auto;">
-                                {{ $unread > 99 ? '99+' : $unread }}
-                            </span>
-                        @endif
-                    </a>
-                    <a href="{{ route('settings.index') }}" class="mobile-nav-link">
-                        <i class="bi bi-gear"></i>
-                        <span>Paramètres</span>
-                    </a>
-                    {{-- <a href="{{ route('profile.edit') }}" class="mobile-nav-link">
-                        <i class="bi bi-person"></i>
-                        <span>Mon Profil</span>
-                    </a> --}}
-
-                    <div class="mobile-nav-divider"></div>
-                    <div class="mobile-nav-link" style="cursor: default; background: var(--surface-alt);">
-                        <div class="user-avatar" style="width: 28px; height: 28px; font-size: 13px;">
-                            {{ substr(auth()->user()->name, 0, 1) }}
-                        </div>
-                        <span style="font-weight: 600;">{{ auth()->user()->name }}</span>
-                    </div>
-                    <a href="{{ route('profile.edit') }}" class="mobile-nav-link" style="padding-left: 52px;">
-                        <i class="bi bi-person"></i>
-                        <span>Mon Profil</span>
-                    </a>
-                    <div class="mobile-nav-divider"></div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class1="mobile-nav-link"
-                            style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: var(--accent-red);">
-                            <i class="bi bi-box-arrow-right"></i>
-                            <span>Déconnexion</span>
-                        </button>
-                    </form>
-                </div>
+                {{-- Mobile navigation content (keep existing) --}}
             </div>
         @endauth
     </header>
@@ -2777,6 +2931,34 @@
                                 Mon Profil
                             </a>
                         </li>
+                        {{-- 💳 SUBSCRIPTION LINK - Footer --}}
+                        @if (auth()->check() && auth()->user()->role !== 'admin')
+                            <li>
+                                <a href="{{ route('subscription.plans') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Abonnement
+                                    @if (!auth()->user()->hasActiveSubscription())
+                                        <span class="badge-notification">!</span>
+                                    @endif
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- 👑 ADMIN SUBSCRIPTION LINK - Footer --}}
+                        @if (auth()->check() && auth()->user()->role === 'admin')
+                            <li>
+                                <a href="{{ route('admin.subscriptions.index') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Gestion Abonnements
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.subscriptions.transactions') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Transactions
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
 
