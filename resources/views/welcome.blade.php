@@ -1041,11 +1041,11 @@
 
         .farmer-popout {
             position: absolute;
-            bottom: -30px;
-            right: -30px;
+            bottom: -50px;
+            right: -35px;
             width: 100px;
             height: 100px;
-            z-index: 20;
+            z-index: 100;
             animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1s backwards;
             pointer-events: none;
         }
@@ -1772,7 +1772,7 @@
             // ==================== VERIFICATION MODAL FUNCTIONS ====================
             let resendTimerInterval;
 
-            function closeVerificationModal() {
+            window.closeVerificationModal = function() {
                 document.getElementById('verificationOverlay').classList.remove('active');
             }
 
@@ -1836,7 +1836,7 @@
                 }, 1000);
             }
 
-            function resendVerificationCode(e) {
+            window.resendVerificationCode = function(e) {
                 e.preventDefault();
                 const email = document.getElementById('verificationEmailDisplay').textContent;
 
