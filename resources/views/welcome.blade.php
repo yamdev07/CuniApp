@@ -246,6 +246,7 @@
         }
 
         .auth-section {
+            position: relative;
             animation: slideInRight 1s ease-out;
         }
 
@@ -1041,7 +1042,7 @@
         .farmer-popout {
             position: absolute;
             bottom: -50px;
-            left: 20%;
+            left: -50px;
             width: 150px;
             height: 150px;
             z-index: 20;
@@ -1145,12 +1146,6 @@
                         <h4>3. Analyser</h4>
                         <p>Tableau de bord intelligent</p>
                     </div>
-                </div>
-
-                <!-- Rabbit Farmer Pop-out -->
-                <div class="farmer-popout">
-                    <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
-                    <div class="farmer-badge">Rejoignez-nous!</div>
                 </div>
             </div>
 
@@ -1465,6 +1460,12 @@
                             </div>
                         </form>
                     </div>
+                </div>
+
+                <!-- Rabbit Farmer Pop-out -->
+                <div class="farmer-popout">
+                    <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
+                    <div class="farmer-badge">Rejoignez-nous!</div>
                 </div>
             </div>
         </div>
