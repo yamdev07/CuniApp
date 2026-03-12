@@ -195,31 +195,25 @@ STEP 6: VIEWS/UI
    - Direct link to subscribe
    - Keep navigation accessible
 
-STEP 7: PAYMENT API INTEGRATION
+## STEP 7: FEDAPAY INTEGRATION (UPDATED)
 -----------------------------------------------------------------------------
-□ 7.1 Create PaymentService interface
-   - initiatePayment()
-   - verifyPayment()
-   - refundPayment()
-
-□ 7.2 Create MTN MoMo Payment Provider class
-   - API credentials from settings
-   - Request formatting
-   - Response handling
-   - Error handling
-
-□ 7.3 Create Celtis Cash Payment Provider class
-   - Same structure as MoMo
-
-□ 7.4 Create Moov Pay Payment Provider class
-   - Same structure as MoMo
-
-□ 7.5 Create PaymentFactory for provider selection
-
-□ 7.6 Store payment provider credentials in Settings table
+□ 7.1 ✅ FedaPayService already exists - Verify configuration
+□ 7.2 ✅ WebhookSignatureVerifier has verifyFedaPay() method
+□ 7.3 ✅ PaymentController has FedaPay webhook handler
+□ 7.4 Store FedaPay credentials in Settings table:
+   - fedapay_public_key
+   - fedapay_secret_key
+   - fedapay_environment (sandbox/production)
+   - fedapay_webhook_secret
+□ 7.5 Configure webhook URL in FedaPay Dashboard:
+   - URL: https://your-domain.com/payment/webhook/fedapay
+   - Events: payment.completed, payment.failed
+□ 7.6 Remove old payment provider settings:
    - momo_api_key, momo_api_secret
    - celtis_api_key, celtis_api_secret
    - moov_api_key, moov_api_secret
+□ 7.7 Test webhook signature verification:
+   - php artisan webhook:test-signature fedapay {payload} {signature}
 
 STEP 8: NOTIFICATIONS & EMAILS
 -----------------------------------------------------------------------------

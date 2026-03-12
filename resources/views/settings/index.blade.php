@@ -231,6 +231,66 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
         </div>
     </div>
 
+
+    {{-- Add after breeding settings, before profile tab --}}
+    <div class="cuni-card" style="margin-top: 24px;">
+        <div class="card-header-custom">
+            <h3 class="card-title">
+                <i class="bi bi-credit-card"></i> Configuration FedaPay
+            </h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('settings.update') }}" method="POST">
+                @csrf
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label class="form-label">Clé Publique FedaPay</label>
+                        <input type="text" name="fedapay_public_key" class="form-control"
+                            value="{{ \App\Models\Setting::get('fedapay_public_key', '') }}"
+                            placeholder="pk_test_... ou pk_live_...">
+                        <small style="color: var(--text-tertiary); font-size: 12px;">
+                            <i class="bi bi-info-circle"></i>
+                            Disponible sur votre tableau de bord FedaPay
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Clé Secrète FedaPay</label>
+                        <input type="password" name="fedapay_secret_key" class="form-control"
+                            value="{{ \App\Models\Setting::get('fedapay_secret_key', '') }}"
+                            placeholder="sk_test_... ou sk_live_...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Environnement</label>
+                        <select name="fedapay_environment" class="form-select">
+                            <option value="sandbox"
+                                {{ \App\Models\Setting::get('fedapay_environment', 'sandbox') === 'sandbox' ? 'selected' : '' }}>
+                                Sandbox (Test)
+                            </option>
+                            <option value="production"
+                                {{ \App\Models\Setting::get('fedapay_environment', 'sandbox') === 'production' ? 'selected' : '' }}>
+                                Production (Réel)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Secret Webhook FedaPay</label>
+                        <input type="password" name="fedapay_webhook_secret" class="form-control"
+                            value="{{ \App\Models\Setting::get('fedapay_webhook_secret', '') }}" placeholder="whsec_...">
+                        <small style="color: var(--text-tertiary); font-size: 12px;">
+                            <i class="bi bi-info-circle"></i>
+                            Pour vérifier les signatures webhook
+                        </small>
+                    </div>
+                </div>
+                <div style="margin-top: 24px;">
+                    <button type="submit" class="btn-cuni primary">
+                        <i class="bi bi-save"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Tab Content: Système (Theme + Notifications) -->
     <div class="tab-content" id="system-tab">
         <!-- Theme Section -->
@@ -587,36 +647,40 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
                         <div class="form-group">
                             <label class="form-label">Email *</label>
                             <input type="email" name="email" class="form-control"
-                                value="{{ old('email', auth()->user()->email) }}" required {{ auth()->user()->google_id ? 'readonly' : '' }}>
-                            @if(auth()->user()->google_id)
+                                value="{{ old('email', auth()->user()->email) }}" required
+                                {{ auth()->user()->google_id ? 'readonly' : '' }}>
+                            @if (auth()->user()->google_id)
                                 <small style="color: var(--primary); font-size: 11px; margin-top: 4px; display: block;">
-                                    <i class="bi bi-info-circle"></i> L'email est lié à votre compte Google et ne peut pas être modifié.
+                                    <i class="bi bi-info-circle"></i> L'email est lié à votre compte Google et ne peut pas
+                                    être modifié.
                                 </small>
                             @endif
                         </div>
-                        @if(!auth()->user()->google_id)
-                        <div class="form-group">
-                            <label class="form-label">Mot de passe actuel</label>
-                            <input type="password" name="current_password" class="form-control" placeholder="••••••••">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Nouveau mot de passe</label>
-                            <input type="password" name="new_password" class="form-control" placeholder="••••••••">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Confirmer nouveau mot de passe</label>
-                            <input type="password" name="new_password_confirmation" class="form-control"
-                                placeholder="••••••••">
-                        </div>
+                        @if (!auth()->user()->google_id)
+                            <div class="form-group">
+                                <label class="form-label">Mot de passe actuel</label>
+                                <input type="password" name="current_password" class="form-control"
+                                    placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nouveau mot de passe</label>
+                                <input type="password" name="new_password" class="form-control" placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirmer nouveau mot de passe</label>
+                                <input type="password" name="new_password_confirmation" class="form-control"
+                                    placeholder="••••••••">
+                            </div>
                         @else
-                        <div class="form-group" style="grid-column: span 2;">
-                            <div class="alert-custom alert-custom-info" style="margin-bottom: 0;">
-                                <i class="bi bi-google alert-icon"></i>
-                                <div>
-                                    Vous êtes connecté via <strong>Google</strong>. La gestion du mot de passe se fait directement sur votre compte Google.
+                            <div class="form-group" style="grid-column: span 2;">
+                                <div class="alert-custom alert-custom-info" style="margin-bottom: 0;">
+                                    <i class="bi bi-google alert-icon"></i>
+                                    <div>
+                                        Vous êtes connecté via <strong>Google</strong>. La gestion du mot de passe se fait
+                                        directement sur votre compte Google.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                     <div style="margin-top: 24px;">
