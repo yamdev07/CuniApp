@@ -84,6 +84,12 @@ class SettingsController extends Controller
         Setting::set('default_price_female', $request->default_price_female ?? 30000, 'number', 'sales', 'Prix par défaut - Femelles');
         Setting::set('default_price_lapereau', $request->default_price_lapereau ?? 15000, 'number', 'sales', 'Prix par défaut - Lapereaux');
 
+        // Dans la méthode update(), après les autres Setting::set()
+        Setting::set('fedapay_public_key', $request->fedapay_public_key ?? '', 'string', 'payments', 'Clé Publique FedaPay');
+        Setting::set('fedapay_secret_key', $request->fedapay_secret_key ?? '', 'string', 'payments', 'Clé Secrète FedaPay');
+        Setting::set('fedapay_environment', $request->fedapay_environment ?? 'sandbox', 'string', 'payments', 'Environnement FedaPay');
+        Setting::set('fedapay_webhook_secret', $request->fedapay_webhook_secret ?? '', 'string', 'payments', 'Secret Webhook FedaPay');
+
 
 
         return redirect()->route('settings.index')
@@ -116,7 +122,7 @@ class SettingsController extends Controller
                     ->with('active_tab', 'profile-tab');
             }
             $user->password = $request->new_password;
-            
+
             // Log in again ONLY if password changed
             Auth::guard('web')->login($user);
         }

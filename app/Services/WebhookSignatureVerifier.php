@@ -18,7 +18,7 @@ class WebhookSignatureVerifier
     {
         try {
             $apiSecret = Setting::get('momo_api_secret');
-            
+
             if (!$apiSecret) {
                 Log::error('MTN MoMo: API secret not configured');
                 return false;
@@ -27,7 +27,7 @@ class WebhookSignatureVerifier
             // MTN MoMo signature verification
             // Signature = HMAC-SHA256(payload, api_secret)
             $expectedSignature = hash_hmac('sha256', $payload, $apiSecret);
-            
+
             // Use timing-safe comparison to prevent timing attacks
             $isValid = hash_equals($expectedSignature, $signature);
 
@@ -57,7 +57,7 @@ class WebhookSignatureVerifier
     {
         try {
             $apiSecret = Setting::get('celtis_api_secret');
-            
+
             if (!$apiSecret) {
                 Log::error('Celtis Cash: API secret not configured');
                 return false;
@@ -65,7 +65,7 @@ class WebhookSignatureVerifier
 
             // Celtis Cash signature verification
             $expectedSignature = hash('sha256', $payload . $apiSecret);
-            
+
             $isValid = hash_equals($expectedSignature, $signature);
 
             if (!$isValid) {
@@ -93,7 +93,7 @@ class WebhookSignatureVerifier
     {
         try {
             $apiSecret = Setting::get('moov_api_secret');
-            
+
             if (!$apiSecret) {
                 Log::error('Moov Pay: API secret not configured');
                 return false;
@@ -101,7 +101,7 @@ class WebhookSignatureVerifier
 
             // Moov Pay signature verification (HMAC-SHA512)
             $expectedSignature = hash_hmac('sha512', $payload, $apiSecret);
-            
+
             $isValid = hash_equals($expectedSignature, $signature);
 
             if (!$isValid) {
@@ -121,17 +121,12 @@ class WebhookSignatureVerifier
     }
 
     /**
-     * ✅ Generic verification method that routes to provider-specific verifier
+     * ✅ Update generic verify() method to include FedaPay
      */
     public static function verify(string $provider, string $payload, string $signature, array $headers = []): bool
     {
-        Log::info('Webhook signature verification requested', [
-            'provider' => $provider,
-            'signature_length' => strlen($signature),
-            'payload_length' => strlen($payload),
-        ]);
-
         return match ($provider) {
+            'fedapay' => self::verifyFedaPay($payload, $signature),  // ← ADD THIS
             'momo' => self::verifyMTNMoMo($payload, $signature, $headers['x-reference-id'] ?? null),
             'celtis' => self::verifyCeltisCash($payload, $signature),
             'moov' => self::verifyMoovPay($payload, $signature),
@@ -169,5 +164,41 @@ class WebhookSignatureVerifier
             'moov' => hash_hmac('sha512', $payload, Setting::get('moov_api_secret')),
             default => null,
         };
+    }
+
+    /**
+     * ✅ Verify FedaPay webhook signature
+     * FedaPay uses HMAC-SHA256 with webhook secret
+     */
+    public static function verifyFedaPay(string $payload, string $signature): bool
+    {
+        try {
+            $webhookSecret = Setting::get('fedapay_webhook_secret');
+
+            if (!$webhookSecret) {
+                Log::error('FedaPay: Webhook secret not configured');
+                return false;
+            }
+
+            // FedaPay uses HMAC-SHA256
+            $expectedSignature = hash_hmac('sha256', $payload, $webhookSecret);
+
+            // Timing-safe comparison
+            $isValid = hash_equals($expectedSignature, $signature);
+
+            if (!$isValid) {
+                Log::warning('FedaPay: Signature verification failed', [
+                    'expected' => substr($expectedSignature, 0, 10) . '...',
+                    'received' => substr($signature, 0, 10) . '...',
+                ]);
+            }
+
+            return $isValid;
+        } catch (\Exception $e) {
+            Log::error('FedaPay: Signature verification error', [
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
     }
 }
