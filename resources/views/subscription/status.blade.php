@@ -202,6 +202,74 @@
         </div>
     </div>
 
+    <!-- Add this section after payment history -->
+    <div class="cuni-card" style="margin-top: 24px;">
+        <div class="card-header-custom">
+            <h3 class="card-title">
+                <i class="bi bi-receipt"></i> Factures
+            </h3>
+            <a href="{{ route('invoices.index') }}" class="btn-cuni sm secondary">
+                Voir tout <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="card-body">
+            @php
+                $recentInvoices = \App\Models\Invoice::where('user_id', auth()->id())
+                    ->orderBy('invoice_date', 'desc')
+                    ->limit(5)
+                    ->get();
+            @endphp
+
+            @if ($recentInvoices->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="table" style="width: 100%;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--surface-border);">
+                                <th style="padding: 12px; text-align: left;">N°</th>
+                                <th style="padding: 12px; text-align: left;">Date</th>
+                                <th style="padding: 12px; text-align: left;">Montant</th>
+                                <th style="padding: 12px; text-align: left;">Statut</th>
+                                <th style="padding: 12px; text-align: left;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($recentInvoices as $invoice)
+                                <tr style="border-bottom: 1px solid var(--surface-border);">
+                                    <td style="padding: 12px;">{{ $invoice->invoice_number }}</td>
+                                    <td style="padding: 12px;">{{ $invoice->invoice_date->format('d/m/Y') }}</td>
+                                    <td style="padding: 12px; font-weight: 600;">
+                                        {{ number_format($invoice->total_amount, 0, ',', ' ') }} FCFA
+                                    </td>
+                                    <td style="padding: 12px;">
+                                        @if ($invoice->status === 'paid')
+                                            <span style="color: var(--accent-green);">
+                                                <i class="bi bi-check-circle"></i> Payée
+                                            </span>
+                                        @else
+                                            <span style="color: var(--accent-orange);">
+                                                <i class="bi bi-clock"></i> {{ ucfirst($invoice->status) }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td style="padding: 12px;">
+                                        <a href="{{ route('invoices.download', $invoice) }}" class="btn-cuni sm primary">
+                                            <i class="bi bi-download"></i> PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                    <i class="bi bi-file-earmark" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;"></i>
+                    <p>Aucune facture disponible</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
     {{-- Cancel Modal --}}
     @if ($subscription)
         <div id="cancelModal"

@@ -126,7 +126,7 @@ class SubscriptionManagementController extends Controller
             ]);
 
             // Create payment transaction
-            PaymentTransaction::create([
+            $paymentTransaction = PaymentTransaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id,
                 'amount' => $plan->price,
@@ -137,6 +137,23 @@ class SubscriptionManagementController extends Controller
                 'paid_at' => now(),
             ]);
 
+            // ✅ CREATE INVOICE for manual activation
+            try {
+                $invoiceService = new \App\Services\InvoiceService();
+                $invoice = $invoiceService->createFromTransaction($paymentTransaction);
+
+                // Send invoice email
+                if ($invoice) {
+                    $user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
+                }
+            } catch (\Exception $e) {
+                Log::error('Admin manual invoice creation failed: ' . $e->getMessage(), [
+                    'user_id' => $user->id,
+                    'subscription_id' => $subscription->id,
+                ]);
+                // Don't fail the activation if invoice creation fails
+            }
+
             // Update user
             $user->update([
                 'subscription_status' => 'active',
@@ -144,9 +161,8 @@ class SubscriptionManagementController extends Controller
             ]);
 
             DB::commit();
-
             return redirect()->route('admin.subscriptions.show', $user->id)
-                ->with('success', 'Abonnement activé avec succès pour ' . $user->name);
+                ->with('success', 'Abonnement activé avec succès pour ' . $user->name . '. Facture générée.');
         } catch (\Exception $e) {
             DB::rollBack();
 

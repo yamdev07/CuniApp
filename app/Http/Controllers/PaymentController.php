@@ -203,6 +203,7 @@ class PaymentController extends Controller
         $transaction = PaymentTransaction::where('transaction_id', $ourTransactionId)->firstOrFail();
 
         // Handle based on event type
+        // Handle based on event type
         if (in_array($event, ['payment.completed', 'payment.success'])) {
             // ✅ Payment successful
             $transaction->update([
@@ -211,13 +212,30 @@ class PaymentController extends Controller
                 'provider_response' => $data,
             ]);
 
-            // Activate subscription
+            // Activate subscription if exists
             if ($transaction->subscription) {
                 $this->activateSubscription($transaction->subscription);
             }
 
-            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
+            // ✅ CREATE INVOICE for completed payment
+            if (class_exists(\App\Services\InvoiceService::class)) {
+                try {
+                    $invoiceService = new \App\Services\InvoiceService();
+                    $invoice = $invoiceService->createFromTransaction($transaction);
 
+                    // ✅ Send invoice email notification
+                    if ($invoice && $transaction->user) {
+                        $transaction->user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Invoice creation failed: ' . $e->getMessage(), [
+                        'transaction_id' => $transaction->transaction_id,
+                    ]);
+                    // Don't fail the payment if invoice creation fails
+                }
+            }
+
+            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
             return ['action' => 'payment_completed', 'transaction_id' => $ourTransactionId];
         } elseif (in_array($event, ['payment.failed', 'payment.declined'])) {
             // ✅ Payment failed
@@ -310,19 +328,34 @@ class PaymentController extends Controller
 
         if (in_array($status, ['completed', 'SUCCESS', 'approved'])) {
             $transaction->update(['status' => 'completed', 'paid_at' => now()]);
-
             if ($transaction->subscription) {
                 $this->activateSubscription($transaction->subscription);
             }
 
-            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
+            // ✅ CREATE INVOICE for completed payment
+            if (class_exists(\App\Services\InvoiceService::class)) {
+                try {
+                    $invoiceService = new \App\Services\InvoiceService();
+                    $invoice = $invoiceService->createFromTransaction($transaction);
 
+                    // ✅ Send invoice email notification
+                    if ($invoice && $transaction->user) {
+                        $transaction->user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
+                    }
+                } catch (\Exception $e) {
+                    Log::channel('webhooks')->error('Invoice creation failed: ' . $e->getMessage(), [
+                        'transaction_id' => $transactionId,
+                    ]);
+                    // Don't fail the payment if invoice creation fails
+                }
+            }
+
+            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
             Log::channel('webhooks')->info('FedaPay Callback: Payment completed', [
                 'transaction_id' => $transactionId
             ]);
-
             return redirect()->route('subscription.status')
-                ->with('success', 'Paiement réussi !');
+                ->with('success', 'Paiement réussi ! Facture générée.');
         }
 
         Log::channel('webhooks')->warning('FedaPay Callback: Payment failed', [

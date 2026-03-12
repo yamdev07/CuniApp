@@ -2818,6 +2818,14 @@
                         <a href="{{ route('activites.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-clock-history"></i> Activités
                         </a>
+
+                        <a href="{{ route('invoices.index') }}" class="dropdown-item-custom">
+                            <i class="bi bi-receipt"></i>
+                            <span>Mes Factures</span>
+                        </a>
+
+
+
                         <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
                             <i class="bi bi-gear"></i> Paramètres
                         </a>
