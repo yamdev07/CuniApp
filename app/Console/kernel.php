@@ -19,6 +19,12 @@ class Kernel extends ConsoleKernel
             ->dailyAt('09:00')
             ->withoutOverlapping()
             ->onOneServer();
+
+        // ✅ NEW: Check subscription expiration daily at 8 AM
+        $schedule->command('subscriptions:check-expiration')
+            ->dailyAt('08:00')
+            ->withoutOverlapping()
+            ->onOneServer();
     }
 
     protected function commands(): void
