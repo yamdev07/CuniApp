@@ -17,11 +17,10 @@ class NaissanceController extends Controller
 
     public function index(Request $request)
     {
-        $query = Naissance::with(['miseBas.femelle', 'lapereaux'])
-            ->latest();
+        $query = Naissance::with(['miseBas.femelle', 'lapereaux'])->latest();
 
-        // ✅ Search functionality
-        if ($request->has('search')) {
+        // 🔍 Recherche texte (femelle : nom ou code)
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('miseBas.femelle', function ($q) use ($search) {
                 $q->where('nom', 'LIKE', "%{$search}%")
@@ -29,33 +28,46 @@ class NaissanceController extends Controller
             });
         }
 
-        // ✅ Filter by health status
-        if ($request->has('etat_sante')) {
+        // 📅 Filtre par période de mise bas
+        if ($request->filled('date_from')) {
+            $query->whereHas('miseBas', function ($q) use ($request) {
+                $q->whereDate('date_mise_bas', '>=', $request->date_from);
+            });
+        }
+        if ($request->filled('date_to')) {
+            $query->whereHas('miseBas', function ($q) use ($request) {
+                $q->whereDate('date_mise_bas', '<=', $request->date_to);
+            });
+        }
+
+        // 🏥 Filtre par état de santé
+        if ($request->filled('etat_sante')) {
             $query->where('etat_sante', $request->etat_sante);
         }
 
-        // ✅ Filter by verification status
-        if ($request->has('sex_verified')) {
-            $query->where('sex_verified', $request->boolean('sex_verified'));
+        // ✅ Filtre par statut de vérification du sexe
+        if ($request->filled('sex_verified')) {
+            if ($request->sex_verified === 'verified') {
+                $query->where('sex_verified', true);
+            } elseif ($request->sex_verified === 'pending') {
+                $query->where('sex_verified', false);
+            }
         }
 
-        $naissances = $query->paginate(15);
+        $naissances = $query->paginate(15)->withQueryString();
 
+        // 📊 Stats (inchangées)
         $stats = [
             'total' => Naissance::count(),
             'this_month' => Naissance::whereHas(
-                    'miseBas',
-                    fn($q) =>
-                    $q->whereMonth('date_mise_bas', now()->month)
-                        ->whereYear('date_mise_bas', now()->year)
-                )
-                ->count(),
+                'miseBas',
+                fn($q) => $q->whereMonth('date_mise_bas', now()->month)
+                    ->whereYear('date_mise_bas', now()->year)
+            )->count(),
             'nb_vivant_total' => Lapereau::whereHas('naissance', fn($q) => $q->active())
                 ->where('etat', 'vivant')
                 ->count(),
-            'taux_survie_moyen' => Naissance::active()->get()->avg(function ($n) {
-                return $n->taux_survie ?? 0;
-            }),
+            'taux_survie_moyen' => Naissance::active()->get()->avg(fn($n) => $n->taux_survie ?? 0),
             'pending_verification' => Naissance::pendingVerification()->count(),
         ];
 

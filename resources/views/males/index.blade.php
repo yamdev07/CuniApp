@@ -20,22 +20,101 @@
             Ajouter un mâle
         </a>
     </div>
-    <form method="GET" action="{{ route('males.index') }}" class="mb-4">
-        <div class="d-flex gap-2">
-            <div class="flex-grow-1">
-                <input type="text" name="search" value="{{ request()->get('search') }}" class="form-control"
-                    placeholder="Rechercher par nom, code ou race...">
+
+
+
+    {{-- ✅ BARRE DE RECHERCHE STYLISÉE CuniApp --}}
+{{-- ✅ BARRE DE RECHERCHE AVANCÉE --}}
+<div class="cuni-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 16px;">
+        <form method="GET" action="{{ route('males.index') }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end;">
+                
+                {{-- Recherche texte --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-search" style="margin-right: 4px;"></i> Recherche
+                    </label>
+                    <input type="text" 
+                           name="search" 
+                           value="{{ request()->get('search') }}"
+                           class="form-control"
+                           placeholder="Nom, code, race..."
+                           style="border-radius: var(--radius-lg);">
+                </div>
+                
+                {{-- Filtre par état --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-filter" style="margin-right: 4px;"></i> État
+                    </label>
+                    <select name="etat" class="form-select" style="border-radius: var(--radius-lg);">
+                        <option value="">Tous les états</option>
+                        <option value="Active" {{ request('etat') === 'Active' ? 'selected' : '' }}>Actif</option>
+                        <option value="Inactive" {{ request('etat') === 'Inactive' ? 'selected' : '' }}>Inactif</option>
+                        <option value="Malade" {{ request('etat') === 'Malade' ? 'selected' : '' }}>Malade</option>
+                        <option value="vendu" {{ request('etat') === 'vendu' ? 'selected' : '' }}>Vendu</option>
+                    </select>
+                </div>
+                
+                {{-- Filtre par origine --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-geo-alt" style="margin-right: 4px;"></i> Origine
+                    </label>
+                    <select name="origine" class="form-select" style="border-radius: var(--radius-lg);">
+                        <option value="">Toutes</option>
+                        <option value="Interne" {{ request('origine') === 'Interne' ? 'selected' : '' }}>Interne</option>
+                        <option value="Achat" {{ request('origine') === 'Achat' ? 'selected' : '' }}>Achat</option>
+                    </select>
+                </div>
+                
+                {{-- Boutons d'action --}}
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-cuni primary" style="flex: 1; padding: 10px;">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                    @if(request()->anyFilled(['search', 'etat', 'origine']))
+                        <a href="{{ route('males.index') }}" 
+                           class="btn-cuni secondary" 
+                           style="padding: 10px 16px;"
+                           title="Réinitialiser les filtres">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    @endif
+                </div>
             </div>
+            
+            {{-- Résumé des filtres actifs --}}
+            @if(request()->anyFilled(['search', 'etat', 'origine']))
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--surface-border);">
+                    <small style="color: var(--text-tertiary);">
+                        Filtres actifs :
+                        @if(request('search'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                 "{{ request('search') }}"
+                            </span>
+                        @endif
+                        @if(request('etat'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                 {{ request('etat') }}
+                            </span>
+                        @endif
+                        @if(request('origine'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                             {{ request('origine') }}
+                            </span>
+                        @endif
+                        <a href="{{ route('males.index') }}" style="color: var(--accent-red); margin-left: 8px; text-decoration: none;">
+                            <i class="bi bi-x-circle"></i> Tout effacer
+                        </a>
+                    </small>
+                </div>
+            @endif
+        </form>
+    </div>
+</div>
 
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i> Rechercher
-            </button>
-
-            <a href="{{ route('males.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-clockwise"></i> Effacer
-            </a>
-        </div>
-    </form>
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
@@ -69,14 +148,6 @@
                                 </td>
                                 <td class="text-muted">{{ $m->origine }}</td>
                                 <td class="text-muted">{{ date('d/m/Y', strtotime($m->date_naissance)) }}</td>
-                                {{-- <td>
-                                    <form action="{{ route('males.toggleEtat', $m->id) }}" method="POST">
-                                        @csrf @method('PATCH')
-                                        <button type="submit" class="badge border-0 status-{{ strtolower($m->etat) }}">
-                                            {{ $m->etat }}
-                                        </button>
-                                    </form>
-                                </td> --}}
 
                                 <td>
                                     <form action="{{ route('males.toggleEtat', $m->id) }}" method="POST">
@@ -156,4 +227,42 @@
             @endif
         </div>
     </div>
+
+
+
+    @push('styles')
+<style>
+/* Animation du champ de recherche au focus */
+input[name="search"]:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+    transition: all 0.2s ease;
+}
+
+/* Effet hover sur les boutons de filtre */
+.btn-cuni.secondary:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* Badge de résultat animé */
+.badge {
+    transition: all 0.2s ease;
+}
+.badge:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive : empiler sur mobile */
+@media (max-width: 768px) {
+    form[method="GET"] > div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    form[method="GET"] > div > div {
+        min-width: 100% !important;
+    }
+}
+</style>
+@endpush
 @endsection

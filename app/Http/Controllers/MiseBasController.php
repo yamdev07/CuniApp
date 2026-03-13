@@ -13,14 +13,31 @@ class MiseBasController extends Controller
 {
     use Notifiable;
 
-    public function index()
-    {
-        $misesBas = MiseBas::with(['femelle', 'saillie.male', 'naissances.lapereaux'])
-            ->latest()
-            ->paginate(15);
+   public function index(Request $request)
+{
+    $query = MiseBas::with(['femelle', 'saillie.male', 'naissances.lapereaux']);
 
-        return view('mises_bas.index', compact('misesBas'));
+    // 🔍 Filtre de recherche
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->whereHas('femelle', function($q) use ($search) {
+            $q->where('nom', 'LIKE', "%{$search}%")
+              ->orWhere('code', 'LIKE', "%{$search}%");
+        });
     }
+
+    // 📅 Filtre par date (optionnel)
+    if ($request->filled('date_from')) {
+        $query->whereDate('date_mise_bas', '>=', $request->date_from);
+    }
+    if ($request->filled('date_to')) {
+        $query->whereDate('date_mise_bas', '<=', $request->date_to);
+    }
+
+    $misesBas = $query->latest()->paginate(15)->withQueryString();
+
+    return view('mises_bas.index', compact('misesBas'));
+}
 
     public function create()
     {
