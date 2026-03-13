@@ -6,14 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Saillie;
 use App\Models\Naissance;
+use App\Traits\BelongsToUser;
 
 class Femelle extends Model
 {
     use HasFactory;
+    use BelongsToUser;
 
     protected $table = 'femelles';
 
     protected $fillable = [
+        'user_id',
         'code',
         'nom',
         'race',

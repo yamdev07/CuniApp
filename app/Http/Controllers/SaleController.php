@@ -542,45 +542,6 @@ public function index(Request $request)
         }
     }
 
-    /**
-     * Remove the specified sale
-     */
-    // public function destroy(Sale $sale)
-    // {
-    //     // RESTAURER le statut des lapins avant suppression de la vente
-    //     foreach ($sale->rabbits as $saleRabbit) {
-    //         if ($saleRabbit->rabbit_type === 'male') {
-    //             Male::where('id', $saleRabbit->rabbit_id)->update(['etat' => 'Active']); 
-    //         } elseif ($saleRabbit->rabbit_type === 'female') {
-    //             Femelle::where('id', $saleRabbit->rabbit_id)->update(['etat' => 'Active']); 
-    //         } elseif ($saleRabbit->rabbit_type === 'lapereau') {
-    //             Lapereau::where('id', $saleRabbit->rabbit_id)->update(['etat' => 'vivant']);
-    //         }
-    //     }
-
-    //     $typeLabel = $this->getTypeLabel('groupe');
-    //     $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
-    //         number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
-
-    //     $sale->delete();
-
-    //     $this->notifyUser([
-    //         'type' => 'warning',
-    //         'title' => 'Vente Supprimée',
-    //         'message' => "Vente #{$sale->id} supprimée: {$saleInfo}",
-    //         'action_url' => route('sales.index')
-    //     ]);
-
-    //     return redirect()->route('sales.index')
-    //         ->with('success', 'Vente supprimée avec succès !');
-    // }
-
-
-    // app/Http/Controllers/SaleController.php
-
-/**
- * Remove the specified sale (only after 60 days)
- */
 /**
  * Remove the specified sale (only after 60 days)
  *  LES LAPINS SONT SUPPRIMÉS DÉFINITIVEMENT (pas de restauration)
@@ -589,10 +550,12 @@ public function index(Request $request)
 
 public function destroy(Sale $sale)
 {
-    // Vérifier les permissions
-    if ($sale->user_id !== auth()->id()) {
-        abort(403, 'Accès non autorisé à cette vente');
-    }
+   
+
+    // ✅ SECURITY FIX: Explicit Ownership Check (Was missing in provided code)
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
     
     // Vérification : Vente doit avoir plus de 60 jours
     $daysSinceSale = now()->diffInDays($sale->date_sale);

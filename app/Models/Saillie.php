@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Saillie extends Model
 {
+    use BelongsToUser;
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'femelle_id',
         'male_id',
         'date_saillie',

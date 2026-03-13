@@ -2,6 +2,7 @@
 // app/Models/Subscription.php
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,11 +11,13 @@ use Carbon\Carbon;
 
 class Subscription extends Model
 {
+    use BelongsToUser;
     use HasFactory, SoftDeletes;
 
     protected $table = 'subscriptions';
 
     protected $fillable = [
+        'user_id',
         'user_id',
         'subscription_plan_id',
         'status',

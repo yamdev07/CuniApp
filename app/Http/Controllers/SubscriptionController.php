@@ -79,7 +79,7 @@ class SubscriptionController extends Controller
         $user = Auth::user();
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
 
-        // Check if user already has pending subscription
+        // ❌ CHECK: Don't allow if there's already a pending subscription
         $pendingSubscription = Subscription::where('user_id', $user->id)
             ->where('status', 'pending')
             ->first();
@@ -91,11 +91,11 @@ class SubscriptionController extends Controller
 
         DB::beginTransaction();
         try {
-            // Create subscription record
+            // ✅ Create subscription with PENDING status (NOT active)
             $subscription = Subscription::create([
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
-                'status' => 'pending',
+                'status' => 'pending', // ← CRITICAL: Must be pending until payment confirmed
                 'start_date' => now(),
                 'end_date' => now()->addMonths($plan->duration_months),
                 'price' => $plan->price,
@@ -103,7 +103,7 @@ class SubscriptionController extends Controller
                 'auto_renew' => $request->auto_renew ?? false,
             ]);
 
-            // Create payment transaction
+            // ✅ Create payment transaction
             $transaction = PaymentTransaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id,
@@ -117,7 +117,7 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
-            // Redirect to payment initiation
+            // ✅ REDIRECT to payment initiation (NOT activate immediately)
             return redirect()->route('payment.initiate', [
                 'transaction_id' => $transaction->transaction_id
             ]);
@@ -150,6 +150,7 @@ class SubscriptionController extends Controller
     /**
      * Renew existing subscription
      */
+
     public function renew(Request $request)
     {
         $request->validate([
@@ -159,23 +160,20 @@ class SubscriptionController extends Controller
         ]);
 
         $user = Auth::user();
+
+        // ✅ Verify subscription belongs to user
         $subscription = Subscription::where('user_id', $user->id)
             ->findOrFail($request->subscription_id);
-
-        // Check if subscription belongs to user
-        if ($subscription->user_id !== $user->id) {
-            abort(403, 'Accès non autorisé à cet abonnement.');
-        }
 
         $plan = $subscription->plan;
 
         DB::beginTransaction();
         try {
-            // Create new subscription record
+            // ✅ Create NEW subscription (don't modify existing)
             $newSubscription = Subscription::create([
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
-                'status' => 'pending',
+                'status' => 'pending', // ← Pending until payment
                 'start_date' => $subscription->end_date->isFuture()
                     ? $subscription->end_date
                     : now(),
@@ -187,7 +185,7 @@ class SubscriptionController extends Controller
                 'auto_renew' => $subscription->auto_renew,
             ]);
 
-            // Create payment transaction
+            // ✅ Create payment transaction
             $transaction = PaymentTransaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $newSubscription->id,
@@ -201,6 +199,7 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
+            // ✅ Redirect to payment
             return redirect()->route('payment.initiate', [
                 'transaction_id' => $transaction->transaction_id
             ]);

@@ -65,7 +65,7 @@ class SaillieController extends Controller
     {
         $femelles = Femelle::all();
         $males = Male::all();
-        
+
         return view('saillies.create', compact('femelles', 'males'));
     }
 
@@ -122,6 +122,10 @@ class SaillieController extends Controller
      */
     public function show(Saillie $saillie)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         $saillie->load(['femelle', 'male']);
         return view('saillies.show', compact('saillie'));
     }
@@ -131,9 +135,12 @@ class SaillieController extends Controller
      */
     public function edit(Saillie $saillie)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         $femelles = Femelle::all();
         $males = Male::all();
-        
         return view('saillies.edit', compact('saillie', 'femelles', 'males'));
     }
 
@@ -142,6 +149,12 @@ class SaillieController extends Controller
      */
     public function update(Request $request, Saillie $saillie)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'male_id' => 'required|exists:males,id',
@@ -192,6 +205,12 @@ class SaillieController extends Controller
      */
     public function destroy(Saillie $saillie)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+
         $femelle = Femelle::find($saillie->femelle_id);
         $male = Male::find($saillie->male_id);
 

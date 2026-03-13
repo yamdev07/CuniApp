@@ -95,6 +95,10 @@ class MaleController extends Controller
     public function show($id)
     {
         $male = Male::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         return view('males.show', compact('male'));
     }
 
@@ -104,6 +108,10 @@ class MaleController extends Controller
     public function edit($id)
     {
         $male = Male::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         return view('males.edit', compact('male'));
     }
 
@@ -113,6 +121,11 @@ class MaleController extends Controller
     public function update(Request $request, $id)
     {
         $male = Male::findOrFail($id);
+
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
 
         $request->validate([
             'code' => 'required|unique:males,code,' . $male->id,
@@ -154,6 +167,11 @@ class MaleController extends Controller
     public function destroy($id)
     {
         $male = Male::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $maleName = $male->nom;
 
         $male->delete();

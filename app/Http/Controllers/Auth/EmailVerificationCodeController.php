@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\RateLimiter;
 
 class EmailVerificationCodeController extends Controller
 {
@@ -53,31 +55,61 @@ class EmailVerificationCodeController extends Controller
 
         $email = $request->email;
         $code = $request->code;
+
+        // ✅ SECURITY FIX: Rate Limiting (5 attempts per 10 minutes)
+        $throttleKey = 'verify_code:' . strtolower($email);
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return redirect()->route('welcome')
+                ->with('verification_pending', true)
+                ->with('verification_email', $email)
+                ->withErrors(['code' => "Trop de tentatives. Veuillez réessayer dans {$seconds} secondes."]);
+        }
+
         $storedCode = Cache::get("verification_code_{$email}");
 
         if (!$storedCode || $storedCode !== $code) {
+            // ✅ Increment failure count
+            RateLimiter::hit($throttleKey, 600); // 10 minutes decay
+
             return redirect()->route('welcome')
                 ->with('verification_pending', true)
                 ->with('verification_email', $email)
                 ->withErrors(['code' => 'Code incorrect ou expiré. Veuillez demander un nouveau code.']);
         }
 
+        // ✅ Clear rate limiter on success
+        RateLimiter::clear($throttleKey);
+
         $user = User::where('email', $email)->first();
+
         if (!$user) {
-            return redirect()->route('welcome')
-                ->withErrors(['email' => 'Utilisateur non trouvé.']);
+            $pendingRegistration = Cache::get("registration_pending_{$email}");
+            if ($pendingRegistration) {
+                $user = User::create([
+                    'name' => $pendingRegistration['name'],
+                    'email' => $pendingRegistration['email'],
+                    'password' => $pendingRegistration['password'],
+                    'email_verified_at' => now(),
+                ]);
+                Cache::forget("registration_pending_{$email}");
+                event(new Registered($user));
+            } else {
+                return redirect()->route('welcome')
+                    ->with('verification_pending', true)
+                    ->with('verification_email', $email)
+                    ->withErrors(['email' => 'Données d\'inscription introuvables. Veuillez vous réinscrire.']);
+            }
+        } else {
+            $user->email_verified_at = now();
+            $user->save();
         }
 
-        // ✅ ONLY mark as verified - DO NOT LOG IN
-        $user->email_verified_at = now();
-        $user->save();
         Cache::forget("verification_code_{$email}");
         event(new Verified($user));
-
-        // ✅ CLEAR verification session flags
         session()->forget(['verification_pending', 'verification_email']);
 
-        // ✅ Redirect to welcome page WITHOUT logging in
         return redirect()->route('welcome')
             ->with('success', '✅ Email vérifié avec succès ! Vous pouvez maintenant vous connecter.');
     }
@@ -94,7 +126,7 @@ class EmailVerificationCodeController extends Controller
         $email = $request->email;
         $code = sprintf('%06d', mt_rand(0, 999999));
 
-        Cache::put("verification_code_{$email}", $code, 600);
+        Cache::put("verification_code_{$email}", $code, 1800);
 
         Mail::send('emails.verification-code', [
             'code' => $code,

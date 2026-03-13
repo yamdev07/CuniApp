@@ -9,6 +9,7 @@ use App\Http\Controllers\MiseBasController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\LapinController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -23,7 +24,9 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\SubscriptionManagementController;
-
+use App\Http\Middleware\CheckSubscription;
+use App\Http\Middleware\CheckAdminRole;
+use App\Http\Middleware\VerifyWebhookIp;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
@@ -84,24 +87,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store']);
 
     // Password Reset Flow
-    // Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
-    // Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
-    // Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-    // Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
 
-    // 🔐 Password Reset Flow - Noms de routes STANDARDS
-    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');  // ← Nom standard
-    
-    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->name('password.email');    // ← Nom standard
-    
-    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');    // ← Nom standard
-    
-    // ⚠️ IMPORTANT : 'password.store' et NON 'password.update'
-    Route::post('/reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');    // ← Correspond au controller method
+    // ✅ FIX: Changed from 'reset-payment' to 'reset-password'
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 
     // Email Verification Code System
     Route::post('/verification/code/verify', [EmailVerificationCodeController::class, 'verify'])->name('verification.code.verify');
@@ -114,7 +105,6 @@ Route::middleware('guest')->group(function () {
 // ========================================================================
 
 Route::middleware('auth')->group(function () {
-
     // Standard Laravel Email Verification Flow
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
@@ -140,7 +130,6 @@ Route::middleware('auth')->group(function () {
     // ====================================================================
 
     Route::middleware('verified')->group(function () {
-
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -152,61 +141,43 @@ Route::middleware('auth')->group(function () {
         // ================================================================
         // 💳 SUBSCRIPTION ROUTES (No subscription check - users need to access these)
         // ================================================================
-
         Route::prefix('subscription')->name('subscription.')->group(function () {
-            // View available plans
             Route::get('/plans', [SubscriptionController::class, 'index'])->name('plans');
-
-            // Show subscription form for selected plan
             Route::get('/subscribe', [SubscriptionController::class, 'create'])->name('subscribe');
-
-            // Process subscription request
             Route::post('/purchase', [SubscriptionController::class, 'store'])->name('purchase');
-
-            // Show subscription status/details
             Route::get('/status', [SubscriptionController::class, 'show'])->name('status');
-
-            // Renew existing subscription
             Route::post('/renew', [SubscriptionController::class, 'renew'])->name('renew');
-
-            // Cancel subscription
             Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
         });
 
         // ================================================================
         // 💰 PAYMENT ROUTES (No subscription check - users need to pay)
         // ================================================================
-
         Route::prefix('payment')->name('payment.')->group(function () {
-            // Initiate payment process
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
-
-            // Process payment with selected provider
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
 
-            // Payment provider callback
-            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
+            // ✅ FEDAPAY WEBHOOK (specific provider) - Protected with IP verification
+            Route::post('/webhook/fedapay', [PaymentController::class, 'webhook'])
+                ->name('webhook.fedapay')
+                ->middleware(VerifyWebhookIp::class);
 
-            // Payment webhook handler
-            Route::post('/webhook/{provider}', [PaymentController::class, 'webhook'])->name('webhook');
+            // ✅ FEDAPAY CALLBACK (user redirect after payment)
+            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])
+                ->name('callback');
 
-            // Verify payment status
+            // ✅ REMOVE DUPLICATE: This was causing conflicts
+            // Route::get('/payment/callback/{provider}', ...) - REMOVED (duplicate)
+
             Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
-
-            // Manual payment confirmation (Admin)
             Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
         });
 
         // ================================================================
         // 🛡️ PROTECTED CRUD ROUTES (Require active subscription)
-        // Apply CheckSubscription middleware here
         // ================================================================
-
         Route::middleware('check.subscription')->group(function () {
-
-            // ================================================================
-            // ✅ MÂLES - Complete CRUD
-            // ================================================================
+            // MÂLES
             Route::prefix('males')->name('males.')->group(function () {
                 Route::get('/check-code', [MaleController::class, 'checkCode'])->name('check-code');
                 Route::get('/', [MaleController::class, 'index'])->name('index');
@@ -219,9 +190,7 @@ Route::middleware('auth')->group(function () {
                 Route::patch('/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('toggleEtat');
             });
 
-            // ================================================================
-            // ✅ FEMELLES - Complete CRUD
-            // ================================================================
+            // FEMELLES
             Route::prefix('femelles')->name('femelles.')->group(function () {
                 Route::get('/check-code', [FemelleController::class, 'checkCode'])->name('check-code');
                 Route::get('/', [FemelleController::class, 'index'])->name('index');
@@ -234,9 +203,7 @@ Route::middleware('auth')->group(function () {
                 Route::patch('/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('toggleEtat');
             });
 
-            // ================================================================
-            // ✅ SAILLIES - Complete CRUD
-            // ================================================================
+            // SAILLIES
             Route::prefix('saillies')->name('saillies.')->group(function () {
                 Route::get('/', [SaillieController::class, 'index'])->name('index');
                 Route::get('/create', [SaillieController::class, 'create'])->name('create');
@@ -248,9 +215,7 @@ Route::middleware('auth')->group(function () {
                 Route::patch('/{saillie}/palpation', [SaillieController::class, 'updatePalpation'])->name('palpation.update');
             });
 
-            // ================================================================
-            // ✅ MISES BAS - Complete CRUD
-            // ================================================================
+            // MISES BAS
             Route::prefix('mises-bas')->name('mises-bas.')->group(function () {
                 Route::get('/', [MiseBasController::class, 'index'])->name('index');
                 Route::get('/create', [MiseBasController::class, 'create'])->name('create');
@@ -261,9 +226,7 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{miseBas}', [MiseBasController::class, 'destroy'])->name('destroy');
             });
 
-            // ================================================================
-            // ✅ LAPINS - Unified Management
-            // ================================================================
+            // LAPINS
             Route::prefix('lapins')->name('lapins.')->group(function () {
                 Route::get('/', [LapinController::class, 'index'])->name('index');
                 Route::get('/create', [LapinController::class, 'create'])->name('create');
@@ -275,9 +238,7 @@ Route::middleware('auth')->group(function () {
                 Route::get('/check-code', [LapinController::class, 'checkCode'])->name('check-code');
             });
 
-            // ================================================================
-            // ✅ NAISSANCES - Complete CRUD
-            // ================================================================
+            // NAISSANCES
             Route::prefix('naissances')->name('naissances.')->group(function () {
                 Route::get('/', [NaissanceController::class, 'index'])->name('index');
                 Route::get('/create', [NaissanceController::class, 'create'])->name('create');
@@ -288,9 +249,7 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{naissance}', [NaissanceController::class, 'destroy'])->name('destroy');
             });
 
-            // ================================================================
-            // ✅ SALES - Complete CRUD
-            // ================================================================
+            // SALES
             Route::prefix('sales')->name('sales.')->group(function () {
                 Route::get('/', [SaleController::class, 'index'])->name('index');
                 Route::get('/create', [SaleController::class, 'create'])->name('create');
@@ -299,26 +258,19 @@ Route::middleware('auth')->group(function () {
                 Route::get('/{sale}/edit', [SaleController::class, 'edit'])->name('edit');
                 Route::put('/{sale}', [SaleController::class, 'update'])->name('update');
                 Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('destroy');
-
-                // Payment Management
                 Route::patch('/{sale}/mark-paid', [SaleController::class, 'markAsPaid'])->name('mark-paid');
                 Route::post('/{sale}/partial-payment', [SaleController::class, 'recordPartialPayment'])->name('partial-payment');
                 Route::post('/{sale}/change-status', [SaleController::class, 'changePaymentStatus'])->name('change-status');
-
-                // Bulk Operations
                 Route::delete('/bulk-delete', [SaleController::class, 'bulkDelete'])->name('bulk-delete');
                 Route::get('/export', [SaleController::class, 'export'])->name('export');
                 Route::post('/load-rabbits', [SaleController::class, 'loadRabbits'])->name('load-rabbits');
             });
-        }); // End CheckSubscription middleware group
+        });
 
         // ================================================================
-        // ✅ SETTINGS & NOTIFICATIONS (Require subscription)
+        // ✅ SETTINGS & NOTIFICATIONS (Protected by subscription)
         // ================================================================
-
         Route::middleware('check.subscription')->group(function () {
-
-            // Settings Management
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/', [SettingsController::class, 'index'])->name('index');
                 Route::post('/', [SettingsController::class, 'update'])->name('update');
@@ -327,7 +279,6 @@ Route::middleware('auth')->group(function () {
                 Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clear-cache');
             });
 
-            // Notification System
             Route::prefix('notifications')->name('notifications.')->group(function () {
                 Route::get('/', [NotificationController::class, 'index'])->name('index');
                 Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
@@ -335,7 +286,6 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
             });
 
-            // Historique des activités
             Route::prefix('activites')->name('activites.')->group(function () {
                 Route::get('/', [ActiviteController::class, 'index'])->name('index');
                 Route::delete('/{type}/{id}', [ActiviteController::class, 'destroy'])->name('destroy');
@@ -343,12 +293,9 @@ Route::middleware('auth')->group(function () {
         });
 
         // ================================================================
-        // 👑 ADMIN ROUTES (Require admin role)
+        // 👑 ADMIN ROUTES (Admin middleware)
         // ================================================================
-
         Route::prefix('admin')->name('admin.')->middleware('check.admin')->group(function () {
-
-            // Subscription Management
             Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
                 Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
                 Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show');
@@ -359,17 +306,27 @@ Route::middleware('auth')->group(function () {
                 Route::get('/export', [SubscriptionManagementController::class, 'export'])->name('export');
             });
         });
-    }); // End verified middleware group
 
-    // ========================================================================
-    // 🔍 UTILITY ROUTES (Available to authenticated users)
-    // ========================================================================
-
-    Route::middleware(['auth', 'verified'])->group(function () {
-        // Search Endpoints
-        Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
-        Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
+        // ================================================================
+        // 👑 Invoice ROUTES 
+        // ================================================================
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index');
+            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+            Route::get('/{invoice}/download', [InvoiceController::class, 'download'])->name('download');
+            Route::post('/{invoice}/regenerate', [InvoiceController::class, 'regeneratePdf'])->name('regenerate');
+            Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
+        });
     });
+});
+
+// ========================================================================
+// 🔍 UTILITY ROUTES
+// ========================================================================
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
+    Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
 });
 
 // ========================================================================
@@ -404,12 +361,16 @@ Route::get('/sitemap.xml', function () {
         route('privacy'),
         route('terms'),
     ];
+
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
     $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+
     foreach ($pages as $page) {
         $xml .= "  <url><loc>$page</loc><lastmod>" . now()->format('Y-m-d') . "</lastmod><changefreq>monthly</changefreq></url>" . PHP_EOL;
     }
+
     $xml .= '</urlset>';
+
     return response($xml, 200, ['Content-Type' => 'application/xml']);
 });
 
@@ -439,6 +400,7 @@ Route::get('/health', function () {
     } catch (\Exception $e) {
         $dbStatus = 'error: ' . $e->getMessage();
     }
+
     return response()->json([
         'status' => 'ok',
         'timestamp' => now()->toIso8601String(),
@@ -478,12 +440,6 @@ Route::fallback(function () {
             'path' => request()->path()
         ], 404);
     }
+
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
-
-
-
-// =====================================================
-// ✅ ROUTES D'AUTHENTIFICATION - MOT DE PASSE
-// =====================================================
-

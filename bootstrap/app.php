@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\CheckAdminRole::class,
             'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
             'check.admin' => \App\Http\Middleware\CheckAdminRole::class,
+            'verify.webhook.ip' => \App\Http\Middleware\VerifyWebhookIP::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Lapereau extends Model
 {
+    use BelongsToUser;
     protected $table = 'lapereaux';
 
     protected $fillable = [
+        'user_id',
         'naissance_id',
         'code',
         'nom',
