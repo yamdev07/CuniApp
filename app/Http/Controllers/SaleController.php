@@ -536,6 +536,11 @@ class SaleController extends Controller
      */
     public function destroy(Sale $sale)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (Was missing in provided code)
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $typeLabel = $this->getTypeLabel($sale->type);
         $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
             number_format($sale->total_amount, 2, ',', ' ') . " FCFA";

@@ -44,11 +44,11 @@ class NaissanceController extends Controller
         $stats = [
             'total' => Naissance::count(),
             'this_month' => Naissance::whereHas(
-                    'miseBas',
-                    fn($q) =>
-                    $q->whereMonth('date_mise_bas', now()->month)
-                        ->whereYear('date_mise_bas', now()->year)
-                )
+                'miseBas',
+                fn($q) =>
+                $q->whereMonth('date_mise_bas', now()->month)
+                    ->whereYear('date_mise_bas', now()->year)
+            )
                 ->count(),
             'nb_vivant_total' => Lapereau::whereHas('naissance', fn($q) => $q->active())
                 ->where('etat', 'vivant')
@@ -217,6 +217,10 @@ class NaissanceController extends Controller
 
     public function show(Naissance $naissance, Request $request)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         $naissance->load(['miseBas.femelle', 'miseBas.saillie.male', 'lapereaux']);
 
         $canVerifySex = $naissance->can_verify_sex;
@@ -251,6 +255,11 @@ class NaissanceController extends Controller
 
     public function edit(Naissance $naissance)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $naissance->load(['miseBas.femelle', 'lapereaux']);
         $canVerifySex = $naissance->can_verify_sex;
 
@@ -272,6 +281,12 @@ class NaissanceController extends Controller
 
     public function update(Request $request, Naissance $naissance)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+
         $validated = $request->validate([
             'poids_moyen_naissance' => 'nullable|numeric|min:0|max:200',
             'etat_sante' => 'required|in:Excellent,Bon,Moyen,Faible',
@@ -391,6 +406,12 @@ class NaissanceController extends Controller
 
     public function destroy(Naissance $naissance)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+
         $femelleName = $naissance->femelle->nom ?? 'Inconnue';
         $totalLapereaux = $naissance->total_lapereaux;
         $naissance->delete(); // Cascade deletes lapereaux
