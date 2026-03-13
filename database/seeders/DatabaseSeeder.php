@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         // Call the main CuniApp seeder
         $this->call([
-            CuniappSeeder::class,
+            CuniAppSeeder::class,
         ]);
 
         $this->command->newLine();
