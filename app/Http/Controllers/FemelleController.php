@@ -19,9 +19,9 @@ class FemelleController extends Controller
         $query = Femelle::query();
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('code', 'LIKE', "%{$search}%")
-                  ->orWhere('nom', 'LIKE', "%{$search}%");
+                    ->orWhere('nom', 'LIKE', "%{$search}%");
             });
         }
 
@@ -88,6 +88,10 @@ class FemelleController extends Controller
     public function show($id)
     {
         $femelle = Femelle::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         return view('femelles.show', compact('femelle'));
     }
 
@@ -97,6 +101,10 @@ class FemelleController extends Controller
     public function edit($id)
     {
         $femelle = Femelle::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
         return view('femelles.edit', compact('femelle'));
     }
 
@@ -106,6 +114,10 @@ class FemelleController extends Controller
     public function update(Request $request, $id)
     {
         $femelle = Femelle::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
 
         $request->validate([
             'code' => 'required|unique:femelles,code,' . $femelle->id,
@@ -147,6 +159,12 @@ class FemelleController extends Controller
     public function destroy($id)
     {
         $femelle = Femelle::findOrFail($id);
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+
         $femelleName = $femelle->nom;
 
         $femelle->delete();
@@ -213,5 +231,4 @@ class FemelleController extends Controller
         $exists = Femelle::where('code', $request->code)->exists();
         return response()->json(['available' => !$exists]);
     }
-
 }

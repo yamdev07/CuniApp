@@ -12,32 +12,43 @@ use App\Models\Naissance;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index() 
     {
-        // Totaux actuels
-        $nbMales = Male::count();
-        $nbFemelles = Femelle::count();
-        $nbSaillies = Saillie::count();
-        $nbMisesBas = MiseBas::count();
+        // ✅ PHASE 1 TASK 1.2: Cache user ID for defense-in-depth
+        $userId = auth()->id();
 
-        // Chiffre d'affaires
+        // ====================================================================
+        // TOTAUX ACTUELS - ✅ EXPLICIT USER FILTER
+        // ====================================================================
+        $nbMales = Male::where('user_id', $userId)->count();
+        $nbFemelles = Femelle::where('user_id', $userId)->count();
+        $nbSaillies = Saillie::where('user_id', $userId)->count();
+        $nbMisesBas = MiseBas::where('user_id', $userId)->count();
+
+        // ====================================================================
+        // CHIFFRE D'AFFAIRES - ✅ EXPLICIT USER FILTER
+        // ====================================================================
         try {
-            $totalRevenue = Sale::where('payment_status', 'paid')->sum('total_amount');
+            $totalRevenue = Sale::where('user_id', $userId)
+                ->where('payment_status', 'paid')
+                ->sum('total_amount');
 
             $startOfWeek = Carbon::now()->startOfWeek();
             $endOfWeek = Carbon::now()->endOfWeek();
-            $revenueThisWeek = Sale::where('payment_status', 'paid')
+            $revenueThisWeek = Sale::where('user_id', $userId)
+                ->where('payment_status', 'paid')
                 ->whereBetween('date_sale', [$startOfWeek, $endOfWeek])
                 ->sum('total_amount');
 
             $startLastWeek = Carbon::now()->subWeek()->startOfWeek();
             $endLastWeek = Carbon::now()->subWeek()->endOfWeek();
-            $revenueLastWeek = Sale::where('payment_status', 'paid')
+            $revenueLastWeek = Sale::where('user_id', $userId)
+                ->where('payment_status', 'paid')
                 ->whereBetween('date_sale', [$startLastWeek, $endLastWeek])
                 ->sum('total_amount');
 
-            $revenuePercent = $revenueLastWeek > 0
-                ? (($revenueThisWeek - $revenueLastWeek) / $revenueLastWeek) * 100
+            $revenuePercent = $revenueLastWeek > 0 
+                ? (($revenueThisWeek - $revenueLastWeek) / $revenueLastWeek) * 100 
                 : ($revenueThisWeek > 0 ? 100 : 0);
         } catch (\Exception $e) {
             $totalRevenue = 0;
@@ -49,30 +60,45 @@ class DashboardController extends Controller
             'trend' => $revenuePercent > 0 ? 'up' : ($revenuePercent < 0 ? 'down' : 'neutral'),
         ];
 
-        // Calcul des pourcentages d'évolution
+        // ====================================================================
+        // CALCUL DES POURCENTAGES D'ÉVOLUTION - ✅ EXPLICIT USER FILTER
+        // ====================================================================
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
         $startLastWeek = Carbon::now()->subWeek()->startOfWeek();
         $endLastWeek = Carbon::now()->subWeek()->endOfWeek();
 
-        $oldMales = Male::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
-        $oldFemelles = Femelle::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
-        $oldSaillies = Saillie::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
-        $oldMisesBas = MiseBas::whereBetween('created_at', [$startLastWeek, $endLastWeek])->count();
+        $oldMales = Male::where('user_id', $userId)
+            ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
+            ->count();
+        $oldFemelles = Femelle::where('user_id', $userId)
+            ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
+            ->count();
+        $oldSaillies = Saillie::where('user_id', $userId)
+            ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
+            ->count();
+        $oldMisesBas = MiseBas::where('user_id', $userId)
+            ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
+            ->count();
 
         $malePercent = $oldMales > 0 ? (($nbMales - $oldMales) / $oldMales) * 100 : 0;
         $femalePercent = $oldFemelles > 0 ? (($nbFemelles - $oldFemelles) / $oldFemelles) * 100 : 0;
         $sailliePercent = $oldSaillies > 0 ? (($nbSaillies - $oldSaillies) / $oldSaillies) * 100 : 0;
         $miseBasPercent = $oldMisesBas > 0 ? (($nbMisesBas - $oldMisesBas) / $oldMisesBas) * 100 : 0;
 
-        // Listes récentes
-        $males = Male::latest()->paginate(10);
-        $femelles = Femelle::latest()->paginate(10);
+        // ====================================================================
+        // LISTES RÉCENTES - ✅ EXPLICIT USER FILTER
+        // ====================================================================
+        $males = Male::where('user_id', $userId)->latest()->paginate(10);
+        $femelles = Femelle::where('user_id', $userId)->latest()->paginate(10);
 
-        // ✅ ÉVÉNEMENTS POUR LE CALENDRIER - FIX APPLIQUÉ
+        // ====================================================================
+        // ÉVÉNEMENTS POUR LE CALENDRIER - ✅ EXPLICIT USER FILTER
+        // ====================================================================
         $events = [
             // Saillies (violet)
-            'saillies' => Saillie::with(['femelle', 'male'])
+            'saillies' => Saillie::where('user_id', $userId)
+                ->with(['femelle', 'male'])
                 ->select('id', 'date_saillie', 'femelle_id', 'male_id')
                 ->get()
                 ->map(function ($saillie) {
@@ -87,10 +113,11 @@ class DashboardController extends Controller
                 ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
 
-            // ✅ Naissances (vert) → FIX: Utiliser la relation lapereaux
-            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+            // Naissances (vert)
+            'naissances' => \App\Models\Naissance::where('user_id', $userId)
+                ->with(['femelle', 'miseBas'])
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
-                ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant')) // ← Filtrage via relation
+                ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->get()
                 ->map(fn($n) => [
                     'date' => $n->date_naissance?->format('Y-m-d'),
@@ -100,10 +127,11 @@ class DashboardController extends Controller
                 ->values()
                 ->toArray(),
 
-            // ✅ Sexuations (bleu) → J+10, FIX: Utiliser la relation lapereaux
-            'sexuations' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+            // Sexuations (bleu) - J+10
+            'sexuations' => \App\Models\Naissance::where('user_id', $userId)
+                ->with(['femelle', 'miseBas'])
                 ->where('sex_verified', false)
-                ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant')) // ← Filtrage via relation
+                ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->get()
                 ->map(function ($n) {
@@ -119,25 +147,29 @@ class DashboardController extends Controller
                 ->toArray(),
         ];
 
-        // Timeline d'activité dynamique
+        // ====================================================================
+        // TIMELINE D'ACTIVITÉ DYNAMIQUE - ✅ EXPLICIT USER FILTER
+        // ====================================================================
         $timelineActivities = collect();
 
-        // ✅ Récupérer les dernières NAISSANCES (vert) → FIX: Utiliser la relation lapereaux
-        $recentNaissances = Naissance::with('femelle')
-            ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant')) // ← Filtrage via relation
+        // Naissances (vert)
+        $recentNaissances = Naissance::where('user_id', $userId)
+            ->with('femelle')
+            ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
             ->latest('created_at')
             ->get()
             ->map(fn($n) => [
                 'type' => 'green',
                 'title' => 'Naissance enregistrée',
-                'desc' => sprintf('%s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0), // ← L'accessor fonctionne toujours
+                'desc' => sprintf('%s (%d nés)', $n->femelle?->nom ?? 'Inconnue', $n->nb_vivant ?? 0),
                 'time' => Carbon::parse($n->created_at)->diffForHumans(),
                 'date' => $n->created_at,
                 'url' => route('naissances.show', $n->id) ?? '#',
             ]);
 
-        // Récupérer les dernières saillies (violet)
-        $recentSaillies = Saillie::with('femelle', 'male')
+        // Saillies (violet)
+        $recentSaillies = Saillie::where('user_id', $userId)
+            ->with('femelle', 'male')
             ->latest('date_saillie')
             ->limit(1)
             ->get()
@@ -150,8 +182,9 @@ class DashboardController extends Controller
                 'url' => route('saillies.show', $s->id) ?? '#',
             ]);
 
-        // Dernières ventes (bleu)
-        $recentSales = Sale::latest('created_at')
+        // Ventes (bleu)
+        $recentSales = Sale::where('user_id', $userId)
+            ->latest('created_at')
             ->limit(1)
             ->get()
             ->map(fn($v) => [
@@ -163,7 +196,9 @@ class DashboardController extends Controller
                 'url' => route('sales.show', $v->id) ?? '#',
             ]);
 
-        $recentMisesBas = MiseBas::with('saillie.femelle')
+        // Mises Bas (amber)
+        $recentMisesBas = MiseBas::where('user_id', $userId)
+            ->with('saillie.femelle')
             ->latest('date_mise_bas')
             ->limit(1)
             ->get()
@@ -176,8 +211,11 @@ class DashboardController extends Controller
                 'url' => route('mises-bas.show', $m->id),
             ]);
 
-        // Nouveaux Lapins
-        $nouveauxMales = Male::latest('created_at')->limit(1)->get()
+        // Nouveaux Lapins (cyan)
+        $nouveauxMales = Male::where('user_id', $userId)
+            ->latest('created_at')
+            ->limit(1)
+            ->get()
             ->map(fn($m) => [
                 'type' => 'cyan',
                 'title' => 'Mâle enregistré',
@@ -187,7 +225,10 @@ class DashboardController extends Controller
                 'url' => route('males.show', $m->id),
             ]);
 
-        $nouvellesFemelles = Femelle::latest('created_at')->limit(1)->get()
+        $nouvellesFemelles = Femelle::where('user_id', $userId)
+            ->latest('created_at')
+            ->limit(1)
+            ->get()
             ->map(fn($f) => [
                 'type' => 'cyan',
                 'title' => 'Femelle enregistrée',
@@ -207,10 +248,13 @@ class DashboardController extends Controller
             ...$recentMisesBas->toArray(),
             ...$nouveauxLapins->toArray(),
         ])
-            ->sortByDesc('date')
-            ->take(5)
-            ->values();
+        ->sortByDesc('date')
+        ->take(5)
+        ->values();
 
+        // ====================================================================
+        // RETURN VIEW
+        // ====================================================================
         return view('dashboard', compact(
             'nbMales',
             'nbFemelles',

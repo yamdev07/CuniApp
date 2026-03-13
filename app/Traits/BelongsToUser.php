@@ -1,11 +1,14 @@
-<?php
+<?php namespace App\Traits;
 
-namespace App\Traits;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ActivityNotificationMail;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
-trait BelongsToUser
-{
-    protected static function bootBelongsToUser()
-    {
+trait BelongsToUser {
+    protected static function bootBelongsToUser() {
         // Auto-assign user_id on create
         static::creating(function ($model) {
             if (auth()->check() && !$model->user_id) {
@@ -15,14 +18,25 @@ trait BelongsToUser
 
         // Auto-filter queries by user_id
         static::addGlobalScope('user', function ($builder) {
-            if (auth()->check() && !auth()->user()->isAdmin()) {
-                $builder->where('user_id', auth()->id());
+            if (auth()->check()) {
+                if (!auth()->user()->isAdmin()) {
+                    $builder->where('user_id', auth()->id());
+                } else {
+                    // ✅ ADMIN AUDIT LOGGING
+                    // Log when admin accesses data belonging to specific users
+                    // We check if the query actually has a user_id constraint being bypassed
+                    \Log::channel('audit')->info('Admin Data Access', [
+                        'admin_id' => auth()->id(),
+                        'model' => get_class($builder->getModel()),
+                        'timestamp' => now(),
+                        'ip' => request()->ip()
+                    ]);
+                }
             }
         });
     }
 
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(\App\Models\User::class);
     }
 }

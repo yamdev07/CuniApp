@@ -134,6 +134,12 @@ return [
             'days' => 90, // Keep webhook logs for 90 days
         ],
 
+        'audit' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/audit.log'),
+            'level' => 'info',
+        ],
+
     ],
 
 ];
