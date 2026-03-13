@@ -314,7 +314,7 @@ class CuniAppSeeder extends Seeder
                     ]);
 
                     // ── Generate invoice for this subscription ─────────────
-                    $this->createInvoice($user, $subscription, $transaction, $startDate, $plan->price, $status);
+                    $this->createInvoice($user, $subscription, $transaction, $startDate, $plan->price, $status, $plan->name);
 
                     $user->update([
                         'subscription_status'  => $status,
@@ -341,7 +341,8 @@ class CuniAppSeeder extends Seeder
         PaymentTransaction $transaction,
         Carbon             $invoiceDate,
         float              $amount,
-        string             $subStatus = 'active'
+        string             $subStatus = 'active',
+        string             $planName  = 'Plan'
     ): void {
         $invoiceNumber = 'INV-' . date('Y') . '-' . str_pad($this->invoiceCounter++, 5, '0', STR_PAD_LEFT);
         $invoiceStatus = ($subStatus === 'active' || $subStatus === 'expired') ? 'paid' : 'pending';
@@ -368,7 +369,7 @@ class CuniAppSeeder extends Seeder
             ]),
             'line_items' => json_encode([
                 [
-                    'description' => 'Abonnement CuniApp – ' . $subscription->subscriptionPlan->name ?? 'Plan',
+                    'description' => 'Abonnement CuniApp – ' . $planName,
                     'quantity'    => 1,
                     'unit_price'  => $amount,
                     'total'       => $amount,
@@ -474,7 +475,7 @@ class CuniAppSeeder extends Seeder
                         'paid_at'         => $adminStart,
                     ]);
 
-                    $this->createInvoice($user, $adminSub, $adminTxn, $adminStart, $adminPlan->price, 'active');
+                    $this->createInvoice($user, $adminSub, $adminTxn, $adminStart, $adminPlan->price, 'active', $adminPlan->name);
                     $this->command->info("     ✓ Admin subscription + invoice created");
                 }
             }
