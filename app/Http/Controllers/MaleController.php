@@ -62,7 +62,7 @@ class MaleController extends Controller
             'race' => 'nullable|string|max:255',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'nullable|date',
-            'etat' => 'required|in:Active,Inactive,Malade',
+            'etat' => 'required|in:Active,Inactive,Malade,vendu',
         ]);
 
         $male = Male::create($request->all());
@@ -133,7 +133,7 @@ class MaleController extends Controller
             'race' => 'nullable|string|max:255',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive,Malade',
+            'etat' => 'required|in:Active,Inactive,Malade,vendu',  // ← Correction
         ]);
 
         $oldNom = $male->nom;

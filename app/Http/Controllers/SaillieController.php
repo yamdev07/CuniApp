@@ -16,13 +16,48 @@ class SaillieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $saillies = Saillie::with(['femelle', 'male'])->latest()->paginate(10);
+   public function index(Request $request)
+{
+    $query = Saillie::with(['femelle', 'male']);
 
-        return view('saillies.index', compact('saillies'));
+    // 🔍 Recherche texte (femelle ou mâle : nom ou code)
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->whereHas('femelle', function($sub) use ($search) {
+                $sub->where('nom', 'LIKE', "%{$search}%")
+                    ->orWhere('code', 'LIKE', "%{$search}%");
+            })
+            ->orWhereHas('male', function($sub) use ($search) {
+                $sub->where('nom', 'LIKE', "%{$search}%")
+                    ->orWhere('code', 'LIKE', "%{$search}%");
+            });
+        });
     }
 
+    // 📅 Filtre par période de saillie
+    if ($request->filled('date_from')) {
+        $query->whereDate('date_saillie', '>=', $request->date_from);
+    }
+    if ($request->filled('date_to')) {
+        $query->whereDate('date_saillie', '<=', $request->date_to);
+    }
+
+    // 🎯 Filtre par résultat de palpation
+    if ($request->filled('resultat')) {
+        // "" signifie "En attente" (palpation_resultat IS NULL)
+        if ($request->resultat === '') {
+            $query->whereNull('palpation_resultat');
+        } else {
+            $query->where('palpation_resultat', $request->resultat);
+        }
+    }
+
+    // 🔢 Pagination avec conservation des paramètres de recherche
+    $saillies = $query->latest()->paginate(10)->withQueryString();
+
+    return view('saillies.index', compact('saillies'));
+}
     /**
      * Show the form for creating a new resource.
      */

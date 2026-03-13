@@ -69,7 +69,7 @@
                     </div>
                 </div>
 
-                {{-- ✅ Global Price Settings Section --}}
+                {{--  Global Price Settings Section --}}
                 <div class="form-section"
                     style="margin-top: 24px; border: 2px solid var(--primary-subtle); background: linear-gradient(135deg, var(--primary-subtle) 0%, var(--surface-alt) 100%);">
                     <h4 class="section-subtitle">

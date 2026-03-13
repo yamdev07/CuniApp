@@ -20,7 +20,136 @@
     </a>
 </div>
 
-{{-- ✅ STATS GRID - Fixed responsive layout --}}
+{{-- ✅ BARRE DE RECHERCHE AVANCÉE --}}
+<div class="cuni-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 16px;">
+        <form method="GET" action="{{ route('naissances.index') }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end;">
+                
+                {{-- Recherche texte --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-search" style="margin-right: 4px;"></i> Recherche
+                    </label>
+                    <input type="text" 
+                           name="search" 
+                           value="{{ request()->get('search') }}"
+                           class="form-control"
+                           placeholder="Nom ou code femelle..."
+                           style="border-radius: var(--radius-lg);">
+                </div>
+                
+                {{-- Filtre date début --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-calendar-event" style="margin-right: 4px;"></i> Du
+                    </label>
+                    <input type="date" 
+                           name="date_from" 
+                           value="{{ request()->get('date_from') }}"
+                           class="form-control"
+                           style="border-radius: var(--radius-lg);">
+                </div>
+                
+                {{-- Filtre date fin --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-calendar-check" style="margin-right: 4px;"></i> Au
+                    </label>
+                    <input type="date" 
+                           name="date_to" 
+                           value="{{ request()->get('date_to') }}"
+                           class="form-control"
+                           style="border-radius: var(--radius-lg);">
+                </div>
+                
+                {{-- Filtre état de santé --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-heart-pulse" style="margin-right: 4px;"></i> Santé
+                    </label>
+                    <select name="etat_sante" class="form-select" style="border-radius: var(--radius-lg);">
+                        <option value="">Tous</option>
+                        <option value="Excellent" {{ request('etat_sante') === 'Excellent' ? 'selected' : '' }}>Excellent</option>
+                        <option value="Bon" {{ request('etat_sante') === 'Bon' ? 'selected' : '' }}>Bon</option>
+                        <option value="Moyen" {{ request('etat_sante') === 'Moyen' ? 'selected' : '' }}>Moyen</option>
+                        <option value="Faible" {{ request('etat_sante') === 'Faible' ? 'selected' : '' }}>Faible</option>
+                    </select>
+                </div>
+                
+                {{-- Filtre vérification sexe --}}
+                <div>
+                    <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                        <i class="bi bi-gender-ambiguous" style="margin-right: 4px;"></i> Vérification
+                    </label>
+                    <select name="sex_verified" class="form-select" style="border-radius: var(--radius-lg);">
+                        <option value="">Tous</option>
+                        <option value="verified" {{ request('sex_verified') === 'verified' ? 'selected' : '' }}>Vérifié</option>
+                        <option value="pending" {{ request('sex_verified') === 'pending' ? 'selected' : '' }}>En attente</option>
+                    </select>
+                </div>
+                
+                {{-- Boutons d'action --}}
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="btn-cuni primary" style="flex: 1; padding: 10px;">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                    @if(request()->anyFilled(['search', 'date_from', 'date_to', 'etat_sante', 'sex_verified']))
+                        <a href="{{ route('naissances.index') }}" 
+                           class="btn-cuni secondary" 
+                           style="padding: 10px 16px;"
+                           title="Réinitialiser les filtres">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    @endif
+                </div>
+            </div>
+            
+            {{-- Résumé des filtres actifs --}}
+            @if(request()->anyFilled(['search', 'date_from', 'date_to', 'etat_sante', 'sex_verified']))
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--surface-border);">
+                    <small style="color: var(--text-tertiary);">
+                        Filtres actifs :
+                        @if(request('search'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                "{{ request('search') }}"
+                            </span>
+                        @endif
+                        @if(request('date_from'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                Du: {{ request('date_from') }}
+                            </span>
+                        @endif
+                        @if(request('date_to'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                Au: {{ request('date_to') }}
+                            </span>
+                        @endif
+                        @if(request('etat_sante'))
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                {{ request('etat_sante') }}
+                            </span>
+                        @endif
+                        @if(request('sex_verified') === 'verified')
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                Vérifié
+                            </span>
+                        @elseif(request('sex_verified') === 'pending')
+                            <span class="badge" style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                En attente
+                            </span>
+                        @endif
+                        <a href="{{ route('naissances.index') }}" style="color: var(--accent-red); margin-left: 8px; text-decoration: none;">
+                            <i class="bi bi-x-circle"></i> Tout effacer
+                        </a>
+                    </small>
+                </div>
+            @endif
+        </form>
+    </div>
+</div>
+
+{{-- ✅ STATS GRID --}}
 <div class="naissances-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; width: 100%;">
     <div class="cuni-card" style="margin-bottom: 0;">
         <div class="card-body p-4">
@@ -201,8 +330,11 @@
                         <td colspan="9">
                             <div class="table-empty-state">
                                 <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                                <p class="mt-3">Aucune naissance enregistrée</p>
-                                <a href="{{ route('naissances.create') }}" class="btn-cuni primary mt-3">
+                                <p class="mt-3">Aucune naissance trouvée avec ces filtres</p>
+                                <a href="{{ route('naissances.index') }}" class="btn-cuni secondary mt-2" style="margin-right: 8px;">
+                                    <i class="bi bi-x-circle"></i> Effacer les filtres
+                                </a>
+                                <a href="{{ route('naissances.create') }}" class="btn-cuni primary mt-2">
                                     <i class="bi bi-plus-lg"></i> Première naissance
                                 </a>
                             </div>
@@ -226,67 +358,67 @@
 
 @push('styles')
 <style>
-    /* ✅ FORCE DESKTOP LAYOUT - Override any mobile-first CSS */
-    @media (min-width: 768px) {
-        .naissances-stats-grid {
-            grid-template-columns: repeat(5, 1fr) !important;
-        }
-        
-        .cuni-card {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-        
-        .table-responsive {
-            overflow-x: auto !important;
-            max-width: 100% !important;
-        }
-        
-        .card-body {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-    }
+/* Animation du champ de recherche au focus */
+input[name="search"]:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-subtle) !important;
+    transition: all 0.2s ease;
+}
 
-    /* ✅ MOBILE LAYOUT */
-    @media (max-width: 767px) {
-        .naissances-stats-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 12px !important;
-        }
-        
-        .page-header {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 16px !important;
-        }
-        
-        .table-responsive table {
-            min-width: 900px !important;
-        }
-    }
+/* Effet hover sur les boutons de filtre */
+.btn-cuni.secondary:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
 
-    /* ✅ VERY SMALL MOBILE */
-    @media (max-width: 480px) {
-        .naissances-stats-grid {
-            grid-template-columns: 1fr !important;
-        }
-        
-        .text-2xl {
-            font-size: 1.5rem !important;
-        }
-    }
+/* Badge de résultat animé */
+.badge {
+    transition: all 0.2s ease;
+}
+.badge:hover {
+    transform: scale(1.05);
+}
 
-    /* ✅ Ensure cards don't shrink */
+/* Responsive : empiler sur mobile */
+@media (max-width: 768px) {
+    form[method="GET"] > div {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ✅ FORCE DESKTOP LAYOUT */
+@media (min-width: 768px) {
+    .naissances-stats-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
     .cuni-card {
-        min-width: 0;
-        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
     }
+}
 
-    /* ✅ Fix grid gap on all screens */
-    .naissances-stats-grid > div {
-        min-width: 0;
+/* ✅ MOBILE LAYOUT */
+@media (max-width: 767px) {
+    .naissances-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
     }
+    .page-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+    }
+}
+
+/* ✅ VERY SMALL MOBILE */
+@media (max-width: 480px) {
+    .naissances-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .text-2xl {
+        font-size: 1.5rem !important;
+    }
+}
 </style>
 @endpush
 @endsection

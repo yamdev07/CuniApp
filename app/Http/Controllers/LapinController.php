@@ -14,12 +14,57 @@ class LapinController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+     public function index(Request $request)
     {
-        $femelles = Femelle::latest()->paginate(10, ['*'], 'femelles_page');
-        $males = Male::latest()->paginate(10, ['*'], 'males_page');
+        // ✅ Fonction helper pour appliquer les filtres communs
+        $applyFilters = function ($query, Request $request) {
+            // Filtre de recherche texte
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('nom', 'LIKE', "%{$search}%")
+                      ->orWhere('code', 'LIKE', "%{$search}%")
+                      ->orWhere('race', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            // Filtre par état
+            if ($request->filled('etat')) {
+                $query->where('etat', $request->etat);
+            }
+            
+            // Filtre par origine
+            if ($request->filled('origine')) {
+                $query->where('origine', $request->origine);
+            }
+        };
+
+        // ✅ Query pour les femelles avec filtres
+        $femellesQuery = Femelle::query();
+        $applyFilters($femellesQuery, $request);
+        
+        // ✅ Query pour les mâles avec filtres
+        $malesQuery = Male::query();
+        $applyFilters($malesQuery, $request);
+        
+        // ✅ Filtre par type (male/female)
+        if ($request->filled('type')) {
+            if ($request->type === 'male') {
+                $femellesQuery->whereRaw('1 = 0'); // Aucun résultat pour femelles
+            } elseif ($request->type === 'female') {
+                $malesQuery->whereRaw('1 = 0'); // Aucun résultat pour mâles
+            }
+        }
+
+        // ✅ Pagination avec préservation des paramètres
+        $femelles = $femellesQuery->latest()->paginate(10, ['*'], 'femelles_page')
+            ->appends($request->except('femelles_page'));
+        $males = $malesQuery->latest()->paginate(10, ['*'], 'males_page')
+            ->appends($request->except('males_page'));
+
         return view('lapins.index', compact('femelles', 'males'));
     }
+
 
     /**
      * Show the form for creating a new resource.

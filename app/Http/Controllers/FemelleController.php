@@ -55,7 +55,7 @@ class FemelleController extends Controller
             'race' => 'nullable|string',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'nullable|date',
-            'etat' => 'required|in:Active,Gestante,Allaitante,Vide',
+            'etat' => 'required|in:Active,Gestante,Allaitante,Vide,vendu',
         ]);
 
         $femelle = Femelle::create($request->all());
@@ -125,7 +125,7 @@ class FemelleController extends Controller
             'race' => 'nullable|string',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'nullable|date',
-            'etat' => 'required|in:Active,Gestante,Allaitante,Vide',
+            'etat' => 'required|in:Active,Gestante,Allaitante,Vide,vendu',
         ]);
 
         $oldNom = $femelle->nom;
