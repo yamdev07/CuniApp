@@ -118,6 +118,7 @@
     </div>
 
     {{-- resources/views/sales/index.blade.php - Search Section --}}
+    {{-- resources/views/sales/index.blade.php - Search Section --}}
     <div class="cuni-card" style="margin-bottom: 20px;">
         <div class="card-body" style="padding: 16px;">
             <form method="GET" action="{{ route('sales.index') }}">
@@ -132,21 +133,7 @@
                             placeholder="Acheteur, note..." style="border-radius: var(--radius-lg);">
                     </div>
 
-                    {{-- Filtre par statut de paiement --}}
-                    <div>
-                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
-                            <i class="bi bi-credit-card" style="margin-right: 4px;"></i> Statut Paiement
-                        </label>
-                        <select name="payment_status" class="form-select" style="border-radius: var(--radius-lg);">
-                            <option value="">Tous les statuts</option>
-                            <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Payé
-                            </option>
-                            <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Partiel
-                            </option>
-                            <option value="pending" {{ request('payment_status') === 'pending' ? 'selected' : '' }}>En
-                                attente</option>
-                        </select>
-                    </div>
+                    {{-- ✅ REMOVED: Statut Paiement (now in Filtres Rapides) --}}
 
                     {{-- Filtre date début --}}
                     <div>
@@ -171,7 +158,7 @@
                         <button type="submit" class="btn-cuni primary" style="flex: 1; padding: 10px;">
                             <i class="bi bi-search"></i> Filtrer
                         </button>
-                        @if (request()->anyFilled(['search', 'payment_status', 'date_from', 'date_to']))
+                        @if (request()->anyFilled(['search', 'date_from', 'date_to']))
                             <a href="{{ route('sales.index') }}" class="btn-cuni secondary" style="padding: 10px 16px;"
                                 title="Réinitialiser les filtres">
                                 <i class="bi bi-arrow-clockwise"></i>
@@ -181,7 +168,7 @@
                 </div>
 
                 {{-- Résumé des filtres actifs --}}
-                @if (request()->anyFilled(['search', 'payment_status', 'date_from', 'date_to']))
+                @if (request()->anyFilled(['search', 'date_from', 'date_to']))
                     <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--surface-border);">
                         <small style="color: var(--text-tertiary);">
                             Filtres actifs :
@@ -189,12 +176,6 @@
                                 <span class="badge"
                                     style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
                                     🔍 "{{ request('search') }}"
-                                </span>
-                            @endif
-                            @if (request('payment_status'))
-                                <span class="badge"
-                                    style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
-                                    💳 {{ ucfirst(request('payment_status')) }}
                                 </span>
                             @endif
                             @if (request('date_from'))
@@ -220,7 +201,7 @@
         </div>
     </div>
 
-    {{-- ✅ FILTRES RAPIDES --}}
+    {{-- ✅ FILTRES RAPIDES (Payment Status filters moved here) --}}
     <div class="cuni-card" style="margin-bottom: 20px;">
         <div class="card-body" style="padding: 16px;">
             <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
@@ -228,22 +209,22 @@
                     <i class="bi bi-funnel"></i> Filtres rapides :
                 </span>
                 <a href="{{ route('sales.index') }}"
-                    class="badge {{ !request('filter') ? 'bg-primary' : 'bg-secondary' }}"
+                    class="badge {{ !request('payment_status') && !request('filter') ? 'bg-primary' : 'bg-secondary' }}"
                     style="text-decoration: none; padding: 6px 12px; border-radius: 20px;">
                     Toutes
                 </a>
-                <a href="{{ route('sales.index', ['filter' => 'paid']) }}"
-                    class="badge {{ request('filter') === 'paid' ? 'bg-success' : 'bg-secondary' }}"
+                <a href="{{ route('sales.index', ['payment_status' => 'paid']) }}"
+                    class="badge {{ request('payment_status') === 'paid' ? 'bg-success' : 'bg-secondary' }}"
                     style="text-decoration: none; padding: 6px 12px; border-radius: 20px;">
                     <i class="bi bi-check-circle"></i> Payé
                 </a>
-                <a href="{{ route('sales.index', ['filter' => 'partial']) }}"
-                    class="badge {{ request('filter') === 'partial' ? 'bg-warning' : 'bg-secondary' }}"
+                <a href="{{ route('sales.index', ['payment_status' => 'partial']) }}"
+                    class="badge {{ request('payment_status') === 'partial' ? 'bg-warning' : 'bg-secondary' }}"
                     style="text-decoration: none; padding: 6px 12px; border-radius: 20px;">
                     <i class="bi bi-clock"></i> Partiel
                 </a>
-                <a href="{{ route('sales.index', ['filter' => 'pending']) }}"
-                    class="badge {{ request('filter') === 'pending' ? 'bg-danger' : 'bg-secondary' }}"
+                <a href="{{ route('sales.index', ['payment_status' => 'pending']) }}"
+                    class="badge {{ request('payment_status') === 'pending' ? 'bg-danger' : 'bg-secondary' }}"
                     style="text-decoration: none; padding: 6px 12px; border-radius: 20px;">
                     <i class="bi bi-hourglass"></i> En attente
                 </a>
@@ -755,7 +736,7 @@
                                         const form = this.closest('form');
                                         if (form && confirm(
                                                 '⚠️ SUPPRESSION DÉFINITIVE\n\nÊtes-vous ABSOLUMENT sûr ?'
-                                                )) {
+                                            )) {
                                             form.submit();
                                         }
                                     };
