@@ -17,66 +17,61 @@ class SaleController extends Controller
 {
     use Notifiable;
 
-    /**
-     * Display a listing of sales
-     */
-    // public function index()
-    // {
-    //     $sales = Sale::with('user')
-    //         ->latest()
-    //         ->paginate(15);
+    public function index(Request $request)
+    {
+        // ✅ Start query with user isolation (Defense-in-Depth)
+        $query = Sale::where('user_id', Auth::id())
+            ->with('user');
 
-    //     $stats = [
-    //         'total_sales' => Sale::count(),
-    //         'total_revenue' => Sale::where('payment_status', 'paid')->sum('total_amount'),
-    //         'pending_payments' => Sale::where('payment_status', 'pending')->sum('total_amount'),
-    //         'this_month' => Sale::where('payment_status', 'paid')
-    //             ->whereMonth('date_sale', now()->month)
-    //             ->whereYear('date_sale', now()->year)
-    //             ->sum('total_amount')
-    //     ];
-
-    //     return view('sales.index', compact('sales', 'stats'));
-    // }
-
-
-
-
-public function index(Request $request)
-{
-    $query = Sale::with('user');
-    
-    // ✅ Filtre optionnel par statut de paiement
-    if ($request->filled('filter')) {
-        if ($request->filter === 'deletable') {
-            $query->where('date_sale', '<=', now()->subDays(60));
-        } 
-        elseif ($request->filter === 'pending') {
-            $query->where('payment_status', 'pending');
+        // ✅ TEXT SEARCH: Buyer name, notes, or transaction reference
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('buyer_name', 'LIKE', "%{$search}%")
+                    ->orWhere('notes', 'LIKE', "%{$search}%")
+                    ->orWhere('buyer_contact', 'LIKE', "%{$search}%");
+            });
         }
-        elseif ($request->filter === 'paid') {
-            $query->where('payment_status', 'paid');
+
+        // ✅ PAYMENT STATUS FILTER
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
         }
-        elseif ($request->filter === 'partial') {
-            $query->where('payment_status', 'partial');
+
+        // ✅ DATE RANGE FILTER: From
+        if ($request->filled('date_from')) {
+            $query->whereDate('date_sale', '>=', $request->date_from);
         }
+
+        // ✅ DATE RANGE FILTER: To
+        if ($request->filled('date_to')) {
+            $query->whereDate('date_sale', '<=', $request->date_to);
+        }
+
+        // ✅ PAGINATION (15 per page)
+        $sales = $query->latest('date_sale')->paginate(15)->withQueryString();
+
+        // ✅ STATISTICS (for dashboard cards)
+        $stats = [
+            'total_sales' => Sale::where('user_id', Auth::id())->count(),
+            'total_revenue' => Sale::where('user_id', Auth::id())
+                ->where('payment_status', 'paid')
+                ->sum('total_amount'),
+            'pending_payments' => Sale::where('user_id', Auth::id())
+                ->where('payment_status', 'pending')
+                ->sum('total_amount'),
+            'this_month' => Sale::where('user_id', Auth::id())
+                ->where('payment_status', 'paid')
+                ->whereMonth('date_sale', now()->month)
+                ->whereYear('date_sale', now()->year)
+                ->sum('total_amount'),
+            'deletable_sales' => Sale::where('user_id', Auth::id())
+                ->where('date_sale', '<=', now()->subDays(60))
+                ->count(),
+        ];
+
+        return view('sales.index', compact('sales', 'stats'));
     }
-    
-    $sales = $query->latest()->paginate(15);
-    
-    $stats = [
-        'total_sales' => Sale::count(),
-        'total_revenue' => Sale::where('payment_status', 'paid')->sum('total_amount'),
-        'pending_payments' => Sale::where('payment_status', 'pending')->sum('total_amount'),
-        'this_month' => Sale::where('payment_status', 'paid')
-            ->whereMonth('date_sale', now()->month)
-            ->whereYear('date_sale', now()->year)
-            ->sum('total_amount'),
-        'deletable_sales' => Sale::where('date_sale', '<=', now()->subDays(60))->count(),
-    ];
-    
-    return view('sales.index', compact('sales', 'stats'));
-}
 
     /**
      * Show form for creating new sale
@@ -88,13 +83,13 @@ public function index(Request $request)
         $males = Male::where('etat', '!=', 'vendu')
             ->orderBy('nom')
             ->paginate(20, ['*'], 'males_page');
-        
+
         //  FEMELLES : Exclure UNIQUEMENT 'vendu'
         // → Active, Gestante, Allaitante, Vide restent visibles pour le suivi d'élevage
         $femelles = Femelle::where('etat', '!=', 'vendu')
             ->orderBy('nom')
             ->paginate(20, ['*'], 'females_page');
-        
+
         //  LAPEREAUX : Montrer UNIQUEMENT 'vivant'
         // → Exclut automatiquement 'vendu', 'mort', 'archivé'
         $lapereaux = Lapereau::where('etat', 'vivant')
@@ -334,26 +329,26 @@ public function index(Request $request)
         $currentSaleRabbitIds = $sale->rabbits->pluck('rabbit_id')->toArray();
 
         //  MÂLES : Disponibles OU déjà dans cette vente
-        $males = Male::where(function($q) use ($currentSaleRabbitIds) {
-                $q->where('etat', '!=', 'vendu')
-                  ->orWhereIn('id', $currentSaleRabbitIds);
-            })
+        $males = Male::where(function ($q) use ($currentSaleRabbitIds) {
+            $q->where('etat', '!=', 'vendu')
+                ->orWhereIn('id', $currentSaleRabbitIds);
+        })
             ->orderBy('nom')
             ->paginate(20, ['*'], 'males_page');
 
         //  FEMELLES : Disponibles OU déjà dans cette vente
-        $femelles = Femelle::where(function($q) use ($currentSaleRabbitIds) {
-                $q->where('etat', '!=', 'vendu')
-                  ->orWhereIn('id', $currentSaleRabbitIds);
-            })
+        $femelles = Femelle::where(function ($q) use ($currentSaleRabbitIds) {
+            $q->where('etat', '!=', 'vendu')
+                ->orWhereIn('id', $currentSaleRabbitIds);
+        })
             ->orderBy('nom')
             ->paginate(20, ['*'], 'females_page');
 
         //  LAPEREAUX : Vivants OU déjà dans cette vente
-        $lapereaux = Lapereau::where(function($q) use ($currentSaleRabbitIds) {
-                $q->where('etat', 'vivant')
-                  ->orWhereIn('id', $currentSaleRabbitIds);
-            })
+        $lapereaux = Lapereau::where(function ($q) use ($currentSaleRabbitIds) {
+            $q->where('etat', 'vivant')
+                ->orWhereIn('id', $currentSaleRabbitIds);
+        })
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
             ->paginate(20, ['*'], 'lapereaux_page');
@@ -485,7 +480,7 @@ public function index(Request $request)
                     'rabbit_id' => $maleId,
                     'sale_price' => $malePrices[$index] ?? 0,
                 ]);
-                Male::where('id', $maleId)->update(['etat' => 'vendu']); 
+                Male::where('id', $maleId)->update(['etat' => 'vendu']);
             }
 
             //  Link selected females with INDIVIDUAL prices + mark as 'vendu'
@@ -542,78 +537,77 @@ public function index(Request $request)
         }
     }
 
-/**
- * Remove the specified sale (only after 60 days)
- *  LES LAPINS SONT SUPPRIMÉS DÉFINITIVEMENT (pas de restauration)
- */
+    /**
+     * Remove the specified sale (only after 60 days)
+     *  LES LAPINS SONT SUPPRIMÉS DÉFINITIVEMENT (pas de restauration)
+     */
 
 
-public function destroy(Sale $sale)
-{
-   
+    public function destroy(Sale $sale)
+    {
 
-    // ✅ SECURITY FIX: Explicit Ownership Check (Was missing in provided code)
+
+        // ✅ SECURITY FIX: Explicit Ownership Check (Was missing in provided code)
         if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
-    
-    // Vérification : Vente doit avoir plus de 60 jours
-    $daysSinceSale = now()->diffInDays($sale->date_sale);
-    
-    if ($daysSinceSale < 60) {
-        return back()->with('warning', 
-            "⚠️ Vous ne pouvez supprimer cette vente qu'après 60 jours. 
+
+        // Vérification : Vente doit avoir plus de 60 jours
+        $daysSinceSale = now()->diffInDays($sale->date_sale);
+
+        if ($daysSinceSale < 60) {
+            return back()->with(
+                'warning',
+                "⚠️ Vous ne pouvez supprimer cette vente qu'après 60 jours. 
             Il reste " . (60 - $daysSinceSale) . " jours d'attente."
-        );
-    }
-    
-    // SUPPRIMER DÉFINITIVEMENT les lapins associés
-    foreach ($sale->rabbits as $saleRabbit) {
-        if ($saleRabbit->rabbit_type === 'male') {
-            Male::where('id', $saleRabbit->rabbit_id)->delete();
-        } 
-        elseif ($saleRabbit->rabbit_type === 'female') {
-            Femelle::where('id', $saleRabbit->rabbit_id)->delete();
-        } 
-        elseif ($saleRabbit->rabbit_type === 'lapereau') {
-            Lapereau::where('id', $saleRabbit->rabbit_id)->delete();
+            );
         }
+
+        // SUPPRIMER DÉFINITIVEMENT les lapins associés
+        foreach ($sale->rabbits as $saleRabbit) {
+            if ($saleRabbit->rabbit_type === 'male') {
+                Male::where('id', $saleRabbit->rabbit_id)->delete();
+            } elseif ($saleRabbit->rabbit_type === 'female') {
+                Femelle::where('id', $saleRabbit->rabbit_id)->delete();
+            } elseif ($saleRabbit->rabbit_type === 'lapereau') {
+                Lapereau::where('id', $saleRabbit->rabbit_id)->delete();
+            }
+        }
+
+        $typeLabel = $this->getTypeLabel('groupe');
+        $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
+            number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
+
+        $sale->delete();
+
+        // Notification
+        $this->notifyUser([
+            'type' => 'warning',
+            'title' => '🗑️ Vente Supprimée',
+            'message' => "Vente #{$sale->id} supprimée: {$saleInfo} (lapins également supprimés)",
+            'action_url' => route('sales.index')
+        ]);
+
+        return redirect()->route('sales.index')
+            ->with('success', 'Vente et lapins associés supprimés définitivement !');
     }
-    
-    $typeLabel = $this->getTypeLabel('groupe');
-    $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
-        number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
-    
-    $sale->delete();
-    
-    // Notification
-    $this->notifyUser([
-        'type' => 'warning',
-        'title' => '🗑️ Vente Supprimée',
-        'message' => "Vente #{$sale->id} supprimée: {$saleInfo} (lapins également supprimés)",
-        'action_url' => route('sales.index')
-    ]);
-    
-    return redirect()->route('sales.index')
-        ->with('success', 'Vente et lapins associés supprimés définitivement !');
-}
 
-/**
- * Vérifie si une vente peut être supprimée (après 60 jours)
- */
-public function canBeDeleted(Sale $sale): bool
-{
-    return now()->diffInDays($sale->date_sale) >= 60;
-}
+    /**
+     * Vérifie si une vente peut être supprimée (après 60 jours)
+     */
+    public function canBeDeleted(Sale $sale): bool
+    {
+        return now()->diffInDays($sale->date_sale) >= 60;
+    }
 
-/**
- * Get remaining days before deletion is allowed
- */
-public function getRemainingDays(Sale $sale): int
-{
-    $daysSinceSale = now()->diffInDays($sale->date_sale);
-    return max(0, 60 - $daysSinceSale);
-}
+    /**
+     * Get remaining days before deletion is allowed
+     */
+    public function getRemainingDays(Sale $sale): int
+    {
+        $daysSinceSale = now()->diffInDays($sale->date_sale);
+        return max(0, 60 - $daysSinceSale);
+    }
     /**
      * Mark sale as paid
      */
