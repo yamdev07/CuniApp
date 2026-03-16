@@ -22,28 +22,42 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
+        // ✅ Start query with user isolation (Defense-in-Depth)
         $query = Invoice::where('user_id', Auth::id())
             ->orderBy('invoice_date', 'desc');
 
-        // Filter by status
-        if ($request->has('status')) {
+        // ✅ INVOICE NUMBER SEARCH
+        if ($request->filled('invoice_number')) {
+            $query->where('invoice_number', 'LIKE', "%{$request->invoice_number}%");
+        }
+
+        // ✅ STATUS FILTER
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter by date range
-        if ($request->has('start_date') && $request->has('end_date')) {
-            $query->whereBetween('invoice_date', [
-                $request->start_date,
-                $request->end_date
-            ]);
+        // ✅ DATE RANGE FILTER: Start Date
+        if ($request->filled('start_date')) {
+            $query->whereDate('invoice_date', '>=', $request->start_date);
         }
 
-        $invoices = $query->paginate(20);
+        // ✅ DATE RANGE FILTER: End Date
+        if ($request->filled('end_date')) {
+            $query->whereDate('invoice_date', '<=', $request->end_date);
+        }
 
+        // ✅ PAGINATION (20 per page)
+        $invoices = $query->paginate(20)->withQueryString();
+
+        // ✅ STATISTICS (for dashboard cards)
         $stats = [
             'total' => Invoice::where('user_id', Auth::id())->count(),
-            'paid' => Invoice::where('user_id', Auth::id())->where('status', 'paid')->count(),
-            'pending' => Invoice::where('user_id', Auth::id())->where('status', 'pending')->count(),
+            'paid' => Invoice::where('user_id', Auth::id())
+                ->where('status', 'paid')
+                ->count(),
+            'pending' => Invoice::where('user_id', Auth::id())
+                ->where('status', 'pending')
+                ->count(),
             'total_amount' => Invoice::where('user_id', Auth::id())
                 ->where('status', 'paid')
                 ->sum('total_amount'),

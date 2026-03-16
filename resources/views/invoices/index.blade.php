@@ -80,6 +80,108 @@
         </div>
     </div>
 
+    {{-- resources/views/invoices/index.blade.php - Search Section --}}
+    <div class="cuni-card" style="margin-bottom: 20px;">
+        <div class="card-body" style="padding: 16px;">
+            <form method="GET" action="{{ route('invoices.index') }}">
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: end;">
+                    {{-- Recherche par numéro de facture --}}
+                    <div>
+                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                            <i class="bi bi-search" style="margin-right: 4px;"></i> N° Facture
+                        </label>
+                        <input type="text" name="invoice_number" value="{{ request()->get('invoice_number') }}"
+                            class="form-control" placeholder="INV-2026-00001" style="border-radius: var(--radius-lg);">
+                    </div>
+
+                    {{-- Filtre par statut --}}
+                    <div>
+                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                            <i class="bi bi-filter-circle" style="margin-right: 4px;"></i> Statut
+                        </label>
+                        <select name="status" class="form-select" style="border-radius: var(--radius-lg);">
+                            <option value="">Tous les statuts</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payée</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente
+                            </option>
+                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulée
+                            </option>
+                        </select>
+                    </div>
+
+                    {{-- Filtre date début --}}
+                    <div>
+                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                            <i class="bi bi-calendar-event" style="margin-right: 4px;"></i> Du
+                        </label>
+                        <input type="date" name="start_date" value="{{ request()->get('start_date') }}"
+                            class="form-control" style="border-radius: var(--radius-lg);">
+                    </div>
+
+                    {{-- Filtre date fin --}}
+                    <div>
+                        <label class="form-label" style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">
+                            <i class="bi bi-calendar-check" style="margin-right: 4px;"></i> Au
+                        </label>
+                        <input type="date" name="end_date" value="{{ request()->get('end_date') }}" class="form-control"
+                            style="border-radius: var(--radius-lg);">
+                    </div>
+
+                    {{-- Boutons d'action --}}
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn-cuni primary" style="flex: 1; padding: 10px;">
+                            <i class="bi bi-search"></i> Filtrer
+                        </button>
+                        @if (request()->anyFilled(['invoice_number', 'status', 'start_date', 'end_date']))
+                            <a href="{{ route('invoices.index') }}" class="btn-cuni secondary" style="padding: 10px 16px;"
+                                title="Réinitialiser les filtres">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Résumé des filtres actifs --}}
+                @if (request()->anyFilled(['invoice_number', 'status', 'start_date', 'end_date']))
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--surface-border);">
+                        <small style="color: var(--text-tertiary);">
+                            Filtres actifs :
+                            @if (request('invoice_number'))
+                                <span class="badge"
+                                    style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                    📄 {{ request('invoice_number') }}
+                                </span>
+                            @endif
+                            @if (request('status'))
+                                <span class="badge"
+                                    style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                    🏷️ {{ ucfirst(request('status')) }}
+                                </span>
+                            @endif
+                            @if (request('start_date'))
+                                <span class="badge"
+                                    style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                    📅 Du: {{ request('start_date') }}
+                                </span>
+                            @endif
+                            @if (request('end_date'))
+                                <span class="badge"
+                                    style="background: var(--primary-subtle); color: var(--primary); margin: 0 4px;">
+                                    📅 Au: {{ request('end_date') }}
+                                </span>
+                            @endif
+                            <a href="{{ route('invoices.index') }}"
+                                style="color: var(--accent-red); margin-left: 8px; text-decoration: none;">
+                                <i class="bi bi-x-circle"></i> Tout effacer
+                            </a>
+                        </small>
+                    </div>
+                @endif
+            </form>
+        </div>
+    </div>
+
     <!-- Filters -->
     <div class="cuni-card mb-6">
         <div class="card-body">
@@ -151,7 +253,8 @@
                                             <i class="bi bi-clock"></i> En attente
                                         </span>
                                     @else
-                                        <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
+                                        <span class="badge"
+                                            style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
                                             {{ ucfirst($invoice->status) }}
                                         </span>
                                     @endif
