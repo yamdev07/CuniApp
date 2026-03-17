@@ -15,28 +15,21 @@ class FedaPayService
 
     public function __construct()
     {
-        // ✅ PRIORITY 1: Environment variables (most secure)
-        // ✅ PRIORITY 2: Config (cached)
-        // ✅ PRIORITY 3: Settings table (fallback only)
-
-        $this->publicKey = Config::get('services.fedapay.public_key')
-            ?? $_ENV['FEDAPAY_PUBLIC_KEY']
+        // ✅ PRIORITY: Environment variables first
+        $this->publicKey = Config::get('services.fedapay.public_key') 
+            ?? $_ENV['FEDAPAY_PUBLIC_KEY'] 
             ?? Setting::get('fedapay_public_key');
-
-        $this->secretKey = Config::get('services.fedapay.secret_key')
-            ?? $_ENV['FEDAPAY_SECRET_KEY']
+            
+        $this->secretKey = Config::get('services.fedapay.secret_key') 
+            ?? $_ENV['FEDAPAY_SECRET_KEY'] 
             ?? Setting::get('fedapay_secret_key');
-
-        $this->webhookSecret = Config::get('services.fedapay.webhook_secret')
-            ?? $_ENV['FEDAPAY_WEBHOOK_SECRET']
-            ?? Setting::get('fedapay_webhook_secret');
-
-        $this->environment = Config::get('services.fedapay.environment')
-            ?? $_ENV['FEDAPAY_ENVIRONMENT']
+            
+        $this->environment = Config::get('services.fedapay.environment') 
+            ?? $_ENV['FEDAPAY_ENVIRONMENT'] 
             ?? Setting::get('fedapay_environment', 'sandbox');
-
-        $this->baseUrl = $this->environment === 'production'
-            ? 'https://api.fedapay.com'
+            
+        $this->baseUrl = $this->environment === 'production' 
+            ? 'https://api.fedapay.com' 
             : 'https://sandbox.fedapay.com';
     }
 

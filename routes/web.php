@@ -157,11 +157,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
 
-            // ✅ FEDAPAY WEBHOOK (specific provider) - Protected with IP verification
-            Route::post('/webhook/fedapay', [PaymentController::class, 'webhook'])
-                ->name('webhook.fedapay')
-                ->middleware(VerifyWebhookIp::class);
-
             // ✅ FEDAPAY CALLBACK (user redirect after payment)
             Route::get('/callback/{provider}', [PaymentController::class, 'callback'])
                 ->name('callback');
