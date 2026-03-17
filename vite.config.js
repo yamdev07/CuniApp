@@ -8,4 +8,12 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        https: true,  // ← Activer HTTPS
+        host: 'cuniapp.loca.lt',  // ← Correspondre à APP_URL
+        port: 5173,
+        hmr: {
+            host: 'cuniapp.loca.lt',  // ← Important pour le hot-reload
+        },
+    },
 });

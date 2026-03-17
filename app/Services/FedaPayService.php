@@ -81,11 +81,16 @@ class FedaPayService
                 'error' => $response->json('message') ?? 'Erreur FedaPay',
                 'response' => $response->json(),
             ];
+            // Dans la méthode initiatePayment(), autour de la ligne 45
         } catch (\Exception $e) {
-            Log::error('FedaPay payment initiation failed: ' . $e->getMessage());
+            Log::error('FedaPay payment initiation failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'response' => $response->body() ?? 'No response',
+                'status' => $response->status() ?? 'No status'
+            ]);
             return [
                 'success' => false,
-                'error' => 'Erreur de connexion à FedaPay',
+                'error' => 'Erreur de connexion à FedaPay: ' . $e->getMessage(),
                 'response' => null,
             ];
         }

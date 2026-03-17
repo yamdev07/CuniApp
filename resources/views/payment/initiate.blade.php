@@ -116,19 +116,29 @@
                         <label class="form-label">Numéro de téléphone *</label>
                         <div class="form-input-wrapper" style="position: relative;">
                             <input type="tel" id="phoneNumber" name="phone_number" class="form-control"
-                                placeholder="01 XX XX XX XX" value="{{ old('phone_number', $transaction->phone_number) }}"
-                                required pattern="^(\+229)?[0-9]{8,12}$"
-                                style="padding-left: 44px; font-family: 'JetBrains Mono', monospace;" maxlength="12">
+                                placeholder="01 XX XX XX XX ou +229 01 XX XX XX XX"
+                                value="{{ old('phone_number', $transaction->phone_number) }}" required
+                                pattern="^(\+229)?01[0-9]{8}$"
+                                style="padding-left: 44px; font-family: 'JetBrains Mono', monospace;" maxlength="14"
+                                title="Format: 01XXXXXXXX (10 chiffres) ou +22901XXXXXXXX (14 caractères)">
                             <i class="bi bi-phone"
                                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 16px;"></i>
                         </div>
                         <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                            <i class="bi bi-info-circle"></i> Format: 01XXXXXX ou +22901XXXXXX
+                            <i class="bi bi-info-circle"></i> Format Bénin: <strong>01XXXXXXXX</strong> (10 chiffres) ou
+                            <strong>+22901XXXXXXXX</strong>
                         </small>
                         <div id="phoneError" class="validation-message error" style="display: none; margin-top: 8px;">
                             <i class="bi bi-exclamation-circle-fill"></i>
                             <span></span>
                         </div>
+                    </div>
+
+                    <!-- Format Preview -->
+                    <div id="formatPreview"
+                        style="margin-top: 12px; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius); font-size: 12px; display: none;">
+                        <strong style="color: var(--primary);">Format FedaPay:</strong>
+                        <span id="fedapayFormat" style="font-family: 'JetBrains Mono', monospace; margin-left: 8px;"></span>
                     </div>
 
                     <!-- Security Notice -->
@@ -201,45 +211,105 @@
                 const confirmCheckbox = document.getElementById('confirmPayment');
                 const phoneError = document.getElementById('phoneError');
                 const termsError = document.getElementById('termsError');
+                const formatPreview = document.getElementById('formatPreview');
+                const fedapayFormat = document.getElementById('fedapayFormat');
 
-                // ✅ Phone Number Auto-Format (+229 prefix)
+                // ============================================
+                // ✅ BENIN PHONE NUMBER FORMATTING FOR FEDAPAY
+                // ============================================
+
+                // User enters: 01XXXXXXXX or +22901XXXXXXXX
+                // FedaPay needs: +229XXXXXXXX (remove the '01', keep country code + last 8 digits)
+
                 phoneInput.addEventListener('input', function() {
-                    let value = this.value.replace(/\D/g, ''); // Remove non-digits
-                    value = value.replace(/^0+/, ''); // Remove leading zeros
+                    let value = this.value.replace(/\s/g, ''); // Remove spaces
 
-                    // Auto-add 229 if not present
-                    if (value.length > 0 && !value.startsWith('229')) {
-                        value = '229' + value;
+                    // Remove non-digits except +
+                    value = value.replace(/[^\d+]/g, '');
+
+                    // Handle +229 prefix
+                    if (value.startsWith('+229')) {
+                        // User typed +22901XXXXXXXX
+                        if (value.length > 14) {
+                            value = value.substring(0, 14); // Limit to +22901XXXXXXXX (14 chars)
+                        }
+                    } else if (value.startsWith('229')) {
+                        // User typed 22901XXXXXXXX
+                        if (value.length > 13) {
+                            value = value.substring(0, 13);
+                        }
+                    } else {
+                        // User typed 01XXXXXXXX (local format)
+                        if (value.length > 10) {
+                            value = value.substring(0, 10);
+                        }
                     }
 
-                    // Limit to 12 digits max (229 + 9 digits)
-                    if (value.length > 12) {
-                        value = value.substring(0, 12);
-                    }
-
-                    // Format for display
-                    if (value.startsWith('229')) {
+                    // Auto-add + for display if starts with 229
+                    if (value.startsWith('229') && !this.value.startsWith('+')) {
                         this.value = '+' + value;
                     } else {
                         this.value = value;
                     }
+
+                    // Show FedaPay format preview
+                    updateFedapayPreview(this.value);
                 });
 
-                // ✅ Validate Phone Number
+                phoneInput.addEventListener('blur', function() {
+                    updateFedapayPreview(this.value);
+                });
+
+                function updateFedapayPreview(userInput) {
+                    const cleaned = userInput.replace(/\s/g, '').replace('+', '');
+
+                    // Extract last 8 digits (remove 01 or 22901 prefix)
+                    let last8Digits = '';
+
+                    if (cleaned.startsWith('22901')) {
+                        // +22901XXXXXXXX -> take last 8
+                        last8Digits = cleaned.slice(-8);
+                    } else if (cleaned.startsWith('01')) {
+                        // 01XXXXXXXX -> take last 8
+                        last8Digits = cleaned.slice(-8);
+                    } else {
+                        // Fallback: take last 8 digits
+                        last8Digits = cleaned.slice(-8);
+                    }
+
+                    if (last8Digits.length === 8 && /^\d+$/.test(last8Digits)) {
+                        formatPreview.style.display = 'block';
+                        fedapayFormat.textContent = '+229' + last8Digits;
+                        fedapayFormat.style.color = 'var(--accent-green)';
+                    } else {
+                        formatPreview.style.display = 'none';
+                    }
+                }
+
+                // ============================================
+                // ✅ VALIDATE PHONE NUMBER FOR BENIN
+                // ============================================
                 function validatePhone() {
                     const phone = phoneInput.value.replace(/\s/g, '');
-                    const phoneRegex = /^(\+229)?[0-9]{8,12}$/;
 
-                    if (!phone || phone.length < 8) {
+                    if (!phone) {
                         phoneError.style.display = 'flex';
-                        phoneError.querySelector('span').textContent = 'Numéro de téléphone invalide';
+                        phoneError.querySelector('span').textContent = 'Numéro de téléphone requis';
                         phoneInput.classList.add('error');
                         return false;
                     }
 
-                    if (!phoneRegex.test(phone)) {
+                    // Remove + for validation
+                    const digits = phone.replace('+', '');
+
+                    // ✅ BENIN FORMAT: Must be 01XXXXXXXX (10 digits) or +22901XXXXXXXX (13 digits)
+                    const beninRegexLocal = /^01[0-9]{8}$/; // 01XXXXXXXX
+                    const beninRegexIntl = /^22901[0-9]{8}$/; // 22901XXXXXXXX
+
+                    if (!beninRegexLocal.test(digits) && !beninRegexIntl.test(digits)) {
                         phoneError.style.display = 'flex';
-                        phoneError.querySelector('span').textContent = 'Format invalide. Ex: +22901524152';
+                        phoneError.querySelector('span').textContent =
+                            'Format invalide. Ex: 0156550912 ou +2290156550912';
                         phoneInput.classList.add('error');
                         return false;
                     }
@@ -252,7 +322,22 @@
 
                 phoneInput.addEventListener('blur', validatePhone);
 
-                // ✅ Form Submission with AJAX
+                // ============================================
+                // ✅ TRANSFORM NUMBER FOR FEDAPAY API
+                // ============================================
+                function transformForFedaPay(userPhone) {
+                    const cleaned = userPhone.replace(/\s/g, '').replace('+', '');
+
+                    // Extract last 8 digits (the actual subscriber number)
+                    let last8Digits = cleaned.slice(-8);
+
+                    // Prepend Benin country code
+                    return '+229' + last8Digits;
+                }
+
+                // ============================================
+                // ✅ FORM SUBMISSION WITH AJAX
+                // ============================================
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
@@ -279,8 +364,14 @@
                     btnText.style.display = 'none';
                     btnLoading.style.display = 'inline-flex';
 
+                    // ✅ TRANSFORM PHONE NUMBER FOR FEDAPAY
+                    const originalPhone = phoneInput.value;
+                    const fedapayPhone = transformForFedaPay(originalPhone);
+
                     // Prepare form data
                     const formData = new FormData(form);
+                    // Override phone_number with transformed value for FedaPay
+                    formData.set('phone_number', fedapayPhone);
 
                     // ✅ Send AJAX request
                     fetch('{{ route('payment.process') }}', {
@@ -333,7 +424,9 @@
                         });
                 });
 
-                // ✅ Toast Notification Function
+                // ============================================
+                // ✅ TOAST NOTIFICATION FUNCTION
+                // ============================================
                 function showToast(message, type = 'info') {
                     const toast = document.createElement('div');
                     toast.style.cssText = `
@@ -363,6 +456,7 @@
         `;
 
                     document.body.appendChild(toast);
+
                     setTimeout(() => {
                         toast.style.animation = 'slideOutRight 0.3s ease';
                         setTimeout(() => toast.remove(), 300);
@@ -388,6 +482,11 @@
             }
         `;
                     document.head.appendChild(style);
+                }
+
+                // Initialize preview on load if value exists
+                if (phoneInput.value) {
+                    updateFedapayPreview(phoneInput.value);
                 }
             });
         </script>
@@ -443,6 +542,23 @@
                 opacity: 0.7;
                 cursor: not-allowed;
                 pointer-events: none;
+            }
+
+            /* Format preview styling */
+            #formatPreview {
+                animation: fadeIn 0.3s ease;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-5px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
         </style>
     @endpush
