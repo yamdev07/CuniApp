@@ -289,13 +289,6 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
                         </small>
                     </div>
 
-                    {{-- ❌ REMOVED: Webhook Secret field (no longer needed) --}}
-                    {{-- 
-                <div class="form-group">
-                    <label class="form-label">Secret Webhook FedaPay</label>
-                    <input type="password" name="fedapay_webhook_secret" ...>
-                </div>
-                --}}
                 </div>
 
                 <div style="margin-top: 24px;">

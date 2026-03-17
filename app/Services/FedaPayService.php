@@ -171,15 +171,4 @@ class FedaPayService
             default => 'mtn_bj',
         };
     }
-
-    /**
-     * ❌ DEPRECATED: Webhook signature verification
-     * No longer needed since we're using callback-based flow
-     * Kept for reference only - do not use
-     */
-    public static function verifyWebhookSignature($payload, $signature)
-    {
-        Log::warning('FedaPayService::verifyWebhookSignature is deprecated - using callback flow instead');
-        return false;
-    }
 }

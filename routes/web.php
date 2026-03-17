@@ -26,7 +26,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\SubscriptionManagementController;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\CheckAdminRole;
-use App\Http\Middleware\VerifyWebhookIp;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
