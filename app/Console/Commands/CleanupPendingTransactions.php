@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\PaymentTransaction;
 use App\Models\Subscription;
+use App\Notifications\PaymentExpiredNotification;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 
@@ -15,7 +16,6 @@ class CleanupPendingTransactions extends Command
     public function handle()
     {
         $threshold = Carbon::now()->subMinutes(30);
-
         $pendingTransactions = PaymentTransaction::where('status', 'pending')
             ->where('created_at', '<', $threshold)
             ->get();
@@ -41,10 +41,13 @@ class CleanupPendingTransactions extends Command
                         'subscription_status' => 'inactive'
                     ]);
                 }
+
+                // ✅ Send expiration notification
+                $user->notify(new PaymentExpiredNotification($transaction));
             }
         }
 
-        $this->info("Cleaned up {$pendingTransactions->count()} pending transactions.");
+        $this->info("Cleaned up {$pendingTransactions->count()} pending transactions. Notifications sent.");
         return Command::SUCCESS;
     }
 }
