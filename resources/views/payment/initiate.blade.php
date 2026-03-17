@@ -205,9 +205,7 @@
                 // ✅ Phone Number Auto-Format (+229 prefix)
                 phoneInput.addEventListener('input', function() {
                     let value = this.value.replace(/\D/g, ''); // Remove non-digits
-
-                    // Remove leading zeros
-                    value = value.replace(/^0+/, '');
+                    value = value.replace(/^0+/, ''); // Remove leading zeros
 
                     // Auto-add 229 if not present
                     if (value.length > 0 && !value.startsWith('229')) {
@@ -365,7 +363,6 @@
         `;
 
                     document.body.appendChild(toast);
-
                     setTimeout(() => {
                         toast.style.animation = 'slideOutRight 0.3s ease';
                         setTimeout(() => toast.remove(), 300);
