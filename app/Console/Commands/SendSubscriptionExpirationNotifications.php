@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Subscription;
 use App\Notifications\SubscriptionExpiringSoonNotification;
 use App\Notifications\SubscriptionExpiredNotification;
+use App\Notifications\SubscriptionRenewalReminderNotification;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 
@@ -18,30 +19,43 @@ class SendSubscriptionExpirationNotifications extends Command
         $now = Carbon::now();
         $count = 0;
 
-        // Check for subscriptions expiring in 7 days
-        $expiringSoon = Subscription::where('status', 'active')
-            ->whereBetween('end_date', [$now, $now->copy()->addDays(7)])
+        // ✅ 7 days before expiration
+        $expiringIn7Days = Subscription::where('status', 'active')
+            ->whereBetween('end_date', [$now->copy()->addDays(7), $now->copy()->addDays(8)])
             ->with(['user', 'plan'])
             ->get();
 
-        foreach ($expiringSoon as $subscription) {
-            $daysRemaining = $subscription->end_date->diffInDays($now, false);
-
-            // Only send if not already notified in the last 24 hours
-            $lastNotification = $subscription->user->notifications()
-                ->where('type', 'warning')
-                ->where('title', 'like', '%Bientôt Expiré%')
-                ->where('created_at', '>=', $now->copy()->subDay())
-                ->first();
-
-            if (!$lastNotification) {
-                $subscription->user->notify(new SubscriptionExpiringSoonNotification($subscription, $daysRemaining));
-                $count++;
-                $this->info("Expiration warning sent to {$subscription->user->email} ({$daysRemaining} jours restants)");
-            }
+        foreach ($expiringIn7Days as $subscription) {
+            $subscription->user->notify(new SubscriptionExpiringSoonNotification($subscription, 7));
+            $count++;
+            $this->info("7-day expiration warning sent to {$subscription->user->email}");
         }
 
-        // Check for expired subscriptions
+        // ✅ 3 days before expiration
+        $expiringIn3Days = Subscription::where('status', 'active')
+            ->whereBetween('end_date', [$now->copy()->addDays(3), $now->copy()->addDays(4)])
+            ->with(['user', 'plan'])
+            ->get();
+
+        foreach ($expiringIn3Days as $subscription) {
+            $subscription->user->notify(new SubscriptionExpiringSoonNotification($subscription, 3));
+            $count++;
+            $this->info("3-day expiration warning sent to {$subscription->user->email}");
+        }
+
+        // ✅ 1 day before expiration
+        $expiringIn1Day = Subscription::where('status', 'active')
+            ->whereBetween('end_date', [$now->copy()->addDay(), $now->copy()->addDays(2)])
+            ->with(['user', 'plan'])
+            ->get();
+
+        foreach ($expiringIn1Day as $subscription) {
+            $subscription->user->notify(new SubscriptionExpiringSoonNotification($subscription, 1));
+            $count++;
+            $this->info("1-day expiration warning sent to {$subscription->user->email}");
+        }
+
+        // ✅ Check for expired subscriptions
         $expired = Subscription::where('status', 'active')
             ->where('end_date', '<', $now)
             ->with(['user', 'plan'])
@@ -57,7 +71,7 @@ class SendSubscriptionExpirationNotifications extends Command
                 'subscription_ends_at' => $subscription->end_date,
             ]);
 
-            // Send notification
+            // ✅ Send expiration notification
             $subscription->user->notify(new SubscriptionExpiredNotification($subscription));
             $count++;
             $this->info("Expiration notification sent to {$subscription->user->email}");

@@ -41,4 +41,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
 
+    'fedapay' => [
+    'public_key' => env('FEDAPAY_PUBLIC_KEY'),
+    'secret_key' => env('FEDAPAY_SECRET_KEY'),
+    'webhook_secret' => env('FEDAPAY_WEBHOOK_SECRET'),
+    'environment' => env('FEDAPAY_ENVIRONMENT', 'sandbox'),
+],
+
 ];

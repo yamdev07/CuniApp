@@ -1,10 +1,12 @@
 <?php
+// app/Services/FedaPayService.php
 
 namespace App\Services;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class FedaPayService
 {
@@ -15,9 +17,20 @@ class FedaPayService
 
     public function __construct()
     {
-        $this->publicKey = Setting::get('fedapay_public_key');
-        $this->secretKey = Setting::get('fedapay_secret_key');
-        $this->environment = Setting::get('fedapay_environment', 'sandbox');
+        // ✅ PRIORITY 1: Environment variables (most secure)
+        // ✅ PRIORITY 2: Config (cached)
+        // ✅ PRIORITY 3: Settings table (fallback only)
+        $this->publicKey = Config::get('services.fedapay.public_key')
+            ?? $_ENV['FEDAPAY_PUBLIC_KEY']
+            ?? Setting::get('fedapay_public_key');
+
+        $this->secretKey = Config::get('services.fedapay.secret_key')
+            ?? $_ENV['FEDAPAY_SECRET_KEY']
+            ?? Setting::get('fedapay_secret_key');
+
+        $this->environment = Config::get('services.fedapay.environment')
+            ?? $_ENV['FEDAPAY_ENVIRONMENT']
+            ?? Setting::get('fedapay_environment', 'sandbox');
 
         $this->baseUrl = $this->environment === 'production'
             ? 'https://api.fedapay.com'
@@ -25,7 +38,8 @@ class FedaPayService
     }
 
     /**
-     * ✅ INITIATE PAYMENT
+     * ✅ INITIATE PAYMENT WITH FEDAPAY
+     * Creates a transaction and returns checkout URL
      */
     public function initiatePayment($transaction)
     {
@@ -39,6 +53,7 @@ class FedaPayService
                 'currency' => 'XOF',
                 'description' => 'Abonnement CuniApp Élevage',
                 'reference' => $transaction->transaction_id,
+                // ✅ IMPORTANT: Callback URL for redirect after payment
                 'callback_url' => route('payment.callback', ['provider' => 'fedapay']),
                 'return_url' => route('subscription.status'),
                 'customer' => [
@@ -53,7 +68,6 @@ class FedaPayService
 
             if ($response->successful()) {
                 $data = $response->json();
-
                 return [
                     'success' => true,
                     'checkout_url' => $data['transaction']['url'] ?? null,
@@ -69,7 +83,6 @@ class FedaPayService
             ];
         } catch (\Exception $e) {
             Log::error('FedaPay payment initiation failed: ' . $e->getMessage());
-
             return [
                 'success' => false,
                 'error' => 'Erreur de connexion à FedaPay',
@@ -78,57 +91,9 @@ class FedaPayService
         }
     }
 
-    // UPDATE verifyWebhookSignature()
-    public static function verifyWebhookSignature($payload, $signature)
-    {
-        $secretKey = Setting::get('fedapay_webhook_secret');
-
-        if (!$secretKey) {
-            Log::channel('webhooks')->error('FedaPay: Webhook secret not configured in Settings');
-            return false;
-        }
-
-        if (empty($payload)) {
-            Log::channel('webhooks')->error('FedaPay: Empty webhook payload');
-            return false;
-        }
-
-        if (empty($signature)) {
-            Log::channel('webhooks')->error('FedaPay: Missing webhook signature');
-            return false;
-        }
-
-        // FedaPay uses HMAC-SHA256
-        $expectedSignature = hash_hmac('sha256', $payload, $secretKey);
-
-        // Timing-safe comparison
-        $isValid = hash_equals($expectedSignature, $signature);
-
-        if (!$isValid) {
-            Log::channel('webhooks')->warning('FedaPay: Signature verification failed', [
-                'expected' => substr($expectedSignature, 0, 10) . '...',
-                'received' => substr($signature, 0, 10) . '...',
-            ]);
-        }
-
-        return $isValid;
-    }
-
     /**
-     * ✅ GET FEDAPAY METHOD CODE
-     */
-    private function getFedaPayMethod($paymentMethod)
-    {
-        return match ($paymentMethod) {
-            'momo' => 'mtn_ml', // or 'mtn_bj' for Benin
-            'moov' => 'moov_bj',
-            'celtis' => 'celtis_bj',
-            default => 'mtn_bj',
-        };
-    }
-
-    /**
-     * ✅ VERIFY TRANSACTION STATUS (optional - for manual checks)
+     * ✅ VERIFY TRANSACTION STATUS WITH FEDAPAY API
+     * Used for callback security - verify payment directly with FedaPay
      */
     public function verifyTransaction($fedapayTransactionId)
     {
@@ -150,11 +115,60 @@ class FedaPayService
             ];
         } catch (\Exception $e) {
             Log::error('FedaPay transaction verification failed: ' . $e->getMessage());
-
             return [
                 'success' => false,
                 'error' => 'Erreur de vérification',
             ];
         }
+    }
+
+    /**
+     * ✅ VERIFY TRANSACTION BY REFERENCE (our transaction_id)
+     * Alternative verification method using our reference
+     */
+    public function verifyTransactionByReference($reference)
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->secretKey,
+            ])->get($this->baseUrl . '/v1/transactions', [
+                'reference' => $reference,
+            ]);
+
+            if ($response->successful()) {
+                $transactions = $response->json('transactions', []);
+                if (!empty($transactions)) {
+                    return [
+                        'success' => true,
+                        'data' => $transactions[0],
+                    ];
+                }
+            }
+
+            return [
+                'success' => false,
+                'error' => 'Transaction not found',
+            ];
+        } catch (\Exception $e) {
+            Log::error('FedaPay transaction verification by reference failed: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Erreur de vérification',
+            ];
+        }
+    }
+
+    /**
+     * ✅ GET FEDAPAY METHOD CODE
+     * Maps our payment method to FedaPay's method codes
+     */
+    private function getFedaPayMethod($paymentMethod)
+    {
+        return match ($paymentMethod) {
+            'momo' => 'mtn_bj',      // MTN Mobile Money Benin
+            'moov' => 'moov_bj',     // Moov Money Benin
+            'celtis' => 'celtis_bj', // Celtis Cash Benin
+            default => 'mtn_bj',
+        };
     }
 }

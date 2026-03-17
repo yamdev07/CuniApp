@@ -26,7 +26,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\SubscriptionManagementController;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\CheckAdminRole;
-use App\Http\Middleware\VerifyWebhookIp;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
@@ -156,11 +155,6 @@ Route::middleware('auth')->group(function () {
         Route::prefix('payment')->name('payment.')->group(function () {
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
-
-            // ✅ FEDAPAY WEBHOOK (specific provider) - Protected with IP verification
-            Route::post('/webhook/fedapay', [PaymentController::class, 'webhook'])
-                ->name('webhook.fedapay')
-                ->middleware(VerifyWebhookIp::class);
 
             // ✅ FEDAPAY CALLBACK (user redirect after payment)
             Route::get('/callback/{provider}', [PaymentController::class, 'callback'])
