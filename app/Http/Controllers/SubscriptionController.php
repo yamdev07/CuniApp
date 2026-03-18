@@ -290,21 +290,5 @@ class SubscriptionController extends Controller
         }
     }
 
-    /**
-     * Activate subscription (helper method)
-     */
-    private function activateSubscription($subscription)
-    {
-        if (!$subscription) return;
-
-        $subscription->update(['status' => 'active']);
-
-        $subscription->user->update([
-            'subscription_status' => 'active',
-            'subscription_ends_at' => $subscription->end_date,
-        ]);
-
-        // Send activation notification
-        $subscription->user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
-    }
+ 
 }

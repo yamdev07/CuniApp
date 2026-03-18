@@ -28,7 +28,6 @@ use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\CheckAdminRole;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -89,8 +88,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-
-    // ✅ FIX: Changed from 'reset-payment' to 'reset-password'
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 
     // Email Verification Code System
@@ -104,7 +101,8 @@ Route::middleware('guest')->group(function () {
 // ========================================================================
 
 Route::middleware('auth')->group(function () {
-    // Standard Laravel Email Verification Flow
+    
+    // --- Routes accessibles à tous les connectés (vérifiés ou non) ---
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
@@ -117,29 +115,22 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('login');
     })->middleware(['throttle:6,1'])->name('verification.send');
 
-    // Password Confirmation
     Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store']);
-
-    // Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     // ====================================================================
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)
     // ====================================================================
-
     Route::middleware('verified')->group(function () {
-        // Dashboard
+        
+        // Dashboard & Profile
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        // Profile Management
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // ================================================================
-        // 💳 SUBSCRIPTION ROUTES (No subscription check - users need to access these)
-        // ================================================================
+        // Subscription Routes
         Route::prefix('subscription')->name('subscription.')->group(function () {
             Route::get('/plans', [SubscriptionController::class, 'index'])->name('plans');
             Route::get('/subscribe', [SubscriptionController::class, 'create'])->name('subscribe');
@@ -149,9 +140,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/cancel', [SubscriptionController::class, 'cancel'])->name('cancel');
         });
 
-        // ================================================================
-        // 💰 PAYMENT ROUTES (No subscription check - users need to pay)
-        // ================================================================
+        // Payment Routes
         Route::prefix('payment')->name('payment.')->group(function () {
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
@@ -167,9 +156,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
         });
 
-        // ================================================================
-        // 🛡️ PROTECTED CRUD ROUTES (Require active subscription)
-        // ================================================================
+        // Protected CRUD Routes (Require active subscription)
         Route::middleware('check.subscription')->group(function () {
             // MÂLES
             Route::prefix('males')->name('males.')->group(function () {
@@ -261,9 +248,7 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // ================================================================
-        // ✅ SETTINGS & NOTIFICATIONS (Protected by subscription)
-        // ================================================================
+        // Settings & Notifications
         Route::middleware('check.subscription')->group(function () {
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/', [SettingsController::class, 'index'])->name('index');
@@ -286,24 +271,7 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // ================================================================
-        // 👑 ADMIN ROUTES (Admin middleware)
-        // ================================================================
-        Route::prefix('admin')->name('admin.')->middleware('check.admin')->group(function () {
-            Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
-                Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
-                Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show');
-                Route::post('/activate', [SubscriptionManagementController::class, 'activate'])->name('activate');
-                Route::post('/deactivate', [SubscriptionManagementController::class, 'deactivate'])->name('deactivate');
-                Route::post('/extend', [SubscriptionManagementController::class, 'extend'])->name('extend');
-                Route::get('/transactions', [SubscriptionManagementController::class, 'transactions'])->name('transactions');
-                Route::get('/export', [SubscriptionManagementController::class, 'export'])->name('export');
-            });
-        });
-
-        // ================================================================
-        // 👑 Invoice ROUTES 
-        // ================================================================
+        // Invoice Routes (Restent dans verified)
         Route::prefix('invoices')->name('invoices.')->group(function () {
             Route::get('/', [InvoiceController::class, 'index'])->name('index');
             Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
@@ -311,8 +279,37 @@ Route::middleware('auth')->group(function () {
             Route::post('/{invoice}/regenerate', [InvoiceController::class, 'regeneratePdf'])->name('regenerate');
             Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
         });
+
+    }); // <--- FIN DU GROUPE VERIFIED
+
+        // ========================================================================
+    // 👑 ADMIN ROUTES (HORS GROUPE VERIFIED)
+    // ========================================================================
+        Route::middleware('check.admin')->prefix('admin')->name('admin.')->group(function () {
+        
+        Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+            
+            // 1. ROUTES FIXES (Doivent être en PREMIER)
+            Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
+            Route::get('/archives', [SubscriptionManagementController::class, 'archives'])->name('archives'); // <--- DOIT ÊTRE ICI
+            Route::get('/transactions', [SubscriptionManagementController::class, 'transactions'])->name('transactions');
+            Route::get('/export', [SubscriptionManagementController::class, 'export'])->name('export');
+
+            // 2. ROUTES DYNAMIQUES (Doivent être APRÈS les fixes)
+            Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show'); // <--- DOIT ÊTRE APRÈS
+            
+            // 3. ROUTES POST/DELETE (Peuvent être à la fin)
+            Route::post('/activate', [SubscriptionManagementController::class, 'activate'])->name('activate');
+            Route::post('/deactivate', [SubscriptionManagementController::class, 'deactivate'])->name('deactivate');
+            Route::post('/extend', [SubscriptionManagementController::class, 'extend'])->name('extend');
+            Route::post('/{id}/archive', [SubscriptionManagementController::class, 'archive'])->name('archive');
+            Route::post('/{id}/restore', [SubscriptionManagementController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/destroy', [SubscriptionManagementController::class, 'destroy'])->name('destroy');
+            
+        });
     });
-});
+
+}); // <--- FIN DU GROUPE AUTH
 
 // ========================================================================
 // 🔍 UTILITY ROUTES
@@ -341,10 +338,7 @@ Route::middleware(['web'])->group(function () {
 // ========================================================================
 
 Route::get('/robots.txt', function () {
-    return response("User-agent: *
-Disallow: /admin/
-Disallow: /settings/
-Sitemap: " . url('/sitemap.xml'), 200, ['Content-Type' => 'text/plain']);
+    return response("User-agent: *\nDisallow: /admin/\nDisallow: /settings/\nSitemap: " . url('/sitemap.xml'), 200, ['Content-Type' => 'text/plain']);
 });
 
 Route::get('/sitemap.xml', function () {
@@ -437,4 +431,3 @@ Route::fallback(function () {
 
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
-

@@ -331,4 +331,179 @@ class SubscriptionManagementController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+
+    /**
+     * Archiver un abonnement (Actif ou Expiré)
+     */
+    public function archive($id)
+    {
+        $subscription = \App\Models\Subscription::findOrFail($id);
+        
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $subscription->update(['archived_at' => now()]);
+
+        return back()->with('success', 'Abonnement archivé avec succès.');
+    }
+
+    /**
+     * Restaurer un abonnement
+     */
+    // public function restore($id)
+    // {
+    //     $subscription = \App\Models\Subscription::findOrFail($id);
+    //     $subscription->update(['archived_at' => null]);
+
+    //     return back()->with('success', 'Abonnement restauré avec succès.');
+    // }
+
+
+        /**
+     * Restaurer un abonnement (Logique améliorée)
+     */
+    // public function restore($id)
+    // {
+    //     $subscription = \App\Models\Subscription::findOrFail($id);
+        
+    //     // 1. On retire la marque d'archivage
+    //     $subscription->update(['archived_at' => null]);
+
+    //     // 2. On vérifie si l'abonnement est encore valable dans le temps
+    //     $now = now();
+    //     if ($subscription->end_date && $subscription->end_date > $now) {
+    //         // Si la date de fin est dans le futur, on le réactive !
+    //         $subscription->update(['status' => 'active']);
+            
+    //         // On met aussi à jour l'utilisateur pour qu'il ait accès immédiatement
+    //         $subscription->user->update([
+    //             'subscription_status' => 'active',
+    //             'subscription_ends_at' => $subscription->end_date,
+    //         ]);
+    //     } else {
+    //         // Si la date est dépassée, on le laisse en 'expired' (ou 'cancelled' s'il l'était)
+    //         // On met juste à jour l'utilisateur pour refléter l'état réel
+    //         $subscription->user->update([
+    //             'subscription_status' => 'expired',
+    //             'subscription_ends_at' => $subscription->end_date,
+    //         ]);
+    //     }
+
+    //     return back()->with('success', 'Abonnement restauré avec succès.' . ($subscription->status === 'active' ? ' Il a été réactivé car toujours valable.' : ' Il est restauré mais expiré.'));
+    // }
+
+
+        /**
+     * Restaurer un abonnement (Sécurisé)
+     */
+    public function restore($id)
+    {
+        try {
+            $subscription = \App\Models\Subscription::findOrFail($id);
+            
+            // 1. On retire la marque d'archivage
+            $subscription->archived_at = null;
+            
+            // 2. Logique de statut intelligente
+            $now = now();
+            if ($subscription->end_date && $subscription->end_date > $now) {
+                $subscription->status = 'active';
+            } else {
+                $subscription->status = 'expired';
+            }
+            
+            $subscription->save();
+
+            // 3. Mise à jour de l'utilisateur (avec vérification)
+            if ($subscription->user) {
+                $subscription->user->update([
+                    'subscription_status' => $subscription->status,
+                    'subscription_ends_at' => $subscription->end_date,
+                ]);
+            }
+
+            $msg = 'Abonnement restauré avec succès.';
+            if ($subscription->status === 'active') {
+                $msg .= ' Il a été réactivé car toujours valable.';
+            } else {
+                $msg .= ' Il est restauré mais expiré.';
+            }
+
+            return back()->with('success', $msg);
+
+        } catch (\Exception $e) {
+            // En cas d'erreur, on affiche le message au lieu d'une page blanche
+            return back()->with('error', 'Erreur lors de la restauration : ' . $e->getMessage());
+        }
+    }
+
+    
+
+    /**
+     * Afficher la liste des archives
+     */
+    // public function archives()
+    // {
+    //     $users = \App\Models\User::with(['subscriptions'])
+    //         ->whereHas('subscriptions', function ($q) {
+    //             $q->whereNotNull('archived_at');
+    //         })
+    //         ->latest()
+    //         ->paginate(20);
+
+    //     $stats = [
+    //         'total_archived' => \App\Models\Subscription::whereNotNull('archived_at')->count(),
+    //     ];
+
+    //     return view('admin.subscriptions.archives', compact('users', 'stats'));
+    // }
+    
+
+
+        /**
+     * Afficher la liste des archives
+     */
+    public function archives()
+    {
+        // On récupère les utilisateurs ayant des abonnements archivés
+        $users = \App\Models\User::whereHas('subscriptions', function ($query) {
+                $query->whereNotNull('archived_at');
+            })
+            ->with(['subscriptions' => function ($q) {
+                // On charge les abonnements archivés AVEC leur plan
+                $q->whereNotNull('archived_at')
+                  ->with('plan') 
+                  ->orderBy('archived_at', 'desc');
+            }])
+            ->latest()
+            ->paginate(20);
+
+        $stats = [
+            'total_archived' => \App\Models\Subscription::whereNotNull('archived_at')->count(),
+        ];
+
+        return view('admin.subscriptions.archives', compact('users', 'stats'));
+    }
+
+
+    // // Si tu as une méthode destroy pour suppression définitive, ajoute-la aussi ici
+    // public function destroy($id) {
+    //     $subscription = \App\Models\Subscription::findOrFail($id);
+    //     $subscription->delete(); // Ou forceDelete() si tu veux bypass soft deletes
+    //     return back()->with('success', 'Abonnement supprimé définitivement.');
+    // }
+
+        /**
+     * Supprimer DÉFINITIVEMENT un abonnement (Irréversible)
+     */
+    public function destroy($id) {
+        $subscription = \App\Models\Subscription::findOrFail($id);
+        
+        // forceDelete() contourne le SoftDelete et efface vraiment la ligne de la BDD
+        $subscription->forceDelete(); 
+        
+        return back()->with('success', 'Abonnement supprimé DÉFINITIVEMENT de la base de données.');
+    }
 }

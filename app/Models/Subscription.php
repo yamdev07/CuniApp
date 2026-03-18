@@ -18,7 +18,6 @@ class Subscription extends Model
 
     protected $fillable = [
         'user_id',
-        'user_id',
         'subscription_plan_id',
         'status',
         'start_date',
@@ -30,14 +29,17 @@ class Subscription extends Model
         'payment_reference',
         'auto_renew',
         'cancellation_reason',
+        'archived_at',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'cancelled_at' => 'datetime',
+                'archived_at' => 'datetime', 
         'price' => 'decimal:2',
         'auto_renew' => 'boolean',
+
     ];
 
     /**
@@ -70,25 +72,28 @@ class Subscription extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
-            ->where('end_date', '>=', now());
+            ->where('end_date', '>=', now())
+            ->whereNull('archived_at'); 
     }
 
     /**
      * Scope: Expiring soon (within X days)
      */
-    public function scopeExpiringSoon($query, int $days = 7)
+public function scopeExpiringSoon($query, int $days = 7)
     {
         return $query->where('status', 'active')
-            ->whereBetween('end_date', [now(), now()->addDays($days)]);
+            ->whereBetween('end_date', [now(), now()->addDays($days)])
+            ->whereNull('archived_at'); // <-- On exclut aussi les archivés ici
     }
 
     /**
      * Check if subscription is currently active
      */
-    public function isActive(): bool
+  public function isActive(): bool
     {
         return $this->status === 'active'
-            && $this->end_date?->isFuture();
+            && $this->end_date?->isFuture()
+            && $this->archived_at === null; // <-- Vérification ajoutée
     }
 
     /**
@@ -116,4 +121,12 @@ class Subscription extends Model
     {
         return number_format($this->price, 0, ',', ' ') . ' FCFA';
     }
+
+
+    // Scope pour ne prendre que les archivés
+    public function scopeArchived($query)
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
 }
