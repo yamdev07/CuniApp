@@ -17,20 +17,25 @@ class FedaPayService
 
     public function __construct()
     {
-        // ✅ PRIORITY 1: Environment variables (most secure)
-        // ✅ PRIORITY 2: Config (cached)
-        // ✅ PRIORITY 3: Settings table (fallback only)
-        $this->publicKey = Config::get('services.fedapay.public_key')
+        $this->publicKey = config('services.fedapay.public_key')
             ?? $_ENV['FEDAPAY_PUBLIC_KEY']
-            ?? Setting::get('fedapay_public_key');
+            ?? \App\Models\Setting::get('fedapay_public_key');
 
-        $this->secretKey = Config::get('services.fedapay.secret_key')
+        $this->secretKey = config('services.fedapay.secret_key')
             ?? $_ENV['FEDAPAY_SECRET_KEY']
-            ?? Setting::get('fedapay_secret_key');
+            ?? \App\Models\Setting::get('fedapay_secret_key');
 
-        $this->environment = Config::get('services.fedapay.environment')
+        // 🔍 DEBUG LOG
+        Log::info('FedaPay config loaded', [
+            'public_key_set' => !empty($this->publicKey),
+            'secret_key_set' => !empty($this->secretKey),
+            'environment' => $this->environment,
+            'base_url' => $this->baseUrl,
+        ]);
+
+        $this->environment = config('services.fedapay.environment')
             ?? $_ENV['FEDAPAY_ENVIRONMENT']
-            ?? Setting::get('fedapay_environment', 'sandbox');
+            ?? \App\Models\Setting::get('fedapay_environment', 'sandbox');
 
         $this->baseUrl = $this->environment === 'production'
             ? 'https://api.fedapay.com'
@@ -82,12 +87,14 @@ class FedaPayService
                 'response' => $response->json(),
             ];
             // Dans la méthode initiatePayment(), autour de la ligne 45
+            // Dans la méthode initiatePayment(), autour de la ligne ~45
         } catch (\Exception $e) {
-            Log::error('FedaPay payment initiation failed: ' . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::error('FedaPay payment initiation failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'response' => $response->body() ?? 'No response',
                 'status' => $response->status() ?? 'No status'
             ]);
+
             return [
                 'success' => false,
                 'error' => 'Erreur de connexion à FedaPay: ' . $e->getMessage(),

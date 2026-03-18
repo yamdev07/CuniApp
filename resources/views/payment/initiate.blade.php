@@ -31,170 +31,167 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="payment-grid">
         <!-- Payment Details -->
-        <div class="cuni-card">
-            <div class="card-header-custom">
-                <h3 class="card-title">
-                    <i class="bi bi-receipt"></i> Détails de la Transaction
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Transaction ID</span>
-                        <span class="font-mono text-sm">{{ $transaction->transaction_id }}</span>
-                    </div>
-                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Plan</span>
-                        <span class="font-semibold">{{ $subscription->plan->name ?? 'N/A' }}</span>
-                    </div>
-                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Durée</span>
-                        <span class="font-semibold">{{ $subscription->plan->duration_months ?? 'N/A' }} mois</span>
-                    </div>
-                    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                        <span class="text-gray-600">Montant à payer</span>
-                        <span class="font-bold text-primary text-lg">
-                            {{ number_format($transaction->amount, 0, ',', ' ') }} FCFA
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Statut</span>
-                        <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
-                            <i class="bi bi-clock"></i> En attente
-                        </span>
-                    </div>
+        <div class="payment-details-card">
+            <div class="cuni-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title">
+                        <i class="bi bi-receipt"></i> Détails de la Transaction
+                    </h3>
                 </div>
-
-                <!-- Payment Method Info -->
-                <div
-                    style="margin-top: 24px; padding: 16px; background: var(--primary-subtle); border-radius: var(--radius-lg);">
-                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--primary);">
-                        <i class="bi bi-info-circle"></i> Comment ça marche ?
-                    </h4>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div
-                            style="width: 40px; height: 40px; border-radius: var(--radius); background: var(--surface); display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-credit-card-2-front" style="color: var(--primary); font-size: 20px;"></i>
+                <div class="card-body">
+                    <div class="transaction-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Transaction ID</span>
+                            <span class="detail-value font-mono">{{ $transaction->transaction_id }}</span>
                         </div>
-                        <div>
-                            <div style="font-weight: 600; color: var(--text-primary);">Paiement Mobile Money</div>
-                            <div style="font-size: 12px; color: var(--text-tertiary);">MTN MoMo • Moov Pay • Celtis Cash via
-                                FedaPay</div>
+                        <div class="detail-row">
+                            <span class="detail-label">Plan</span>
+                            <span class="detail-value font-semibold">{{ $subscription->plan->name ?? 'N/A' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Durée</span>
+                            <span class="detail-value font-semibold">{{ $subscription->plan->duration_months ?? 'N/A' }}
+                                mois</span>
+                        </div>
+                        <div class="detail-row highlight">
+                            <span class="detail-label">Montant à payer</span>
+                            <span class="detail-value font-bold text-primary text-lg">
+                                {{ number_format($transaction->amount, 0, ',', ' ') }} FCFA
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Statut</span>
+                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+                                <i class="bi bi-clock"></i> En attente
+                            </span>
                         </div>
                     </div>
-                    <div
-                        style="margin-top: 16px; padding: 12px; background: var(--surface); border-radius: var(--radius); font-size: 13px; color: var(--text-secondary);">
-                        <strong>📱 Étapes :</strong>
-                        <ol style="margin: 8px 0 0 20px; padding: 0; line-height: 1.8;">
-                            <li>Entrez votre numéro de téléphone mobile money</li>
-                            <li>Vous recevrez une notification USSD sur votre téléphone</li>
-                            <li>Confirmez le paiement avec votre code secret</li>
-                            <li>Vous serez automatiquement redirigé vers votre espace après confirmation</li>
-                        </ol>
+
+                    <!-- Payment Method Info -->
+                    <div class="payment-info-box">
+                        <h4 class="info-title">
+                            <i class="bi bi-info-circle"></i> Comment ça marche ?
+                        </h4>
+                        <div class="payment-method-display">
+                            <div class="method-icon">
+                                <i class="bi bi-credit-card-2-front"></i>
+                            </div>
+                            <div class="method-info">
+                                <div class="method-name">Paiement Mobile Money</div>
+                                <div class="method-providers">MTN MoMo • Moov Pay • Celtis Cash via FedaPay</div>
+                            </div>
+                        </div>
+                        <div class="payment-steps">
+                            <strong>📱 Étapes :</strong>
+                            <ol class="steps-list">
+                                <li>Entrez votre numéro de téléphone mobile money</li>
+                                <li>Vous recevrez une notification USSD sur votre téléphone</li>
+                                <li>Confirmez le paiement avec votre code secret</li>
+                                <li>Vous serez automatiquement redirigé vers votre espace après confirmation</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Payment Form -->
-        <div class="cuni-card">
-            <div class="card-header-custom">
-                <h3 class="card-title">
-                    <i class="bi bi-wallet2"></i> Confirmer le Paiement
-                </h3>
-            </div>
-            <div class="card-body">
-                <form id="paymentForm" data-transaction-id="{{ $transaction->transaction_id }}">
-                    @csrf
-                    <input type="hidden" name="transaction_id" value="{{ $transaction->transaction_id }}">
-                    <input type="hidden" name="payment_method" value="{{ $transaction->provider ?? 'momo' }}">
+        <div class="payment-form-card">
+            <div class="cuni-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title">
+                        <i class="bi bi-wallet2"></i> Confirmer le Paiement
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="paymentForm" data-transaction-id="{{ $transaction->transaction_id }}">
+                        @csrf
+                        <input type="hidden" name="transaction_id" value="{{ $transaction->transaction_id }}">
+                        <input type="hidden" name="payment_method" value="{{ $transaction->provider ?? 'momo' }}">
 
-                    <!-- Phone Number -->
-                    <div class="form-group">
-                        <label class="form-label">Numéro de téléphone *</label>
-                        <div class="form-input-wrapper" style="position: relative;">
-                            <input type="tel" id="phoneNumber" name="phone_number" class="form-control"
-                                placeholder="01 XX XX XX XX ou +229 01 XX XX XX XX"
-                                value="{{ old('phone_number', $transaction->phone_number) }}" required
-                                pattern="^(\+229)?01[0-9]{8}$"
-                                style="padding-left: 44px; font-family: 'JetBrains Mono', monospace;" maxlength="14"
-                                title="Format: 01XXXXXXXX (10 chiffres) ou +22901XXXXXXXX (14 caractères)">
-                            <i class="bi bi-phone"
-                                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 16px;"></i>
+                        <!-- Phone Number -->
+                        <div class="form-group">
+                            <label class="form-label">Numéro de téléphone *</label>
+                            <div class="form-input-wrapper">
+                                <input type="tel" id="phoneNumber" name="phone_number" class="form-control"
+                                    placeholder="01 XX XX XX XX ou +229 01 XX XX XX XX"
+                                    value="{{ old('phone_number', $transaction->phone_number) }}" required
+                                    pattern="^(\+229)?01[0-9]{8}$"
+                                    style="padding-left: 44px; font-family: 'JetBrains Mono', monospace;" maxlength="14"
+                                    title="Format: 01XXXXXXXX (10 chiffres) ou +22901XXXXXXXX (14 caractères)">
+                                <i class="bi bi-phone"></i>
+                            </div>
+                            <small class="form-text">
+                                <i class="bi bi-info-circle"></i> Format Bénin: <strong>01XXXXXXXX</strong> (10 chiffres) ou
+                                <strong>+22901XXXXXXXX</strong>
+                            </small>
+                            <div id="phoneError" class="validation-message error" style="display: none;">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span></span>
+                            </div>
                         </div>
-                        <small style="color: var(--text-tertiary); font-size: 12px; margin-top: 6px; display: block;">
-                            <i class="bi bi-info-circle"></i> Format Bénin: <strong>01XXXXXXXX</strong> (10 chiffres) ou
-                            <strong>+22901XXXXXXXX</strong>
-                        </small>
-                        <div id="phoneError" class="validation-message error" style="display: none; margin-top: 8px;">
-                            <i class="bi bi-exclamation-circle-fill"></i>
-                            <span></span>
+
+                        <!-- Format Preview -->
+                        <div id="formatPreview" class="format-preview">
+                            <strong style="color: var(--primary);">Format FedaPay:</strong>
+                            <span id="fedapayFormat" class="font-mono"></span>
                         </div>
-                    </div>
 
-                    <!-- Format Preview -->
-                    <div id="formatPreview"
-                        style="margin-top: 12px; padding: 10px 14px; background: var(--surface-alt); border-radius: var(--radius); font-size: 12px; display: none;">
-                        <strong style="color: var(--primary);">Format FedaPay:</strong>
-                        <span id="fedapayFormat" style="font-family: 'JetBrains Mono', monospace; margin-left: 8px;"></span>
-                    </div>
-
-                    <!-- Security Notice -->
-                    <div
-                        style="margin: 24px 0; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius); border-left: 4px solid var(--primary);">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <i class="bi bi-shield-check" style="color: var(--primary); font-size: 18px;"></i>
-                            <div style="font-size: 13px; color: var(--text-secondary);">
+                        <!-- Security Notice -->
+                        <div class="security-notice">
+                            <div class="security-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="security-text">
                                 <strong>Paiement sécurisé</strong><br>
                                 Vous recevrez une notification sur votre téléphone pour confirmer la transaction.
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Terms -->
-                    <div class="form-group">
-                        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" id="confirmPayment" name="confirm_payment" required
-                                style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
-                            <span style="font-size: 13px; color: var(--text-secondary);">
-                                Je confirme vouloir payer <strong>{{ number_format($transaction->amount, 0, ',', ' ') }}
-                                    FCFA</strong>
-                            </span>
-                        </label>
-                        <div id="termsError" class="validation-message error" style="display: none; margin-top: 8px;">
-                            <i class="bi bi-exclamation-circle-fill"></i>
-                            <span>Veuillez accepter les conditions de paiement</span>
+                        <!-- Terms -->
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="confirmPayment" name="confirm_payment" required
+                                    style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
+                                <span class="checkbox-text">
+                                    Je confirme vouloir payer
+                                    <strong>{{ number_format($transaction->amount, 0, ',', ' ') }} FCFA</strong>
+                                </span>
+                            </label>
+                            <div id="termsError" class="validation-message error" style="display: none;">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                <span>Veuillez accepter les conditions de paiement</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Submit Button -->
-                    <div style="margin-top: 32px; display: flex; gap: 12px;">
-                        <button type="submit" class="btn-cuni primary" style="flex: 1;" id="submitBtn">
-                            <i class="bi bi-lock"></i>
-                            <span class="btn-text">Payer {{ number_format($transaction->amount, 0, ',', ' ') }}
-                                FCFA</span>
-                            <span class="btn-loading" style="display: none;">
-                                <i class="bi bi-hourglass-split" style="animation: spin 1s linear infinite;"></i>
-                                Traitement en cours...
-                            </span>
-                        </button>
-                        <a href="{{ route('subscription.status') }}" class="btn-cuni secondary">
-                            <i class="bi bi-x-circle"></i> Annuler
+                        <!-- Submit Button -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn-cuni primary btn-large" id="submitBtn">
+                                <i class="bi bi-lock"></i>
+                                <span class="btn-text">Payer {{ number_format($transaction->amount, 0, ',', ' ') }}
+                                    FCFA</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <i class="bi bi-hourglass-split" style="animation: spin 1s linear infinite;"></i>
+                                    Traitement en cours...
+                                </span>
+                            </button>
+                            <a href="{{ route('subscription.status') }}" class="btn-cuni secondary btn-large">
+                                <i class="bi bi-x-circle"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Help Text -->
+                    <div class="help-section">
+                        <p class="help-text">
+                            <i class="bi bi-question-circle"></i> Besoin d'aide ?
+                        </p>
+                        <a href="{{ route('contact') }}" class="help-link">
+                            Contacter le support
                         </a>
                     </div>
-                </form>
-
-                <!-- Help Text -->
-                <div
-                    style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--surface-border); text-align: center;">
-                    <p style="font-size: 13px; color: var(--text-tertiary); margin-bottom: 12px;">
-                        <i class="bi bi-question-circle"></i> Besoin d'aide ?
-                    </p>
-                    <a href="{{ route('contact') }}" class="text-primary" style="font-size: 13px; font-weight: 500;">
-                        Contacter le support
-                    </a>
                 </div>
             </div>
         </div>
@@ -217,42 +214,30 @@
                 // ============================================
                 // ✅ BENIN PHONE NUMBER FORMATTING FOR FEDAPAY
                 // ============================================
-
-                // User enters: 01XXXXXXXX or +22901XXXXXXXX
-                // FedaPay needs: +229XXXXXXXX (remove the '01', keep country code + last 8 digits)
-
                 phoneInput.addEventListener('input', function() {
-                    let value = this.value.replace(/\s/g, ''); // Remove spaces
-
-                    // Remove non-digits except +
+                    let value = this.value.replace(/\s/g, '');
                     value = value.replace(/[^\d+]/g, '');
 
-                    // Handle +229 prefix
                     if (value.startsWith('+229')) {
-                        // User typed +22901XXXXXXXX
                         if (value.length > 14) {
-                            value = value.substring(0, 14); // Limit to +22901XXXXXXXX (14 chars)
+                            value = value.substring(0, 14);
                         }
                     } else if (value.startsWith('229')) {
-                        // User typed 22901XXXXXXXX
                         if (value.length > 13) {
                             value = value.substring(0, 13);
                         }
                     } else {
-                        // User typed 01XXXXXXXX (local format)
                         if (value.length > 10) {
                             value = value.substring(0, 10);
                         }
                     }
 
-                    // Auto-add + for display if starts with 229
                     if (value.startsWith('229') && !this.value.startsWith('+')) {
                         this.value = '+' + value;
                     } else {
                         this.value = value;
                     }
 
-                    // Show FedaPay format preview
                     updateFedapayPreview(this.value);
                 });
 
@@ -262,18 +247,13 @@
 
                 function updateFedapayPreview(userInput) {
                     const cleaned = userInput.replace(/\s/g, '').replace('+', '');
-
-                    // Extract last 8 digits (remove 01 or 22901 prefix)
                     let last8Digits = '';
 
                     if (cleaned.startsWith('22901')) {
-                        // +22901XXXXXXXX -> take last 8
                         last8Digits = cleaned.slice(-8);
                     } else if (cleaned.startsWith('01')) {
-                        // 01XXXXXXXX -> take last 8
                         last8Digits = cleaned.slice(-8);
                     } else {
-                        // Fallback: take last 8 digits
                         last8Digits = cleaned.slice(-8);
                     }
 
@@ -299,12 +279,9 @@
                         return false;
                     }
 
-                    // Remove + for validation
                     const digits = phone.replace('+', '');
-
-                    // ✅ BENIN FORMAT: Must be 01XXXXXXXX (10 digits) or +22901XXXXXXXX (13 digits)
-                    const beninRegexLocal = /^01[0-9]{8}$/; // 01XXXXXXXX
-                    const beninRegexIntl = /^22901[0-9]{8}$/; // 22901XXXXXXXX
+                    const beninRegexLocal = /^01[0-9]{8}$/;
+                    const beninRegexIntl = /^22901[0-9]{8}$/;
 
                     if (!beninRegexLocal.test(digits) && !beninRegexIntl.test(digits)) {
                         phoneError.style.display = 'flex';
@@ -327,11 +304,7 @@
                 // ============================================
                 function transformForFedaPay(userPhone) {
                     const cleaned = userPhone.replace(/\s/g, '').replace('+', '');
-
-                    // Extract last 8 digits (the actual subscriber number)
                     let last8Digits = cleaned.slice(-8);
-
-                    // Prepend Benin country code
                     return '+229' + last8Digits;
                 }
 
@@ -341,39 +314,31 @@
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
 
-                    // Reset errors
                     phoneError.style.display = 'none';
                     termsError.style.display = 'none';
                     phoneInput.classList.remove('error');
 
-                    // Validate phone
                     if (!validatePhone()) {
                         phoneInput.focus();
                         return;
                     }
 
-                    // Validate terms
                     if (!confirmCheckbox.checked) {
                         termsError.style.display = 'flex';
                         confirmCheckbox.focus();
                         return;
                     }
 
-                    // Show loading state
                     submitBtn.disabled = true;
                     btnText.style.display = 'none';
                     btnLoading.style.display = 'inline-flex';
 
-                    // ✅ TRANSFORM PHONE NUMBER FOR FEDAPAY
                     const originalPhone = phoneInput.value;
                     const fedapayPhone = transformForFedaPay(originalPhone);
 
-                    // Prepare form data
                     const formData = new FormData(form);
-                    // Override phone_number with transformed value for FedaPay
                     formData.set('phone_number', fedapayPhone);
 
-                    // ✅ Send AJAX request
                     fetch('{{ route('payment.process') }}', {
                             method: 'POST',
                             body: formData,
@@ -393,10 +358,7 @@
                         })
                         .then(data => {
                             if (data.success && data.checkout_url) {
-                                // ✅ Show redirect message
                                 showToast('✅ Paiement initié ! Redirection vers FedaPay...', 'success');
-
-                                // ✅ Redirect to FedaPay after short delay
                                 setTimeout(() => {
                                     window.location.href = data.checkout_url;
                                 }, 1500);
@@ -408,16 +370,10 @@
                         })
                         .catch(error => {
                             console.error('Payment error:', error);
-
-                            // Show error toast
                             showToast('❌ ' + (error.message || 'Une erreur est survenue'), 'error');
-
-                            // Reset button
                             submitBtn.disabled = false;
                             btnText.style.display = 'inline';
                             btnLoading.style.display = 'none';
-
-                            // Show error in form
                             phoneError.style.display = 'flex';
                             phoneError.querySelector('span').textContent = error.message ||
                                 'Échec du paiement. Veuillez réessayer.';
@@ -456,32 +412,10 @@
         `;
 
                     document.body.appendChild(toast);
-
                     setTimeout(() => {
                         toast.style.animation = 'slideOutRight 0.3s ease';
                         setTimeout(() => toast.remove(), 300);
                     }, 4000);
-                }
-
-                // Add animation styles
-                if (!document.getElementById('payment-animations')) {
-                    const style = document.createElement('style');
-                    style.id = 'payment-animations';
-                    style.textContent = `
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-        `;
-                    document.head.appendChild(style);
                 }
 
                 // Initialize preview on load if value exists
@@ -494,6 +428,163 @@
 
     @push('styles')
         <style>
+            /* ============================================
+           PAYMENT PAGE LAYOUT - DESKTOP FIRST
+           ============================================ */
+            .payment-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                width: 100%;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+
+            @media (max-width: 1024px) {
+                .payment-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .payment-grid {
+                    gap: 16px;
+                }
+            }
+
+            /* Transaction Details */
+            .transaction-details {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .detail-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid var(--surface-border);
+            }
+
+            .detail-row:last-child {
+                border-bottom: none;
+            }
+
+            .detail-row.highlight {
+                background: var(--primary-subtle);
+                padding: 16px;
+                border-radius: var(--radius);
+                border-bottom: none;
+            }
+
+            .detail-label {
+                color: var(--text-secondary);
+                font-size: 14px;
+            }
+
+            .detail-value {
+                color: var(--text-primary);
+                font-size: 14px;
+            }
+
+            .font-mono {
+                font-family: 'JetBrains Mono', monospace;
+            }
+
+            .font-semibold {
+                font-weight: 600;
+            }
+
+            .font-bold {
+                font-weight: 700;
+            }
+
+            .text-primary {
+                color: var(--primary);
+            }
+
+            .text-lg {
+                font-size: 1.125rem;
+            }
+
+            /* Payment Info Box */
+            .payment-info-box {
+                margin-top: 24px;
+                padding: 20px;
+                background: var(--primary-subtle);
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--surface-border);
+            }
+
+            .info-title {
+                font-size: 15px;
+                font-weight: 600;
+                color: var(--primary);
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .payment-method-display {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin-bottom: 16px;
+            }
+
+            .method-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: var(--radius);
+                background: var(--surface);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .method-icon i {
+                color: var(--primary);
+                font-size: 24px;
+            }
+
+            .method-info {
+                flex: 1;
+            }
+
+            .method-name {
+                font-weight: 600;
+                color: var(--text-primary);
+                font-size: 14px;
+            }
+
+            .method-providers {
+                font-size: 12px;
+                color: var(--text-tertiary);
+                margin-top: 2px;
+            }
+
+            .payment-steps {
+                margin-top: 16px;
+                padding: 16px;
+                background: var(--surface);
+                border-radius: var(--radius);
+                font-size: 13px;
+                color: var(--text-secondary);
+            }
+
+            .steps-list {
+                margin: 12px 0 0 24px;
+                padding: 0;
+                line-height: 2;
+            }
+
+            .steps-list li {
+                margin-bottom: 8px;
+            }
+
+            /* Form Input Wrapper */
             .form-input-wrapper {
                 position: relative;
             }
@@ -513,6 +604,23 @@
                 padding-left: 44px !important;
             }
 
+            .form-control {
+                width: 100%;
+                padding: 12px 16px;
+                font-size: 14px;
+                border: 2px solid var(--gray-200);
+                border-radius: var(--radius);
+                background: var(--white);
+                color: var(--text-primary);
+                transition: all 0.3s ease;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 4px var(--primary-subtle);
+            }
+
             .form-control.error {
                 border-color: var(--accent-red) !important;
                 background-color: rgba(239, 68, 68, 0.05) !important;
@@ -523,29 +631,21 @@
                 background-color: rgba(16, 185, 129, 0.05) !important;
             }
 
-            .validation-message {
-                display: flex;
-                align-items: center;
-                gap: 6px;
+            .form-text {
+                color: var(--text-tertiary);
                 font-size: 12px;
-                padding: 8px 12px;
+                margin-top: 8px;
+                display: block;
+            }
+
+            /* Format Preview */
+            .format-preview {
+                margin-top: 12px;
+                padding: 12px 16px;
+                background: var(--surface-alt);
                 border-radius: var(--radius);
-            }
-
-            .validation-message.error {
-                background: rgba(239, 68, 68, 0.1);
-                color: var(--accent-red);
-                border: 1px solid rgba(239, 68, 68, 0.2);
-            }
-
-            .btn-cuni.primary:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
-                pointer-events: none;
-            }
-
-            /* Format preview styling */
-            #formatPreview {
+                font-size: 13px;
+                display: none;
                 animation: fadeIn 0.3s ease;
             }
 
@@ -559,6 +659,183 @@
                     opacity: 1;
                     transform: translateY(0);
                 }
+            }
+
+            /* Security Notice */
+            .security-notice {
+                margin: 24px 0;
+                padding: 16px;
+                background: rgba(59, 130, 246, 0.1);
+                border-radius: var(--radius);
+                border-left: 4px solid var(--primary);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .security-icon {
+                flex-shrink: 0;
+            }
+
+            .security-icon i {
+                color: var(--primary);
+                font-size: 20px;
+            }
+
+            .security-text {
+                font-size: 13px;
+                color: var(--text-secondary);
+            }
+
+            /* Checkbox Label */
+            .checkbox-label {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                cursor: pointer;
+            }
+
+            .checkbox-text {
+                font-size: 13px;
+                color: var(--text-secondary);
+                line-height: 1.5;
+            }
+
+            /* Validation Message */
+            .validation-message {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                padding: 8px 12px;
+                border-radius: var(--radius);
+                margin-top: 8px;
+            }
+
+            .validation-message.error {
+                background: rgba(239, 68, 68, 0.1);
+                color: var(--accent-red);
+                border: 1px solid rgba(239, 68, 68, 0.2);
+            }
+
+            /* Form Actions */
+            .form-actions {
+                margin-top: 32px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .btn-large {
+                flex: 1;
+                min-width: 200px;
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+
+            /* Help Section */
+            .help-section {
+                margin-top: 24px;
+                padding-top: 24px;
+                border-top: 1px solid var(--surface-border);
+                text-align: center;
+            }
+
+            .help-text {
+                font-size: 13px;
+                color: var(--text-tertiary);
+                margin-bottom: 12px;
+            }
+
+            .help-link {
+                color: var(--primary);
+                font-size: 13px;
+                font-weight: 500;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .help-link:hover {
+                color: var(--primary-dark);
+                text-decoration: underline;
+            }
+
+            /* Button Loading State */
+            .btn-cuni.primary:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Responsive Adjustments */
+            @media (max-width: 768px) {
+                .form-actions {
+                    flex-direction: column;
+                }
+
+                .btn-large {
+                    width: 100%;
+                    min-width: auto;
+                }
+
+                .payment-info-box {
+                    padding: 16px;
+                }
+
+                .detail-row {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 8px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .payment-grid {
+                    gap: 12px;
+                }
+
+                .card-body {
+                    padding: 16px !important;
+                }
+
+                .method-icon {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .steps-list {
+                    font-size: 12px;
+                }
+            }
+
+            /* Dark Mode Support */
+            .theme-dark .form-control {
+                background-color: var(--surface-alt);
+                border-color: var(--surface-border);
+                color: var(--text-primary);
+            }
+
+            .theme-dark .form-control:focus {
+                background-color: var(--surface-elevated);
+                border-color: var(--primary);
+            }
+
+            .theme-dark .payment-info-box {
+                background: rgba(77, 166, 255, 0.08);
+            }
+
+            .theme-dark .security-notice {
+                background: rgba(77, 166, 255, 0.08);
             }
         </style>
     @endpush
