@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\SubscriptionExpiredNotification;
 use Carbon\Carbon;
 
 class SubscriptionManagementController extends Controller
@@ -161,6 +162,8 @@ class SubscriptionManagementController extends Controller
                 'subscription_ends_at' => $subscription->end_date,
             ]);
 
+            $user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
+
             DB::commit();
             return redirect()->route('admin.subscriptions.show', $user->id)
                 ->with('success', 'Abonnement activé avec succès pour ' . $user->name . '. Facture générée.');
@@ -197,6 +200,8 @@ class SubscriptionManagementController extends Controller
                 'subscription_status' => 'expired',
                 'subscription_ends_at' => now(),
             ]);
+
+            $subscription->user->notify(new SubscriptionExpiredNotification($subscription));
 
             DB::commit();
 

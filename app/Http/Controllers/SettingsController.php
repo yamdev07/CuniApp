@@ -88,7 +88,6 @@ class SettingsController extends Controller
         Setting::set('fedapay_public_key', $request->fedapay_public_key ?? '', 'string', 'payments', 'Clé Publique FedaPay');
         Setting::set('fedapay_secret_key', $request->fedapay_secret_key ?? '', 'string', 'payments', 'Clé Secrète FedaPay');
         Setting::set('fedapay_environment', $request->fedapay_environment ?? 'sandbox', 'string', 'payments', 'Environnement FedaPay');
-        Setting::set('fedapay_webhook_secret', $request->fedapay_webhook_secret ?? '', 'string', 'payments', 'Secret Webhook FedaPay');
 
 
 

@@ -240,6 +240,15 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
             </h3>
         </div>
         <div class="card-body">
+            <div class="alert-box info" style="margin-bottom: 20px;">
+                <i class="bi bi-info-circle-fill"></i>
+                <div>
+                    <strong>💡 Flux de Paiement :</strong> Votre application utilise la méthode de redirection (callback).
+                    Après le paiement, l'utilisateur est automatiquement redirigé vers votre espace.
+                    Aucune configuration webhook n'est nécessaire.
+                </div>
+            </div>
+
             <form action="{{ route('settings.update') }}" method="POST">
                 @csrf
                 <div class="settings-grid">
@@ -249,16 +258,20 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
                             value="{{ \App\Models\Setting::get('fedapay_public_key', '') }}"
                             placeholder="pk_test_... ou pk_live_...">
                         <small style="color: var(--text-tertiary); font-size: 12px;">
-                            <i class="bi bi-info-circle"></i>
-                            Disponible sur votre tableau de bord FedaPay
+                            <i class="bi bi-info-circle"></i> Disponible sur votre tableau de bord FedaPay
                         </small>
                     </div>
+
                     <div class="form-group">
                         <label class="form-label">Clé Secrète FedaPay</label>
                         <input type="password" name="fedapay_secret_key" class="form-control"
                             value="{{ \App\Models\Setting::get('fedapay_secret_key', '') }}"
                             placeholder="sk_test_... ou sk_live_...">
+                        <small style="color: var(--text-tertiary); font-size: 12px;">
+                            <i class="bi bi-lock"></i> Utilisée pour les appels API (ne jamais partager)
+                        </small>
                     </div>
+
                     <div class="form-group">
                         <label class="form-label">Environnement</label>
                         <select name="fedapay_environment" class="form-select">
@@ -271,17 +284,13 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
                                 Production (Réel)
                             </option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Secret Webhook FedaPay</label>
-                        <input type="password" name="fedapay_webhook_secret" class="form-control"
-                            value="{{ \App\Models\Setting::get('fedapay_webhook_secret', '') }}" placeholder="whsec_...">
                         <small style="color: var(--text-tertiary); font-size: 12px;">
-                            <i class="bi bi-info-circle"></i>
-                            Pour vérifier les signatures webhook
+                            <i class="bi bi-info-circle"></i> Utilisez Sandbox pour tester sans paiement réel
                         </small>
                     </div>
+
                 </div>
+
                 <div style="margin-top: 24px;">
                     <button type="submit" class="btn-cuni primary">
                         <i class="bi bi-save"></i> Enregistrer

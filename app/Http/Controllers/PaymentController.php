@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentTransaction;
 use App\Models\Subscription;
-use App\Models\Setting;
-use App\Services\FedaPayService; // ← NEW
+use App\Services\FedaPayService;
+use App\Services\InvoiceService;
+use App\Notifications\PaymentInitiatedNotification;
 use App\Notifications\PaymentSuccessfulNotification;
 use App\Notifications\PaymentFailedNotification;
+use App\Notifications\SubscriptionActivatedNotification;
+use App\Notifications\InvoiceEmailNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +33,16 @@ class PaymentController extends Controller
                 ->with('warning', 'Cette transaction est déjà traitée.');
         }
 
-        $subscription = $transaction->subscription;
+        // ✅ Send notification when payment page is viewed
+        if (!$transaction->user->notifications()->where('type', 'info')
+            ->where('title', 'LIKE', '%Paiement en Cours%')
+            ->where('created_at', '>', now()->subMinutes(5))
+            ->exists()) {
 
+            $transaction->user->notify(new PaymentInitiatedNotification($transaction));
+        }
+
+        $subscription = $transaction->subscription;
         return view('payment.initiate', compact('transaction', 'subscription'));
     }
 
@@ -43,7 +54,7 @@ class PaymentController extends Controller
         $request->validate([
             'transaction_id' => 'required|exists:payment_transactions,transaction_id',
             'phone_number' => 'required|string|min:8',
-            'payment_method' => 'required|in:momo,moov,celtis', // ← User still chooses operator
+            'payment_method' => 'required|in:momo,moov,celtis',
         ]);
 
         $transaction = PaymentTransaction::where('transaction_id', $request->transaction_id)
@@ -62,8 +73,8 @@ class PaymentController extends Controller
             // Update transaction
             $transaction->update([
                 'phone_number' => $request->phone_number,
-                'provider' => 'fedapay', // ← Always FedaPay now
-                'payment_method' => $request->payment_method, // ← User's choice (momo/moov/celtis)
+                'provider' => 'fedapay',
+                'payment_method' => $request->payment_method,
             ]);
 
             // ✅ Call FedaPay API
@@ -71,8 +82,10 @@ class PaymentController extends Controller
             $paymentResult = $fedaPayService->initiatePayment($transaction);
 
             if ($paymentResult['success']) {
-                // Return FedaPay checkout URL to frontend
                 DB::commit();
+
+                // ✅ Send initiated notification
+                $transaction->user->notify(new PaymentInitiatedNotification($transaction));
 
                 return response()->json([
                     'success' => true,
@@ -87,6 +100,7 @@ class PaymentController extends Controller
                 ]);
                 DB::commit();
 
+                // ✅ Send failed notification
                 $transaction->user->notify(new PaymentFailedNotification($transaction));
 
                 return response()->json([
@@ -98,6 +112,13 @@ class PaymentController extends Controller
             DB::rollBack();
             Log::error('Payment processing error: ' . $e->getMessage());
 
+            // ✅ Send error notification
+            $transaction->update([
+                'status' => 'failed',
+                'failure_reason' => 'Erreur système: ' . $e->getMessage(),
+            ]);
+            $transaction->user->notify(new PaymentFailedNotification($transaction));
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du traitement du paiement'
@@ -106,155 +127,126 @@ class PaymentController extends Controller
     }
 
     /**
-     * ✅ FEDAPAY WEBHOOK HANDLER (REPLACES 3 SEPARATE HANDLERS)
+     * ✅ FEDAPAY CALLBACK (PRIMARY PAYMENT CONFIRMATION)
      */
-    public function webhook(Request $request)
+    public function callback(Request $request)
     {
-        $webhookId = uniqid('wh_fedapay_');
-
-        Log::channel('webhooks')->info("FedaPay Webhook received", [
-            'webhook_id' => $webhookId,
+        Log::channel('payments')->info('FedaPay Callback received', [
+            'query' => $request->query(),
             'ip' => $request->ip(),
-            'timestamp' => now()->toIso8601String(),
         ]);
 
-        // ✅ STEP 1: Get raw payload
-        $payload = $request->getContent();
-        $signature = $request->header('X-FedaPay-Signature');
+        $transactionId = $request->get('reference')
+            ?? $request->get('transaction_id')
+            ?? $request->get('id');
 
-        // ✅ STEP 2: Verify signature
-        $isValid = FedaPayService::verifyWebhookSignature($payload, $signature);
-
-        if (!$isValid) {
-            Log::channel('webhooks')->error('FedaPay Webhook: Signature verification failed', [
-                'webhook_id' => $webhookId,
-                'ip' => $request->ip(),
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid signature',
-            ], 401);
+        if (!$transactionId) {
+            Log::channel('payments')->error('FedaPay Callback: Missing transaction reference');
+            return redirect()->route('subscription.status')
+                ->with('error', 'Référence de transaction manquante');
         }
 
-        Log::channel('webhooks')->info('FedaPay Webhook: Signature verified', [
-            'webhook_id' => $webhookId,
-        ]);
-
-        // ✅ STEP 3: Process webhook
-        DB::beginTransaction();
-        try {
-            $webhookData = json_decode($payload, true);
-            $result = $this->processFedaPayWebhook($webhookData);
-
-            DB::commit();
-
-            Log::channel('webhooks')->info('FedaPay Webhook processed successfully', [
-                'webhook_id' => $webhookId,
-                'result' => $result,
-            ]);
-
-            return response()->json([
-                'status' => 'processed',
-                'webhook_id' => $webhookId,
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::channel('webhooks')->error('FedaPay Webhook processing failed', [
-                'webhook_id' => $webhookId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Processing failed',
-            ], 500);
-        }
-    }
-
-    /**
-     * ✅ PROCESS FEDAPAY WEBHOOK DATA
-     */
-    private function processFedaPayWebhook($data)
-    {
-        // FedaPay webhook payload structure:
-        // {
-        //   "event": "payment.completed" | "payment.failed",
-        //   "transaction": {
-        //     "id": "fedapay_transaction_id",
-        //     "reference": "our_transaction_id",
-        //     "status": "completed" | "failed",
-        //     "amount": 2500,
-        //     "currency": "XOF"
-        //   }
-        // }
-
-        $event = $data['event'] ?? '';
-        $transactionData = $data['transaction'] ?? [];
-
-        // Find our transaction by reference
-        $ourTransactionId = $transactionData['reference'] ?? null;
-
-        if (!$ourTransactionId) {
-            throw new \Exception('Missing transaction reference in webhook');
+        $transaction = PaymentTransaction::where('transaction_id', $transactionId)->first();
+        if (!$transaction) {
+            Log::channel('payments')->error('FedaPay Callback: Transaction not found');
+            return redirect()->route('subscription.status')
+                ->with('error', 'Transaction non trouvée');
         }
 
-        $transaction = PaymentTransaction::where('transaction_id', $ourTransactionId)->firstOrFail();
+        // ✅ SECURITY: Verify transaction belongs to authenticated user
+        if ($transaction->user_id !== Auth::id()) {
+            Log::channel('payments')->warning('FedaPay Callback: User mismatch');
+            return redirect()->route('subscription.status')
+                ->with('error', 'Non autorisé');
+        }
 
-        // Handle based on event type
-        // Handle based on event type
-        if (in_array($event, ['payment.completed', 'payment.success'])) {
-            // ✅ Payment successful
-            $transaction->update([
-                'status' => 'completed',
-                'paid_at' => now(),
-                'provider_response' => $data,
-            ]);
+        // ✅ Verify payment status with FedaPay API
+        $status = $request->get('status') ?? $request->get('transaction_status');
+        $verified = $this->verifyPaymentWithFedaPay($transactionId);
 
-            // Activate subscription if exists
-            if ($transaction->subscription) {
-                $this->activateSubscription($transaction->subscription);
-            }
+        if ($verified['status'] === 'completed' || $status === 'completed' || $status === 'SUCCESS' || $status === 'approved') {
+            DB::beginTransaction();
+            try {
+                // Update transaction
+                $transaction->update([
+                    'status' => 'completed',
+                    'paid_at' => now(),
+                    'provider_response' => $request->all(),
+                ]);
 
-            // ✅ CREATE INVOICE for completed payment
-            if (class_exists(\App\Services\InvoiceService::class)) {
-                try {
-                    $invoiceService = new \App\Services\InvoiceService();
-                    $invoice = $invoiceService->createFromTransaction($transaction);
-
-                    // ✅ Send invoice email notification
-                    if ($invoice && $transaction->user) {
-                        $transaction->user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
-                    }
-                } catch (\Exception $e) {
-                    Log::error('Invoice creation failed: ' . $e->getMessage(), [
-                        'transaction_id' => $transaction->transaction_id,
-                    ]);
-                    // Don't fail the payment if invoice creation fails
+                // Activate subscription
+                if ($transaction->subscription) {
+                    $this->activateSubscription($transaction->subscription);
                 }
+
+                // ✅ CREATE INVOICE
+                if (class_exists(\App\Services\InvoiceService::class)) {
+                    try {
+                        $invoiceService = new \App\Services\InvoiceService();
+                        $invoice = $invoiceService->createFromTransaction($transaction);
+
+                        if ($invoice && $transaction->user) {
+                            // ✅ Send invoice notification
+                            $transaction->user->notify(new InvoiceEmailNotification($invoice));
+                        }
+                    } catch (\Exception $e) {
+                        Log::channel('payments')->error('Invoice creation failed: ' . $e->getMessage());
+                    }
+                }
+
+                // ✅ Send success notification
+                $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
+
+                DB::commit();
+                Log::channel('payments')->info('FedaPay Callback: Payment completed');
+
+                return redirect()->route('subscription.status')
+                    ->with('success', 'Paiement réussi ! Facture générée et envoyée par email.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::channel('payments')->error('Callback processing failed: ' . $e->getMessage());
+                return redirect()->route('subscription.status')
+                    ->with('error', 'Erreur lors de la confirmation du paiement');
             }
-
-            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
-            return ['action' => 'payment_completed', 'transaction_id' => $ourTransactionId];
-        } elseif (in_array($event, ['payment.failed', 'payment.declined'])) {
-            // ✅ Payment failed
-            $transaction->update([
-                'status' => 'failed',
-                'failure_reason' => $transactionData['failure_reason'] ?? 'Payment failed',
-                'provider_response' => $data,
-            ]);
-
-            $transaction->user->notify(new PaymentFailedNotification($transaction));
-
-            return ['action' => 'payment_failed', 'transaction_id' => $ourTransactionId];
         }
 
-        return ['action' => 'status_updated', 'transaction_id' => $ourTransactionId];
+        // Payment failed or pending
+        Log::channel('payments')->warning('FedaPay Callback: Payment not completed');
+
+        // ✅ Send failed notification
+        $transaction->update([
+            'status' => 'failed',
+            'failure_reason' => 'Paiement non confirmé par FedaPay',
+        ]);
+        $transaction->user->notify(new PaymentFailedNotification($transaction));
+
+        return redirect()->route('subscription.status')
+            ->with('error', 'Paiement échoué ou en attente');
     }
 
     /**
-     * ✅ ACTIVATE SUBSCRIPTION (existing method - keep)
+     * ✅ VERIFY PAYMENT STATUS WITH FEDAPAY API
+     */
+    private function verifyPaymentWithFedaPay($transactionId)
+    {
+        try {
+            $fedaPayService = new FedaPayService();
+            $result = $fedaPayService->verifyTransaction($transactionId);
+            if ($result['success']) {
+                return [
+                    'status' => $result['data']['status'] ?? 'unknown',
+                    'verified' => true
+                ];
+            }
+            return ['status' => 'unknown', 'verified' => false];
+        } catch (\Exception $e) {
+            Log::channel('payments')->error('FedaPay verification failed: ' . $e->getMessage());
+            return ['status' => 'unknown', 'verified' => false];
+        }
+    }
+
+    /**
+     * ✅ ACTIVATE SUBSCRIPTION
      */
     private function activateSubscription($subscription)
     {
@@ -262,22 +254,23 @@ class PaymentController extends Controller
             return;
         }
 
+        $subscription->update(['status' => 'active']);
         $subscription->user->update([
             'subscription_status' => 'active',
             'subscription_ends_at' => $subscription->end_date,
         ]);
 
-        $subscription->user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
+        // ✅ Send activation notification
+        $subscription->user->notify(new SubscriptionActivatedNotification($subscription));
     }
 
     /**
-     * ✅ VERIFY PAYMENT STATUS (keep for manual checks)
+     * ✅ VERIFY PAYMENT STATUS (for manual checks)
      */
     public function verify($transaction_id)
     {
         $transaction = PaymentTransaction::where('transaction_id', $transaction_id)
             ->firstOrFail();
-
         return response()->json([
             'success' => true,
             'transaction' => [
@@ -289,81 +282,5 @@ class PaymentController extends Controller
                 'paid_at' => $transaction->paid_at,
             ]
         ]);
-    }
-
-    /**
-     * ✅ FEDAPAY CALLBACK (after payment completion)
-     */
-    // app/Http/Controllers/PaymentController.php - UPDATE callback() method
-    // app/Http/Controllers/PaymentController.php - UPDATE callback() method
-    public function callback(Request $request)
-    {
-        Log::channel('webhooks')->info('FedaPay Callback received', [
-            'query' => $request->query(),
-            'ip' => $request->ip(),
-        ]);
-
-        // FedaPay sends 'reference' as primary identifier
-        $transactionId = $request->get('reference')
-            ?? $request->get('transaction_id')
-            ?? $request->get('id');
-
-        if (!$transactionId) {
-            Log::channel('webhooks')->error('FedaPay Callback: Missing transaction reference');
-            return redirect()->route('subscription.status')
-                ->with('error', 'Référence de transaction manquante');
-        }
-
-        $transaction = PaymentTransaction::where('transaction_id', $transactionId)->first();
-
-        if (!$transaction) {
-            Log::channel('webhooks')->error('FedaPay Callback: Transaction not found', [
-                'transaction_id' => $transactionId
-            ]);
-            return redirect()->route('subscription.status')
-                ->with('error', 'Transaction non trouvée');
-        }
-
-        $status = $request->get('status') ?? $request->get('transaction_status');
-
-        if (in_array($status, ['completed', 'SUCCESS', 'approved'])) {
-            $transaction->update(['status' => 'completed', 'paid_at' => now()]);
-            if ($transaction->subscription) {
-                $this->activateSubscription($transaction->subscription);
-            }
-
-            // ✅ CREATE INVOICE for completed payment
-            if (class_exists(\App\Services\InvoiceService::class)) {
-                try {
-                    $invoiceService = new \App\Services\InvoiceService();
-                    $invoice = $invoiceService->createFromTransaction($transaction);
-
-                    // ✅ Send invoice email notification
-                    if ($invoice && $transaction->user) {
-                        $transaction->user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
-                    }
-                } catch (\Exception $e) {
-                    Log::channel('webhooks')->error('Invoice creation failed: ' . $e->getMessage(), [
-                        'transaction_id' => $transactionId,
-                    ]);
-                    // Don't fail the payment if invoice creation fails
-                }
-            }
-
-            $transaction->user->notify(new PaymentSuccessfulNotification($transaction));
-            Log::channel('webhooks')->info('FedaPay Callback: Payment completed', [
-                'transaction_id' => $transactionId
-            ]);
-            return redirect()->route('subscription.status')
-                ->with('success', 'Paiement réussi ! Facture générée.');
-        }
-
-        Log::channel('webhooks')->warning('FedaPay Callback: Payment failed', [
-            'transaction_id' => $transactionId,
-            'status' => $status
-        ]);
-
-        return redirect()->route('subscription.status')
-            ->with('error', 'Paiement échoué');
     }
 }

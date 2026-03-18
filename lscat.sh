@@ -1,1 +1,1 @@
-lscat -d app/ database/migrations/ resources/ routes/ -f todo.md cdc.md storage/logs/laravel.log -C -H none -D test.txt
+lscat -d app/ database/migrations/ resources/ routes/ -f .env todo.md storage/logs/laravel.log -c -H none -D test.txt

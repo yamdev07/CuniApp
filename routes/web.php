@@ -26,7 +26,6 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\SubscriptionManagementController;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\CheckAdminRole;
-use App\Http\Middleware\VerifyWebhookIp;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -145,10 +144,14 @@ Route::middleware('auth')->group(function () {
         Route::prefix('payment')->name('payment.')->group(function () {
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
-            Route::post('/webhook/fedapay', [PaymentController::class, 'webhook'])
-                ->name('webhook.fedapay')
-                ->middleware(VerifyWebhookIp::class);
-            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
+
+            // ✅ FEDAPAY CALLBACK (user redirect after payment)
+            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])
+                ->name('callback');
+
+            // ✅ REMOVE DUPLICATE: This was causing conflicts
+            // Route::get('/payment/callback/{provider}', ...) - REMOVED (duplicate)
+
             Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
             Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
         });
