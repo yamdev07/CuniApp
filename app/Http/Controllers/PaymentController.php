@@ -22,11 +22,22 @@ class PaymentController extends Controller
     /**
      * ✅ INITIATE PAYMENT WITH FEDAPAY
      */
+
     public function initiate(Request $request, $transaction_id)
     {
         $transaction = PaymentTransaction::where('transaction_id', $transaction_id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
+
+        // ✅ ALLOW RETRY FOR FAILED TRANSACTIONS
+        if ($transaction->status === 'failed') {
+            // Reset transaction to pending for retry
+            $transaction->update([
+                'status' => 'pending',
+                'failure_reason' => null,
+                'provider_response' => null,
+            ]);
+        }
 
         if ($transaction->status !== 'pending') {
             return redirect()->route('subscription.status')
@@ -34,12 +45,12 @@ class PaymentController extends Controller
         }
 
         // ✅ Send notification when payment page is viewed
-        if ($transaction->user->customNotifications()->where('type', 'info')
+        if ($transaction->user->customNotifications()
+            ->where('type', 'info')
             ->where('title', 'LIKE', '%Paiement en Cours%')
             ->where('created_at', '>', now()->subMinutes(5))
             ->exists()
         ) {
-
             $transaction->user->notify(new PaymentInitiatedNotification($transaction));
         }
 

@@ -69,13 +69,27 @@
                     </div>
                 </div>
 
-                {{-- ✅ FIND LATEST FAILED/PENDING TRANSACTION --}}
+                {{-- ✅ FIND LATEST FAILED/PENDING TRANSACTION - IMPROVED QUERY --}}
                 @php
-                    $retryTransaction = $subscription
-                        ->transactions()
-                        ->whereIn('status', ['pending', 'failed'])
-                        ->orderBy('created_at', 'desc')
-                        ->first();
+                    $retryTransaction = null;
+
+                    // Try to get transaction from subscription
+                    if ($subscription->transactions) {
+                        $retryTransaction = $subscription
+                            ->transactions()
+                            ->whereIn('status', ['pending', 'failed'])
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                    }
+
+                    // If no transaction found, try to get from user's payment history
+if (!$retryTransaction) {
+    $retryTransaction = \App\Models\PaymentTransaction::where('user_id', auth()->id())
+        ->where('subscription_id', $subscription->id)
+        ->whereIn('status', ['pending', 'failed'])
+        ->orderBy('created_at', 'desc')
+                            ->first();
+                    }
                 @endphp
 
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -108,6 +122,19 @@
                             <i class="bi bi-info-circle"></i>
                             <strong>Raison de l'échec:</strong> {{ $retryTransaction->failure_reason }}
                         </p>
+                    </div>
+                @endif
+
+                {{-- ✅ DEBUG INFO (Remove in production) --}}
+                @if (config('app.debug'))
+                    <div
+                        style="margin-top: 16px; padding: 12px; background: var(--gray-100); border-radius: var(--radius); font-size: 11px;">
+                        <strong>Debug:</strong><br>
+                        Subscription ID: {{ $subscription->id }}<br>
+                        Transaction ID: {{ $retryTransaction->transaction_id ?? 'Aucune' }}<br>
+                        Transaction Status: {{ $retryTransaction->status ?? 'N/A' }}<br>
+                        Retry URL:
+                        {{ $retryTransaction ? route('payment.initiate', $retryTransaction->transaction_id) : 'N/A' }}
                     </div>
                 @endif
             </div>
@@ -341,6 +368,7 @@
                     phoneGroup.querySelector('input').required = false;
                 }
             }
+
             // Close modals on outside click
             document.querySelectorAll('[id$="Modal"]').forEach(modal => {
                 modal.addEventListener('click', function(e) {
@@ -349,6 +377,7 @@
                     }
                 });
             });
+
             // Close modals on Escape key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
