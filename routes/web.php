@@ -40,7 +40,6 @@ use Illuminate\Support\Facades\Cache;
 // ========================================================================
 // 🔓 PUBLIC ROUTES (No authentication required)
 // ========================================================================
-
 Route::get('/', function () {
     return redirect()->route('welcome');
 })->name('home');
@@ -68,7 +67,6 @@ Route::get('/terms', function () {
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
 // ========================================================================
-
 Route::middleware('guest')->group(function () {
     // Authentication Routes
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -99,14 +97,14 @@ Route::middleware('guest')->group(function () {
 // ========================================================================
 // 🔐 AUTHENTICATED ROUTES (Login required)
 // ========================================================================
-
 Route::middleware('auth')->group(function () {
-    
     // --- Routes accessibles à tous les connectés (vérifiés ou non) ---
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
+
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
+
     Route::post('/email/verification-notification', function () {
         if (auth()->check() && auth()->user()) {
             auth()->user()->sendEmailVerificationNotification();
@@ -123,7 +121,6 @@ Route::middleware('auth')->group(function () {
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)
     // ====================================================================
     Route::middleware('verified')->group(function () {
-        
         // Dashboard & Profile
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -146,11 +143,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
 
             // ✅ FEDAPAY CALLBACK (user redirect after payment)
-            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])
-                ->name('callback');
-
-            // ✅ REMOVE DUPLICATE: This was causing conflicts
-            // Route::get('/payment/callback/{provider}', ...) - REMOVED (duplicate)
+            Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
 
             Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
             Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
@@ -279,25 +272,22 @@ Route::middleware('auth')->group(function () {
             Route::post('/{invoice}/regenerate', [InvoiceController::class, 'regeneratePdf'])->name('regenerate');
             Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
         });
-
     }); // <--- FIN DU GROUPE VERIFIED
 
-        // ========================================================================
+    // ========================================================================
     // 👑 ADMIN ROUTES (HORS GROUPE VERIFIED)
     // ========================================================================
-        Route::middleware('check.admin')->prefix('admin')->name('admin.')->group(function () {
-        
+    Route::middleware('check.admin')->prefix('admin')->name('admin.')->group(function () {
         Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
-            
             // 1. ROUTES FIXES (Doivent être en PREMIER)
             Route::get('/', [SubscriptionManagementController::class, 'index'])->name('index');
-            Route::get('/archives', [SubscriptionManagementController::class, 'archives'])->name('archives'); // <--- DOIT ÊTRE ICI
+            Route::get('/archives', [SubscriptionManagementController::class, 'archives'])->name('archives');
             Route::get('/transactions', [SubscriptionManagementController::class, 'transactions'])->name('transactions');
             Route::get('/export', [SubscriptionManagementController::class, 'export'])->name('export');
 
             // 2. ROUTES DYNAMIQUES (Doivent être APRÈS les fixes)
-            Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show'); // <--- DOIT ÊTRE APRÈS
-            
+            Route::get('/{userId}', [SubscriptionManagementController::class, 'show'])->name('show');
+
             // 3. ROUTES POST/DELETE (Peuvent être à la fin)
             Route::post('/activate', [SubscriptionManagementController::class, 'activate'])->name('activate');
             Route::post('/deactivate', [SubscriptionManagementController::class, 'deactivate'])->name('deactivate');
@@ -305,16 +295,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/{id}/archive', [SubscriptionManagementController::class, 'archive'])->name('archive');
             Route::post('/{id}/restore', [SubscriptionManagementController::class, 'restore'])->name('restore');
             Route::delete('/{id}/destroy', [SubscriptionManagementController::class, 'destroy'])->name('destroy');
-            
         });
     });
-
 }); // <--- FIN DU GROUPE AUTH
 
 // ========================================================================
 // 🔍 UTILITY ROUTES
 // ========================================================================
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
     Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
@@ -323,7 +310,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // ========================================================================
 // 🌐 LOCALIZATION ROUTES
 // ========================================================================
-
 Route::middleware(['web'])->group(function () {
     Route::get('/lang/{locale}', function ($locale) {
         if (in_array($locale, ['fr', 'en'])) {
@@ -336,9 +322,11 @@ Route::middleware(['web'])->group(function () {
 // ========================================================================
 // 🤖 SYSTEM & SEO ROUTES
 // ========================================================================
-
 Route::get('/robots.txt', function () {
-    return response("User-agent: *\nDisallow: /admin/\nDisallow: /settings/\nSitemap: " . url('/sitemap.xml'), 200, ['Content-Type' => 'text/plain']);
+    return response("User-agent: *
+Disallow: /admin/
+Disallow: /settings/
+Sitemap: " . url('/sitemap.xml'), 200, ['Content-Type' => 'text/plain']);
 });
 
 Route::get('/sitemap.xml', function () {
@@ -349,23 +337,18 @@ Route::get('/sitemap.xml', function () {
         route('privacy'),
         route('terms'),
     ];
-
     $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
     $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
-
     foreach ($pages as $page) {
         $xml .= "  <url><loc>$page</loc><lastmod>" . now()->format('Y-m-d') . "</lastmod><changefreq>monthly</changefreq></url>" . PHP_EOL;
     }
-
     $xml .= '</urlset>';
-
     return response($xml, 200, ['Content-Type' => 'application/xml']);
 });
 
 // ========================================================================
 // 🔁 LEGACY ROUTE ALIASES
 // ========================================================================
-
 Route::redirect('/home', '/dashboard', 301);
 Route::redirect('/femelles/show/{id}', '/femelles/{id}', 301);
 Route::redirect('/males/show/{id}', '/males/{id}', 301);
@@ -380,7 +363,6 @@ Route::prefix('api/v1')->middleware('auth')->group(function () {
 // ========================================================================
 // 🚨 SYSTEM HEALTH CHECK ROUTES
 // ========================================================================
-
 Route::get('/health', function () {
     try {
         DB::connection()->getPdo();
@@ -388,7 +370,6 @@ Route::get('/health', function () {
     } catch (\Exception $e) {
         $dbStatus = 'error: ' . $e->getMessage();
     }
-
     return response()->json([
         'status' => 'ok',
         'timestamp' => now()->toIso8601String(),
@@ -408,7 +389,6 @@ Route::get('/ping', function () {
 // ========================================================================
 // 🛑 MAINTENANCE MODE HANDLING
 // ========================================================================
-
 Route::get('/maintenance', function () {
     if (!app()->isDownForMaintenance()) {
         return redirect()->route('dashboard');
@@ -419,7 +399,6 @@ Route::get('/maintenance', function () {
 // ========================================================================
 // ❌ CATCH-ALL ROUTE (404 Handling)
 // ========================================================================
-
 Route::fallback(function () {
     if (request()->wantsJson()) {
         return response()->json([
@@ -428,6 +407,5 @@ Route::fallback(function () {
             'path' => request()->path()
         ], 404);
     }
-
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');

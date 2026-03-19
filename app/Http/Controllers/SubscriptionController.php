@@ -1,6 +1,5 @@
 <?php
 // app/Http/Controllers/SubscriptionController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Subscription;
@@ -25,7 +24,6 @@ class SubscriptionController extends Controller
         $plans = SubscriptionPlan::where('is_active', true)
             ->orderBy('duration_months')
             ->get();
-
         $paymentHistory = PaymentTransaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit(10)
@@ -40,14 +38,12 @@ class SubscriptionController extends Controller
     public function create(Request $request)
     {
         $planId = $request->query('plan_id');
-
         if (!$planId) {
             return redirect()->route('subscription.plans')
                 ->with('error', 'Veuillez sélectionner un plan d\'abonnement.');
         }
 
         $plan = SubscriptionPlan::findOrFail($planId);
-
         if (!$plan->is_active) {
             return redirect()->route('subscription.plans')
                 ->with('error', 'Ce plan n\'est plus disponible.');
@@ -59,44 +55,34 @@ class SubscriptionController extends Controller
         // Check if user already has active subscription
         if ($currentSubscription && $currentSubscription->end_date->isFuture()) {
             return redirect()->route('subscription.status')
-                ->with('warning', 'Vous avez déjà un abonnement actif. Veuillez le renouveler ou attendre son expiration.');
+                ->with('warning', 'Vous avez déjà un abonnement actif.');
         }
 
         return view('subscription.subscribe', compact('plan', 'currentSubscription'));
     }
 
     /**
-     * Process subscription request
+     * Process NEW subscription request
      */
     public function store(Request $request)
     {
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
             'payment_method' => 'required|in:momo,celtis,moov,manual',
-            'phone_number' => 'required_if:payment_method,momo,celtis,moov|nullable',
+            'phone_number' => 'nullable|required_if:payment_method,momo,celtis,moov|string|min:8',
             'auto_renew' => 'boolean',
         ]);
 
         $user = Auth::user();
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
 
-        // ❌ CHECK: Don't allow if there's already a pending subscription
-        $pendingSubscription = Subscription::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($pendingSubscription) {
-            return redirect()->route('subscription.status')
-                ->with('warning', 'Vous avez déjà une demande d\'abonnement en attente.');
-        }
-
         DB::beginTransaction();
         try {
-            // ✅ Create subscription with PENDING status (NOT active)
+            // Create subscription with PENDING status
             $subscription = Subscription::create([
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
-                'status' => 'pending', // ← CRITICAL: Must be pending until payment confirmed
+                'status' => 'pending',
                 'start_date' => now(),
                 'end_date' => now()->addMonths($plan->duration_months),
                 'price' => $plan->price,
@@ -104,7 +90,7 @@ class SubscriptionController extends Controller
                 'auto_renew' => $request->auto_renew ?? false,
             ]);
 
-            // ✅ Create payment transaction
+            // Create payment transaction
             $transaction = PaymentTransaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $subscription->id,
@@ -118,12 +104,13 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
-            // ✅ REDIRECT to payment initiation (NOT activate immediately)
+            // Redirect to payment initiation
             return redirect()->route('payment.initiate', [
                 'transaction_id' => $transaction->transaction_id
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Subscription creation failed: ' . $e->getMessage());
             return redirect()->route('subscription.plans')
                 ->with('error', 'Erreur lors de la création de l\'abonnement: ' . $e->getMessage());
         }
@@ -137,9 +124,9 @@ class SubscriptionController extends Controller
         $user = Auth::user();
         $subscription = $user->activeSubscription();
 
-        // ✅ Load ALL subscriptions with transactions
+        // Load ALL subscriptions with transactions for history table
         $allSubscriptions = Subscription::where('user_id', $user->id)
-            ->with(['plan', 'transactions']) // ← Important!
+            ->with(['plan', 'transactions'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -151,56 +138,42 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Renew existing subscription
+     * Renew EXISTING subscription (or retry failed one)
      */
-
     public function renew(Request $request)
     {
-        // ✅ Enhanced validation with custom messages
         $validated = $request->validate([
             'subscription_id' => 'required|exists:subscriptions,id',
             'payment_method' => 'required|in:momo,celtis,moov,manual',
             'phone_number' => 'nullable|string|min:8|max:15',
-        ], [
-            'subscription_id.required' => 'Veuillez sélectionner un abonnement à renouveler',
-            'subscription_id.exists' => 'Abonnement non trouvé',
-            'payment_method.required' => 'Veuillez sélectionner un mode de paiement',
-            'payment_method.in' => 'Mode de paiement invalide',
-            'phone_number.min' => 'Numéro de téléphone trop court',
         ]);
 
         $user = Auth::user();
-
-        // ✅ Verify subscription belongs to user
         $subscription = Subscription::where('user_id', $user->id)
             ->findOrFail($validated['subscription_id']);
 
         $plan = $subscription->plan;
-
         if (!$plan || !$plan->is_active) {
             return redirect()->route('subscription.status')
-                ->with('error', 'Ce plan n\'est plus disponible pour le renouvellement.');
+                ->with('error', 'Ce plan n\'est plus disponible.');
         }
 
         DB::beginTransaction();
         try {
-            // ✅ Create NEW subscription (don't modify existing)
+            // Create NEW subscription for renewal
             $newSubscription = Subscription::create([
                 'user_id' => $user->id,
                 'subscription_plan_id' => $plan->id,
-                'status' => 'pending', // ← Pending until payment confirmed
-                'start_date' => $subscription->end_date->isFuture()
-                    ? $subscription->end_date
-                    : now(),
-                'end_date' => ($subscription->end_date->isFuture()
-                    ? $subscription->end_date
-                    : now())->addMonths($plan->duration_months),
+                'status' => 'pending',
+                'start_date' => $subscription->end_date->isFuture() ? $subscription->end_date : now(),
+                'end_date' => ($subscription->end_date->isFuture() ? $subscription->end_date : now())
+                    ->addMonths($plan->duration_months),
                 'price' => $plan->price,
                 'payment_method' => $validated['payment_method'],
                 'auto_renew' => $subscription->auto_renew,
             ]);
 
-            // ✅ Create payment transaction
+            // Create payment transaction
             $transaction = PaymentTransaction::create([
                 'user_id' => $user->id,
                 'subscription_id' => $newSubscription->id,
@@ -214,36 +187,19 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
-            // ✅ Redirect to payment initiation for mobile money
-            if (in_array($validated['payment_method'], ['momo', 'celtis', 'moov'])) {
-                return redirect()->route('payment.initiate', [
-                    'transaction_id' => $transaction->transaction_id
-                ]);
-            }
-
-            // ✅ For manual payment (admin only), activate immediately
-            if ($validated['payment_method'] === 'manual' && $user->isAdmin()) {
-                $this->activateSubscription($newSubscription);
-                return redirect()->route('subscription.status')
-                    ->with('success', 'Abonnement renouvelé avec succès (paiement manuel).');
-            }
-
-            return redirect()->route('subscription.status')
-                ->with('success', 'Paiement initié. Veuillez finaliser sur la page de paiement.');
+            // Redirect to payment initiation
+            return redirect()->route('payment.initiate', [
+                'transaction_id' => $transaction->transaction_id
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
-
-            // ✅ Log error for debugging
-            \Log::error('Subscription renewal failed: ' . $e->getMessage(), [
+            Log::error('Subscription renewal failed: ' . $e->getMessage(), [
                 'user_id' => $user->id,
                 'subscription_id' => $validated['subscription_id'] ?? null,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
-
             return redirect()->route('subscription.status')
                 ->with('error', 'Erreur lors du renouvellement: ' . $e->getMessage())
-                ->withInput(); // ← Keep form data for retry
+                ->withInput();
         }
     }
 
@@ -262,11 +218,6 @@ class SubscriptionController extends Controller
             ->where('status', 'active')
             ->findOrFail($request->subscription_id);
 
-        // Check if subscription belongs to user
-        if ($subscription->user_id !== $user->id) {
-            abort(403, 'Accès non autorisé à cet abonnement.');
-        }
-
         DB::beginTransaction();
         try {
             $subscription->update([
@@ -275,7 +226,6 @@ class SubscriptionController extends Controller
                 'cancellation_reason' => $request->cancellation_reason,
             ]);
 
-            // Update user subscription status
             $user->update([
                 'subscription_status' => 'expired',
                 'subscription_ends_at' => $subscription->end_date,
@@ -284,51 +234,11 @@ class SubscriptionController extends Controller
             DB::commit();
 
             return redirect()->route('subscription.status')
-                ->with('success', 'Votre abonnement a été annulé. Vous aurez accès jusqu\'à la fin de la période payée.');
+                ->with('success', 'Votre abonnement a été annulé.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('subscription.status')
                 ->with('error', 'Erreur lors de l\'annulation: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Retry payment for a pending subscription
-     */
-    public function retryPayment(Request $request, Subscription $subscription)
-    {
-        // Security check
-        if ($subscription->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        // Only allow retry on pending subscriptions
-        if ($subscription->status !== 'pending') {
-            return back()->with('error', 'Cet abonnement ne peut pas être payé.');
-        }
-
-        DB::beginTransaction();
-        try {
-            // Create a NEW transaction for the same subscription intent
-            $transaction = PaymentTransaction::create([
-                'user_id' => auth()->id(),
-                'subscription_id' => $subscription->id,
-                'amount' => $subscription->price,
-                'payment_method' => $subscription->payment_method, // Keep original method or let user choose
-                'transaction_id' => 'TXN-' . strtoupper(uniqid()),
-                'status' => 'pending',
-                'provider' => $subscription->payment_method,
-            ]);
-
-            DB::commit();
-
-            // Redirect to payment initiation with the NEW transaction ID
-            return redirect()->route('payment.initiate', [
-                'transaction_id' => $transaction->transaction_id
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Erreur lors de la génération du lien de paiement: ' . $e->getMessage());
         }
     }
 }
