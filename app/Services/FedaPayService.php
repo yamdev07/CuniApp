@@ -59,6 +59,7 @@ class FedaPayService
                 'Authorization' => 'Bearer ' . $this->secretKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
+                'User-Agent' => 'CuniApp/1.0 (Laravel)',
             ])->post($this->baseUrl . '/v1/transactions', [
                 'amount' => (int) $transaction->amount,
                 'currency' => 'XOF',
