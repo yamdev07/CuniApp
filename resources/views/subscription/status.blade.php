@@ -40,26 +40,17 @@
                         <div style="font-size: 24px; font-weight: 700;">{{ $subscription->end_date->format('d/m/Y') }}</div>
                     </div>
                 </div>
-
-                {{-- ✅ RENEWAL BUTTON --}}
                 <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
                     <button type="button" class="btn-cuni" style="background: white; color: var(--primary); border: none;"
                         onclick="showRenewalModal()">
                         <i class="bi bi-arrow-repeat"></i> Renouveler
                     </button>
-                    @if (auth()->user()->role === 'admin')
-                        <button type="button" class="btn-cuni"
-                            style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);"
-                            onclick="showCancelModal()">
-                            <i class="bi bi-x-circle"></i> Annuler l'abonnement
-                        </button>
-                    @endif
                 </div>
             </div>
         </div>
 
-        {{-- ✅ PENDING/FAILED SUBSCRIPTION CARD --}}
-    @elseif ($subscription && in_array($subscription->status, ['pending', 'failed']))
+        {{-- ✅ PENDING/FAILED SUBSCRIPTION CARD WITH RETRY --}}
+    @elseif ($subscription && in_array($subscription->status, ['pending', 'failed', 'cancelled']))
         <div class="cuni-card mb-6" style="border-left: 4px solid var(--accent-orange);">
             <div class="card-body" style="padding: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
@@ -68,8 +59,9 @@
                         <i class="bi bi-exclamation-triangle" style="font-size: 24px; color: var(--accent-orange);"></i>
                     </div>
                     <div style="flex: 1;">
-                        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary);">Paiement en Attente ou
-                            Échoué</h3>
+                        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary);">
+                            Paiement {{ $subscription->status === 'failed' ? 'Échoué' : 'En Attente' }}
+                        </h3>
                         <p style="font-size: 13px; color: var(--text-secondary);">
                             Plan: <strong>{{ $subscription->plan->name }}</strong> •
                             Montant: <strong>{{ number_format($subscription->price, 0, ',', ' ') }} FCFA</strong>
@@ -77,35 +69,24 @@
                     </div>
                 </div>
 
-                {{-- ✅ CHECK FOR PENDING PAYMENT TRANSACTION --}}
+                {{-- ✅ FIND LATEST FAILED/PENDING TRANSACTION --}}
                 @php
-                    $pendingTransaction = $subscription
+                    $retryTransaction = $subscription
                         ->transactions()
-                        ->where('status', 'pending')
-                        ->orderBy('created_at', 'desc')
-                        ->first();
-                    $failedTransaction = $subscription
-                        ->transactions()
-                        ->where('status', 'failed')
+                        ->whereIn('status', ['pending', 'failed'])
                         ->orderBy('created_at', 'desc')
                         ->first();
                 @endphp
 
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    @if ($pendingTransaction)
-                        {{-- ✅ RETRY PENDING PAYMENT --}}
-                        <a href="{{ route('payment.initiate', $pendingTransaction->transaction_id) }}"
-                            class="btn-cuni primary">
-                            <i class="bi bi-credit-card"></i> Finaliser le Paiement
-                        </a>
-                    @elseif ($failedTransaction)
-                        {{-- ✅ RETRY FAILED PAYMENT --}}
-                        <a href="{{ route('payment.initiate', $failedTransaction->transaction_id) }}"
+                    @if ($retryTransaction)
+                        {{-- ✅ DIRECT RETRY BUTTON --}}
+                        <a href="{{ route('payment.initiate', $retryTransaction->transaction_id) }}"
                             class="btn-cuni primary">
                             <i class="bi bi-arrow-repeat"></i> Réessayer le Paiement
                         </a>
                     @else
-                        {{-- ✅ CREATE NEW PAYMENT TRANSACTION --}}
+                        {{-- ✅ CREATE NEW TRANSACTION --}}
                         <form action="{{ route('subscription.renew') }}" method="POST" style="display: inline;">
                             @csrf
                             <input type="hidden" name="subscription_id" value="{{ $subscription->id }}">
@@ -120,20 +101,20 @@
                     </button>
                 </div>
 
-                @if ($failedTransaction && $failedTransaction->failure_reason)
+                @if ($retryTransaction && $retryTransaction->failure_reason)
                     <div
                         style="margin-top: 16px; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius); border-left: 3px solid var(--accent-red);">
                         <p style="font-size: 13px; color: var(--accent-red); margin: 0;">
                             <i class="bi bi-info-circle"></i>
-                            <strong>Raison de l'échec:</strong> {{ $failedTransaction->failure_reason }}
+                            <strong>Raison de l'échec:</strong> {{ $retryTransaction->failure_reason }}
                         </p>
                     </div>
                 @endif
             </div>
         </div>
 
-        {{-- ✅ EXPIRED/CANCELLED SUBSCRIPTION CARD --}}
-    @elseif ($subscription && in_array($subscription->status, ['expired', 'cancelled']))
+        {{-- ✅ EXPIRED SUBSCRIPTION CARD --}}
+    @elseif ($subscription && $subscription->status === 'expired')
         <div class="cuni-card mb-6" style="border-left: 4px solid var(--accent-red);">
             <div class="card-body" style="padding: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
@@ -142,17 +123,14 @@
                         <i class="bi bi-x-circle" style="font-size: 24px; color: var(--accent-red);"></i>
                     </div>
                     <div style="flex: 1;">
-                        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary);">Abonnement
-                            {{ ucfirst($subscription->status) }}</h3>
+                        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-primary);">Abonnement Expiré</h3>
                         <p style="font-size: 13px; color: var(--text-secondary);">
-                            Votre abonnement est {{ $subscription->status === 'expired' ? 'expiré' : 'annulé' }}.
-                            Veuillez souscrire à un nouvel abonnement pour continuer à utiliser toutes les fonctionnalités.
+                            Votre abonnement est expiré depuis le {{ $subscription->end_date->format('d/m/Y') }}.
                         </p>
                     </div>
                 </div>
-
                 <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
-                    <i class="bi bi-cart-plus"></i> Voir les Abonnements
+                    <i class="bi bi-cart-plus"></i> Souscrire un Nouvel Abonnement
                 </a>
             </div>
         </div>
@@ -170,8 +148,7 @@
                     Abonnement Actif</h3>
                 <p
                     style="color: var(--text-secondary); margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Vous n'avez pas d'abonnement actif. Souscrivez à un plan pour accéder à toutes les fonctionnalités de
-                    CuniApp Élevage.
+                    Vous n'avez pas d'abonnement actif. Souscrivez à un plan pour accéder à toutes les fonctionnalités.
                 </p>
                 <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
                     <i class="bi bi-cart-plus"></i> Choisir un Abonnement
@@ -180,7 +157,7 @@
         </div>
     @endif
 
-    {{-- ✅ RENEWAL MODAL --}}
+    {{-- ✅ RENEWAL MODAL (For Active Subscriptions) --}}
     @if ($subscription && $subscription->isActive())
         <div id="renewalModal"
             style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
@@ -195,8 +172,7 @@
                     <div style="margin-bottom: 16px;">
                         <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Méthode de
                             paiement</label>
-                        <select name="payment_method" class="form-select" required
-                            onchange="togglePhoneNumber(this.value)">
+                        <select name="payment_method" class="form-select" required onchange="togglePhoneNumber(this.value)">
                             <option value="momo">MTN MoMo</option>
                             <option value="celtis">Celtis Cash</option>
                             <option value="moov">Moov Pay</option>
@@ -213,9 +189,7 @@
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                         <button type="button" class="btn-cuni secondary"
-                            onclick="document.getElementById('renewalModal').style.display='none'">
-                            Annuler
-                        </button>
+                            onclick="document.getElementById('renewalModal').style.display='none'">Annuler</button>
                         <button type="submit" class="btn-cuni primary">
                             <i class="bi bi-credit-card"></i> Payer {{ number_format($subscription->price, 0, ',', ' ') }}
                             FCFA
@@ -236,8 +210,7 @@
                     <i class="bi bi-exclamation-triangle" style="color: var(--accent-orange);"></i> Annuler l'abonnement
                 </h3>
                 <p style="color: var(--text-secondary); margin-bottom: 24px;">
-                    Êtes-vous sûr de vouloir annuler votre abonnement ? Vous n'aurez plus accès aux fonctionnalités premium
-                    !
+                    Êtes-vous sûr de vouloir annuler votre abonnement ?
                 </p>
                 <form action="{{ route('subscription.cancel') }}" method="POST">
                     @csrf
@@ -246,9 +219,7 @@
                         placeholder="Raison de l'annulation (optionnel)"></textarea>
                     <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                         <button type="button" class="btn-cuni secondary"
-                            onclick="document.getElementById('cancelModal').style.display='none'">
-                            Retour
-                        </button>
+                            onclick="document.getElementById('cancelModal').style.display='none'">Retour</button>
                         <button type="submit" class="btn-cuni danger">
                             <i class="bi bi-trash"></i> Confirmer l'annulation
                         </button>
@@ -276,7 +247,6 @@
                                 <th style="padding: 12px; text-align: left;">Début</th>
                                 <th style="padding: 12px; text-align: left;">Fin</th>
                                 <th style="padding: 12px; text-align: left;">Statut</th>
-                                <th style="padding: 12px; text-align: left;">Paiement</th>
                                 <th style="padding: 12px; text-align: left;">Action</th>
                             </tr>
                         </thead>
@@ -285,8 +255,7 @@
                                 <tr style="border-bottom: 1px solid var(--surface-border);">
                                     <td style="padding: 12px;">{{ $sub->plan->name }}</td>
                                     <td style="padding: 12px; font-weight: 600;">
-                                        {{ number_format($sub->price, 0, ',', ' ') }} FCFA
-                                    </td>
+                                        {{ number_format($sub->price, 0, ',', ' ') }} FCFA</td>
                                     <td style="padding: 12px;">{{ $sub->start_date->format('d/m/Y') }}</td>
                                     <td style="padding: 12px;">{{ $sub->end_date->format('d/m/Y') }}</td>
                                     <td style="padding: 12px;">
@@ -311,18 +280,17 @@
                                                 style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">{{ ucfirst($sub->status) }}</span>
                                         @endif
                                     </td>
-                                    <td style="padding: 12px;">{{ strtoupper($sub->payment_method) }}</td>
                                     <td style="padding: 12px;">
-                                        @if (in_array($sub->status, ['pending', 'failed']) && $sub->id === $subscription?->id)
+                                        @if (in_array($sub->status, ['pending', 'failed']))
                                             @php
-                                                $retryTransaction = $sub
+                                                $retryTxn = $sub
                                                     ->transactions()
                                                     ->whereIn('status', ['pending', 'failed'])
                                                     ->orderBy('created_at', 'desc')
                                                     ->first();
                                             @endphp
-                                            @if ($retryTransaction)
-                                                <a href="{{ route('payment.initiate', $retryTransaction->transaction_id) }}"
+                                            @if ($retryTxn)
+                                                <a href="{{ route('payment.initiate', $retryTxn->transaction_id) }}"
                                                     class="btn-cuni sm primary">
                                                     <i class="bi bi-arrow-repeat"></i> Réessayer
                                                 </a>
@@ -373,7 +341,6 @@
                     phoneGroup.querySelector('input').required = false;
                 }
             }
-
             // Close modals on outside click
             document.querySelectorAll('[id$="Modal"]').forEach(modal => {
                 modal.addEventListener('click', function(e) {
@@ -382,7 +349,6 @@
                     }
                 });
             });
-
             // Close modals on Escape key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
