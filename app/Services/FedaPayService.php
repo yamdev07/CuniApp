@@ -55,13 +55,13 @@ class FedaPayService
                 'method' => $transaction->payment_method,
             ]);
 
+            // ✅ CORRECT ENDPOINT: /transactions (NOT /v1/transactions)
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'User-Agent' => 'CuniApp/1.0 (Laravel)',
-            ])->post($this->baseUrl . '/v1/transactions', [
-                'amount' => (int) $transaction->amount,
+            ])->post($this->baseUrl . '/transactions', [ // ← Removed /v1/
+                'amount' => (int) $transaction->amount * 100, // ← FedaPay expects amount in cents!
                 'currency' => 'XOF',
                 'description' => 'Abonnement CuniApp Élevage',
                 'reference' => $transaction->transaction_id,
@@ -70,7 +70,7 @@ class FedaPayService
                 'customer' => [
                     'email' => $transaction->user->email,
                     'name' => $transaction->user->name,
-                    'phone_number' => $transaction->phone_number,
+                    'phone_number' => $this->formatPhoneNumber($transaction->phone_number),
                 ],
                 'settings' => [
                     'methods' => [$this->getFedaPayMethod($transaction->payment_method)],
@@ -86,8 +86,8 @@ class FedaPayService
                 $data = $response->json();
                 return [
                     'success' => true,
-                    'checkout_url' => $data['transaction']['url'] ?? null,
-                    'transaction_id' => $data['transaction']['id'] ?? null,
+                    'checkout_url' => $data['transaction']['url'] ?? $data['url'] ?? null,
+                    'transaction_id' => $data['transaction']['id'] ?? $data['id'] ?? null,
                     'response' => $data,
                 ];
             }
@@ -106,7 +106,6 @@ class FedaPayService
             Log::error('FedaPay payment initiation failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
-
             return [
                 'success' => false,
                 'error' => 'Erreur de connexion à FedaPay: ' . $e->getMessage(),
@@ -120,20 +119,10 @@ class FedaPayService
     public function verifyTransaction($fedapayTransactionId)
     {
         try {
-            Log::info('FedaPay verify request', [
-                'url' => $this->baseUrl . '/v1/transactions/' . $fedapayTransactionId,
-                'secret_key_set' => !empty($this->secretKey),
-            ]);
-
+            // ✅ Also remove /v1/ here
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
-            ])->get($this->baseUrl . '/v1/transactions/' . $fedapayTransactionId);
-
-            Log::info('FedaPay verify response', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-                'is_json' => json_decode($response->body(), true) !== null,
-            ]);
+            ])->get($this->baseUrl . '/transactions/' . $fedapayTransactionId);
 
             if ($response->successful()) {
                 $jsonData = $response->json();
@@ -146,14 +135,10 @@ class FedaPayService
             return [
                 'success' => false,
                 'error' => 'Transaction not found (HTTP ' . $response->status() . ')',
-                'body' => $response->body(),
             ];
         } catch (\Exception $e) {
-            Log::error('FedaPay transaction verification failed: ' . $e->getMessage());
-            return [
-                'success' => false,
-                'error' => 'Erreur de vérification: ' . $e->getMessage(),
-            ];
+            Log::error('FedaPay verification failed: ' . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
 
@@ -168,5 +153,24 @@ class FedaPayService
             'celtis' => 'celtis_bj',
             default => 'mtn_bj',
         };
+    }
+
+    // ✅ ADD THIS HELPER: Format phone number for FedaPay
+    private function formatPhoneNumber($phone)
+    {
+        // Remove spaces, dashes, and ensure +229 prefix
+        $cleaned = preg_replace('/[\s\-]/', '', $phone);
+
+        if (strpos($cleaned, '+229') === 0) {
+            return $cleaned;
+        }
+        if (strpos($cleaned, '229') === 0) {
+            return '+' . $cleaned;
+        }
+        if (strpos($cleaned, '01') === 0) {
+            return '+229' . substr($cleaned, 1);
+        }
+
+        return '+229' . $cleaned;
     }
 }
