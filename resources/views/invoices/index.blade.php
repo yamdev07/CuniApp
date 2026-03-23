@@ -182,34 +182,7 @@
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="cuni-card mb-6">
-        <div class="card-body">
-            <form method="GET" action="{{ route('invoices.index') }}" class="flex gap-3 flex-wrap">
-                <select name="status" class="form-select" style="width: auto;" onchange="this.form.submit()">
-                    <option value="">Tous les statuts</option>
-                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payées</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulées</option>
-                </select>
-
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control"
-                    style="width: auto;" placeholder="Date début">
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control"
-                    style="width: auto;" placeholder="Date fin">
-
-                <button type="submit" class="btn-cuni primary">
-                    <i class="bi bi-search"></i> Filtrer
-                </button>
-
-                @if (request()->hasAny(['status', 'start_date', 'end_date']))
-                    <a href="{{ route('invoices.index') }}" class="btn-cuni secondary">
-                        <i class="bi bi-x-circle"></i> Effacer
-                    </a>
-                @endif
-            </form>
-        </div>
-    </div>
+  
 
     <!-- Invoices Table -->
     <div class="cuni-card">
@@ -291,9 +264,75 @@
                 </table>
             </div>
 
+                        {{-- ✅ PAGINATION STYLISÉE CuniApp --}}
             @if ($invoices->hasPages())
-                <div style="margin-top: 20px;">
-                    {{ $invoices->links('pagination.bootstrap-5-sm') }}
+                <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+                    
+                    {{-- Résumé --}}
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        Affichage de <strong>{{ $invoices->firstItem() }}</strong> à 
+                        <strong>{{ $invoices->lastItem() }}</strong> sur 
+                        <strong>{{ $invoices->total() }}</strong> factures
+                    </div>
+
+                    <div class="flex gap-2 flex-wrap justify-center">
+                        
+                        {{-- Bouton Précédent --}}
+                        @if ($invoices->onFirstPage())
+                            <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                                <i class="bi bi-chevron-left"></i> Précédent
+                            </span>
+                        @else
+                            <a href="{{ $invoices->previousPageUrl() }}" class="btn-cuni secondary sm">
+                                <i class="bi bi-chevron-left"></i> Précédent
+                            </a>
+                        @endif
+
+                        {{-- Numéros de pages (Logique intelligente) --}}
+                        @php
+                            $start = max($invoices->currentPage() - 2, 1);
+                            $end = min($invoices->currentPage() + 2, $invoices->lastPage());
+                        @endphp
+
+                        {{-- Page 1 --}}
+                        @if ($start > 1)
+                            <a href="{{ $invoices->url(1) }}" class="btn-cuni sm" style="min-width: 40px; justify-content: center;">1</a>
+                            @if ($start > 2)
+                                <span class="text-gray-400 px-2 flex items-center">...</span>
+                            @endif
+                        @endif
+
+                        {{-- Pages intermédiaires --}}
+                        @for ($i = $start; $i <= $end; $i++)
+                            <a href="{{ $invoices->url($i) }}" 
+                               class="btn-cuni sm {{ $i == $invoices->currentPage() ? 'primary' : 'secondary' }}" 
+                               style="min-width: 40px; justify-content: center;">
+                                {{ $i }}
+                            </a>
+                        @endfor
+
+                        {{-- Dernière Page --}}
+                        @if ($end < $invoices->lastPage())
+                            @if ($end < $invoices->lastPage() - 1)
+                                <span class="text-gray-400 px-2 flex items-center">...</span>
+                            @endif
+                            <a href="{{ $invoices->url($invoices->lastPage()) }}" 
+                               class="btn-cuni sm" style="min-width: 40px; justify-content: center;">
+                                {{ $invoices->lastPage() }}
+                            </a>
+                        @endif
+
+                        {{-- Bouton Suivant --}}
+                        @if ($invoices->hasMorePages())
+                            <a href="{{ $invoices->nextPageUrl() }}" class="btn-cuni secondary sm">
+                                Suivant <i class="bi bi-chevron-right"></i>
+                            </a>
+                        @else
+                            <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                                Suivant <i class="bi bi-chevron-right"></i>
+                            </span>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>

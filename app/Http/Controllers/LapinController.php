@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Male;
 use App\Models\Femelle;
 use App\Traits\Notifiable;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LapinController extends Controller
 {
@@ -14,58 +15,137 @@ class LapinController extends Controller
     /**
      * Display a listing of the resource.
      */
-     public function index(Request $request)
-    {
-        // ✅ Fonction helper pour appliquer les filtres communs
-        $applyFilters = function ($query, Request $request) {
-            // Filtre de recherche texte
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('nom', 'LIKE', "%{$search}%")
-                      ->orWhere('code', 'LIKE', "%{$search}%")
-                      ->orWhere('race', 'LIKE', "%{$search}%");
-                });
-            }
-            
-            // Filtre par état
-            if ($request->filled('etat')) {
-                $query->where('etat', $request->etat);
-            }
-            
-            // Filtre par origine
-            if ($request->filled('origine')) {
-                $query->where('origine', $request->origine);
-            }
-        };
+    //  public function index(Request $request)
+    // {
+    //     // ✅ Fonction helper pour appliquer les filtres communs
+    //     $applyFilters = function ($query, Request $request) {
+    //         // Filtre de recherche texte
+    //         if ($request->filled('search')) {
+    //             $search = $request->search;
+    //             $query->where(function($q) use ($search) {
+    //                 $q->where('nom', 'LIKE', "%{$search}%")
+    //                   ->orWhere('code', 'LIKE', "%{$search}%")
+    //                   ->orWhere('race', 'LIKE', "%{$search}%");
+    //             });
+    //         }
 
-        // ✅ Query pour les femelles avec filtres
-        $femellesQuery = Femelle::query();
-        $applyFilters($femellesQuery, $request);
-        
-        // ✅ Query pour les mâles avec filtres
-        $malesQuery = Male::query();
-        $applyFilters($malesQuery, $request);
-        
-        // ✅ Filtre par type (male/female)
-        if ($request->filled('type')) {
-            if ($request->type === 'male') {
-                $femellesQuery->whereRaw('1 = 0'); // Aucun résultat pour femelles
-            } elseif ($request->type === 'female') {
-                $malesQuery->whereRaw('1 = 0'); // Aucun résultat pour mâles
-            }
+    //         // Filtre par état
+    //         if ($request->filled('etat')) {
+    //             $query->where('etat', $request->etat);
+    //         }
+
+    //         // Filtre par origine
+    //         if ($request->filled('origine')) {
+    //             $query->where('origine', $request->origine);
+    //         }
+    //     };
+
+    //     // ✅ Query pour les femelles avec filtres
+    //     $femellesQuery = Femelle::query();
+    //     $applyFilters($femellesQuery, $request);
+
+    //     // ✅ Query pour les mâles avec filtres
+    //     $malesQuery = Male::query();
+    //     $applyFilters($malesQuery, $request);
+
+    //     // ✅ Filtre par type (male/female)
+    //     if ($request->filled('type')) {
+    //         if ($request->type === 'male') {
+    //             $femellesQuery->whereRaw('1 = 0'); // Aucun résultat pour femelles
+    //         } elseif ($request->type === 'female') {
+    //             $malesQuery->whereRaw('1 = 0'); // Aucun résultat pour mâles
+    //         }
+    //     }
+
+    //     // ✅ Pagination avec préservation des paramètres
+    //     $femelles = $femellesQuery->latest()->paginate(10, ['*'], 'femelles_page')
+    //         ->appends($request->except('femelles_page'));
+    //     $males = $malesQuery->latest()->paginate(10, ['*'], 'males_page')
+    //         ->appends($request->except('males_page'));
+
+    //     return view('lapins.index', compact('femelles', 'males'));
+    // }
+
+
+
+
+public function index(Request $request)
+{
+    // 1. Nettoyage
+    $type = $request->has('type') ? strtolower(trim($request->type)) : '';
+    $search = trim($request->get('search', ''));
+    $etat = trim($request->get('etat', ''));
+    $origine = trim($request->get('origine', ''));
+
+    $femellesCollection = collect([]);
+    $malesCollection = collect([]);
+
+    $applyFilters = function ($query) use ($search, $etat, $origine) {
+        if ($search !== '') {
+            $query->where(function($q) use ($search) {
+                $q->where('nom', 'LIKE', "%{$search}%")
+                  ->orWhere('code', 'LIKE', "%{$search}%")
+                  ->orWhere('race', 'LIKE', "%{$search}%");
+            });
         }
+        if ($etat !== '') $query->where('etat', $etat);
+        if ($origine !== '') $query->where('origine', $origine);
+    };
 
-        // ✅ Pagination avec préservation des paramètres
-        $femelles = $femellesQuery->latest()->paginate(10, ['*'], 'femelles_page')
-            ->appends($request->except('femelles_page'));
-        $males = $malesQuery->latest()->paginate(10, ['*'], 'males_page')
-            ->appends($request->except('males_page'));
-
-        return view('lapins.index', compact('femelles', 'males'));
+   // Chargement Femelles
+    if ($type === '' || $type === 'female') {
+        $femellesCollection = Femelle::query()
+            ->when($search !== '' || $etat !== '' || $origine !== '', fn($q) => $applyFilters($q))
+            ->latest()->get()
+            ->map(function ($item) {
+                $item->type = 'female';
+                return $item;
+            });
     }
 
+    // Chargement Mâles
+    if ($type === '' || $type === 'male') {
+        $malesCollection = Male::query()
+            ->when($search !== '' || $etat !== '' || $origine !== '', fn($q) => $applyFilters($q))
+            ->latest()->get()
+            ->map(function ($item) {
+                $item->type = 'male';
+                return $item;
+            });
+    }
 
+   
+    $arrayFemelles = $femellesCollection->toArray();
+    $arrayMales = $malesCollection->toArray();
+    
+    // Fusion des deux tableaux
+    $allRabbitsArray = array_merge($arrayFemelles, $arrayMales);
+    
+    // Recréation de la collection
+    $allRabbits = collect($allRabbitsArray)
+        ->sortByDesc('created_at')
+        ->values() // Réindexation propre
+        ->map(function ($item) {
+            // RECONVERSION EN OBJET pour que la vue fonctionne avec $lapin->code
+            return (object) $item;
+        });
+
+
+    // Pagination (le reste est identique)
+    $perPage = 20;
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $currentItems = $allRabbits->forPage($currentPage, $perPage);
+
+    $paginatedRabbits = new LengthAwarePaginator(
+        $currentItems,
+        $allRabbits->count(),
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => $request->query()]
+    );
+
+    return view('lapins.index', compact('paginatedRabbits'));
+}
     /**
      * Show the form for creating a new resource.
      */

@@ -10,18 +10,18 @@ class NotificationController extends Controller
 {
     use \App\Traits\Notifiable;
 
-    public function index()
-    {
-        $notifications = Notification::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(25);
+    // public function index()
+    // {
+    //     $notifications = Notification::where('user_id', Auth::id())
+    //         ->orderBy('created_at', 'desc')
+    //         ->paginate(25);
 
-        $unreadCount = Notification::where('user_id', Auth::id())
-            ->where('is_read', false)
-            ->count();
+    //     $unreadCount = Notification::where('user_id', Auth::id())
+    //         ->where('is_read', false)
+    //         ->count();
 
-        return view('notifications.index', compact('notifications', 'unreadCount'));
-    }
+    //     return view('notifications.index', compact('notifications', 'unreadCount'));
+    // }
 
     // public function markAsRead(string $id)
     // {
@@ -41,6 +41,31 @@ class NotificationController extends Controller
     //     return response()->json(['success' => true]);
     // }
 
+    
+
+        public function index(Request $request)
+    {
+        $query = Notification::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc');
+
+        // Gestion du filtre (lus, non-lus, ou tous)
+        $filter = $request->get('filter', 'all'); // Par défaut: 'all'
+
+        if ($filter === 'unread') {
+            $query->where('is_read', false);
+        } elseif ($filter === 'read') {
+            $query->where('is_read', true);
+        }
+
+        $notifications = $query->paginate(25);
+
+        // Le compteur de non-lues reste global pour l'affichage
+        $unreadCount = Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
+            ->count();
+
+        return view('notifications.index', compact('notifications', 'unreadCount', 'filter'));
+    }
     
         public function markAsRead(string $id)
     {

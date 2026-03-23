@@ -185,31 +185,80 @@
             </div>
 
             {{-- Pagination simple --}}
-            @if ($lastPage > 1)
-                <div class="flex justify-center mt-6 gap-2">
-                    @if ($currentPage > 1)
-                        <a href="?page={{ $currentPage - 1 }}{{ request('type') ? '&type=' . request('type') : '' }}"
-                            class="btn-cuni secondary sm">
-                            <i class="bi bi-chevron-left"></i> Précédent
-                        </a>
-                    @endif
+           {{-- ✅ PAGINATION MANUELLE ADAPTÉE À TON CONTRÔLEUR --}}
+@if ($lastPage > 1)
+    <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+        
+        {{-- Résumé --}}
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+            Affichage de <strong>{{ ($currentPage - 1) * $perPage + 1 }}</strong> à 
+            <strong>{{ min($currentPage * $perPage, $stats['total']) }}</strong> sur 
+            <strong>{{ $stats['total'] }}</strong> activités
+        </div>
 
-                    @for ($i = 1; $i <= $lastPage; $i++)
-                        <a href="?page={{ $i }}{{ request('type') ? '&type=' . request('type') : '' }}"
-                            class="btn-cuni sm {{ $i == $currentPage ? 'primary' : 'secondary' }}"
-                            style="min-width: 40px; justify-content: center;">
-                            {{ $i }}
-                        </a>
-                    @endfor
-
-                    @if ($currentPage < $lastPage)
-                        <a href="?page={{ $currentPage + 1 }}{{ request('type') ? '&type=' . request('type') : '' }}"
-                            class="btn-cuni secondary sm">
-                            Suivant <i class="bi bi-chevron-right"></i>
-                        </a>
-                    @endif
-                </div>
+        <div class="flex gap-2 flex-wrap justify-center">
+            
+            {{-- Bouton Précédent --}}
+            @if ($currentPage > 1)
+                <a href="?page={{ $currentPage - 1 }}{{ request('type') ? '&type=' . request('type') : '' }}" 
+                   class="btn-cuni secondary sm">
+                    <i class="bi bi-chevron-left"></i> Précédent
+                </a>
+            @else
+                <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                    <i class="bi bi-chevron-left"></i> Précédent
+                </span>
             @endif
+
+            {{-- Numéros de pages (Logique intelligente) --}}
+            @php
+                $start = max($currentPage - 2, 1);
+                $end = min($currentPage + 2, $lastPage);
+            @endphp
+
+            {{-- Page 1 (si pas dans la plage) --}}
+            @if ($start > 1)
+                <a href="?page=1{{ request('type') ? '&type=' . request('type') : '' }}" 
+                   class="btn-cuni sm" style="min-width: 40px; justify-content: center;">1</a>
+                @if ($start > 2)
+                    <span class="text-gray-400 px-2 flex items-center">...</span>
+                @endif
+            @endif
+
+            {{-- Pages intermédiaires --}}
+            @for ($i = $start; $i <= $end; $i++)
+                <a href="?page={{ $i }}{{ request('type') ? '&type=' . request('type') : '' }}" 
+                   class="btn-cuni sm {{ $i == $currentPage ? 'primary' : 'secondary' }}" 
+                   style="min-width: 40px; justify-content: center;">
+                    {{ $i }}
+                </a>
+            @endfor
+
+            {{-- Dernière Page (si pas dans la plage) --}}
+            @if ($end < $lastPage)
+                @if ($end < $lastPage - 1)
+                    <span class="text-gray-400 px-2 flex items-center">...</span>
+                @endif
+                <a href="?page={{ $lastPage }}{{ request('type') ? '&type=' . request('type') : '' }}" 
+                   class="btn-cuni sm" style="min-width: 40px; justify-content: center;">
+                    {{ $lastPage }}
+                </a>
+            @endif
+
+            {{-- Bouton Suivant --}}
+            @if ($currentPage < $lastPage)
+                <a href="?page={{ $currentPage + 1 }}{{ request('type') ? '&type=' . request('type') : '' }}" 
+                   class="btn-cuni secondary sm">
+                    Suivant <i class="bi bi-chevron-right"></i>
+                </a>
+            @else
+                <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                    Suivant <i class="bi bi-chevron-right"></i>
+                </span>
+            @endif
+        </div>
+    </div>
+@endif
         </div>
     </div>
 

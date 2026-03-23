@@ -233,9 +233,79 @@ $subscriptionToManage = $user
                     </table>
                 </div>
 
+                {{-- ✅ PAGINATION STYLISÉE CuniApp --}}
                 @if ($users->hasPages())
-                    <div style="margin-top: 24px;">
-                        {{ $users->links('pagination.bootstrap-5-sm') }}
+                    <div
+                        class="flex flex-col md:flex-row justify-between items-center mt-8 gap-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+
+                        {{-- Résumé --}}
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            Affichage de <strong>{{ $users->firstItem() }}</strong> à
+                            <strong>{{ $users->lastItem() }}</strong> sur
+                            <strong>{{ $users->total() }}</strong> utilisateurs
+                        </div>
+
+                        <div class="flex gap-2 flex-wrap justify-center">
+
+                            {{-- Bouton Précédent --}}
+                            @if ($users->onFirstPage())
+                                <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed"
+                                    style="pointer-events: none;">
+                                    <i class="bi bi-chevron-left"></i> Précédent
+                                </span>
+                            @else
+                                <a href="{{ $users->previousPageUrl() }}" class="btn-cuni secondary sm">
+                                    <i class="bi bi-chevron-left"></i> Précédent
+                                </a>
+                            @endif
+
+                            {{-- Numéros de pages (Logique intelligente) --}}
+                            @php
+                                $start = max($users->currentPage() - 2, 1);
+                                $end = min($users->currentPage() + 2, $users->lastPage());
+                            @endphp
+
+                            {{-- Page 1 --}}
+                            @if ($start > 1)
+                                <a href="{{ $users->url(1) }}" class="btn-cuni sm"
+                                    style="min-width: 40px; justify-content: center;">1</a>
+                                @if ($start > 2)
+                                    <span class="text-gray-400 px-2 flex items-center">...</span>
+                                @endif
+                            @endif
+
+                            {{-- Pages intermédiaires --}}
+                            @for ($i = $start; $i <= $end; $i++)
+                                <a href="{{ $users->url($i) }}"
+                                    class="btn-cuni sm {{ $i == $users->currentPage() ? 'primary' : 'secondary' }}"
+                                    style="min-width: 40px; justify-content: center;">
+                                    {{ $i }}
+                                </a>
+                            @endfor
+
+                            {{-- Dernière Page --}}
+                            @if ($end < $users->lastPage())
+                                @if ($end < $users->lastPage() - 1)
+                                    <span class="text-gray-400 px-2 flex items-center">...</span>
+                                @endif
+                                <a href="{{ $users->url($users->lastPage()) }}" class="btn-cuni sm"
+                                    style="min-width: 40px; justify-content: center;">
+                                    {{ $users->lastPage() }}
+                                </a>
+                            @endif
+
+                            {{-- Bouton Suivant --}}
+                            @if ($users->hasMorePages())
+                                <a href="{{ $users->nextPageUrl() }}" class="btn-cuni secondary sm">
+                                    Suivant <i class="bi bi-chevron-right"></i>
+                                </a>
+                            @else
+                                <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed"
+                                    style="pointer-events: none;">
+                                    Suivant <i class="bi bi-chevron-right"></i>
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 @endif
             </div>

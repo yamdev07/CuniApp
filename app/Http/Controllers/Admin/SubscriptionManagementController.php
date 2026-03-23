@@ -349,50 +349,6 @@ class SubscriptionManagementController extends Controller
         return back()->with('success', 'Abonnement archivé avec succès.');
     }
 
-    /**
-     * Restaurer un abonnement
-     */
-    // public function restore($id)
-    // {
-    //     $subscription = \App\Models\Subscription::findOrFail($id);
-    //     $subscription->update(['archived_at' => null]);
-
-    //     return back()->with('success', 'Abonnement restauré avec succès.');
-    // }
-
-
-        /**
-     * Restaurer un abonnement (Logique améliorée)
-     */
-    // public function restore($id)
-    // {
-    //     $subscription = \App\Models\Subscription::findOrFail($id);
-        
-    //     // 1. On retire la marque d'archivage
-    //     $subscription->update(['archived_at' => null]);
-
-    //     // 2. On vérifie si l'abonnement est encore valable dans le temps
-    //     $now = now();
-    //     if ($subscription->end_date && $subscription->end_date > $now) {
-    //         // Si la date de fin est dans le futur, on le réactive !
-    //         $subscription->update(['status' => 'active']);
-            
-    //         // On met aussi à jour l'utilisateur pour qu'il ait accès immédiatement
-    //         $subscription->user->update([
-    //             'subscription_status' => 'active',
-    //             'subscription_ends_at' => $subscription->end_date,
-    //         ]);
-    //     } else {
-    //         // Si la date est dépassée, on le laisse en 'expired' (ou 'cancelled' s'il l'était)
-    //         // On met juste à jour l'utilisateur pour refléter l'état réel
-    //         $subscription->user->update([
-    //             'subscription_status' => 'expired',
-    //             'subscription_ends_at' => $subscription->end_date,
-    //         ]);
-    //     }
-
-    //     return back()->with('success', 'Abonnement restauré avec succès.' . ($subscription->status === 'active' ? ' Il a été réactivé car toujours valable.' : ' Il est restauré mais expiré.'));
-    // }
 
 
         /**
@@ -441,26 +397,6 @@ class SubscriptionManagementController extends Controller
 
     
 
-    /**
-     * Afficher la liste des archives
-     */
-    // public function archives()
-    // {
-    //     $users = \App\Models\User::with(['subscriptions'])
-    //         ->whereHas('subscriptions', function ($q) {
-    //             $q->whereNotNull('archived_at');
-    //         })
-    //         ->latest()
-    //         ->paginate(20);
-
-    //     $stats = [
-    //         'total_archived' => \App\Models\Subscription::whereNotNull('archived_at')->count(),
-    //     ];
-
-    //     return view('admin.subscriptions.archives', compact('users', 'stats'));
-    // }
-    
-
 
         /**
      * Afficher la liste des archives
@@ -488,13 +424,7 @@ class SubscriptionManagementController extends Controller
     }
 
 
-    // // Si tu as une méthode destroy pour suppression définitive, ajoute-la aussi ici
-    // public function destroy($id) {
-    //     $subscription = \App\Models\Subscription::findOrFail($id);
-    //     $subscription->delete(); // Ou forceDelete() si tu veux bypass soft deletes
-    //     return back()->with('success', 'Abonnement supprimé définitivement.');
-    // }
-
+  
         /**
      * Supprimer DÉFINITIVEMENT un abonnement (Irréversible)
      */
