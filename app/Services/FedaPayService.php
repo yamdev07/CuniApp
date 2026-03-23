@@ -46,83 +46,54 @@ class FedaPayService
     public function initiatePayment($transaction)
     {
         try {
-            // ✅ FIX 1: Amount in FCFA (NOT cents) - FedaPay expects whole units for XOF
             $amount = (int) round(floatval($transaction->amount));
+
+            // ✅ FIX: Remove + from phone number for FedaPay
+            $phone = ltrim($this->formatPhoneNumber($transaction->phone_number), '+');
 
             Log::info('Initiating FedaPay payment', [
                 'transaction_id' => $transaction->transaction_id,
                 'amount_fcfa' => $amount,
-                'phone' => $transaction->phone_number,
+                'phone' => $phone,
                 'method' => $transaction->payment_method,
-                'base_url' => $this->baseUrl,
             ]);
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'User-Agent' => 'CuniApp/1.0 Laravel/' . app()->version(),
             ])->post($this->baseUrl . '/v1/transactions', [
-                // ✅ FIX 2: Amount as integer FCFA
+                // ✅ FIX: Add description field (REQUIRED)
+                'description' => 'Abonnement CuniApp Élevage - ' . $transaction->transaction_id,
                 'amount' => $amount,
-
-                // ✅ FIX 3: Currency as array with iso key
                 'currency' => ['iso' => 'XOF'],
-
-                'description' => 'Abonnement CuniApp Élevage',
                 'reference' => $transaction->transaction_id,
-
-                // ✅ Ensure callback_url is absolute and accessible
                 'callback_url' => route('payment.callback', ['provider' => 'fedapay'], true),
                 'return_url' => route('subscription.status', [], true),
-
-                // ✅ FIX 4: Customer fields matching FedaPay API expectations
+                // ✅ FIX: Customer structure
                 'customer' => [
                     'email' => $transaction->user->email,
-                    'firstname' => $transaction->user->name,  // ✅ Use firstname, not name
-                    'phone_number' => $this->formatPhoneNumber($transaction->phone_number),
+                    'firstname' => $transaction->user->name,
+                    // ✅ FIX: Phone without + prefix
+                    'phone_number' => $phone,
                 ],
-
-                // ✅ FIX 5: Remove settings.methods or use correct format
-                // FedaPay auto-detects available methods; explicit methods may cause issues in sandbox
-            ]);
-
-            Log::info('FedaPay API response', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-                'headers' => $response->headers(),
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
-
-                // Handle both possible response structures
-                $checkoutUrl = $data['transaction']['url']
-                    ?? $data['url']
-                    ?? $data['checkout_url']
-                    ?? null;
-
-                $fedaPayTransactionId = $data['transaction']['id']
-                    ?? $data['id']
-                    ?? null;
+                $checkoutUrl = $data['transaction']['url'] ?? $data['url'] ?? $data['checkout_url'] ?? null;
 
                 if ($checkoutUrl) {
                     return [
                         'success' => true,
                         'checkout_url' => $checkoutUrl,
-                        'transaction_id' => $fedaPayTransactionId,
+                        'transaction_id' => $data['transaction']['id'] ?? $data['id'] ?? null,
                         'response' => $data,
                     ];
                 }
-
-                Log::error('FedaPay response missing checkout_url', ['response' => $data]);
-                return [
-                    'success' => false,
-                    'error' => 'Réponse FedaPay invalide: URL de paiement manquante',
-                    'response' => $data,
-                ];
             }
 
+            // ✅ FIX: Better error logging
             Log::error('FedaPay payment failed', [
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -130,6 +101,7 @@ class FedaPayService
                     'amount' => $amount,
                     'currency' => ['iso' => 'XOF'],
                     'reference' => $transaction->transaction_id,
+                    'phone' => $phone,
                 ],
             ]);
 
@@ -139,12 +111,7 @@ class FedaPayService
                 'response' => $response->json(),
             ];
         } catch (\Exception $e) {
-            Log::error('FedaPay payment initiation failed: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
+            Log::error('FedaPay payment initiation failed: ' . $e->getMessage());
             return [
                 'success' => false,
                 'error' => 'Erreur de connexion à FedaPay: ' . $e->getMessage(),

@@ -13,13 +13,13 @@ export default defineConfig({
         host: '0.0.0.0', // ← Listen on all interfaces
         port: 5173,
         hmr: {
-            host: 'https://chest-acquire-upc-marshall.trycloudflare.com', // ← Your tunnel domain
+            host: 'https://man-redeem-attempted-got.trycloudflare.com', // ← Your tunnel domain
             clientPort: 443 // ← Use HTTPS port for HMR
         },
         // ✅ Allow your tunnel domain
         cors: {
             origin: [
-                'https://chest-acquire-upc-marshall.trycloudflare.com',
+                'https://man-redeem-attempted-got.trycloudflare.com',
                 'http://localhost:5173',
                 'https://localhost:5173'
             ],

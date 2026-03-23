@@ -108,11 +108,9 @@ class PaymentController extends Controller
 
             // ✅ STEP 5: Update transaction metadata
             $transaction->update([
-                'phone_number' => $request->phone_number,
+                'phone_number' => ltrim($request->phone_number, '+'), // ✅ Remove + prefix
                 'provider' => 'fedapay',
                 'payment_method' => $request->payment_method,
-                // Reset failure reason on retry
-                'failure_reason' => $transaction->status === 'failed' ? null : $transaction->failure_reason,
             ]);
 
             // ✅ STEP 6: Call FedaPay API
