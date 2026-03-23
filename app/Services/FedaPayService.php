@@ -27,120 +27,124 @@ class FedaPayService
             ?? config('services.fedapay.environment')
             ?? Setting::get('fedapay_environment', 'sandbox');
 
-        $this->baseUrl = env('FEDAPAY_BASE_URL')
-            ?? ($this->environment === 'production'
-                ? 'https://api.fedapay.com'
-                : 'https://sandbox-api.fedapay.com');
+        $this->baseUrl = $this->environment === 'production'
+            ? 'https://api.fedapay.com'
+            : 'https://sandbox-api.fedapay.com';
 
-        Log::info('FedaPay config loaded', [
-            'public_key_set' => !empty($this->publicKey),
-            'secret_key_set' => !empty($this->secretKey),
+        Log::info('FedaPay initialized', [
             'environment' => $this->environment,
             'base_url' => $this->baseUrl,
+            'has_secret' => !empty($this->secretKey),
         ]);
     }
 
     /**
-     * ✅ INITIATE PAYMENT WITH FEDAPAY - FIXED
+     * Initiate payment with FedaPay
      */
     public function initiatePayment($transaction)
     {
         try {
-            $amount = (int) round(floatval($transaction->amount));
+            // ✅ Amount in smallest unit (XOF has no decimals, so just cast to int)
+            $amount = (int) round($transaction->amount);
 
-            // ✅ FIX: Remove + from phone number for FedaPay
-            $phone = ltrim($this->formatPhoneNumber($transaction->phone_number), '+');
+            // ✅ Format phone: remove +, ensure Benin format
+            $phone = $this->formatPhoneNumber($transaction->phone_number);
 
-            Log::info('Initiating FedaPay payment', [
+            Log::info('FedaPay payment request', [
                 'transaction_id' => $transaction->transaction_id,
-                'amount_fcfa' => $amount,
+                'amount' => $amount,
                 'phone' => $phone,
                 'method' => $transaction->payment_method,
             ]);
 
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->secretKey,
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ])->post($this->baseUrl . '/v1/transactions', [
-                // ✅ FIX: Add description field (REQUIRED)
-                'description' => 'Abonnement CuniApp Élevage - ' . $transaction->transaction_id,
+            $payload = [
+                // ✅ REQUIRED: description field
+                'description' => 'Abonnement CuniApp - ' . $transaction->transaction_id,
                 'amount' => $amount,
                 'currency' => ['iso' => 'XOF'],
                 'reference' => $transaction->transaction_id,
                 'callback_url' => route('payment.callback', ['provider' => 'fedapay'], true),
                 'return_url' => route('subscription.status', [], true),
-                // ✅ FIX: Customer structure
+
+                // ✅ Customer object - simplified structure
                 'customer' => [
                     'email' => $transaction->user->email,
-                    'firstname' => $transaction->user->name,
-                    // ✅ FIX: Phone without + prefix
-                    'phone_number' => $phone,
+                    'firstname' => explode(' ', $transaction->user->name)[0] ?? $transaction->user->name,
+                    'lastname' => implode(' ', array_slice(explode(' ', $transaction->user->name), 1)) ?? '',
+                    'phone_number' => [
+                        'number' => preg_replace('/^\+?229/', '', $phone), // Send without +229 prefix
+                        'country' => 'bj',
+                    ],
                 ],
-            ]);
+
+                // ✅ Payment method mapping
+                'payment_method' => $this->getFedaPayMethod($transaction->payment_method),
+            ];
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->secretKey,
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ])->post($this->baseUrl . '/v1/transactions', $payload);
 
             if ($response->successful()) {
                 $data = $response->json();
-                $checkoutUrl = $data['transaction']['url'] ?? $data['url'] ?? $data['checkout_url'] ?? null;
+                $checkoutUrl = $data['transaction']['url']
+                    ?? $data['url']
+                    ?? $data['checkout_url']
+                    ?? null;
 
                 if ($checkoutUrl) {
                     return [
                         'success' => true,
                         'checkout_url' => $checkoutUrl,
-                        'transaction_id' => $data['transaction']['id'] ?? $data['id'] ?? null,
-                        'response' => $data,
+                        'fedapay_transaction_id' => $data['transaction']['id'] ?? $data['id'] ?? null,
+                        'raw_response' => $data,
                     ];
                 }
             }
 
-            // ✅ FIX: Better error logging
-            Log::error('FedaPay payment failed', [
+            Log::error('FedaPay payment initiation failed', [
                 'status' => $response->status(),
                 'response' => $response->json(),
-                'request_body' => [
-                    'amount' => $amount,
-                    'currency' => ['iso' => 'XOF'],
-                    'reference' => $transaction->transaction_id,
-                    'phone' => $phone,
-                ],
+                'request_payload' => $payload,
+                'headers_sent' => ['Authorization' => 'Bearer ***', 'Content-Type' => 'application/json'],
             ]);
 
             return [
                 'success' => false,
-                'error' => 'Erreur FedaPay: ' . ($response->json('error') ?? 'HTTP ' . $response->status()),
+                'error' => 'FedaPay API Error: ' . ($response->json('error') ?? 'HTTP ' . $response->status()),
                 'response' => $response->json(),
             ];
         } catch (\Exception $e) {
-            Log::error('FedaPay payment initiation failed: ' . $e->getMessage());
+            Log::error('FedaPay service exception: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'transaction_id' => $transaction->transaction_id ?? 'N/A',
+            ]);
+
             return [
                 'success' => false,
-                'error' => 'Erreur de connexion à FedaPay: ' . $e->getMessage(),
+                'error' => 'Connection error: ' . $e->getMessage(),
             ];
         }
     }
 
     /**
-     * ✅ VERIFY TRANSACTION STATUS
+     * Verify transaction status via API
      */
-    public function verifyTransaction($fedapayTransactionId)
+    public function verifyTransaction($fedapayId)
     {
         try {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->secretKey,
                 'Accept' => 'application/json',
-            ])->get($this->baseUrl . '/v1/transactions/' . $fedapayTransactionId);
+            ])->get($this->baseUrl . '/v1/transactions/' . $fedapayId);
 
             if ($response->successful()) {
-                return [
-                    'success' => true,
-                    'data' => $response->json(),
-                ];
+                return ['success' => true, 'data' => $response->json()];
             }
 
-            return [
-                'success' => false,
-                'error' => 'Transaction non trouvée (HTTP ' . $response->status() . ')',
-            ];
+            return ['success' => false, 'error' => 'Not found (HTTP ' . $response->status() . ')'];
         } catch (\Exception $e) {
             Log::error('FedaPay verification failed: ' . $e->getMessage());
             return ['success' => false, 'error' => $e->getMessage()];
@@ -148,11 +152,38 @@ class FedaPayService
     }
 
     /**
-     * ✅ GET FEDAPAY METHOD CODE
+     * Verify webhook signature
      */
-    private function getFedaPayMethod($paymentMethod)
+    public function verifyWebhookSignature($payload, $signature, $secret)
     {
-        return match ($paymentMethod) {
+        // FedaPay signature format: t=TIMESTAMP,s=SIGNATURE
+        parse_str(parse_url('http://x?' . $signature, PHP_URL_QUERY), $parts);
+
+        if (!isset($parts['t']) || !isset($parts['s'])) {
+            return false;
+        }
+
+        $timestamp = $parts['t'];
+        $expectedSignature = $parts['s'];
+
+        // Reject if timestamp is too old (>5 minutes)
+        if (abs(time() - $timestamp) > 300) {
+            return false;
+        }
+
+        // Compute expected signature: HMAC-SHA256 of "timestamp.payload"
+        $signedPayload = $timestamp . '.' . $payload;
+        $computedSignature = hash_hmac('sha256', $signedPayload, $secret);
+
+        return hash_equals($computedSignature, $expectedSignature);
+    }
+
+    /**
+     * Map our payment method to FedaPay's method code
+     */
+    private function getFedaPayMethod($method)
+    {
+        return match ($method) {
             'momo' => 'mtn_bj',
             'moov' => 'moov_bj',
             'celtis' => 'celtis_bj',
@@ -161,37 +192,36 @@ class FedaPayService
     }
 
     /**
-     * ✅ FORMAT PHONE NUMBER FOR BENIN
+     * Format phone number for Benin (+229XXXXXXXXX)
      */
     private function formatPhoneNumber($phone)
     {
         if (!$phone) return null;
 
-        // Remove all non-digit characters except +
-        $cleaned = preg_replace('/[^\d+]/', '', $phone);
+        // Remove all non-digit except +
+        $clean = preg_replace('/[^\d+]/', '', $phone);
 
-        // Already in international format
-        if (strpos($cleaned, '+229') === 0) {
-            return $cleaned;
+        // Already international
+        if (str_starts_with($clean, '+229')) {
+            return $clean;
         }
 
-        // Starts with 229, add +
-        if (strpos($cleaned, '229') === 0) {
-            return '+' . $cleaned;
+        // Has 229 prefix but no +
+        if (str_starts_with($clean, '229') && strlen($clean) === 11) {
+            return '+' . $clean;
         }
 
         // Local Benin format: 01XXXXXXXX (10 digits)
-        if (preg_match('/^01\d{8}$/', $cleaned)) {
-            return '+229' . substr($cleaned, 1);
+        if (preg_match('/^01\d{8}$/', $clean)) {
+            return '+229' . substr($clean, 1);
         }
 
-        // Fallback: try to extract last 8 digits and prefix with +229
-        $digits = preg_replace('/\D/', '', $cleaned);
+        // Fallback: extract last 8 digits and prefix
+        $digits = preg_replace('/\D/', '', $clean);
         if (strlen($digits) >= 8) {
             return '+229' . substr($digits, -8);
         }
 
-        // Last resort
-        return '+229' . $digits;
+        return $clean; // Return as-is if unsure
     }
 }

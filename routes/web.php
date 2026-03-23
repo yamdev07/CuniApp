@@ -64,6 +64,7 @@ Route::get('/terms', function () {
     return view('pages.terms');
 })->name('terms');
 
+
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
 // ========================================================================
@@ -92,6 +93,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/verification/code/verify', [EmailVerificationCodeController::class, 'verify'])->name('verification.code.verify');
     Route::post('/verification/code/resend', [EmailVerificationCodeController::class, 'resend'])->name('verification.code.resend');
     Route::post('/verification/send-code', [EmailVerificationCodeController::class, 'sendCode'])->name('verification.send-code');
+});
+
+// Add this BEFORE the auth middleware group
+Route::prefix('webhooks')->name('webhooks.')->group(function () {
+    // FedaPay webhook - NO auth, signature verified in controller
+    Route::post('/fedapay', [App\Http\Controllers\PaymentController::class, 'handleWebhook'])
+        ->name('fedapay')
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Skip CSRF for webhooks
 });
 
 // ========================================================================

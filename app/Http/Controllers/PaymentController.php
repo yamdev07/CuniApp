@@ -345,4 +345,174 @@ class PaymentController extends Controller
             ]
         ]);
     }
+
+
+    /**
+     * Handle FedaPay webhook notifications (server-to-server)
+     */
+    public function handleWebhook(Request $request)
+    {
+        $signature = $request->header('X-FEDAPAY-SIGNATURE');
+        $payload = $request->getContent();
+
+        Log::channel('payments')->info('FedaPay webhook received', [
+            'signature' => $signature,
+            'event_type' => $request->input('type'),
+            'payload_preview' => substr($payload, 0, 200),
+        ]);
+
+        // ✅ Verify signature
+        $fedapayService = new \App\Services\FedaPayService();
+        $webhookSecret = Setting::get('fedapay_webhook_secret')
+            ?? env('FEDAPAY_WEBHOOK_SECRET');
+
+        if (!$webhookSecret || !$fedapayService->verifyWebhookSignature($payload, $signature, $webhookSecret)) {
+            Log::channel('payments')->warning('FedaPay webhook signature verification failed');
+            return response()->json(['error' => 'Invalid signature'], 401);
+        }
+
+        $event = $request->json()->all();
+        $eventType = $event['type'] ?? null;
+        $data = $event['data'] ?? [];
+
+        // ✅ Handle different event types
+        match ($eventType) {
+            'transaction.approved' => $this->handleTransactionApproved($data),
+            'transaction.declined' => $this->handleTransactionDeclined($data),
+            'transaction.canceled' => $this->handleTransactionCanceled($data),
+            'transaction.pending' => $this->handleTransactionPending($data),
+            default => Log::channel('payments')->info('Unhandled FedaPay event type', ['type' => $eventType]),
+        };
+
+        // ✅ Always return 200 to acknowledge receipt (FedaPay requirement)
+        return response()->json(['received' => true], 200);
+    }
+
+    /**
+     * Process approved transaction from webhook
+     */
+    private function handleTransactionApproved($data)
+    {
+        $reference = $data['reference'] ?? null;
+
+        if (!$reference) {
+            Log::channel('payments')->error('Webhook approved: missing reference');
+            return;
+        }
+
+        $transaction = \App\Models\PaymentTransaction::where('transaction_id', $reference)->first();
+
+        if (!$transaction) {
+            Log::channel('payments')->error('Webhook approved: transaction not found', ['reference' => $reference]);
+            return;
+        }
+
+        // Prevent double-processing
+        if ($transaction->status === 'completed') {
+            Log::channel('payments')->info('Webhook approved: already completed', ['id' => $transaction->id]);
+            return;
+        }
+
+        \DB::beginTransaction();
+        try {
+            // Update transaction
+            $transaction->update([
+                'status' => 'completed',
+                'paid_at' => now(),
+                'provider_response' => $data,
+                'fedapay_transaction_id' => $data['id'] ?? null,
+            ]);
+
+            // Activate subscription if exists
+            if ($transaction->subscription && $transaction->subscription->status !== 'active') {
+                $subscription = $transaction->subscription;
+                $subscription->update(['status' => 'active']);
+
+                $subscription->user->update([
+                    'subscription_status' => 'active',
+                    'subscription_ends_at' => $subscription->end_date,
+                ]);
+
+                // Send activation notification
+                $subscription->user->notify(new \App\Notifications\SubscriptionActivatedNotification($subscription));
+            }
+
+            // Generate invoice if enabled
+            if (class_exists(\App\Services\InvoiceService::class)) {
+                try {
+                    $invoiceService = new \App\Services\InvoiceService();
+                    $invoice = $invoiceService->createFromTransaction($transaction);
+                    if ($invoice) {
+                        $transaction->user->notify(new \App\Notifications\InvoiceEmailNotification($invoice));
+                    }
+                } catch (\Exception $e) {
+                    Log::channel('payments')->error('Invoice creation from webhook failed: ' . $e->getMessage());
+                }
+            }
+
+            // Send success notification
+            $transaction->user->notify(new \App\Notifications\PaymentSuccessfulNotification($transaction));
+
+            \DB::commit();
+            Log::channel('payments')->info('Webhook processed successfully', [
+                'transaction_id' => $transaction->id,
+                'user_id' => $transaction->user_id,
+            ]);
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            Log::channel('payments')->error('Webhook processing failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id ?? 'N/A',
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle declined transaction
+     */
+    private function handleTransactionDeclined($data)
+    {
+        $reference = $data['reference'] ?? null;
+        $transaction = \App\Models\PaymentTransaction::where('transaction_id', $reference)->first();
+
+        if ($transaction && !in_array($transaction->status, ['completed', 'failed'])) {
+            $transaction->update([
+                'status' => 'failed',
+                'failure_reason' => $data['reason'] ?? 'Declined by FedaPay',
+                'provider_response' => $data,
+            ]);
+
+            $transaction->user?->notify(new \App\Notifications\PaymentFailedNotification($transaction));
+
+            Log::channel('payments')->info('Webhook: transaction declined', ['reference' => $reference]);
+        }
+    }
+
+    /**
+     * Handle canceled transaction
+     */
+    private function handleTransactionCanceled($data)
+    {
+        $reference = $data['reference'] ?? null;
+        $transaction = \App\Models\PaymentTransaction::where('transaction_id', $reference)->first();
+
+        if ($transaction && $transaction->status === 'pending') {
+            $transaction->update([
+                'status' => 'cancelled',
+                'provider_response' => $data,
+            ]);
+            Log::channel('payments')->info('Webhook: transaction canceled', ['reference' => $reference]);
+        }
+    }
+
+    /**
+     * Handle pending transaction (optional logging)
+     */
+    private function handleTransactionPending($data)
+    {
+        Log::channel('payments')->info('Webhook: transaction pending', [
+            'reference' => $data['reference'] ?? null,
+            'fedapay_id' => $data['id'] ?? null,
+        ]);
+    }
 }
