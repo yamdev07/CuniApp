@@ -13,13 +13,13 @@ export default defineConfig({
         host: '0.0.0.0', // ← Listen on all interfaces
         port: 5173,
         hmr: {
-            host: ' https://components-guidance-garden-factory.trycloudflare.com', // ← Your tunnel domain
+            host: 'http://localhost:8000', // ← Your tunnel domain
             clientPort: 443 // ← Use HTTPS port for HMR
         },
         // ✅ Allow your tunnel domain
         cors: {
             origin: [
-                ' https://components-guidance-garden-factory.trycloudflare.com',
+                'http://localhost:8000',
                 'http://localhost:5173',
                 'https://localhost:5173'
             ],
