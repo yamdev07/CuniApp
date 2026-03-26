@@ -1,5 +1,5 @@
 <?php
-// app/Http/Controllers/FirmController.php
+// app/Http/Controllers/FirmController.php - UPDATED
 namespace App\Http\Controllers;
 
 use App\Models\Firm;
@@ -23,6 +23,7 @@ class FirmController extends Controller
         }
 
         $firm = $user->firm;
+
         if (!$firm) {
             abort(404, 'Entreprise non trouvée');
         }
@@ -38,11 +39,14 @@ class FirmController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
+        // ✅ NEW: Firm Statistics
         $stats = [
             'total_males' => $firm->total_males,
             'total_femelles' => $firm->total_femelles,
             'total_sales' => $firm->sales()->count(),
             'total_revenue' => $firm->total_revenue,
+            'total_saillies' => $firm->total_saillies,
+            'total_naissances' => $firm->total_naissances,
         ];
 
         return view('firm.index', compact(
@@ -69,7 +73,7 @@ class FirmController extends Controller
 
         $firm = $user->firm;
 
-        // ✅ Check subscription limit
+        // ✅ CRITICAL: Check subscription limit
         if (!$firm->can_add_more_users) {
             return back()
                 ->withErrors(['error' => 'Limite d\'utilisateurs atteinte. Veuillez mettre à niveau votre abonnement.'])
@@ -84,13 +88,13 @@ class FirmController extends Controller
                 'string',
                 'email',
                 'max:255',
-                'unique:users,email' // ✅ Unique across ALL users (admin, employees, other firms)
+                'unique:users,email' // ✅ Unique across ALL users
             ],
             'password' => [
                 'required',
                 'confirmed',
                 'min:8',
-                Rules\Password::defaults() // ✅ Same as registration (letters, numbers, mixed case, symbols)
+                Rules\Password::defaults() // ✅ Same as registration
             ],
             'role' => ['required', 'in:employee'],
         ], [
@@ -126,6 +130,9 @@ class FirmController extends Controller
                 'action_url' => route('firm.index'),
             ]);
 
+            // ✅ Notify new employee
+            $employee->notify(new \App\Notifications\EmployeeAddedNotification($employee, $firm));
+
             return back()->with('success', '✅ Employé ajouté avec succès !');
         } catch (\Illuminate\Database\QueryException $e) {
             // ✅ Catch unique constraint violations
@@ -134,7 +141,6 @@ class FirmController extends Controller
                     ->withErrors(['email' => 'Cette adresse email est déjà utilisée.'])
                     ->withInput();
             }
-
             return back()
                 ->withErrors(['error' => 'Erreur lors de l\'ajout: ' . $e->getMessage()])
                 ->withInput();
@@ -168,7 +174,7 @@ class FirmController extends Controller
         $employee->update([
             'name' => $request->name,
             'email' => $request->email,
-             'status' => $request->status ?? 'active',  // ✅ Default to active
+            'status' => $request->status ?? 'active',
         ]);
 
         return back()->with('success', 'Employé mis à jour avec succès !');
@@ -194,5 +200,26 @@ class FirmController extends Controller
         $employee->update(['status' => 'inactive']);
 
         return back()->with('success', 'Employé désactivé avec succès !');
+    }
+
+    // ✅ NEW: Update Firm Settings
+    public function updateFirm(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->isFirmAdmin()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $firm = $user->firm;
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $firm->update($validated);
+
+        return back()->with('success', 'Informations de l\'entreprise mises à jour !');
     }
 }
