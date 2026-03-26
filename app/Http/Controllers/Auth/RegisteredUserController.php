@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Validator;
 
 class RegisteredUserController extends Controller
 {
@@ -34,6 +35,21 @@ class RegisteredUserController extends Controller
             'firm_name' => ['required', 'string', 'max:255'],
             'firm_description' => ['nullable', 'string', 'max:1000'],
         ]);
+
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'firm_name' => ['required', 'string', 'max:255'],
+            'firm_description' => ['nullable', 'string', 'max:1000'],
+            'terms' => ['accepted'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         DB::beginTransaction();
         try {
