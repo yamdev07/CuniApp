@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'CuniApp Élevage') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -97,18 +100,23 @@
         }
 
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translate(0, 0) rotate(0deg);
                 opacity: 0.1;
             }
+
             25% {
                 transform: translate(30px, -30px) rotate(90deg);
                 opacity: 0.15;
             }
+
             50% {
                 transform: translate(-20px, 20px) rotate(180deg);
                 opacity: 0.1;
             }
+
             75% {
                 transform: translate(20px, 30px) rotate(270deg);
                 opacity: 0.15;
@@ -145,6 +153,7 @@
                 opacity: 0;
                 transform: translateX(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -165,10 +174,13 @@
         }
 
         @keyframes logoPulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 box-shadow: var(--shadow-lg);
             }
+
             50% {
                 transform: scale(1.05);
                 box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.4);
@@ -218,16 +230,28 @@
             animation: fadeInUp 0.6s ease-out backwards;
         }
 
-        .features-list li:nth-child(1) { animation-delay: 0.2s; }
-        .features-list li:nth-child(2) { animation-delay: 0.4s; }
-        .features-list li:nth-child(3) { animation-delay: 0.6s; }
-        .features-list li:nth-child(4) { animation-delay: 0.8s; }
+        .features-list li:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .features-list li:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .features-list li:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .features-list li:nth-child(4) {
+            animation-delay: 0.8s;
+        }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -255,6 +279,7 @@
                 opacity: 0;
                 transform: translateX(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -384,7 +409,7 @@
             box-shadow: 0 0 0 4px var(--primary-subtle);
         }
 
-        .form-input:focus + i,
+        .form-input:focus+i,
         .form-input-wrapper:focus-within i {
             color: var(--primary);
         }
@@ -417,6 +442,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -492,10 +518,21 @@
             letter-spacing: 0.5px;
         }
 
-        .password-strength-text.weak { color: var(--accent-red); }
-        .password-strength-text.fair { color: var(--accent-orange); }
-        .password-strength-text.good { color: var(--accent-cyan); }
-        .password-strength-text.strong { color: var(--accent-green); }
+        .password-strength-text.weak {
+            color: var(--accent-red);
+        }
+
+        .password-strength-text.fair {
+            color: var(--accent-orange);
+        }
+
+        .password-strength-text.good {
+            color: var(--accent-cyan);
+        }
+
+        .password-strength-text.strong {
+            color: var(--accent-green);
+        }
 
         .password-requirements {
             margin-top: 12px;
@@ -818,8 +855,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ==================== VERIFICATION MODAL ==================== */
@@ -965,8 +1007,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -974,6 +1021,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -1051,9 +1099,20 @@
         }
 
         @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3) translateY(50px); }
-            50% { opacity: 1; transform: scale(1.05) translateY(-10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateY(50px);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05) translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .farmer-img {
@@ -1085,18 +1144,22 @@
             .farmer-popout {
                 display: none;
             }
+
             .steps-illustration {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 12px;
             }
+
             .step-item {
                 padding: 16px 10px;
             }
+
             .step-image-wrapper {
                 width: 60px;
                 height: 60px;
             }
         }
+
         @media (max-width: 640px) {
             .steps-illustration {
                 grid-template-columns: 1fr;
@@ -1104,6 +1167,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Background Particles -->
     <div class="bg-particle"></div>
@@ -1117,12 +1181,13 @@
             <div class="brand-section">
                 <div class="logo-container">
                     <svg viewBox="0 0 40 40" fill="none">
-                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/>
-                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/>
+                        <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
+                        <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                     </svg>
                 </div>
                 <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
-                <p class="brand-tagline">Gestion intelligente de votre cheptel lapin. Suivez vos reproductions, naissances et performances en toute simplicité.</p>
+                <p class="brand-tagline">Gestion intelligente de votre cheptel lapin. Suivez vos reproductions,
+                    naissances et performances en toute simplicité.</p>
                 <!-- 3 Step Illustration -->
                 <div class="steps-illustration">
                     <div class="step-item">
@@ -1175,42 +1240,44 @@
                         </div>
 
                         <!-- Success Message (After Verification) -->
-                        @if(session('success'))
-                        <div class="alert-box success">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <div>{{ session('success') }}</div>
-                        </div>
+                        @if (session('success'))
+                            <div class="alert-box success">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div>{{ session('success') }}</div>
+                            </div>
                         @endif
 
                         <!-- Login Form -->
                         <form method="POST" action="{{ route('login') }}" class="auth-form active" id="form-login">
                             @csrf
 
-                            @if($errors->has('email') || $errors->has('password'))
-                            <div class="alert-box error">
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                <div>
-                                    <strong>Erreurs de connexion</strong>
-                                    <ul class="validation-summary-list">
-                                        @foreach($errors->all() as $error)
-                                        <li>
-                                            <i class="bi bi-x-circle-fill"></i>
-                                            <span>
-                                                @if($error === 'auth.failed' || str_contains($error, 'auth.failed'))
-                                                    Ces identifiants ne correspondent pas à nos enregistrements. Veuillez vérifier votre email et mot de passe.
-                                                @elseif(str_contains($error, 'throttle'))
-                                                    Trop de tentatives de connexion. Veuillez réessayer plus tard.
-                                                @elseif(str_contains($error, 'validation.'))
-                                                    {{ str_replace('validation.', '', $error) }}
-                                                @else
-                                                    {{ $error }}
-                                                @endif
-                                            </span>
-                                        </li>
-                                        @endforeach
-                                    </ul>
+                            @if ($errors->has('email') || $errors->has('password'))
+                                <div class="alert-box error">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    <div>
+                                        <strong>Erreurs de connexion</strong>
+                                        <ul class="validation-summary-list">
+                                            @foreach ($errors->all() as $error)
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>
+                                                        @if ($error === 'auth.failed' || str_contains($error, 'auth.failed'))
+                                                            Ces identifiants ne correspondent pas à nos enregistrements.
+                                                            Veuillez vérifier votre email et mot de passe.
+                                                        @elseif(str_contains($error, 'throttle'))
+                                                            Trop de tentatives de connexion. Veuillez réessayer plus
+                                                            tard.
+                                                        @elseif(str_contains($error, 'validation.'))
+                                                            {{ str_replace('validation.', '', $error) }}
+                                                        @else
+                                                            {{ $error }}
+                                                        @endif
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
                             @endif
 
                             <h2 class="form-title">Bon retour !</h2>
@@ -1219,20 +1286,22 @@
                             <div class="form-group">
                                 <label class="form-label">Adresse email</label>
                                 <div class="form-input-wrapper">
-                                    <input type="email" name="email" class="form-input @error('email') error @enderror" placeholder="votre@email.com" required autofocus value="{{ old('email') }}" id="loginEmail">
+                                    <input type="email" name="email"
+                                        class="form-input @error('email') error @enderror" placeholder="votre@email.com"
+                                        required autofocus value="{{ old('email') }}" id="loginEmail">
                                     <i class="bi bi-envelope"></i>
                                 </div>
                                 @error('email')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>
-                                        @if(str_contains($message, 'validation.'))
-                                            {{ str_replace('validation.', '', $message) }}
-                                        @else
-                                            {{ $message }}
-                                        @endif
-                                    </span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>
+                                            @if (str_contains($message, 'validation.'))
+                                                {{ str_replace('validation.', '', $message) }}
+                                            @else
+                                                {{ $message }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @enderror
                                 <div class="validation-message" id="loginEmailValidation" style="display: none;"></div>
                             </div>
@@ -1240,14 +1309,16 @@
                             <div class="form-group">
                                 <label class="form-label">Mot de passe</label>
                                 <div class="form-input-wrapper">
-                                    <input type="password" name="password" class="form-input @error('password') error @enderror" placeholder="••••••••" required id="loginPassword">
+                                    <input type="password" name="password"
+                                        class="form-input @error('password') error @enderror" placeholder="••••••••"
+                                        required id="loginPassword">
                                     <i class="bi bi-lock"></i>
                                 </div>
                                 @error('password')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>{{ $message }}</span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
                                 @enderror
                             </div>
 
@@ -1257,7 +1328,8 @@
                                     <span>Se souvenir de moi</span>
                                 </label>
                                 @if (Route::has('password.request'))
-                                    <a class="forgot-password" href="{{ route('password.request') }}">Mot de passe oublié ?</a>
+                                    <a class="forgot-password" href="{{ route('password.request') }}">Mot de passe
+                                        oublié ?</a>
                                 @endif
                             </div>
 
@@ -1269,7 +1341,9 @@
                             <div class="divider"><span>ou continuer avec</span></div>
 
                             <div class="social-login">
-                                <button type="button" onclick="window.location='{{ route('social-login.google.redirect') }}'" class="btn-social google">
+                                <button type="button"
+                                    onclick="window.location='{{ route('social-login.google.redirect') }}'"
+                                    class="btn-social google">
                                     <i class="bi bi-google"></i>
                                     <span>Google</span>
                                 </button>
@@ -1280,37 +1354,38 @@
                         <form method="POST" action="{{ route('register') }}" class="auth-form" id="form-register">
                             @csrf
 
-                            @if($errors->has('name') || $errors->has('email') || $errors->has('password') || $errors->has('password_confirmation'))
-                            <div class="alert-box error">
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                <div>
-                                    <strong>Erreurs de validation</strong>
-                                    <ul class="validation-summary-list">
-                                        @foreach($errors->all() as $error)
-                                        <li>
-                                            <i class="bi bi-x-circle-fill"></i>
-                                            <span>
-                                                @if(str_contains($error, 'validation.unique'))
-                                                    Cette adresse email est déjà utilisée. Veuillez en choisir une autre.
-                                                @elseif(str_contains($error, 'validation.email'))
-                                                    Format d'email invalide.
-                                                @elseif(str_contains($error, 'validation.min'))
-                                                    Le champ est trop court.
-                                                @elseif(str_contains($error, 'validation.required'))
-                                                    Ce champ est obligatoire.
-                                                @elseif(str_contains($error, 'validation.confirmed'))
-                                                    Les mots de passe ne correspondent pas.
-                                                @elseif(str_contains($error, 'validation.'))
-                                                    {{ str_replace('validation.', '', $error) }}
-                                                @else
-                                                    {{ $error }}
-                                                @endif
-                                            </span>
-                                        </li>
-                                        @endforeach
-                                    </ul>
+                            @if ($errors->has('name') || $errors->has('email') || $errors->has('password') || $errors->has('password_confirmation'))
+                                <div class="alert-box error">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    <div>
+                                        <strong>Erreurs de validation</strong>
+                                        <ul class="validation-summary-list">
+                                            @foreach ($errors->all() as $error)
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>
+                                                        @if (str_contains($error, 'validation.unique'))
+                                                            Cette adresse email est déjà utilisée. Veuillez en choisir
+                                                            une autre.
+                                                        @elseif(str_contains($error, 'validation.email'))
+                                                            Format d'email invalide.
+                                                        @elseif(str_contains($error, 'validation.min'))
+                                                            Le champ est trop court.
+                                                        @elseif(str_contains($error, 'validation.required'))
+                                                            Ce champ est obligatoire.
+                                                        @elseif(str_contains($error, 'validation.confirmed'))
+                                                            Les mots de passe ne correspondent pas.
+                                                        @elseif(str_contains($error, 'validation.'))
+                                                            {{ str_replace('validation.', '', $error) }}
+                                                        @else
+                                                            {{ $error }}
+                                                        @endif
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
                             @endif
 
                             <h2 class="form-title">Créer un compte</h2>
@@ -1319,21 +1394,24 @@
                             <div class="form-group">
                                 <label class="form-label">Nom complet</label>
                                 <div class="form-input-wrapper">
-                                    <input type="text" name="name" class="form-input @error('name') error @enderror" placeholder="Jean Dupont" required autofocus value="{{ old('name') }}" id="registerName" minlength="2" maxlength="50">
+                                    <input type="text" name="name"
+                                        class="form-input @error('name') error @enderror" placeholder="Jean Dupont"
+                                        required autofocus value="{{ old('name') }}" id="registerName"
+                                        minlength="2" maxlength="50">
                                     <i class="bi bi-person"></i>
                                 </div>
                                 <div class="char-counter" id="nameCharCounter">0/50</div>
                                 @error('name')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>
-                                        @if(str_contains($message, 'validation.'))
-                                            {{ str_replace('validation.', '', $message) }}
-                                        @else
-                                            {{ $message }}
-                                        @endif
-                                    </span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>
+                                            @if (str_contains($message, 'validation.'))
+                                                {{ str_replace('validation.', '', $message) }}
+                                            @else
+                                                {{ $message }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @enderror
                                 <div class="validation-message" id="nameValidation" style="display: none;"></div>
                             </div>
@@ -1341,24 +1419,27 @@
                             <div class="form-group">
                                 <label class="form-label">Adresse email</label>
                                 <div class="form-input-wrapper">
-                                    <input type="email" name="email" class="form-input @error('email') error @enderror" placeholder="votre@email.com" required value="{{ old('email') }}" id="registerEmail" autocomplete="off">
+                                    <input type="email" name="email"
+                                        class="form-input @error('email') error @enderror"
+                                        placeholder="votre@email.com" required value="{{ old('email') }}"
+                                        id="registerEmail" autocomplete="off">
                                     <i class="bi bi-envelope"></i>
                                 </div>
                                 @error('email')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>
-                                        @if(str_contains($message, 'validation.unique'))
-                                            Cette adresse email est déjà utilisée. Veuillez en choisir une autre.
-                                        @elseif(str_contains($message, 'validation.email'))
-                                            Format d'email invalide.
-                                        @elseif(str_contains($message, 'validation.'))
-                                            {{ str_replace('validation.', '', $message) }}
-                                        @else
-                                            {{ $message }}
-                                        @endif
-                                    </span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>
+                                            @if (str_contains($message, 'validation.unique'))
+                                                Cette adresse email est déjà utilisée. Veuillez en choisir une autre.
+                                            @elseif(str_contains($message, 'validation.email'))
+                                                Format d'email invalide.
+                                            @elseif(str_contains($message, 'validation.'))
+                                                {{ str_replace('validation.', '', $message) }}
+                                            @else
+                                                {{ $message }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @enderror
                                 <div class="validation-message" id="emailValidation" style="display: none;"></div>
                             </div>
@@ -1366,7 +1447,9 @@
                             <div class="form-group">
                                 <label class="form-label">Mot de passe</label>
                                 <div class="form-input-wrapper">
-                                    <input type="password" name="password" class="form-input @error('password') error @enderror" placeholder="••••••••" required id="registerPassword" minlength="8" autocomplete="new-password">
+                                    <input type="password" name="password"
+                                        class="form-input @error('password') error @enderror" placeholder="••••••••"
+                                        required id="registerPassword" minlength="8" autocomplete="new-password">
                                     <i class="bi bi-lock"></i>
                                 </div>
                                 <div class="password-strength-container">
@@ -1402,53 +1485,101 @@
                                     </div>
                                 </div>
                                 @error('password')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>
-                                        @if(str_contains($message, 'validation.'))
-                                            {{ str_replace('validation.', '', $message) }}
-                                        @else
-                                            {{ $message }}
-                                        @endif
-                                    </span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>
+                                            @if (str_contains($message, 'validation.'))
+                                                {{ str_replace('validation.', '', $message) }}
+                                            @else
+                                                {{ $message }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">Confirmer le mot de passe</label>
                                 <div class="form-input-wrapper">
-                                    <input type="password" name="password_confirmation" class="form-input @error('password_confirmation') error @enderror" placeholder="••••••••" required id="passwordConfirmation">
+                                    <input type="password" name="password_confirmation"
+                                        class="form-input @error('password_confirmation') error @enderror"
+                                        placeholder="••••••••" required id="passwordConfirmation">
                                     <i class="bi bi-lock-fill"></i>
                                 </div>
-                                <div class="validation-message" id="passwordMatchValidation" style="display: none;"></div>
-                                @error('password_confirmation')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>
-                                        @if(str_contains($message, 'validation.'))
-                                            {{ str_replace('validation.', '', $message) }}
-                                        @else
-                                            {{ $message }}
-                                        @endif
-                                    </span>
+                                <div class="validation-message" id="passwordMatchValidation" style="display: none;">
                                 </div>
+                                @error('password_confirmation')
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>
+                                            @if (str_contains($message, 'validation.'))
+                                                {{ str_replace('validation.', '', $message) }}
+                                            @else
+                                                {{ $message }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-                                    <input type="checkbox" name="terms" required style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
+                                    <input type="checkbox" name="terms" required
+                                        style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
                                     <span style="font-size: 13px; color: var(--gray-600);">
-                                        J'accepte les <a href="#" style="color: var(--primary);">Conditions d'utilisation</a> et la <a href="#" style="color: var(--primary);">Politique de confidentialité</a>
+                                        J'accepte les <a href="#" style="color: var(--primary);">Conditions
+                                            d'utilisation</a> et la <a href="#"
+                                            style="color: var(--primary);">Politique de confidentialité</a>
                                     </span>
                                 </label>
                                 @error('terms')
-                                <div class="validation-message error">
-                                    <i class="bi bi-exclamation-circle-fill"></i>
-                                    <span>{{ $message }}</span>
-                                </div>
+                                    <div class="validation-message error">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>{{ $message }}</span>
+                                    </div>
                                 @enderror
+                            </div>
+
+                            <!-- ✅ NEW: Firm Information Section -->
+                            <div class="form-section"
+                                style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
+                                <h4 class="form-title" style="font-size: 18px; margin-bottom: 16px;">
+                                    <i class="bi bi-building" style="color: var(--primary);"></i>
+                                    Informations de l'Entreprise
+                                </h4>
+
+                                <div class="form-group">
+                                    <label class="form-label">Nom de l'entreprise *</label>
+                                    <div class="form-input-wrapper">
+                                        <input type="text" name="firm_name"
+                                            class="form-input @error('firm_name') error @enderror"
+                                            placeholder="Ex: Ferme Lapin d'Or" required
+                                            value="{{ old('firm_name') }}">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    @error('firm_name')
+                                        <div class="validation-message error">
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+                                            <span>{{ $message }}</span>
+                                        </div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Description (optionnel)</label>
+                                    <div class="form-input-wrapper">
+                                        <textarea name="firm_description" class="form-input @error('firm_description') error @enderror"
+                                            placeholder="Décrivez votre entreprise..." rows="3">{{ old('firm_description') }}</textarea>
+                                        <i class="bi bi-card-text"></i>
+                                    </div>
+                                    @error('firm_description')
+                                        <div class="validation-message error">
+                                            <i class="bi bi-exclamation-circle-fill"></i>
+                                            <span>{{ $message }}</span>
+                                        </div>
+                                    @enderror
+                                    <div class="char-counter" id="descriptionCharCounter">0/1000</div>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn-submit">
@@ -1459,7 +1590,9 @@
                             <div class="divider"><span>ou s'inscrire avec</span></div>
 
                             <div class="social-login">
-                                <button type="button" onclick="window.location='{{ route('social-login.google.redirect') }}'" class="btn-social google">
+                                <button type="button"
+                                    onclick="window.location='{{ route('social-login.google.redirect') }}'"
+                                    class="btn-social google">
                                     <i class="bi bi-google"></i>
                                     <span>Google</span>
                                 </button>
@@ -1472,62 +1605,69 @@
     </div>
 
     <!-- ==================== VERIFICATION MODAL ==================== -->
-    @if(session('verification_pending'))
-    <div class="verification-overlay active" id="verificationOverlay">
-        <div class="verification-modal">
-            <div class="verification-header">
-                <h3>
-                    <i class="bi bi-shield-check"></i>
-                    Vérification Email
-                </h3>
-                <button type="button" class="modal-close" onclick="closeVerificationModal()">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-            <div class="verification-body">
-                <p class="verification-message">
-                    Un code de vérification a été envoyé à<br>
-                    <strong id="verificationEmailDisplay">{{ session('verification_email') }}</strong>
-                </p>
+    @if (session('verification_pending'))
+        <div class="verification-overlay active" id="verificationOverlay">
+            <div class="verification-modal">
+                <div class="verification-header">
+                    <h3>
+                        <i class="bi bi-shield-check"></i>
+                        Vérification Email
+                    </h3>
+                    <button type="button" class="modal-close" onclick="closeVerificationModal()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="verification-body">
+                    <p class="verification-message">
+                        Un code de vérification a été envoyé à<br>
+                        <strong id="verificationEmailDisplay">{{ session('verification_email') }}</strong>
+                    </p>
 
-                <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
-                    @csrf
-                    <input type="hidden" name="email" value="{{ session('verification_email') }}">
+                    <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
+                        @csrf
+                        <input type="hidden" name="email" value="{{ session('verification_email') }}">
 
-                    <div class="verification-code-inputs">
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="0" required>
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="1" required>
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="2" required>
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="3" required>
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="4" required>
-                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="5" required>
+                        <div class="verification-code-inputs">
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="0" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="1" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="2" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="3" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="4" required>
+                            <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
+                                inputmode="numeric" data-index="5" required>
+                        </div>
+
+                        <input type="hidden" name="code" id="verificationCodeInput">
+
+                        <button type="submit" class="btn-submit">
+                            <span>Vérifier</span>
+                            <i class="bi bi-check-circle"></i>
+                        </button>
+                    </form>
+
+                    <div class="verification-info">
+                        <p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode"
+                                onclick="resendVerificationCode(event)">Renvoyer</a></p>
                     </div>
 
-                    <input type="hidden" name="code" id="verificationCodeInput">
+                    <div class="resend-timer disabled" id="resendTimer">
+                        Renvoyer dans <span id="timerCount">60</span>s
+                    </div>
 
-                    <button type="submit" class="btn-submit">
-                        <span>Vérifier</span>
-                        <i class="bi bi-check-circle"></i>
-                    </button>
-                </form>
-
-                <div class="verification-info">
-                    <p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode" onclick="resendVerificationCode(event)">Renvoyer</a></p>
+                    @if ($errors->has('code'))
+                        <div class="alert-box error" style="margin-top: 16px;">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            <span>{{ $errors->first('code') }}</span>
+                        </div>
+                    @endif
                 </div>
-
-                <div class="resend-timer disabled" id="resendTimer">
-                    Renvoyer dans <span id="timerCount">60</span>s
-                </div>
-
-                @if($errors->has('code'))
-                <div class="alert-box error" style="margin-top: 16px;">
-                    <i class="bi bi-exclamation-circle-fill"></i>
-                    <span>{{ $errors->first('code') }}</span>
-                </div>
-                @endif
             </div>
         </div>
-    </div>
     @endif
 
     <script>
@@ -1675,13 +1815,15 @@
 
                 if (password === confirmation) {
                     passwordMatchValidation.className = 'validation-message success';
-                    passwordMatchValidation.innerHTML = '<i class="bi bi-check-circle-fill"></i><span>Les mots de passe correspondent</span>';
+                    passwordMatchValidation.innerHTML =
+                        '<i class="bi bi-check-circle-fill"></i><span>Les mots de passe correspondent</span>';
                     passwordMatchValidation.style.display = 'flex';
                     passwordConfirmation.classList.remove('error');
                     passwordConfirmation.classList.add('success');
                 } else {
                     passwordMatchValidation.className = 'validation-message error';
-                    passwordMatchValidation.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Les mots de passe ne correspondent pas</span>';
+                    passwordMatchValidation.innerHTML =
+                        '<i class="bi bi-x-circle-fill"></i><span>Les mots de passe ne correspondent pas</span>';
                     passwordMatchValidation.style.display = 'flex';
                     passwordConfirmation.classList.remove('success');
                     passwordConfirmation.classList.add('error');
@@ -1701,12 +1843,14 @@
                     if (length > 50) {
                         nameCharCounter.classList.add('exceeded');
                         nameValidation.className = 'validation-message error';
-                        nameValidation.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Le nom est trop long (max 50 caractères)</span>';
+                        nameValidation.innerHTML =
+                            '<i class="bi bi-x-circle-fill"></i><span>Le nom est trop long (max 50 caractères)</span>';
                         nameValidation.style.display = 'flex';
                         this.classList.add('error');
                     } else if (length > 0 && length < 2) {
                         nameValidation.className = 'validation-message warning';
-                        nameValidation.innerHTML = '<i class="bi bi-exclamation-circle-fill"></i><span>Le nom est trop court (min 2 caractères)</span>';
+                        nameValidation.innerHTML =
+                            '<i class="bi bi-exclamation-circle-fill"></i><span>Le nom est trop court (min 2 caractères)</span>';
                         nameValidation.style.display = 'flex';
                         this.classList.add('error');
                     } else if (length >= 2) {
@@ -1742,7 +1886,8 @@
 
                     if (!emailRegex.test(email)) {
                         validationElement.className = 'validation-message error';
-                        validationElement.innerHTML = '<i class="bi bi-x-circle-fill"></i><span>Format d\'email invalide</span>';
+                        validationElement.innerHTML =
+                            '<i class="bi bi-x-circle-fill"></i><span>Format d\'email invalide</span>';
                         validationElement.style.display = 'flex';
                         this.classList.add('error');
                         this.classList.remove('success');
@@ -1751,7 +1896,7 @@
                         this.classList.remove('error');
                         this.classList.add('success');
                     }
-                });                                    
+                });
             }
 
             validateEmail(loginEmail, loginEmailValidation);
@@ -1841,25 +1986,27 @@
                 const email = document.getElementById('verificationEmailDisplay').textContent;
 
                 fetch('{{ route('verification.code.resend') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ email: email })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        ('Un nouveau code a été envoyé à votre adresse email.');
-                        startResendTimer();
-                    } else {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            email: email
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            ('Un nouveau code a été envoyé à votre adresse email.');
+                            startResendTimer();
+                        } else {
+                            alert('Une erreur est survenue. Veuillez réessayer.');
+                        }
+                    })
+                    .catch(error => {
                         alert('Une erreur est survenue. Veuillez réessayer.');
-                    }
-                })
-                .catch(error => {
-                    alert('Une erreur est survenue. Veuillez réessayer.');
-                });
+                    });
             }
 
             // Close modal on Escape key
@@ -1870,15 +2017,32 @@
             });
 
             // Start timer on load if verification is pending
-            @if(session('verification_pending'))
-            startResendTimer();
+            @if (session('verification_pending'))
+                startResendTimer();
 
-            // Focus first input
-            setTimeout(() => {
-                document.querySelector('.verification-code-input')?.focus();
-            }, 300);
+                // Focus first input
+                setTimeout(() => {
+                    document.querySelector('.verification-code-input')?.focus();
+                }, 300);
             @endif
         });
+
+        // ✅ Firm Description Character Counter
+        const firmDescription = document.querySelector('textarea[name="firm_description"]');
+        const descriptionCounter = document.getElementById('descriptionCharCounter');
+
+        if (firmDescription && descriptionCounter) {
+            firmDescription.addEventListener('input', function() {
+                const length = this.value.length;
+                descriptionCounter.textContent = `${length}/1000`;
+                if (length > 1000) {
+                    descriptionCounter.classList.add('exceeded');
+                } else {
+                    descriptionCounter.classList.remove('exceeded');
+                }
+            });
+        }
     </script>
 </body>
+
 </html>
