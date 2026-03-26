@@ -1,1 +1,1 @@
-lscat -d app/ database/migrations/ resources/ routes/ -f vite.config.js .env todo.md storage/logs/laravel.log -c -H none -D test.txt
+lscat -d app/ database/migrations/ resources/ routes/ -f ./payment-strategy.md vite.config.js .env todo.md storage/logs/laravel.log -c -H none -D test.txt
