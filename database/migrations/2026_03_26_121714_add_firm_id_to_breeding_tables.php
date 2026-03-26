@@ -15,8 +15,8 @@ return new class extends Migration
         'naissances',
         'lapereaux',
         'sales',
-        'sale_rabbits',
         'invoices'
+        // 'sale_rabbits' ← removed
     ];
 
     public function up(): void
