@@ -99,12 +99,10 @@ class Firm extends Model
 
     public function getSubscriptionLimitAttribute(): int
     {
-        $subscription = $this->activeSubscription();
-
+        $subscription = $this->activeSubscription()->first(); 
         if (!$subscription || !$subscription->plan) {
             return 5; // Default limit
         }
-
         return $subscription->plan->max_users ?? 5;
     }
 
