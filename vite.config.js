@@ -1,3 +1,4 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
 
@@ -5,18 +6,20 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true
-        })
+            refresh: true,
+        }),
     ],
     server: {
-        https: true,
-        host: '0.0.0.0', // ← Listen on all interfaces
+        // 🔹 Disable HTTPS for local development
+        https: false,
+        host: 'localhost',
         port: 5173,
         hmr: {
-            host: 'http://localhost:8000', // ← Your tunnel domain
-            clientPort: 443 // ← Use HTTPS port for HMR
+            // 🔹 Use simple hostname, not full URL
+            host: 'localhost',
+            protocol: 'ws',
+            clientPort: 5173, // Match Vite server port
         },
-        // ✅ Allow your tunnel domain
         cors: {
             origin: [
                 'http://localhost:8000',
@@ -25,5 +28,10 @@ export default defineConfig({
             ],
             credentials: true
         }
-    }
+    },
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+        },
+    },
 })
