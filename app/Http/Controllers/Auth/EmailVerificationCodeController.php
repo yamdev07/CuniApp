@@ -44,7 +44,7 @@ class EmailVerificationCodeController extends Controller
 
     /**
      * Verify the code (POST from modal)
-     */     
+     */
     public function verify(Request $request)
     {
         $request->validate([
@@ -81,6 +81,28 @@ class EmailVerificationCodeController extends Controller
         $pendingRegistration = Cache::get("registration_pending_{$email}");
 
         if ($pendingRegistration) {
+            // ✅ FIX: Check if user already exists before creating
+            $existingUser = User::where('email', $pendingRegistration['email'])->first();
+
+            if ($existingUser) {
+                // User already exists - just verify their email
+                if (!$existingUser->hasVerifiedEmail()) {
+                    $existingUser->update([
+                        'email_verified_at' => now(),
+                    ]);
+                    event(new Verified($existingUser));
+                }
+
+                // Clean up cache
+                Cache::forget("registration_pending_{$email}");
+                Cache::forget("verification_code_{$email}");
+
+                session()->forget(['verification_pending', 'verification_email']);
+                return redirect()->route('login')
+                    ->with('success', '✅ Email déjà vérifié ! Vous pouvez vous connecter.');
+            }
+
+            // Create new user only if email doesn't exist
             $user = User::create([
                 'name' => $pendingRegistration['name'],
                 'email' => $pendingRegistration['email'],
