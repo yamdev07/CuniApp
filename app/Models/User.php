@@ -26,6 +26,8 @@ class User extends Authenticatable
         'role',                      // ✅ Ensure this exists
         'subscription_status',       // ✅ Ensure this exists
         'subscription_ends_at',      // ✅ Ensure this exists
+        'firm_id',  // ✅ ADD THIS
+        'role',     // ✅ Ensure this includes new roles
     ];
 
     protected $hidden = [
@@ -87,7 +89,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['super_admin', 'firm_admin', 'admin']);
     }
 
     public function activeSubscription()
@@ -102,5 +104,61 @@ class User extends Authenticatable
     public function customNotifications()
     {
         return $this->hasMany(\App\Models\Notification::class, 'user_id');
+    }
+
+    // ====================================================================
+    // NEW RELATIONSHIPS
+    // ====================================================================
+
+    public function firm()
+    {
+        return $this->belongsTo(Firm::class);
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(User::class, 'firm_id')->where('role', 'employee');
+    }
+
+
+    // ====================================================================
+    // ROLE HELPER METHODS
+    // ====================================================================
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isFirmAdmin(): bool
+    {
+        return $this->role === 'firm_admin';
+    }
+
+    public function isEmployee(): bool
+    {
+        return $this->role === 'employee';
+    }
+
+    // ====================================================================
+    // FIRM-BASED METHODS
+    // ====================================================================
+
+    public function canAddMoreUsers(): bool
+    {
+        if (!$this->firm || !$this->isFirmAdmin()) {
+            return false;
+        }
+
+        return $this->firm->can_add_more_users;
+    }
+
+    public function getFirmUsagePercentageAttribute(): float
+    {
+        if (!$this->firm) {
+            return 0;
+        }
+
+        return $this->firm->usage_percentage;
     }
 }
