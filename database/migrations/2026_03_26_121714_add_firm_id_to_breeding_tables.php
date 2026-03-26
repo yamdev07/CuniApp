@@ -23,18 +23,25 @@ return new class extends Migration
     {
         foreach ($this->tables as $table) {
             if (Schema::hasTable($table)) {
-                Schema::table($table, function (Blueprint $table) {
-                    $table->foreignId('firm_id')->nullable()->after('user_id')->constrained('firms')->onDelete('cascade');
-                    $table->index('firm_id');
-                });
+                // Step 1: Add column only if it doesn't exist
+                if (!Schema::hasColumn($table, 'firm_id')) {
+                    Schema::table($table, function (Blueprint $table) {
+                        $table->foreignId('firm_id')
+                            ->nullable()
+                            ->after('user_id')
+                            ->constrained('firms')
+                            ->onDelete('cascade');
+                        $table->index('firm_id');
+                    });
+                }
 
-                // Migrate existing data: firm_id = user's firm_id
+                // Step 2: Backfill existing records (safe to run even if column already exists)
                 DB::statement("
-                    UPDATE {$table} t
-                    JOIN users u ON t.user_id = u.id
-                    SET t.firm_id = u.firm_id
-                    WHERE u.firm_id IS NOT NULL
-                ");
+                UPDATE {$table} t
+                JOIN users u ON t.user_id = u.id
+                SET t.firm_id = u.firm_id
+                WHERE u.firm_id IS NOT NULL
+            ");
             }
         }
     }
