@@ -47,8 +47,7 @@ class Firm extends Model
         return $this->subscriptions()
             ->where('status', 'active')
             ->where('end_date', '>=', now())
-            ->latest('created_at')
-            ->first();
+            ->latest('created_at');
     }
 
     // Breeding Data Relationships

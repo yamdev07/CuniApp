@@ -12,8 +12,12 @@ use App\Models\Naissance;
 
 class DashboardController extends Controller
 {
-    public function index() 
+    public function index()
     {
+        // Add this line to eager load relationships
+        $user = auth()->user()->load(['firm.activeSubscription.plan']);
+
+
         // ✅ PHASE 1 TASK 1.2: Cache user ID for defense-in-depth
         $userId = auth()->id();
 
@@ -47,8 +51,8 @@ class DashboardController extends Controller
                 ->whereBetween('date_sale', [$startLastWeek, $endLastWeek])
                 ->sum('total_amount');
 
-            $revenuePercent = $revenueLastWeek > 0 
-                ? (($revenueThisWeek - $revenueLastWeek) / $revenueLastWeek) * 100 
+            $revenuePercent = $revenueLastWeek > 0
+                ? (($revenueThisWeek - $revenueLastWeek) / $revenueLastWeek) * 100
                 : ($revenueThisWeek > 0 ? 100 : 0);
         } catch (\Exception $e) {
             $totalRevenue = 0;
@@ -248,9 +252,9 @@ class DashboardController extends Controller
             ...$recentMisesBas->toArray(),
             ...$nouveauxLapins->toArray(),
         ])
-        ->sortByDesc('date')
-        ->take(5)
-        ->values();
+            ->sortByDesc('date')
+            ->take(5)
+            ->values();
 
         // ====================================================================
         // RETURN VIEW
