@@ -2754,7 +2754,15 @@
                 </a>
                 <div class="brand-info">
                     <a href="{{ route('dashboard') }}">
-                        <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
+                        <h1 class="brand-title">
+                            CuniApp <span>Élevage</span>
+                            @if (auth()->check() && auth()->user()->firm)
+                                <span
+                                    style="font-size: 14px; font-weight: 400; color: var(--text-secondary); margin-left: 12px;">
+                                    | {{ auth()->user()->firm->name }}
+                                </span>
+                            @endif
+                        </h1>
                     </a>
                     <p class="brand-tagline">Gestion intelligente de votre cheptel</p>
                 </div>
@@ -2787,6 +2795,26 @@
                     <i class="bi bi-egg"></i>
                     <span>Mises Bas</span>
                 </a>
+
+                {{-- ✅ ENTREPRISE LINK (Firm Admins Only) --}}
+                @if (auth()->check() && auth()->user()->isFirmAdmin())
+                    <a href="{{ route('firm.index') }}"
+                        class="nav-link {{ request()->routeIs('firm.*') ? 'active' : '' }}">
+                        <i class="bi bi-building"></i>
+                        <span>Entreprise</span>
+                    </a>
+                @endif
+
+                {{-- ✅ SUPER ADMIN LINK (Super Admins Only) --}}
+                @if (auth()->check() && auth()->user()->isSuperAdmin())
+                    <a href="{{ route('super.admin.dashboard') }}"
+                        class="nav-link {{ request()->routeIs('super.admin.*') ? 'active' : '' }}"
+                        style="color: var(--accent-orange);">
+                        <i class="bi bi-star-fill"></i>
+                        <span>Super Admin</span>
+                    </a>
+                @endif
+
 
                 {{-- ✅ MORE DROPDOWN - FIXED POSITIONING --}}
                 <div class="dropdown-container" style="position: relative; display: inline-block;">
@@ -3036,6 +3064,35 @@
                         <i class="bi bi-egg"></i>
                         <span>Mises Bas</span>
                     </a>
+
+
+                    {{-- ✅ MOBILE: ENTREPRISE LINK (Firm Admins Only) --}}
+                    @if (auth()->check() && auth()->user()->isFirmAdmin())
+                        <div class="mobile-nav-divider"></div>
+                        <div
+                            style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase;">
+                            🏢 Entreprise
+                        </div>
+                        <a href="{{ route('firm.index') }}"
+                            class="mobile-nav-link {{ request()->routeIs('firm.*') ? 'active' : '' }}">
+                            <i class="bi bi-building"></i>
+                            <span>Gérer l'Entreprise</span>
+                        </a>
+                    @endif
+
+                    {{-- ✅ MOBILE: SUPER ADMIN LINK (Super Admins Only) --}}
+                    @if (auth()->check() && auth()->user()->isSuperAdmin())
+                        <div class="mobile-nav-divider"></div>
+                        <div
+                            style="padding: 8px 16px; font-size: 11px; font-weight: 600; color: var(--accent-orange); text-transform: uppercase;">
+                            👑 Super Admin
+                        </div>
+                        <a href="{{ route('super.admin.dashboard') }}"
+                            class="mobile-nav-link {{ request()->routeIs('super.admin.*') ? 'active' : '' }}">
+                            <i class="bi bi-star-fill"></i>
+                            <span>Tableau de Bord</span>
+                        </a>
+                    @endif
 
                     {{-- ✅ MOBILE DIVIDER --}}
                     <div class="mobile-nav-divider"></div>

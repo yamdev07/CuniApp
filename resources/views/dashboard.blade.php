@@ -1054,6 +1054,62 @@
             </div>
         </header>
 
+        {{-- ✅ FIRM STATS SECTION (Only for Firm Admins) --}}
+        @if (auth()->check() && auth()->user()->firm && auth()->user()->isFirmAdmin())
+            <div class="cuni-card mb-6" style="border-left: 4px solid var(--primary);">
+                <div class="card-body p-4">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                        {{-- Employee Count --}}
+                        <div
+                            style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-lg);">
+                            <div style="font-size: 32px; font-weight: 700; color: var(--primary);">
+                                {{ auth()->user()->firm->active_users_count }} /
+                                {{ auth()->user()->firm->subscription_limit }}
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                <i class="bi bi-people"></i> Utilisateurs Actifs
+                            </div>
+                            @if (auth()->user()->firm->usage_percentage >= 80)
+                                <div style="font-size: 11px; color: var(--accent-orange); margin-top: 8px;">
+                                    <i class="bi bi-exclamation-triangle"></i> Limite proche!
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Firm Revenue --}}
+                        <div
+                            style="text-align: center; padding: 16px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-lg);">
+                            <div style="font-size: 32px; font-weight: 700; color: var(--accent-green);">
+                                {{ number_format(auth()->user()->firm->total_revenue ?? 0, 0, ',', ' ') }} FCFA
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                <i class="bi bi-cash-stack"></i> Revenus Entreprise
+                            </div>
+                        </div>
+
+                        {{-- Subscription Status --}}
+                        <div
+                            style="text-align: center; padding: 16px; background: rgba(139, 92, 246, 0.1); border-radius: var(--radius-lg);">
+                            <div style="font-size: 32px; font-weight: 700; color: var(--accent-purple);">
+                                {{ auth()->user()->firm->activeSubscription?->plan->name ?? 'Aucun' }}
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
+                                <i class="bi bi-credit-card"></i> Abonnement Actuel
+                            </div>
+                        </div>
+
+                        {{-- Quick Action --}}
+                        <div
+                            style="text-align: center; padding: 16px; background: var(--surface-alt); border-radius: var(--radius-lg); border: 1px solid var(--surface-border);">
+                            <a href="{{ route('firm.index') }}" class="btn-cuni primary" style="width: 100%;">
+                                <i class="bi bi-building"></i> Gérer l'Entreprise
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Main Grid -->
         <div class="main-grid">
             <!-- Left Column -->
@@ -1111,17 +1167,20 @@
                                     <span class="card-label">{{ $card['title'] }}</span>
                                     <div class="card-badge {{ $card['type'] }}">
                                         @if ($card['icon'] === 'male')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2">
                                                 <circle cx="10" cy="14" r="6" />
                                                 <path d="M16 8h6V2M22 2l-8.5 8.5" />
                                             </svg>
                                         @elseif($card['icon'] === 'female')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2">
                                                 <circle cx="12" cy="8" r="6" />
                                                 <path d="M12 14v8M9 19h6" />
                                             </svg>
                                         @elseif($card['icon'] === 'breed')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2">
                                                 <path
                                                     d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                             </svg>

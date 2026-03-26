@@ -1,4 +1,3 @@
-// app/Http/Controllers/Auth/RegisteredUserController.php
 <?php
 
 namespace App\Http\Controllers\Auth;

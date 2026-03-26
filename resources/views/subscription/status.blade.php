@@ -35,6 +35,29 @@
                         <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">Jours Restants</div>
                         <div style="font-size: 24px; font-weight: 700;">{{ $subscription->days_remaining }} jours</div>
                     </div>
+
+                    {{-- ✅ NEW CODE START: User Usage Limit --}}
+                    @if (auth()->check() && auth()->user()->firm)
+                        <div>
+                            <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">Utilisateurs</div>
+                            <div style="font-size: 24px; font-weight: 700;">
+                                {{ auth()->user()->firm->active_users_count }} /
+                                {{ auth()->user()->firm->subscription_limit }}
+                            </div>
+                            {{-- Progress Bar Visual --}}
+                            <div
+                                style="margin-top: 8px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden;">
+                                <div
+                                    style="height: 100%; width: {{ min(100, (auth()->user()->firm->active_users_count / auth()->user()->firm->subscription_limit) * 100) }}%; background: #fff; border-radius: 3px;">
+                                </div>
+                            </div>
+                            @if (auth()->user()->firm->active_users_count >= auth()->user()->firm->subscription_limit)
+                                <div style="font-size: 11px; margin-top: 4px; color: #fca5a5;">⚠️ Limite atteinte</div>
+                            @endif
+                        </div>
+                    @endif
+                    {{-- ✅ NEW CODE END --}}
+
                     <div>
                         <div style="font-size: 13px; opacity: 0.9; margin-bottom: 8px;">Date d'Expiration</div>
                         <div style="font-size: 24px; font-weight: 700;">{{ $subscription->end_date->format('d/m/Y') }}</div>
@@ -199,7 +222,8 @@ if (!$retryTransaction) {
                     <div style="margin-bottom: 16px;">
                         <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Méthode de
                             paiement</label>
-                        <select name="payment_method" class="form-select" required onchange="togglePhoneNumber(this.value)">
+                        <select name="payment_method" class="form-select" required
+                            onchange="togglePhoneNumber(this.value)">
                             <option value="momo">MTN MoMo</option>
                             <option value="celtis">Celtis Cash</option>
                             <option value="moov">Moov Pay</option>

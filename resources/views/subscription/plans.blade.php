@@ -106,10 +106,24 @@
                                 {{ $plan->duration_months }} mois •
                                 {{ number_format($plan->price / $plan->duration_months, 0, ',', ' ') }} FCFA/mois
                             </div>
+                            {{-- ✅ MAX USERS BADGE --}}
+                            <div style="margin-top: 12px;">
+                                <span class="badge"
+                                    style="background: rgba(59, 130, 246, 0.1); color: #3B82F6; font-size: 12px; padding: 6px 12px;">
+                                    <i class="bi bi-people"></i> Jusqu'à {{ $plan->max_users ?? 5 }} utilisateurs
+                                </span>
+                            </div>
                         </div>
 
                         <ul style="list-style: none; padding: 0; margin: 0 0 24px 0;">
                             @foreach (is_array($plan->features) ? $plan->features : ['Accès complet à toutes les fonctionnalités', 'Support prioritaire', 'Sauvegarde automatique'] as $feature)
+                                @if ($loop->first)
+                                    <li
+                                        style="display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 13px; color: var(--text-secondary);">
+                                        <i class="bi bi-people-fill" style="color: var(--primary); font-size: 14px;"></i>
+                                        <span>{{ $plan->max_users ?? 5 }} utilisateurs maximum</span>
+                                    </li>
+                                @endif
                                 <li
                                     style="
                         display: flex;
