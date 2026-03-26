@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // ✅ Vérification des naissances (tous les jours à 9h)
         $schedule->command('births:check-verification')
-            ->dailyAt('09:00')
+            ->dailyAt('09:00')  
             ->withoutOverlapping()
             ->onOneServer()
             ->emailOutputOnFailure(config('mail.from.address'));
@@ -39,6 +39,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // ✅ Register your custom middleware
         $middleware->alias([
             'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
+            'check.firm.admin' => \App\Http\Middleware\CheckFirmAdmin::class,
+            'check.super.admin' => \App\Http\Middleware\CheckSuperAdmin::class,
             'check.admin' => \App\Http\Middleware\CheckAdminRole::class,
         ]);
 

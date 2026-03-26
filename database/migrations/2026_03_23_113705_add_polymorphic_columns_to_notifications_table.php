@@ -1,4 +1,3 @@
-// database/migrations/2026_03_23_000000_add_polymorphic_columns_to_notifications_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;

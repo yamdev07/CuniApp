@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\FirmController;
+use App\Hpp\Controllers\SuperAdminController
 
 /*
 |--------------------------------------------------------------------------
@@ -418,3 +420,20 @@ Route::fallback(function () {
     }
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
+
+
+
+// routes/web.php - Add these routes
+Route::middleware(['auth', 'verified', 'check.firm.admin'])->prefix('firm')->name('firm.')->group(function () {
+    Route::get('/', [FirmController::class, 'index'])->name('index');
+    Route::post('/employee', [FirmController::class, 'storeEmployee'])->name('employee.store');
+    Route::patch('/employee/{userId}', [FirmController::class, 'updateEmployee'])->name('employee.update');
+    Route::patch('/employee/{userId}/deactivate', [FirmController::class, 'deactivateEmployee'])->name('employee.deactivate');
+});
+
+Route::middleware(['auth', 'verified', 'check.super.admin'])->prefix('super-admin')->name('super.admin.')->group(function () {
+    Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/firms', [SuperAdminController::class, 'firms'])->name('firms');
+    Route::post('/firms/{id}/ban', [SuperAdminController::class, 'banFirm'])->name('firms.ban');
+    Route::post('/firms/{id}/activate', [SuperAdminController::class, 'activateFirm'])->name('firms.activate');
+});
