@@ -14,9 +14,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Add this line to eager load relationships
-        $user = auth()->user()->load(['firm.activeSubscription.plan']);
+        // ✅ Safe loading: Checks if user exists first
+        $user = auth()->user();
 
+        // Only load firm relations if the user actually belongs to a firm
+        if ($user->firm_id) {
+            $user->load(['firm.activeSubscription.plan']);
+        }
 
         // ✅ PHASE 1 TASK 1.2: Cache user ID for defense-in-depth
         $userId = auth()->id();

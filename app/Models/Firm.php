@@ -44,10 +44,10 @@ class Firm extends Model
 
     public function activeSubscription()
     {
-        return $this->subscriptions()
+        return $this->hasOne(Subscription::class)
             ->where('status', 'active')
             ->where('end_date', '>=', now())
-            ->latest('created_at');
+            ->orderBy('created_at', 'desc');
     }
 
     // Breeding Data Relationships
