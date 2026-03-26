@@ -2819,7 +2819,7 @@
                             <i class="bi bi-clock-history"></i> Activités
                         </a>
 
-                        <a href="{{ route('invoices.index') }}" class="dropdown-item-custom">
+                        <a href="{{ route('invoices.i   ndex') }}" class="dropdown-item-custom">
                             <i class="bi bi-receipt"></i>
                             <span>Mes Factures</span>
                         </a>
