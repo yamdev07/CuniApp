@@ -24,14 +24,16 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\SubscriptionManagementController;
+use App\Http\Controllers\FirmController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\CheckAdminRole;
+use App\Http\Middleware\CheckFirmAdmin;
+use App\Http\Middleware\CheckSuperAdmin;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Controllers\FirmController;
-use App\Hpp\Controllers\SuperAdminController
 
 /*
 |--------------------------------------------------------------------------
@@ -66,7 +68,6 @@ Route::get('/terms', function () {
     return view('pages.terms');
 })->name('terms');
 
-
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
 // ========================================================================
@@ -97,12 +98,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/verification/send-code', [EmailVerificationCodeController::class, 'sendCode'])->name('verification.send-code');
 });
 
-// Add this BEFORE the auth middleware group
+// ========================================================================
+// 🪝 WEBHOOK ROUTES (Outside auth, CSRF disabled)
+// ========================================================================
 Route::prefix('webhooks')->name('webhooks.')->group(function () {
     // FedaPay webhook - NO auth, signature verified in controller
-    Route::post('/fedapay', [App\Http\Controllers\PaymentController::class, 'handleWebhook'])
+    Route::post('/fedapay', [PaymentController::class, 'handleWebhook'])
         ->name('fedapay')
-        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]); // Skip CSRF for webhooks
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 });
 
 // ========================================================================
@@ -111,11 +114,9 @@ Route::prefix('webhooks')->name('webhooks.')->group(function () {
 Route::middleware('auth')->group(function () {
     // --- Routes accessibles à tous les connectés (vérifiés ou non) ---
     Route::get('/verify-email', fn() => view('auth.verify-email'))->name('verification.notice');
-
     Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-
     Route::post('/email/verification-notification', function () {
         if (auth()->check() && auth()->user()) {
             auth()->user()->sendEmailVerificationNotification();
@@ -152,12 +153,11 @@ Route::middleware('auth')->group(function () {
         Route::prefix('payment')->name('payment.')->group(function () {
             Route::get('/initiate/{transaction_id}', [PaymentController::class, 'initiate'])->name('initiate');
             Route::post('/process', [PaymentController::class, 'process'])->name('process');
-
             // ✅ FEDAPAY CALLBACK (user redirect after payment)
             Route::get('/callback/{provider}', [PaymentController::class, 'callback'])->name('callback');
-
             Route::get('/verify/{transaction_id}', [PaymentController::class, 'verify'])->name('verify');
-            Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
+            // ⚠️ REMOVED: manualConfirm method doesn't exist in PaymentController
+            // Route::post('/manual-confirm', [PaymentController::class, 'manualConfirm'])->name('manual-confirm');
         });
 
         // Protected CRUD Routes (Require active subscription)
@@ -173,6 +173,8 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{male}', [MaleController::class, 'update'])->name('update');
                 Route::delete('/{male}', [MaleController::class, 'destroy'])->name('destroy');
                 Route::patch('/{male}/toggle-etat', [MaleController::class, 'toggleEtat'])->name('toggleEtat');
+                // ⚠️ REMOVED: search method doesn't exist in MaleController
+                // Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
             });
 
             // FEMELLES
@@ -186,6 +188,8 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{femelle}', [FemelleController::class, 'update'])->name('update');
                 Route::delete('/{femelle}', [FemelleController::class, 'destroy'])->name('destroy');
                 Route::patch('/{femelle}/toggle-etat', [FemelleController::class, 'toggleEtat'])->name('toggleEtat');
+                // ⚠️ REMOVED: search method doesn't exist in FemelleController
+                // Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
             });
 
             // SAILLIES
@@ -252,7 +256,7 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // Settings & Notifications
+        // Settings & Notifications (Require active subscription)
         Route::middleware('check.subscription')->group(function () {
             Route::prefix('settings')->name('settings.')->group(function () {
                 Route::get('/', [SettingsController::class, 'index'])->name('index');
@@ -275,7 +279,7 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // Invoice Routes (Restent dans verified)
+        // Invoice Routes (Require verification, optionally add check.subscription)
         Route::prefix('invoices')->name('invoices.')->group(function () {
             Route::get('/', [InvoiceController::class, 'index'])->name('index');
             Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
@@ -283,10 +287,30 @@ Route::middleware('auth')->group(function () {
             Route::post('/{invoice}/regenerate', [InvoiceController::class, 'regeneratePdf'])->name('regenerate');
             Route::post('/{invoice}/email', [InvoiceController::class, 'email'])->name('email');
         });
+
+        // ========================================================================
+        // 👑 FIRM ADMIN ROUTES (Inside auth group for consistency)
+        // ========================================================================
+        Route::middleware(['verified', 'check.firm.admin'])->prefix('firm')->name('firm.')->group(function () {
+            Route::get('/', [FirmController::class, 'index'])->name('index');
+            Route::post('/employee', [FirmController::class, 'storeEmployee'])->name('employee.store');
+            Route::patch('/employee/{userId}', [FirmController::class, 'updateEmployee'])->name('employee.update');
+            Route::patch('/employee/{userId}/deactivate', [FirmController::class, 'deactivateEmployee'])->name('employee.deactivate');
+        });
+
+        // ========================================================================
+        // 🌟 SUPER ADMIN ROUTES (Inside auth group for consistency)
+        // ========================================================================
+        Route::middleware(['verified', 'check.super.admin'])->prefix('super-admin')->name('super.admin.')->group(function () {
+            Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+            Route::get('/firms', [SuperAdminController::class, 'firms'])->name('firms');
+            Route::post('/firms/{id}/ban', [SuperAdminController::class, 'banFirm'])->name('firms.ban');
+            Route::post('/firms/{id}/activate', [SuperAdminController::class, 'activateFirm'])->name('firms.activate');
+        });
     }); // <--- FIN DU GROUPE VERIFIED
 
     // ========================================================================
-    // 👑 ADMIN ROUTES (HORS GROUPE VERIFIED)
+    // 👑 ADMIN ROUTES (HORS GROUPE VERIFIED - For subscription management)
     // ========================================================================
     Route::middleware('check.admin')->prefix('admin')->name('admin.')->group(function () {
         Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
@@ -314,8 +338,9 @@ Route::middleware('auth')->group(function () {
 // 🔍 UTILITY ROUTES
 // ========================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
-    Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
+    // ⚠️ REMOVED: search methods don't exist in controllers
+    // Route::get('/search/males', [MaleController::class, 'search'])->name('males.search');
+    // Route::get('/search/femelles', [FemelleController::class, 'search'])->name('femelles.search');
 });
 
 // ========================================================================
@@ -420,20 +445,3 @@ Route::fallback(function () {
     }
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
-
-
-
-// routes/web.php - Add these routes
-Route::middleware(['auth', 'verified', 'check.firm.admin'])->prefix('firm')->name('firm.')->group(function () {
-    Route::get('/', [FirmController::class, 'index'])->name('index');
-    Route::post('/employee', [FirmController::class, 'storeEmployee'])->name('employee.store');
-    Route::patch('/employee/{userId}', [FirmController::class, 'updateEmployee'])->name('employee.update');
-    Route::patch('/employee/{userId}/deactivate', [FirmController::class, 'deactivateEmployee'])->name('employee.deactivate');
-});
-
-Route::middleware(['auth', 'verified', 'check.super.admin'])->prefix('super-admin')->name('super.admin.')->group(function () {
-    Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/firms', [SuperAdminController::class, 'firms'])->name('firms');
-    Route::post('/firms/{id}/ban', [SuperAdminController::class, 'banFirm'])->name('firms.ban');
-    Route::post('/firms/{id}/activate', [SuperAdminController::class, 'activateFirm'])->name('firms.activate');
-});
