@@ -1710,343 +1710,342 @@
         </script>
     @endif
 
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('🚀 Welcome page loaded successfully');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Welcome page loaded successfully');
 
-                // ==================== NETWORK STATUS ====================
-                function updateNetworkStatus() {
-                    const networkStatus = document.getElementById('networkStatus');
-                    if (navigator.onLine) {
-                        networkStatus.style.display = 'none';
-                    } else {
-                        networkStatus.style.display = 'flex';
-                    }
+            // ==================== NETWORK STATUS ====================
+            function updateNetworkStatus() {
+                const networkStatus = document.getElementById('networkStatus');
+                if (navigator.onLine) {
+                    networkStatus.style.display = 'none';
+                } else {
+                    networkStatus.style.display = 'flex';
                 }
+            }
 
-                window.addEventListener('online', updateNetworkStatus);
-                window.addEventListener('offline', updateNetworkStatus);
-                updateNetworkStatus();
+            window.addEventListener('online', updateNetworkStatus);
+            window.addEventListener('offline', updateNetworkStatus);
+            updateNetworkStatus();
 
-                // ==================== TAB SWITCHING ====================
-                function switchTab(tabName) {
-                    const tabs = document.querySelectorAll('.auth-tab');
-                    const forms = document.querySelectorAll('.auth-form');
-
-                    tabs.forEach(tab => tab.classList.remove('active'));
-                    forms.forEach(form => form.classList.remove('active'));
-
-                    const selectedTab = document.querySelector(`.auth-tab[data-tab="${tabName}"]`);
-                    const selectedForm = document.querySelector(`#form-${tabName}`);
-
-                    if (selectedTab) selectedTab.classList.add('active');
-                    if (selectedForm) selectedForm.classList.add('active');
-
-                    sessionStorage.setItem('cuniapp_current_tab', tabName);
-                }
-
+            // ==================== TAB SWITCHING ====================
+            function switchTab(tabName) {
                 const tabs = document.querySelectorAll('.auth-tab');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        switchTab(this.getAttribute('data-tab'));
-                    });
-                });
+                const forms = document.querySelectorAll('.auth-form');
 
-                // Restore saved tab
-                @if ($errors->has('email') || $errors->has('password'))
-                    switchTab('login');
-                @elseif ($errors->has('name') || $errors->has('password_confirmation'))
-                    switchTab('register');
-                @else
-                    const savedTab = sessionStorage.getItem('cuniapp_current_tab');
-                    if (savedTab) switchTab(savedTab);
-                @endif
+                tabs.forEach(tab => tab.classList.remove('active'));
+                forms.forEach(form => form.classList.remove('active'));
 
-                // ==================== PASSWORD STRENGTH ====================
-                const registerPassword = document.getElementById('registerPassword');
-                const passwordStrengthFill = document.getElementById('passwordStrengthFill');
-                const passwordStrengthText = document.getElementById('passwordStrengthText');
+                const selectedTab = document.querySelector(`.auth-tab[data-tab="${tabName}"]`);
+                const selectedForm = document.querySelector(`#form-${tabName}`);
 
-                if (registerPassword) {
-                    registerPassword.addEventListener('input', function() {
-                        const password = this.value;
-                        const strength = calculatePasswordStrength(password);
-                        updatePasswordStrengthUI(strength);
-                    });
-                }
+                if (selectedTab) selectedTab.classList.add('active');
+                if (selectedForm) selectedForm.classList.add('active');
 
-                function calculatePasswordStrength(password) {
-                    let score = 0;
-                    if (password.length >= 8) score++;
-                    if (/[A-Z]/.test(password)) score++;
-                    if (/[a-z]/.test(password)) score++;
-                    if (/[0-9]/.test(password)) score++;
-                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
-                    return score;
-                }
+                sessionStorage.setItem('cuniapp_current_tab', tabName);
+            }
 
-                function updatePasswordStrengthUI(strength) {
-                    if (!passwordStrengthFill || !passwordStrengthText) return;
-
-                    const classes = ['weak', 'fair', 'good', 'strong'];
-                    const labels = ['Faible', 'Moyen', 'Bon', 'Excellent'];
-                    const widths = ['25%', '50%', '75%', '100%'];
-
-                    const index = Math.min(strength - 1, 3);
-                    if (index >= 0) {
-                        passwordStrengthFill.className = 'password-strength-fill ' + classes[index];
-                        passwordStrengthFill.style.width = widths[index];
-                        passwordStrengthText.className = 'password-strength-text ' + classes[index];
-                        passwordStrengthText.textContent = labels[index];
-                    }
-                }
-
-                // ==================== FORM LOADING STATE ====================
-                document.querySelectorAll('form').forEach(form => {
-                    form.addEventListener('submit', function() {
-                        const submitBtn = this.querySelector('.btn-submit');
-                        if (submitBtn) {
-                            submitBtn.classList.add('loading');
-                            submitBtn.querySelector('span').textContent = 'Chargement...';
-                        }
-                    });
-                });
-
-                // ==================== VERIFICATION MODAL ====================
-                let resendTimerInterval;
-
-                window.closeVerificationModal = function() {
-                    const overlay = document.getElementById('verificationOverlay');
-                    if (overlay) {
-                        overlay.classList.remove('active');
-                        setTimeout(() => {
-                            overlay.style.display = 'none';
-                            document.body.style.overflow = '';
-                        }, 300);
-                    }
-                };
-
-                // Verification Code Input Handling
-                document.querySelectorAll('.verification-code-input').forEach((input, index, inputs) => {
-                    input.addEventListener('input', function() {
-                        if (this.value.length === 1) {
-                            this.classList.add('filled');
-                            if (index < inputs.length - 1) {
-                                inputs[index + 1].focus();
-                            }
-                        }
-                        updateVerificationCode();
-                    });
-
-                    input.addEventListener('keydown', function(e) {
-                        if (e.key === 'Backspace' && this.value === '' && index > 0) {
-                            inputs[index - 1].focus();
-                            inputs[index - 1].value = '';
-                            inputs[index - 1].classList.remove('filled');
-                            updateVerificationCode();
-                        }
-                    });
-                });
-
-                function updateVerificationCode() {
-                    let code = '';
-                    document.querySelectorAll('.verification-code-input').forEach(input => {
-                        code += input.value;
-                    });
-                    const codeInput = document.getElementById('verificationCodeInput');
-                    if (codeInput) codeInput.value = code;
-                }
-
-                function startResendTimer() {
-                    const timerElement = document.getElementById('resendTimer');
-                    const timerCount = document.getElementById('timerCount');
-                    const resendLink = document.getElementById('resendCode');
-
-                    if (!timerElement || !timerCount || !resendLink) return;
-
-                    let seconds = 60;
-                    timerElement.classList.remove('disabled');
-                    resendLink.style.pointerEvents = 'none';
-                    resendLink.style.opacity = '0.5';
-
-                    clearInterval(resendTimerInterval);
-                    resendTimerInterval = setInterval(() => {
-                        seconds--;
-                        timerCount.textContent = seconds;
-                        if (seconds <= 0) {
-                            clearInterval(resendTimerInterval);
-                            timerElement.classList.add('disabled');
-                            resendLink.style.pointerEvents = 'auto';
-                            resendLink.style.opacity = '1';
-                        }
-                    }, 1000);
-                }
-
-                window.resendVerificationCode = function(e) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const emailDisplay = document.getElementById('verificationEmailDisplay');
-                    if (!emailDisplay) return;
+                    switchTab(this.getAttribute('data-tab'));
+                });
+            });
 
-                    const email = emailDisplay.textContent;
-                    fetch('{{ route('verification.code.resend') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                email: email
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Un nouveau code a été envoyé à votre adresse email.');
-                                startResendTimer();
-                            } else {
-                                alert('Une erreur est survenue. Veuillez réessayer.');
-                            }
-                        })
-                        .catch(error => {
-                            alert('Une erreur est survenue. Veuillez réessayer.');
-                        });
-                };
+            // Restore saved tab
+            @if ($errors->has('email') || $errors->has('password'))
+                switchTab('login');
+            @elseif ($errors->has('name') || $errors->has('password_confirmation'))
+                switchTab('register');
+            @else
+                const savedTab = sessionStorage.getItem('cuniapp_current_tab');
+                if (savedTab) switchTab(savedTab);
+            @endif
 
-                // Close modal on Escape key
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape') {
-                        closeVerificationModal();
+            // ==================== PASSWORD STRENGTH ====================
+            const registerPassword = document.getElementById('registerPassword');
+            const passwordStrengthFill = document.getElementById('passwordStrengthFill');
+            const passwordStrengthText = document.getElementById('passwordStrengthText');
+
+            if (registerPassword) {
+                registerPassword.addEventListener('input', function() {
+                    const password = this.value;
+                    const strength = calculatePasswordStrength(password);
+                    updatePasswordStrengthUI(strength);
+                });
+            }
+
+            function calculatePasswordStrength(password) {
+                let score = 0;
+                if (password.length >= 8) score++;
+                if (/[A-Z]/.test(password)) score++;
+                if (/[a-z]/.test(password)) score++;
+                if (/[0-9]/.test(password)) score++;
+                if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+                return score;
+            }
+
+            function updatePasswordStrengthUI(strength) {
+                if (!passwordStrengthFill || !passwordStrengthText) return;
+
+                const classes = ['weak', 'fair', 'good', 'strong'];
+                const labels = ['Faible', 'Moyen', 'Bon', 'Excellent'];
+                const widths = ['25%', '50%', '75%', '100%'];
+
+                const index = Math.min(strength - 1, 3);
+                if (index >= 0) {
+                    passwordStrengthFill.className = 'password-strength-fill ' + classes[index];
+                    passwordStrengthFill.style.width = widths[index];
+                    passwordStrengthText.className = 'password-strength-text ' + classes[index];
+                    passwordStrengthText.textContent = labels[index];
+                }
+            }
+
+            // ==================== FORM LOADING STATE ====================
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitBtn = this.querySelector('.btn-submit');
+                    if (submitBtn) {
+                        submitBtn.classList.add('loading');
+                        submitBtn.querySelector('span').textContent = 'Chargement...';
                     }
                 });
+            });
 
-                // Start timer if verification pending
-                @if (session('verification_pending'))
-                    startResendTimer();
+            // ==================== VERIFICATION MODAL ====================
+            let resendTimerInterval;
+
+            window.closeVerificationModal = function() {
+                const overlay = document.getElementById('verificationOverlay');
+                if (overlay) {
+                    overlay.classList.remove('active');
                     setTimeout(() => {
-                        const firstInput = document.querySelector('.verification-code-input');
-                        if (firstInput) firstInput.focus();
-                    }, 500);
-                @endif
-
-                // ==================== REGISTRATION STEP NAVIGATION ====================
-                let currentStep = 1;
-
-                window.nextStep = function(step) {
-                    if (!validateStep(currentStep)) {
-                        return;
-                    }
-
-                    const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
-                    const nextStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
-
-                    if (currentStepEl) currentStepEl.style.display = 'none';
-                    if (nextStepEl) nextStepEl.style.display = 'block';
-
-                    updateStepIndicator(step);
-                    currentStep = step;
-
-                    const form = document.getElementById('form-register');
-                    if (form) {
-                        form.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                };
-
-                window.previousStep = function(step) {
-                    const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
-                    const prevStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
-
-                    if (currentStepEl) currentStepEl.style.display = 'none';
-                    if (prevStepEl) prevStepEl.style.display = 'block';
-
-                    updateStepIndicator(step);
-                    currentStep = step;
-                };
-
-                function updateStepIndicator(step) {
-                    const circles = document.querySelectorAll('.step-circle');
-                    const progress = document.querySelector('.step-progress');
-                    const stepTexts = document.querySelectorAll('.step span');
-
-                    circles.forEach((circle, index) => {
-                        if (index < step) {
-                            circle.style.background = 'var(--primary)';
-                            circle.style.color = 'white';
-                        } else {
-                            circle.style.background = 'var(--gray-200)';
-                            circle.style.color = 'var(--text-secondary)';
-                        }
-                    });
-
-                    stepTexts.forEach((text, index) => {
-                        if (index < step) {
-                            text.style.color = 'var(--text-primary)';
-                            text.style.fontWeight = '600';
-                        } else {
-                            text.style.color = 'var(--text-secondary)';
-                            text.style.fontWeight = '500';
-                        }
-                    });
-
-                    if (progress) {
-                        progress.style.width = step === 1 ? '0%' : '100%';
-                    }
+                        overlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }, 300);
                 }
+            };
 
-                function validateStep(step) {
-                    let isValid = true;
-                    const requiredInputs = document.querySelectorAll(`.step${step}-required`);
-
-                    requiredInputs.forEach(input => {
-                        if (!input.value.trim()) {
-                            isValid = false;
-                            input.classList.add('error');
-
-                            const wrapper = input.closest('.form-group');
-                            let errorMsg = wrapper.querySelector('.validation-message.error');
-                            if (!errorMsg) {
-                                errorMsg = document.createElement('div');
-                                errorMsg.className = 'validation-message error';
-                                errorMsg.innerHTML =
-                                    '<i class="bi bi-exclamation-circle-fill"></i><span>Ce champ est obligatoire</span>';
-                                wrapper.appendChild(errorMsg);
-                            }
-                            errorMsg.style.display = 'flex';
-                        } else {
-                            input.classList.remove('error');
-                            const wrapper = input.closest('.form-group');
-                            const errorMsg = wrapper.querySelector('.validation-message.error');
-                            if (errorMsg) errorMsg.style.display = 'none';
+            // Verification Code Input Handling
+            document.querySelectorAll('.verification-code-input').forEach((input, index, inputs) => {
+                input.addEventListener('input', function() {
+                    if (this.value.length === 1) {
+                        this.classList.add('filled');
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
                         }
-                    });
-
-                    if (!isValid) {
-                        showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
                     }
-
-                    return isValid;
-                }
-
-                // Clear error on input
-                document.querySelectorAll('.form-input').forEach(input => {
-                    input.addEventListener('input', function() {
-                        if (this.value.trim()) {
-                            this.classList.remove('error');
-                            const wrapper = this.closest('.form-group');
-                            const errorMsg = wrapper.querySelector('.validation-message.error');
-                            if (errorMsg) errorMsg.style.display = 'none';
-                        }
-                    });
+                    updateVerificationCode();
                 });
 
-                // Toast notification helper
-                function showToast(message, type = 'info') {
-                    const toast = document.createElement('div');
-                    toast.style.cssText = `
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                        inputs[index - 1].value = '';
+                        inputs[index - 1].classList.remove('filled');
+                        updateVerificationCode();
+                    }
+                });
+            });
+
+            function updateVerificationCode() {
+                let code = '';
+                document.querySelectorAll('.verification-code-input').forEach(input => {
+                    code += input.value;
+                });
+                const codeInput = document.getElementById('verificationCodeInput');
+                if (codeInput) codeInput.value = code;
+            }
+
+            function startResendTimer() {
+                const timerElement = document.getElementById('resendTimer');
+                const timerCount = document.getElementById('timerCount');
+                const resendLink = document.getElementById('resendCode');
+
+                if (!timerElement || !timerCount || !resendLink) return;
+
+                let seconds = 60;
+                timerElement.classList.remove('disabled');
+                resendLink.style.pointerEvents = 'none';
+                resendLink.style.opacity = '0.5';
+
+                clearInterval(resendTimerInterval);
+                resendTimerInterval = setInterval(() => {
+                    seconds--;
+                    timerCount.textContent = seconds;
+                    if (seconds <= 0) {
+                        clearInterval(resendTimerInterval);
+                        timerElement.classList.add('disabled');
+                        resendLink.style.pointerEvents = 'auto';
+                        resendLink.style.opacity = '1';
+                    }
+                }, 1000);
+            }
+
+            window.resendVerificationCode = function(e) {
+                e.preventDefault();
+                const emailDisplay = document.getElementById('verificationEmailDisplay');
+                if (!emailDisplay) return;
+
+                const email = emailDisplay.textContent;
+                fetch('{{ route('verification.code.resend') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            email: email
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Un nouveau code a été envoyé à votre adresse email.');
+                            startResendTimer();
+                        } else {
+                            alert('Une erreur est survenue. Veuillez réessayer.');
+                        }
+                    })
+                    .catch(error => {
+                        alert('Une erreur est survenue. Veuillez réessayer.');
+                    });
+            };
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeVerificationModal();
+                }
+            });
+
+            // Start timer if verification pending
+            @if (session('verification_pending'))
+                startResendTimer();
+                setTimeout(() => {
+                    const firstInput = document.querySelector('.verification-code-input');
+                    if (firstInput) firstInput.focus();
+                }, 500);
+            @endif
+
+            // ==================== REGISTRATION STEP NAVIGATION ====================
+            let currentStep = 1;
+
+            window.nextStep = function(step) {
+                if (!validateStep(currentStep)) {
+                    return;
+                }
+
+                const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+                const nextStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+
+                if (currentStepEl) currentStepEl.style.display = 'none';
+                if (nextStepEl) nextStepEl.style.display = 'block';
+
+                updateStepIndicator(step);
+                currentStep = step;
+
+                const form = document.getElementById('form-register');
+                if (form) {
+                    form.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            };
+
+            window.previousStep = function(step) {
+                const currentStepEl = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+                const prevStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+
+                if (currentStepEl) currentStepEl.style.display = 'none';
+                if (prevStepEl) prevStepEl.style.display = 'block';
+
+                updateStepIndicator(step);
+                currentStep = step;
+            };
+
+            function updateStepIndicator(step) {
+                const circles = document.querySelectorAll('.step-circle');
+                const progress = document.querySelector('.step-progress');
+                const stepTexts = document.querySelectorAll('.step span');
+
+                circles.forEach((circle, index) => {
+                    if (index < step) {
+                        circle.style.background = 'var(--primary)';
+                        circle.style.color = 'white';
+                    } else {
+                        circle.style.background = 'var(--gray-200)';
+                        circle.style.color = 'var(--text-secondary)';
+                    }
+                });
+
+                stepTexts.forEach((text, index) => {
+                    if (index < step) {
+                        text.style.color = 'var(--text-primary)';
+                        text.style.fontWeight = '600';
+                    } else {
+                        text.style.color = 'var(--text-secondary)';
+                        text.style.fontWeight = '500';
+                    }
+                });
+
+                if (progress) {
+                    progress.style.width = step === 1 ? '0%' : '100%';
+                }
+            }
+
+            function validateStep(step) {
+                let isValid = true;
+                const requiredInputs = document.querySelectorAll(`.step${step}-required`);
+
+                requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('error');
+
+                        const wrapper = input.closest('.form-group');
+                        let errorMsg = wrapper.querySelector('.validation-message.error');
+                        if (!errorMsg) {
+                            errorMsg = document.createElement('div');
+                            errorMsg.className = 'validation-message error';
+                            errorMsg.innerHTML =
+                                '<i class="bi bi-exclamation-circle-fill"></i><span>Ce champ est obligatoire</span>';
+                            wrapper.appendChild(errorMsg);
+                        }
+                        errorMsg.style.display = 'flex';
+                    } else {
+                        input.classList.remove('error');
+                        const wrapper = input.closest('.form-group');
+                        const errorMsg = wrapper.querySelector('.validation-message.error');
+                        if (errorMsg) errorMsg.style.display = 'none';
+                    }
+                });
+
+                if (!isValid) {
+                    showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
+                }
+
+                return isValid;
+            }
+
+            // Clear error on input
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        this.classList.remove('error');
+                        const wrapper = this.closest('.form-group');
+                        const errorMsg = wrapper.querySelector('.validation-message.error');
+                        if (errorMsg) errorMsg.style.display = 'none';
+                    }
+                });
+            });
+
+            // Toast notification helper
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
             position: fixed;
             bottom: 100px;
             right: 30px;
@@ -2063,26 +2062,26 @@
             animation: slideInRight 0.3s ease;
         `;
 
-                    const icon = type === 'success' ? 'check-circle-fill' : 'x-circle-fill';
-                    const color = type === 'success' ? 'var(--accent-green)' : 'var(--accent-red)';
+                const icon = type === 'success' ? 'check-circle-fill' : 'x-circle-fill';
+                const color = type === 'success' ? 'var(--accent-green)' : 'var(--accent-red)';
 
-                    toast.innerHTML = `
+                toast.innerHTML = `
             <i class="bi bi-${icon}" style="color: ${color}; font-size: 20px;"></i>
             <span style="color: var(--text-primary); font-size: 14px; font-weight: 500;">${message}</span>
         `;
 
-                    document.body.appendChild(toast);
-                    setTimeout(() => {
-                        toast.style.animation = 'slideOutRight 0.3s ease';
-                        setTimeout(() => toast.remove(), 300);
-                    }, 3000);
-                }
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
 
-                // Add animation styles
-                if (!document.getElementById('cuniapp-animations-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'cuniapp-animations-style';
-                    style.textContent = `
+            // Add animation styles
+            if (!document.getElementById('cuniapp-animations-style')) {
+                const style = document.createElement('style');
+                style.id = 'cuniapp-animations-style';
+                style.textContent = `
             @keyframes slideInRight {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
@@ -2092,11 +2091,10 @@
                 to { transform: translateX(100%); opacity: 0; }
             }
         `;
-                    document.head.appendChild(style);
-                }
-            });
-        </script>
-    @endpush
+                document.head.appendChild(style);
+            }
+        });
+    </script>
 </body>
 
 </html>
