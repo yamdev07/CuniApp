@@ -1,6 +1,5 @@
 <?php
 // app/Http/Controllers/Auth/RegisteredUserController.php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -14,14 +13,17 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
-    public function create()
+    public function create(): View
     {
         return view('welcome');
     }
@@ -32,7 +34,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // ✅ 1. VALIDATION
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -49,9 +51,14 @@ class RegisteredUserController extends Controller
             'terms.accepted' => 'Vous devez accepter les conditions d\'utilisation.',
         ]);
 
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
         // ✅ 2. DATABASE TRANSACTION (All or Nothing)
         DB::beginTransaction();
-        
         try {
             // ✅ 3. CREATE THE FIRM FIRST
             $firm = Firm::create([
@@ -79,7 +86,7 @@ class RegisteredUserController extends Controller
 
             // ✅ 6. GENERATE VERIFICATION CODE (6 digits)
             $code = sprintf('%06d', mt_rand(0, 999999));
-            
+
             // ✅ 7. STORE IN CACHE FOR VERIFICATION (30 minutes)
             Cache::put("registration_pending_{$request->email}", [
                 'name' => $request->name,
@@ -103,36 +110,36 @@ class RegisteredUserController extends Controller
 
             // ✅ 9. COMMIT TRANSACTION
             DB::commit();
-            
+
             // ✅ 10. SET SESSION FLAGS FOR VERIFICATION MODAL
             session()->flash('verification_pending', true);
             session()->flash('verification_email', $request->email);
             session()->flash('success', 'Code de vérification envoyé ! Vérifiez votre email pour activer votre compte.');
-            
+
             // ✅ 11. LOG THE REGISTRATION (For audit)
-            \Log::info('New user registration', [
+            Log::info('New user registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'firm_id' => $firm->id,
                 'firm_name' => $firm->name,
             ]);
-            
+
             // ✅ 12. REDIRECT TO WELCOME PAGE (Modal will appear)
             return redirect()->route('welcome')
                 ->with('verification_pending', true)
                 ->with('verification_email', $request->email);
-            
+                
         } catch (\Exception $e) {
             // ✅ 13. ROLLBACK ON ERROR
             DB::rollBack();
             
             // ✅ 14. LOG THE ERROR
-            \Log::error('Registration failed', [
+            Log::error('Registration failed', [
                 'email' => $request->email,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            
+
             // ✅ 15. RETURN WITH ERROR
             return back()
                 ->withErrors(['error' => 'Erreur lors de l\'inscription: ' . $e->getMessage()])
