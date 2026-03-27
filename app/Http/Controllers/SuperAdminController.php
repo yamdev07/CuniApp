@@ -57,12 +57,38 @@ class SuperAdminController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        // Login Activity (Last 24h - from sessions if tracked)
-        $activeUsers24h = User::whereHas('sessions', function ($q) {
-            $q->where('last_activity', '>=', $now->copy()->subHours(24)->timestamp);
-        })->count();
+        // Login Activity (Last 24h)
+        $activeUsers24h = \Illuminate\Support\Facades\DB::table('sessions')
+            ->where('last_activity', '>=', $now->copy()->subHours(24)->timestamp)
+            ->whereNotNull('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
 
-        return view('super-admin.dashboard', compact('stats', 'topFirms', 'recentSignups', 'activeUsers24h'));
+        // ✅ SIGNUP EVOLUTION DATA (Last 30 days) - ADD THIS
+        $signupEvolution = User::where('role', 'firm_admin')
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereBetween('created_at', [now()->subDays(30), now()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('count', 'date');
+
+        // Build arrays for Chart.js
+        $signupLabels = [];
+        $signupCounts = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $signupLabels[] = now()->subDays($i)->format('d/m');  // e.g., "23/03"
+            $signupCounts[] = $signupEvolution->get($date) ?? 0;  // 0 if no signups that day
+        }
+
+        return view('super-admin.dashboard', compact(
+            'stats',
+            'topFirms',
+            'recentSignups',
+            'activeUsers24h',
+            'signupLabels',    // ✅ ADD THIS
+            'signupCounts'     // ✅ ADD THIS
+        ));
     }
 
     public function firms(Request $request)
