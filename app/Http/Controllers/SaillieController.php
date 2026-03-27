@@ -46,7 +46,6 @@ class SaillieController extends Controller
 
         // 🎯 Filtre par résultat de palpation
         if ($request->filled('resultat')) {
-            // "" signifie "En attente" (palpation_resultat IS NULL)
             if ($request->resultat === '') {
                 $query->whereNull('palpation_resultat');
             } else {
@@ -59,11 +58,19 @@ class SaillieController extends Controller
 
         return view('saillies.index', compact('saillies'));
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $femelles = Femelle::all();
         $males = Male::all();
 
@@ -75,8 +82,7 @@ class SaillieController extends Controller
      */
     public function store(Request $request)
     {
-
-        // ✅ CRITICAL: Check if user has a firm
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
         if (!auth()->user()->firm_id) {
             return back()
                 ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
@@ -100,8 +106,9 @@ class SaillieController extends Controller
         $saillie->date_mise_bas_theorique = Carbon::parse($request->date_saillie)->addDays(31);
         $saillie->save();
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            null,
+            null,  // ✅ Let the model auto-detect from authenticated user
             auth()->id(),
             'saillie_created',
             'femelle_id',
@@ -140,11 +147,13 @@ class SaillieController extends Controller
      */
     public function show(Saillie $saillie)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
         $saillie->load(['femelle', 'male']);
+
         return view('saillies.show', compact('saillie'));
     }
 
@@ -153,12 +162,21 @@ class SaillieController extends Controller
      */
     public function edit(Saillie $saillie)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $femelles = Femelle::all();
         $males = Male::all();
+
         return view('saillies.edit', compact('saillie', 'femelles', 'males'));
     }
 
@@ -167,11 +185,17 @@ class SaillieController extends Controller
      */
     public function update(Request $request, Saillie $saillie)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
 
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
@@ -193,9 +217,9 @@ class SaillieController extends Controller
             'date_mise_bas_theorique' => Carbon::parse($request->date_saillie)->addDays(31),
         ]);
 
-
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'saillie_updated',
             'palpation_resultat',
@@ -233,18 +257,24 @@ class SaillieController extends Controller
      */
     public function destroy(Saillie $saillie)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
 
         $femelle = Femelle::find($saillie->femelle_id);
         $male = Male::find($saillie->male_id);
 
-
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'saillie_deleted',
             'id',
@@ -280,6 +310,11 @@ class SaillieController extends Controller
      */
     public function updatePalpation(Request $request, Saillie $saillie)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($saillie->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $request->validate([
             'palpation_resultat' => 'required|in:+,-',
             'date_palpage' => 'required|date',
