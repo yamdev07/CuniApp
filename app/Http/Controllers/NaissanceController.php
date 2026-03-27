@@ -92,6 +92,14 @@ class NaissanceController extends Controller
 
     public function store(Request $request)
     {
+
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         // ✅ VALIDATION 1: Basic fields
         $validated = $request->validate([
             'mise_bas_id' => 'required|exists:mises_bas,id',
@@ -439,7 +447,7 @@ class NaissanceController extends Controller
 
 
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,
             auth()->id(),
             'naissance_deleted',
             'id',

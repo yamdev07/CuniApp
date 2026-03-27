@@ -57,6 +57,13 @@ class MaleController extends Controller
      */
     public function store(Request $request)
     {
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'code' => 'required|unique:males,code',
             'nom' => 'required|string|max:255',
@@ -68,8 +75,9 @@ class MaleController extends Controller
 
         $male = Male::create($request->all());
 
+        // ✅ AFTER (let the model auto-detect):
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Auto-detect from authenticated user
             auth()->id(),
             'male_created',
             'code',

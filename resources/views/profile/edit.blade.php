@@ -51,6 +51,20 @@
                     </div>
                 @endif
 
+
+                {{-- ✅ ADD THIS WARNING IF USER HAS NO FIRM --}}
+                @if (!auth()->user()->firm_id)
+                    <div class="alert-cuni error" style="margin-bottom: 24px;">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <div>
+                            <strong>Entreprise non configurée</strong>
+                            <p>Votre compte n'est associé à aucune entreprise. Certaines fonctionnalités seront limitées.
+                            </p>
+                            <p>Contactez le support à <a href="mailto:contact@anyxtech.com"
+                                    style="color: var(--primary);">contact@anyxtech.com</a></p>
+                        </div>
+                    </div>
+                @endif
                 <form action="{{ route('profile.update') }}" method="POST">
                     @csrf
                     @method('PATCH')

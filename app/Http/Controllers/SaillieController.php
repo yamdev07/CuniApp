@@ -75,6 +75,14 @@ class SaillieController extends Controller
      */
     public function store(Request $request)
     {
+
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'male_id' => 'required|exists:males,id',
@@ -93,7 +101,7 @@ class SaillieController extends Controller
         $saillie->save();
 
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,
             auth()->id(),
             'saillie_created',
             'femelle_id',

@@ -50,6 +50,14 @@ class FemelleController extends Controller
      */
     public function store(Request $request)
     {
+
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'code' => 'required|unique:femelles,code',
             'nom' => 'required|string',
@@ -62,7 +70,7 @@ class FemelleController extends Controller
         $femelle = Femelle::create($request->all());
 
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,
             auth()->id(),
             'femelle_created',
             'code',
