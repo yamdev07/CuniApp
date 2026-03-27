@@ -32,8 +32,27 @@ class FirmAuditLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function log($firmId, $userId, $action, $field = null, $oldValue = null, $newValue = null)
+    public static function log($firmId = null, $userId = null, $action, $field = null, $oldValue = null, $newValue = null)
     {
+        // Auto-detect from authenticated user if not provided
+        if (!$userId && auth()->check()) {
+            $userId = auth()->id();
+        }
+
+        if (!$firmId && auth()->check()) {
+            $firmId = auth()->user()->firm_id;
+        }
+
+        // Fallback: if still no firm_id, skip audit log (safer than crashing)
+        if (!$firmId) {
+            // Log warning for debugging
+            \Log::warning('FirmAuditLog skipped: No firm_id available', [
+                'user_id' => $userId,
+                'action' => $action,
+            ]);
+            return null;
+        }
+
         return self::create([
             'firm_id' => $firmId,
             'user_id' => $userId,

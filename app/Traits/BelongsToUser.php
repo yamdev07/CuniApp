@@ -1,47 +1,50 @@
 <?php
-
+// app/Traits/BelongsToUser.php
 namespace App\Traits;
 
 trait BelongsToUser
 {
-
     protected static function bootBelongsToUser()
     {
-        // Auto-assign user_id et firm_id à la création
+        // Auto-assign user_id and firm_id on creation
         static::creating(function ($model) {
             if (auth()->check()) {
                 $user = auth()->user();
+
                 if (!$model->user_id) {
                     $model->user_id = $user->id;
                 }
+
+                // CRITICAL: Only set firm_id if user has one
                 if ($user->firm_id && !$model->firm_id) {
                     $model->firm_id = $user->firm_id;
+                } elseif (!$model->firm_id) {
+                    // Fallback: try to get firm from user relationship
+                    $model->firm_id = $user->firm?->id;
                 }
             }
         });
 
-        // ✅ Global Scope FIX: Use explicit table names to avoid ambiguity
+        // Global Scope for data isolation
         static::addGlobalScope('firm', function ($builder) {
             if (!auth()->check()) {
                 return;
             }
 
             $user = auth()->user();
-            $modelTable = $builder->getModel()->getTable(); // ← Get the main model's table
+            $modelTable = $builder->getModel()->getTable();
 
-            // Super Admin voit tout
+            // Super Admin sees all
             if ($user->isSuperAdmin()) {
                 return;
             }
 
-            // Employer/Firm Admin : scope par firm_id
+            // Firm Admin/Employee: scope by firm_id
             if ($user->firm_id && in_array($user->role, ['firm_admin', 'employee'])) {
-                // ✅ Explicitly specify table name
                 $builder->where("{$modelTable}.firm_id", $user->firm_id);
             }
-            // Fallback : scope par user_id
+            // Fallback: scope by user_id only (for users without firm)
             elseif (auth()->id()) {
-                // ✅ Explicitly specify table name to avoid ambiguity in JOINs
                 $builder->where("{$modelTable}.user_id", auth()->id());
             }
         });
@@ -52,7 +55,6 @@ trait BelongsToUser
         return $this->belongsTo(\App\Models\User::class);
     }
 
-    // ✅ NEW: Firm relationship for models with firm_id
     public function firm()
     {
         return $this->belongsTo(\App\Models\Firm::class);
