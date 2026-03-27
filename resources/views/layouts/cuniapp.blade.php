@@ -2788,35 +2788,7 @@
             font-size: 16px;
         }
 
-        /* ✅ Overflow Badge on Plus Button */
-        .overflow-count-badge {
-            background: var(--accent-red);
-            color: white;
-            font-size: 9px;
-            font-weight: 700;
-            min-width: 16px;
-            height: 16px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
+        /* ✅ Overflow Badge on Plus Button Disabled */
 
         /* ✅ Overflow Item in Dropdown */
         .overflow-nav-item {
@@ -3026,8 +2998,6 @@
                         <i class="bi bi-three-dots"></i>
                         <span>Plus</span>
                         <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
-                        <span class="overflow-count-badge" id="overflowCountBadge"
-                            style="display: none; position: absolute; top: -5px; right: -5px; background: var(--accent-red); color: white; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">0</span>
                     </button>
                     {{-- ✅ DROPDOWN MENU --}}
                     <div class="dropdown-menu-custom" id="moreDropdown"
@@ -3938,19 +3908,7 @@
             }
 
             updateOverflowBadge() {
-                const count = this.overflowItems.size;
-                if (this.overflowBadge) {
-                    if (count > 0) {
-                        this.overflowBadge.textContent = count > 9 ? '9+' : count;
-                        this.overflowBadge.style.display = 'flex';
-                        this.moreButton.style.background = 'var(--primary-subtle)';
-                        this.moreButton.style.color = 'var(--primary)';
-                    } else {
-                        this.overflowBadge.style.display = 'none';
-                        this.moreButton.style.background = '';
-                        this.moreButton.style.color = '';
-                    }
-                }
+                // UI notification and background highlight has been removed.
             }
         }
 
