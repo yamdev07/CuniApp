@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Femelle;
 use Illuminate\Http\Request;
 use App\Traits\Notifiable;
+use App\Models\FirmAuditLog;
 
 class FemelleController extends Controller
 {
@@ -59,6 +60,15 @@ class FemelleController extends Controller
         ]);
 
         $femelle = Femelle::create($request->all());
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'femelle_created',
+            'code',
+            null,
+            $femelle->code
+        );
 
         // Create notification
         $this->notifyUser([
@@ -130,6 +140,15 @@ class FemelleController extends Controller
 
         $oldNom = $femelle->nom;
         $femelle->update($request->all());
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'femelle_updated',
+            'etat',
+            $femelle->getOriginal('etat'),
+            $femelle->etat
+        );
 
         // Create notification
         $this->notifyUser([

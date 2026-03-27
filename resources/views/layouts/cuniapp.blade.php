@@ -2796,6 +2796,14 @@
                     <span>Mises Bas</span>
                 </a>
 
+                {{-- Dépenses --}}
+                <a href="{{ route('expenses.index') }}"
+                    class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}"
+                    title="Gestion des dépenses">
+                    <i class="bi bi-wallet2"></i>
+                    <span>Dépenses</span>
+                </a>
+
                 {{-- ✅ ENTREPRISE LINK (Firm Admins Only) --}}
                 @if (auth()->check() && auth()->user()->isFirmAdmin())
                     <a href="{{ route('firm.index') }}"
@@ -3721,6 +3729,7 @@
             }
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @stack('scripts')
 </body>
 

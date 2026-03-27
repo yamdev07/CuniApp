@@ -12,6 +12,7 @@ use App\Traits\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\FirmAuditLog;
 
 class SaleController extends Controller
 {
@@ -275,6 +276,15 @@ class SaleController extends Controller
             ]);
 
             DB::commit();
+
+            FirmAuditLog::log(
+                auth()->user()->firm_id,
+                auth()->id(),
+                'sale_created',
+                'total_amount',
+                null,
+                $sale->total_amount
+            );
             return redirect()->route('sales.index')
                 ->with('success', 'Vente enregistrée avec succès !');
         } catch (\Exception $e) {
@@ -577,6 +587,16 @@ class SaleController extends Controller
         $typeLabel = $this->getTypeLabel('groupe');
         $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
             number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
+
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'sale_deleted',
+            'id',
+            $sale->id,
+            null
+        );
 
         $sale->delete();
 

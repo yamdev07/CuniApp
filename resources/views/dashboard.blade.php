@@ -1110,6 +1110,29 @@
             </div>
         @endif
 
+        {{-- ✅ VISUAL ANALYTICS SECTION --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Finance Chart -->
+            <div class="cuni-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title"><i class="bi bi-graph-up"></i> Finance ({{ now()->year }})</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="financeChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Activity Chart -->
+            <div class="cuni-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title"><i class="bi bi-activity"></i> Activité d'Élevage</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Grid -->
         <div class="main-grid">
             <!-- Left Column -->
@@ -1552,4 +1575,93 @@
             }
         </script>
     @endpush
+
+    @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Finance Chart
+    const ctxFinance = document.getElementById('financeChart');
+    if (ctxFinance) {
+        new Chart(ctxFinance.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: @json($financialData['labels']),
+                datasets: [
+                    {
+                        label: 'Ventes',
+                        data: @json($financialData['sales']),
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Dépenses',
+                        data: @json($financialData['expenses']),
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' FCFA';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Activity Chart
+    const ctxActivity = document.getElementById('activityChart');
+    if (ctxActivity) {
+        new Chart(ctxActivity.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: @json($activityData['labels']),
+                datasets: [
+                    {
+                        label: 'Saillies',
+                        data: @json($activityData['saillies']),
+                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                        borderColor: '#8B5CF6',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Naissances',
+                        data: @json($activityData['naissances']),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10B981',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection

@@ -260,6 +260,10 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
+
+        $financialData = $this->getFinancialChartData();
+        $activityData = $this->getActivityChartData();
+
         // ====================================================================
         // RETURN VIEW
         // ====================================================================
@@ -281,7 +285,66 @@ class DashboardController extends Controller
             'totalRevenue',
             'events',
             'timelineActivities',
-            'salesStats'
+            'salesStats',
+            'financialData',
+            'activityData'
         ));
+    }
+
+    /**
+     * Prepare financial data for charts
+     */
+    private function getFinancialChartData()
+    {
+        $userId = auth()->id();
+        $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
+
+        // Sales data
+        $sales = Sale::where('user_id', $userId)
+            ->where('payment_status', 'paid')
+            ->whereYear('date_sale', now()->year)
+            ->selectRaw('MONTH(date_sale) as month, SUM(total_amount) as total')
+            ->groupBy('month')
+            ->pluck('total', 'month');
+
+        // Expenses data
+        $expenses = \App\Models\Expense::where('user_id', $userId)
+            ->whereYear('expense_date', now()->year)
+            ->selectRaw('MONTH(expense_date) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->pluck('total', 'month');
+
+        return [
+            'labels' => $months,
+            'sales' => $months->map(fn($m, $i) => $sales->get($i + 1) ?? 0)->toArray(),
+            'expenses' => $months->map(fn($m, $i) => $expenses->get($i + 1) ?? 0)->toArray(),
+        ];
+    }
+
+    /**
+     * Prepare activity data for charts
+     */
+    private function getActivityChartData()
+    {
+        $userId = auth()->id();
+        $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
+
+        $saillies = \App\Models\Saillie::where('user_id', $userId)
+            ->whereYear('created_at', now()->year)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        $naissances = \App\Models\Naissance::where('user_id', $userId)
+            ->whereYear('created_at', now()->year)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->pluck('count', 'month');
+
+        return [
+            'labels' => $months,
+            'saillies' => $months->map(fn($m, $i) => $saillies->get($i + 1) ?? 0)->toArray(),
+            'naissances' => $months->map(fn($m, $i) => $naissances->get($i + 1) ?? 0)->toArray(),
+        ];
     }
 }

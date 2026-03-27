@@ -8,6 +8,7 @@ use App\Models\Male;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Traits\Notifiable;
+use App\Models\FirmAuditLog;
 
 class SaillieController extends Controller
 {
@@ -16,48 +17,48 @@ class SaillieController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index(Request $request)
-{
-    $query = Saillie::with(['femelle', 'male']);
+    public function index(Request $request)
+    {
+        $query = Saillie::with(['femelle', 'male']);
 
-    // 🔍 Recherche texte (femelle ou mâle : nom ou code)
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->whereHas('femelle', function($sub) use ($search) {
-                $sub->where('nom', 'LIKE', "%{$search}%")
-                    ->orWhere('code', 'LIKE', "%{$search}%");
-            })
-            ->orWhereHas('male', function($sub) use ($search) {
-                $sub->where('nom', 'LIKE', "%{$search}%")
-                    ->orWhere('code', 'LIKE', "%{$search}%");
+        // 🔍 Recherche texte (femelle ou mâle : nom ou code)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('femelle', function ($sub) use ($search) {
+                    $sub->where('nom', 'LIKE', "%{$search}%")
+                        ->orWhere('code', 'LIKE', "%{$search}%");
+                })
+                    ->orWhereHas('male', function ($sub) use ($search) {
+                        $sub->where('nom', 'LIKE', "%{$search}%")
+                            ->orWhere('code', 'LIKE', "%{$search}%");
+                    });
             });
-        });
-    }
-
-    // 📅 Filtre par période de saillie
-    if ($request->filled('date_from')) {
-        $query->whereDate('date_saillie', '>=', $request->date_from);
-    }
-    if ($request->filled('date_to')) {
-        $query->whereDate('date_saillie', '<=', $request->date_to);
-    }
-
-    // 🎯 Filtre par résultat de palpation
-    if ($request->filled('resultat')) {
-        // "" signifie "En attente" (palpation_resultat IS NULL)
-        if ($request->resultat === '') {
-            $query->whereNull('palpation_resultat');
-        } else {
-            $query->where('palpation_resultat', $request->resultat);
         }
+
+        // 📅 Filtre par période de saillie
+        if ($request->filled('date_from')) {
+            $query->whereDate('date_saillie', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('date_saillie', '<=', $request->date_to);
+        }
+
+        // 🎯 Filtre par résultat de palpation
+        if ($request->filled('resultat')) {
+            // "" signifie "En attente" (palpation_resultat IS NULL)
+            if ($request->resultat === '') {
+                $query->whereNull('palpation_resultat');
+            } else {
+                $query->where('palpation_resultat', $request->resultat);
+            }
+        }
+
+        // 🔢 Pagination avec conservation des paramètres de recherche
+        $saillies = $query->latest()->paginate(10)->withQueryString();
+
+        return view('saillies.index', compact('saillies'));
     }
-
-    // 🔢 Pagination avec conservation des paramètres de recherche
-    $saillies = $query->latest()->paginate(10)->withQueryString();
-
-    return view('saillies.index', compact('saillies'));
-}
     /**
      * Show the form for creating a new resource.
      */
@@ -90,6 +91,15 @@ class SaillieController extends Controller
         $saillie->palpation_resultat = $request->palpation_resultat;
         $saillie->date_mise_bas_theorique = Carbon::parse($request->date_saillie)->addDays(31);
         $saillie->save();
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'saillie_created',
+            'femelle_id',
+            null,
+            $saillie->femelle_id
+        );
 
         // Get femelle and male names for notification
         $femelle = Femelle::find($request->femelle_id);
@@ -175,6 +185,16 @@ class SaillieController extends Controller
             'date_mise_bas_theorique' => Carbon::parse($request->date_saillie)->addDays(31),
         ]);
 
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'saillie_updated',
+            'palpation_resultat',
+            $saillie->getOriginal('palpation_resultat'),
+            $saillie->palpation_resultat
+        );
+
         $newFemelle = Femelle::find($request->femelle_id);
         $newMale = Male::find($request->male_id);
 
@@ -213,6 +233,16 @@ class SaillieController extends Controller
 
         $femelle = Femelle::find($saillie->femelle_id);
         $male = Male::find($saillie->male_id);
+
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'saillie_deleted',
+            'id',
+            $saillie->id,
+            null
+        );
 
         $saillie->delete();
 

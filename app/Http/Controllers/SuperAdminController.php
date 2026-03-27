@@ -136,7 +136,24 @@ class SuperAdminController extends Controller
             'subscription_limit' => $firm->subscription_limit,
         ];
 
-        return view('super-admin.firms.show', compact('firm', 'stats'));
+        // ✅ SIGNUP EVOLUTION DATA (Last 30 days)
+        $signupEvolution = \App\Models\User::where('role', 'firm_admin')
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereBetween('created_at', [now()->subDays(30), now()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('count', 'date');
+
+        // Build arrays for Chart.js
+        $signupLabels = [];
+        $signupCounts = [];
+
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $signupLabels[] = now()->subDays($i)->format('d/m');  // e.g., "23/03"
+            $signupCounts[] = $signupEvolution->get($date) ?? 0;  // 0 if no signups that day
+        }
+
+        return view('super-admin.dashboard', compact('stats', 'topFirms', 'recentSignups', 'activeUsers24h', 'signupLabels', 'signupCounts'));
     }
 }
-    

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Traits\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\FirmAuditLog;
 
 class NaissanceController extends Controller
 {
@@ -216,6 +217,15 @@ class NaissanceController extends Controller
             ]);
 
             DB::commit();
+
+            FirmAuditLog::log(
+                auth()->user()->firm_id,
+                auth()->id(),
+                'naissance_created',
+                'nb_vivant',
+                null,
+                $naissance->nb_vivant
+            );
 
             return redirect()->route('naissances.show', $naissance)
                 ->with('success', 'Naissance et lapereaux enregistrés ! Sexe à vérifier après 10 jours.');
@@ -426,6 +436,17 @@ class NaissanceController extends Controller
 
         $femelleName = $naissance->femelle->nom ?? 'Inconnue';
         $totalLapereaux = $naissance->total_lapereaux;
+
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'naissance_deleted',
+            'id',
+            $naissance->id,
+            null
+        );
+
         $naissance->delete(); // Cascade deletes lapereaux
 
         $this->notifyUser([

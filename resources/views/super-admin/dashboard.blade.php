@@ -26,6 +26,64 @@
             </div>
         </div>
 
+        {{-- Signup Evolution Chart --}}
+        <div class="cuni-card mb-6">
+            <div class="card-header-custom">
+                <h3 class="card-title"><i class="bi bi-graph-up-arrow"></i> Évolution des Inscriptions (30 jours)</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="signupChart" height="100"></canvas>
+            </div>
+        </div>
+
+        @push('scripts')
+            <script>
+                // Signup Evolution Chart
+                const ctxSignup = document.getElementById('signupChart');
+                if (ctxSignup) {
+                    new Chart(ctxSignup.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: @json($signupLabels),
+                            datasets: [{
+                                label: 'Nouvelles entreprises',
+                                data: @json($signupCounts),
+                                borderColor: '#2563EB',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 3,
+                                pointHoverRadius: 5
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            </script>
+        @endpush
+
         <div class="cuni-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">

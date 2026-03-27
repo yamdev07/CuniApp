@@ -8,36 +8,37 @@ use App\Models\Saillie;
 use Illuminate\Http\Request;
 use App\Traits\Notifiable;
 use Carbon\Carbon;
+use App\Models\FirmAuditLog;
 
 class MiseBasController extends Controller
 {
     use Notifiable;
 
-   public function index(Request $request)
-{
-    $query = MiseBas::with(['femelle', 'saillie.male', 'naissances.lapereaux']);
+    public function index(Request $request)
+    {
+        $query = MiseBas::with(['femelle', 'saillie.male', 'naissances.lapereaux']);
 
-    // 🔍 Filtre de recherche
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->whereHas('femelle', function($q) use ($search) {
-            $q->where('nom', 'LIKE', "%{$search}%")
-              ->orWhere('code', 'LIKE', "%{$search}%");
-        });
+        // 🔍 Filtre de recherche
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('femelle', function ($q) use ($search) {
+                $q->where('nom', 'LIKE', "%{$search}%")
+                    ->orWhere('code', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // 📅 Filtre par date (optionnel)
+        if ($request->filled('date_from')) {
+            $query->whereDate('date_mise_bas', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('date_mise_bas', '<=', $request->date_to);
+        }
+
+        $misesBas = $query->latest()->paginate(15)->withQueryString();
+
+        return view('mises_bas.index', compact('misesBas'));
     }
-
-    // 📅 Filtre par date (optionnel)
-    if ($request->filled('date_from')) {
-        $query->whereDate('date_mise_bas', '>=', $request->date_from);
-    }
-    if ($request->filled('date_to')) {
-        $query->whereDate('date_mise_bas', '<=', $request->date_to);
-    }
-
-    $misesBas = $query->latest()->paginate(15)->withQueryString();
-
-    return view('mises_bas.index', compact('misesBas'));
-}
 
     public function create()
     {
@@ -72,6 +73,15 @@ class MiseBasController extends Controller
         }
 
         $miseBas = MiseBas::create($validated);
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'misebas_created',
+            'nb_vivant',
+            null,
+            $miseBas->nb_vivant
+        );
 
         // Update femelle status
         $femelle = Femelle::find($validated['femelle_id']);
@@ -123,6 +133,15 @@ class MiseBasController extends Controller
     {
         $femelleName = $miseBas->femelle->nom ?? 'Inconnue';
         $totalLapereaux = $miseBas->total_lapereaux;
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'misebas_deleted',
+            'id',
+            $miseBas->id,
+            null
+        );
 
         $miseBas->delete();
 

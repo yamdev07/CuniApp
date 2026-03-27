@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Male;
 use App\Traits\Notifiable;
+use App\Models\FirmAuditLog;
 
 class MaleController extends Controller
 {
@@ -66,6 +67,15 @@ class MaleController extends Controller
         ]);
 
         $male = Male::create($request->all());
+
+        FirmAuditLog::log(
+            auth()->user()->firm_id,
+            auth()->id(),
+            'male_created',
+            'code',
+            null,
+            $male->code
+        );
 
         // Create notification using Notifiable trait
         $this->notifyUser([
