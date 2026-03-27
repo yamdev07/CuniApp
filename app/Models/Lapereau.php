@@ -14,6 +14,7 @@ class Lapereau extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'naissance_id',
         'code',
         'nom',
