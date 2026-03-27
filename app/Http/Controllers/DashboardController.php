@@ -122,8 +122,7 @@ class DashboardController extends Controller
                 ->toArray(),
 
             // Naissances (vert)
-            'naissances' => \App\Models\Naissance::where('user_id', $userId)
-                ->with(['femelle', 'miseBas'])
+            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->get()
@@ -136,8 +135,7 @@ class DashboardController extends Controller
                 ->toArray(),
 
             // Sexuations (bleu) - J+10
-            'sexuations' => \App\Models\Naissance::where('user_id', $userId)
-                ->with(['femelle', 'miseBas'])
+            'sexuations' => \App\Models\Naissance::with(['femelle', 'miseBas'])
                 ->where('sex_verified', false)
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
@@ -161,8 +159,7 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         // Naissances (vert)
-        $recentNaissances = Naissance::where('user_id', $userId)
-            ->with('femelle')
+        $recentNaissances = Naissance::with('femelle')
             ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
             ->latest('created_at')
             ->get()
@@ -335,8 +332,7 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        $naissances = \App\Models\Naissance::where('user_id', $userId)
-            ->whereYear('created_at', now()->year)
+        $naissances = \App\Models\Naissance::whereYear('created_at', now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');
