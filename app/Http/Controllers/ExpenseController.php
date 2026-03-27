@@ -6,6 +6,7 @@ use App\Models\Expense;
 use Illuminate\Http\Request;
 use App\Traits\Notifiable;
 use App\Models\FirmAuditLog;
+use Illuminate\Support\Facades\Log;
 
 class ExpenseController extends Controller
 {
@@ -13,20 +14,36 @@ class ExpenseController extends Controller
 
     public function index(Request $request)
     {
-        $query = Expense::query()->latest('expense_date');
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        $userId = auth()->id();
+
+        $query = Expense::where('user_id', $userId)
+            ->latest('expense_date');
 
         if ($request->filled('month')) {
             $query->whereMonth('expense_date', $request->month);
         }
+
         if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
-        $expenses = $query->paginate(15);
+        $expenses = $query->paginate(15)->withQueryString();
+
+        Log::info('Expenses Query Result', [
+            'type' => get_class($expenses),
+            'count' => $expenses->count(),
+            'total' => $expenses->total(),
+        ]);
 
         $stats = [
-            'total' => Expense::sum('amount'),
-            'this_month' => Expense::whereMonth('expense_date', now()->month)->sum('amount'),
+            'total' => Expense::where('user_id', $userId)->sum('amount'),
+            'this_month' => Expense::where('user_id', $userId)
+                ->whereMonth('expense_date', now()->month)
+                ->sum('amount'),
         ];
 
         return view('expenses.index', compact('expenses', 'stats'));

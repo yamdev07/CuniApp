@@ -66,8 +66,8 @@
                             $sales = \App\Models\Sale::where('user_id', auth()->id())
                                 ->where('payment_status', 'paid')
                                 ->sum('total_amount');
-                            $expenses = \App\Models\Expense::where('user_id', auth()->id())->sum('amount');
-                            $net = $sales - $expenses;
+                            $totalExpenses = \App\Models\Expense::where('user_id', auth()->id())->sum('amount');
+                            $net = $sales - $totalExpenses;
                         @endphp
                         <p class="text-2xl font-bold {{ $net >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ number_format($net, 0, ',', ' ') }} FCFA
@@ -99,7 +99,8 @@
                             <option value="Vétérinaire" {{ request('category') === 'Vétérinaire' ? 'selected' : '' }}>
                                 Vétérinaire</option>
                             <option value="Équipement" {{ request('category') === 'Équipement' ? 'selected' : '' }}>
-                                Équipement</option>
+                                Équipement
+                            </option>
                             <option value="Transport" {{ request('category') === 'Transport' ? 'selected' : '' }}>Transport
                             </option>
                             <option value="Autre" {{ request('category') === 'Autre' ? 'selected' : '' }}>Autre</option>
@@ -155,11 +156,33 @@
                                 <td>{{ Str::limit($expense->description, 50) }}</td>
                                 <td class="text-danger fw-bold">- {{ $expense->formatted_amount }}</td>
                                 <td class="pe-4">
-                                    <form action="{{ route('expenses.destroy', $expense) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn-cuni sm danger" title="Supprimer"
+                                    <form action="{{ route('expenses.destroy', $expense) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-cuni sm danger"
                                             onclick="return confirm('Supprimer cette dépense ?')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-8">
+                                    <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5;"></i>
+                                    <p class="mt-4 text-gray-500">Aucune dépense enregistrée</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($expenses->hasPages())
+                <div style="margin-top: 24px;">
+                    {{ $expenses->links('pagination.bootstrap-5-sm') }}
+                </div>
+            @endif
+        </div>
+    </div>
+@endsection

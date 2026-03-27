@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expense extends Model
 {
-    use BelongsToUser; // Handles firm_id & user_id auto-scoping
+    use BelongsToUser;
 
     protected $fillable = [
         'user_id',
