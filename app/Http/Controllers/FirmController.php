@@ -202,24 +202,77 @@ class FirmController extends Controller
         return back()->with('success', 'Employé désactivé avec succès !');
     }
 
-    // ✅ NEW: Update Firm Settings
     public function updateFirm(Request $request)
     {
         $user = auth()->user();
-
         if (!$user->isFirmAdmin()) {
             abort(403, 'Accès non autorisé');
         }
 
         $firm = $user->firm;
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        // ✅ LOG CHANGES
+        if ($firm->name !== $validated['name']) {
+            \App\Models\FirmAuditLog::log(
+                $firm->id,
+                $user->id,
+                'firm_name_updated',
+                'name',
+                $firm->name,
+                $validated['name']
+            );
+        }
+
+        if ($firm->description !== $validated['description']) {
+            \App\Models\FirmAuditLog::log(
+                $firm->id,
+                $user->id,
+                'firm_description_updated',
+                'description',
+                $firm->description,
+                $validated['description']
+            );
+        }
+
         $firm->update($validated);
 
         return back()->with('success', 'Informations de l\'entreprise mises à jour !');
     }
+
+    public function deleteEmployee($userId)
+    {
+        $user = auth()->user();
+        if (!$user->isFirmAdmin()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $employee = User::where('id', $userId)
+            ->where('firm_id', $user->firm_id)
+            ->where('role', 'employee')
+            ->firstOrFail();
+
+        if ($employee->id === $user->firm->owner_id) {
+            return back()->withErrors(['error' => 'Impossible de supprimer le propriétaire']);
+        }
+
+        // ✅ LOG THE ACTION
+        \App\Models\FirmAuditLog::log(
+            $user->firm_id,
+            $user->id,
+            'employee_deleted',
+            'user_id',
+            null,
+            $employee->id
+        );
+
+        $employeeName = $employee->name;
+        $employee->delete();
+
+        return back()->with('success', "L'employé {$employeeName} a été supprimé définitivement.");
+    }
 }
+    

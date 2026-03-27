@@ -27,6 +27,17 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        // ✅ ADD THIS: Check if user's firm is banned
+        $user = auth()->user();
+        if ($user->firm && $user->firm->isBanned()) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('welcome')
+                ->withErrors(['error' => 'Votre entreprise a été suspendue. Contactez le support.']);
+        }
+
         return redirect()->intended(route('dashboard'));
     }
 

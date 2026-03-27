@@ -21,9 +21,11 @@ class SubscriptionController extends Controller
     {
         $user = Auth::user();
         $currentSubscription = $user->activeSubscription();
+
         $plans = SubscriptionPlan::where('is_active', true)
             ->orderBy('duration_months')
             ->get();
+
         $paymentHistory = PaymentTransaction::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit(10)
@@ -38,12 +40,14 @@ class SubscriptionController extends Controller
     public function create(Request $request)
     {
         $planId = $request->query('plan_id');
+
         if (!$planId) {
             return redirect()->route('subscription.plans')
                 ->with('error', 'Veuillez sélectionner un plan d\'abonnement.');
         }
 
         $plan = SubscriptionPlan::findOrFail($planId);
+
         if (!$plan->is_active) {
             return redirect()->route('subscription.plans')
                 ->with('error', 'Ce plan n\'est plus disponible.');
@@ -77,10 +81,12 @@ class SubscriptionController extends Controller
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
 
         DB::beginTransaction();
+
         try {
             // Create subscription with PENDING status
             $subscription = Subscription::create([
                 'user_id' => $user->id,
+                'firm_id' => $user->firm_id, // ✅ ADD THIS: Link to Firm
                 'subscription_plan_id' => $plan->id,
                 'status' => 'pending',
                 'start_date' => now(),
@@ -111,6 +117,7 @@ class SubscriptionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Subscription creation failed: ' . $e->getMessage());
+
             return redirect()->route('subscription.plans')
                 ->with('error', 'Erreur lors de la création de l\'abonnement: ' . $e->getMessage());
         }
@@ -122,6 +129,10 @@ class SubscriptionController extends Controller
     public function show()
     {
         $user = Auth::user();
+
+        // ✅ Load firm relationship to avoid errors in view
+        $user->load('firm.activeSubscription.plan');
+
         $subscription = $user->activeSubscription();
 
         // Load ALL subscriptions with transactions for history table
@@ -153,16 +164,19 @@ class SubscriptionController extends Controller
             ->findOrFail($validated['subscription_id']);
 
         $plan = $subscription->plan;
+
         if (!$plan || !$plan->is_active) {
             return redirect()->route('subscription.status')
                 ->with('error', 'Ce plan n\'est plus disponible.');
         }
 
         DB::beginTransaction();
+
         try {
             // Create NEW subscription for renewal
             $newSubscription = Subscription::create([
                 'user_id' => $user->id,
+                'firm_id' => $user->firm_id, // ✅ ADD THIS: Link to Firm
                 'subscription_plan_id' => $plan->id,
                 'status' => 'pending',
                 'start_date' => $subscription->end_date->isFuture() ? $subscription->end_date : now(),
@@ -197,6 +211,7 @@ class SubscriptionController extends Controller
                 'user_id' => $user->id,
                 'subscription_id' => $validated['subscription_id'] ?? null,
             ]);
+
             return redirect()->route('subscription.status')
                 ->with('error', 'Erreur lors du renouvellement: ' . $e->getMessage())
                 ->withInput();
@@ -219,6 +234,7 @@ class SubscriptionController extends Controller
             ->findOrFail($request->subscription_id);
 
         DB::beginTransaction();
+
         try {
             $subscription->update([
                 'status' => 'cancelled',

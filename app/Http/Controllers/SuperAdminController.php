@@ -88,8 +88,22 @@ class SuperAdminController extends Controller
     public function banFirm($id)
     {
         $firm = Firm::findOrFail($id);
-
         $firm->update(['status' => 'banned']);
+
+        // ✅ LOG THE ACTION
+        \App\Models\FirmAuditLog::log(
+            $firm->id,
+            auth()->id(),
+            'firm_banned',
+            'status',
+            'active',
+            'banned'
+        );
+
+        // ✅ NOTIFY FIRM ADMIN
+        if ($firm->owner) {
+            $firm->owner->notify(new \App\Notifications\FirmBannedNotification($firm));
+        }
 
         // Logout all users from this firm
         User::where('firm_id', $firm->id)->update(['status' => 'inactive']);
@@ -125,3 +139,4 @@ class SuperAdminController extends Controller
         return view('super-admin.firms.show', compact('firm', 'stats'));
     }
 }
+    

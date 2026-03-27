@@ -190,3 +190,4 @@ class Firm extends Model
         return $this->naissances()->count();
     }
 }
+    
