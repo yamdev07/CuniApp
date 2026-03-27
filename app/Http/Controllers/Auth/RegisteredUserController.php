@@ -94,7 +94,7 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password), // Already hashed
                 'firm_id' => $firm->id,
             ], 1800);
-            
+
             Cache::put("verification_code_{$request->email}", $code, 1800);
 
             // ✅ 8. SEND VERIFICATION EMAIL
@@ -128,11 +128,10 @@ class RegisteredUserController extends Controller
             return redirect()->route('welcome')
                 ->with('verification_pending', true)
                 ->with('verification_email', $request->email);
-                
         } catch (\Exception $e) {
             // ✅ 13. ROLLBACK ON ERROR
             DB::rollBack();
-            
+
             // ✅ 14. LOG THE ERROR
             Log::error('Registration failed', [
                 'email' => $request->email,
