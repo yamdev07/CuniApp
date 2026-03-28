@@ -2121,9 +2121,13 @@
             }
 
             .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 35px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
                 margin-bottom: 35px;
+            }
+
+            .footer-brand, .footer-section:last-child {
+                grid-column: 1 / -1;
             }
 
             .footer-brand {
@@ -3260,6 +3264,28 @@
                                 Mon Profil
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('invoices.index') }}">
+                                <i class="bi bi-chevron-right"></i>
+                                Mes Factures
+                            </a>
+                        </li>
+                        @if (auth()->check() && auth()->user()->isFirmAdmin())
+                            <li>
+                                <a href="{{ route('firm.index') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Entreprise
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->check() && auth()->user()->isSuperAdmin())
+                            <li>
+                                <a href="{{ route('super.admin.dashboard') }}" style="color: var(--accent-orange);">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Super Admin
+                                </a>
+                            </li>
+                        @endif
                         {{-- 💳 SUBSCRIPTION LINK - Footer --}}
                         @if (auth()->check() && auth()->user()->role !== 'admin' && !auth()->user()->isSuperAdmin())
                             <li>

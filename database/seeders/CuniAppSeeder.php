@@ -268,12 +268,16 @@ class CuniAppSeeder extends Seeder
         $subscriptionStatuses = ['active', 'active', 'active', 'expired', 'grace_period']; // Weighted towards active
 
         for ($i = 1; $i <= 10; $i++) {
+            $randomDate = now()->subDays(rand(0, 30))->subHours(rand(0, 23));
+
             // ── Create Firm ─────────────────────────────────────────────
             $firm = Firm::create([
                 'name' => $firmNames[$i - 1],
                 'description' => "Entreprise d'élevage de lapins - Zone " . chr(64 + $i),
                 'owner_id' => null, // Will be set after firm admin creation
                 'status' => 'active',
+                'created_at' => $randomDate,
+                'updated_at' => $randomDate,
             ]);
 
             // ── Create Firm Admin ────────────────────────────────────────
@@ -281,7 +285,7 @@ class CuniAppSeeder extends Seeder
                 'name' => "Admin {$firmNames[$i - 1]}",
                 'email' => "admin{$i}@cuniapp.bj",
                 'password' => Hash::make("Firm{$i}123!"),
-                'email_verified_at' => now(),
+                'email_verified_at' => $randomDate,
                 'role' => 'firm_admin',
                 'firm_id' => $firm->id,
                 'status' => 'active',
@@ -289,6 +293,8 @@ class CuniAppSeeder extends Seeder
                 'language' => 'fr',
                 'notifications_email' => true,
                 'notifications_dashboard' => true,
+                'created_at' => $randomDate,
+                'updated_at' => $randomDate,
             ]);
 
             // Link firm to its admin (owner)

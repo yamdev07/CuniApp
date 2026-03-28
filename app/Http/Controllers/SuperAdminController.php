@@ -78,9 +78,7 @@ class SuperAdminController extends Controller
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
             $signupLabels[] = now()->subDays($i)->format('d/m');  // e.g., "23/03"
-            $realCount = $signupEvolution->get($date) ?? 0;
-            // Inject dummy data to make the chart look active, especially for empty days
-            $signupCounts[] = $realCount > 0 ? $realCount : rand(1, 8);
+            $signupCounts[] = $signupEvolution->get($date) ?? 0;  // 0 if no signups that day
         }
 
         return view('super-admin.dashboard', compact(
@@ -179,9 +177,7 @@ class SuperAdminController extends Controller
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
             $signupLabels[] = now()->subDays($i)->format('d/m');  // e.g., "23/03"
-            $realCount = $signupEvolution->get($date) ?? 0;
-            // Inject dummy data to make the chart look active
-            $signupCounts[] = $realCount > 0 ? $realCount : rand(1, 8);
+            $signupCounts[] = $signupEvolution->get($date) ?? 0;  // 0 if no signups that day
         }
 
         return view('super-admin.dashboard', compact('stats', 'topFirms', 'recentSignups', 'activeUsers24h', 'signupLabels', 'signupCounts'));
