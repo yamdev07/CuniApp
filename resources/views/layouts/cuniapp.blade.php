@@ -844,11 +844,50 @@
             padding: 0 2.5rem;
         }
 
+        /* ===========================================================
+           FOOTER — MOBILE FIRST
+           =========================================================== */
         .footer-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr; /* mobile: single column */
+            gap: 0;
+            margin-bottom: 0;
+        }
+
+        /* Tablet: 2 columns */
+        @media (min-width: 600px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+                margin-bottom: 32px;
+            }
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+            .footer-section:last-child {
+                grid-column: 1 / -1;
+            }
+            /* Accordion is disabled on tablet+ — always show section bodies */
+            .footer-section-body {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 0 !important;
+            }
+        }
+
+        /* Desktop: 4 columns */
+        @media (min-width: 1024px) {
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                gap: 48px;
+                margin-bottom: 48px;
+            }
+            .footer-brand {
+                grid-column: auto;
+            }
+            .footer-section:last-child {
+                grid-column: auto;
+            }
         }
 
         .footer-brand {
@@ -2052,357 +2091,123 @@
             animation: fadeIn 0.3s ease;
         }
 
-        /* ===== MOBILE RESPONSIVE FOOTER ===== */
+        /* ===========================================================
+           FOOTER MOBILE OVERRIDES
+           =========================================================== */
 
-        /* Tablet (1024px and below) */
-        @media (max-width: 1024px) {
-            .footer-container {
-                padding: 0 2rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 40px;
-            }
-
-            .footer-brand {
-                grid-column: 1 / -1;
-                text-align: center;
-                align-items: center;
-            }
-
-            .footer-logo {
-                justify-content: center;
-            }
-
-            .footer-tagline {
-                max-width: 450px;
-                margin: 0 auto;
-            }
-
-            .footer-social {
-                justify-content: center;
-            }
-
-            .footer-app-buttons {
-                justify-content: center;
-            }
-
-            .footer-section h4 {
-                justify-content: center;
-            }
-
-            .section-divider {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-
-            .footer-links li a {
-                justify-content: center;
-            }
-
-            .footer-contact {
-                align-items: center;
-            }
-
-            .footer-contact-item {
-                justify-content: center;
-            }
+        /* Accordion toggle — mobile only */
+        .footer-section-toggle {
+            display: none;
         }
 
-        /* Mobile (768px and below) */
-        @media (max-width: 768px) {
+        @media (max-width: 599px) {
             .cuni-footer {
-                padding: 50px 0 20px 0;
+                padding: 36px 0 16px 0;
             }
-
             .footer-container {
-                padding: 0 1.5rem;
+                padding: 0 1.25rem;
             }
-
             .footer-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 25px;
-                margin-bottom: 35px;
+                gap: 0;
+                margin-bottom: 0;
             }
-
-            .footer-brand, .footer-section:last-child {
-                grid-column: 1 / -1;
-            }
-
+            /* Brand stacks full-width, centered */
             .footer-brand {
                 text-align: center;
                 align-items: center;
-                padding-bottom: 25px;
+                padding: 0 0 24px 0;
+                margin-bottom: 0;
                 border-bottom: 1px solid var(--surface-border);
             }
-
             .footer-logo {
                 justify-content: center;
             }
-
-            .footer-logo-icon {
-                width: 45px;
-                height: 45px;
-            }
-
-            .footer-logo-icon svg {
-                width: 26px;
-                height: 26px;
-            }
-
-            .footer-logo-text {
-                font-size: 1.25rem;
-            }
-
             .footer-tagline {
                 max-width: 100%;
-                font-size: 0.9rem;
+                font-size: 0.88rem;
             }
-
-            .footer-social {
-                justify-content: center;
-                gap: 8px;
+            /* Each section becomes an accordion */
+            .footer-section {
+                border-bottom: 1px solid var(--surface-border);
             }
-
-            .social-link {
-                width: 38px;
-                height: 38px;
-                font-size: 16px;
-            }
-
-            .footer-app-buttons {
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .app-store-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 22px;
-            }
-
             .footer-section h4 {
-                font-size: 1rem;
-                justify-content: flex-start;
+                margin-bottom: 0;
+                padding: 16px 0;
+                cursor: pointer;
+                user-select: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
             }
-
-            .section-divider {
-                left: 0;
-                transform: none;
+            .footer-section h4 .section-divider {
+                display: none;
             }
-
-            .footer-links li a {
-                justify-content: flex-start;
-                font-size: 0.9rem;
+            .footer-section-toggle {
+                display: inline-block;
+                font-size: 18px;
+                transition: transform 0.25s ease;
+                color: var(--text-tertiary);
             }
-
-            .footer-contact {
-                align-items: flex-start;
+            .footer-section.open .footer-section-toggle {
+                transform: rotate(180deg);
             }
-
-            .footer-contact-item {
-                justify-content: flex-start;
+            .footer-section-body {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease, padding 0.3s ease;
+                padding: 0;
             }
-
-            .footer-quick-stats {
-                padding: 15px;
+            .footer-section.open .footer-section-body {
+                max-height: 600px;
+                padding-bottom: 16px;
             }
-
-            .stats-grid {
-                gap: 8px;
+            /* Contact full-width */
+            .footer-section:last-child {
+                border-bottom: none;
             }
-
-            .stat-item {
-                padding: 8px;
-            }
-
-            .stat-value {
-                font-size: 16px;
-            }
-
-            .stat-label {
-                font-size: 9px;
-            }
-
+            /* Footer bottom stacks */
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
-                gap: 18px;
-                padding-top: 24px;
+                gap: 14px;
+                padding-top: 20px;
+                margin-top: 16px;
             }
-
-            .footer-copyright {
-                min-width: 100%;
-            }
-
             .footer-legal {
                 justify-content: center;
-                gap: 18px;
+                flex-wrap: wrap;
+                gap: 12px;
                 width: 100%;
             }
-
-            .footer-legal a {
-                font-size: 0.85rem;
-            }
-
-            .back-to-top {
-                width: 44px;
-                height: 44px;
-                bottom: 20px;
-                right: 20px;
-                font-size: 20px;
+            .footer-copyright {
+                width: 100%;
             }
         }
 
-        /* Small Mobile (480px and below) */
-        @media (max-width: 480px) {
+        @media (min-width: 600px) and (max-width: 1023px) {
             .footer-container {
-                padding: 0 1rem;
+                padding: 0 2rem;
             }
-
-            .footer-logo-text {
-                font-size: 1.15rem;
+            .footer-brand {
+                text-align: center;
+                align-items: center;
             }
-
-            .footer-logo-icon {
-                width: 42px;
-                height: 42px;
-            }
-
-            .footer-logo-icon svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            .footer-tagline {
-                font-size: 0.88rem;
-                line-height: 1.6;
-            }
-
-            .footer-social {
-                gap: 6px;
-            }
-
-            .social-link {
-                width: 36px;
-                height: 36px;
-                font-size: 15px;
-            }
-
-            .footer-app-buttons {
-                gap: 6px;
-            }
-
-            .app-store-btn {
-                width: 42px;
-                height: 42px;
-                font-size: 20px;
-            }
-
-            .footer-section h4 {
-                font-size: 0.95rem;
-                margin-bottom: 18px;
-            }
-
-            .footer-links {
-                gap: 10px;
-            }
-
-            .footer-links li a {
-                font-size: 0.88rem;
-            }
-
-            .footer-contact-item strong {
-                font-size: 10px;
-            }
-
-            .footer-contact-item span,
-            .footer-contact-item a {
-                font-size: 12px;
-            }
-
-            .footer-quick-stats {
-                padding: 12px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 6px;
-            }
-
-            .stat-item {
-                padding: 8px 6px;
-            }
-
-            .stat-value {
-                font-size: 15px;
-            }
-
-            .stat-label {
-                font-size: 8px;
-            }
-
-            .footer-bottom {
-                padding-top: 20px;
-            }
-
-            .footer-copyright p {
-                font-size: 0.82rem;
-            }
-
-            .footer-version {
-                font-size: 10px !important;
-            }
-
-            .footer-legal {
-                flex-wrap: wrap;
-                gap: 14px;
-            }
-
-            .footer-legal a {
-                font-size: 0.82rem;
+            .footer-logo {
                 justify-content: center;
             }
-
-            .back-to-top {
-                width: 42px;
-                height: 42px;
-                bottom: 15px;
-                right: 15px;
-            }
-        }
-
-        /* Extra Small Mobile (360px and below) */
-        @media (max-width: 360px) {
-            .footer-logo-text {
-                font-size: 1.1rem;
-            }
-
             .footer-tagline {
-                font-size: 0.85rem;
+                max-width: 100%;
             }
-
-            .social-link {
-                width: 34px;
-                height: 34px;
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 14px;
             }
-
-            .app-store-btn {
-                width: 40px;
-                height: 40px;
-            }
-
-            .footer-links li a {
-                font-size: 0.85rem;
-            }
-
             .footer-legal {
-                gap: 10px;
-            }
-
-            .footer-legal a {
-                font-size: 0.78rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                width: 100%;
             }
         }
 
@@ -3229,193 +3034,167 @@
 
                 <!-- Navigation Section -->
                 <div class="footer-section">
-                    <h4>
-                        <i class="bi bi-compass"></i>
-                        Navigation
-                        <span class="section-divider"></span>
+                    <h4 onclick="toggleFooterSection(this)">
+                        <span style="display:flex;align-items:center;gap:8px;">
+                            <i class="bi bi-compass"></i>
+                            Navigation
+                        </span>
+                        <i class="bi bi-chevron-down footer-section-toggle"></i>
                     </h4>
-                    <ul class="footer-links">
-                        <li>
-                            <a href="{{ route('dashboard') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Tableau de bord
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('activites.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Historique des activités
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('notifications.index') }}">
-                                <i class="bi bi-chevron-right"></i> Notifications
-                                @php
-                                    $unread = \App\Models\Notification::where('user_id', auth()->id() ?? 0)
-                                        ->where('is_read', false)
-                                        ->count();
-                                @endphp
-                                @if ($unread > 0)
-                                    <span class="badge-notification">{{ $unread > 99 ? '99+' : $unread }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('settings.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Paramètres
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('profile.edit') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Mon Profil
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('invoices.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Mes Factures
-                            </a>
-                        </li>
-                        @if (auth()->check() && auth()->user()->isFirmAdmin())
+                    <div class="footer-section-body">
+                        <ul class="footer-links">
                             <li>
-                                <a href="{{ route('firm.index') }}">
+                                <a href="{{ route('dashboard') }}">
                                     <i class="bi bi-chevron-right"></i>
-                                    Entreprise
+                                    Tableau de bord
                                 </a>
                             </li>
-                        @endif
-                        @if (auth()->check() && auth()->user()->isSuperAdmin())
                             <li>
-                                <a href="{{ route('super.admin.dashboard') }}" style="color: var(--accent-orange);">
+                                <a href="{{ route('activites.index') }}">
                                     <i class="bi bi-chevron-right"></i>
-                                    Super Admin
+                                    Activités
                                 </a>
                             </li>
-                        @endif
-                        {{-- 💳 SUBSCRIPTION LINK - Footer --}}
-                        @if (auth()->check() && auth()->user()->role !== 'admin' && !auth()->user()->isSuperAdmin())
                             <li>
-                                <a href="{{ route('subscription.plans') }}">
-                                    <i class="bi bi-chevron-right"></i>
-                                    Abonnement
-                                    @if (!auth()->user()->hasActiveSubscription())
-                                        <span class="badge-notification">!</span>
+                                <a href="{{ route('notifications.index') }}">
+                                    <i class="bi bi-chevron-right"></i> Notifications
+                                    @php
+                                        $unread = \App\Models\Notification::where('user_id', auth()->id() ?? 0)
+                                            ->where('is_read', false)
+                                            ->count();
+                                    @endphp
+                                    @if ($unread > 0)
+                                        <span class="badge-notification">{{ $unread > 99 ? '99+' : $unread }}</span>
                                     @endif
                                 </a>
                             </li>
-                        @endif
-
-                        {{-- 👑 ADMIN SUBSCRIPTION LINK - Footer --}}
-                        @if (auth()->check() && auth()->user()->role === 'admin')
                             <li>
-                                <a href="{{ route('admin.subscriptions.index') }}">
+                                <a href="{{ route('profile.edit') }}">
                                     <i class="bi bi-chevron-right"></i>
-                                    Gestion Abonnements
+                                    Mon Profil
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('admin.subscriptions.transactions') }}">
+                                <a href="{{ route('settings.index') }}">
                                     <i class="bi bi-chevron-right"></i>
-                                    Transactions
+                                    Paramètres
                                 </a>
                             </li>
-                        @endif
-                    </ul>
+                            <li>
+                                <a href="{{ route('invoices.index') }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                    Mes Factures
+                                </a>
+                            </li>
+                            @if (auth()->check() && auth()->user()->isFirmAdmin())
+                                <li>
+                                    <a href="{{ route('firm.index') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Entreprise
+                                    </a>
+                                </li>
+                            @endif
+                            @if (auth()->check() && auth()->user()->isSuperAdmin())
+                                <li>
+                                    <a href="{{ route('super.admin.dashboard') }}" style="color: var(--accent-orange);">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Super Admin
+                                    </a>
+                                </li>
+                            @endif
+                            {{-- 💳 SUBSCRIPTION LINK - Footer --}}
+                            @if (auth()->check() && auth()->user()->role !== 'admin' && !auth()->user()->isSuperAdmin())
+                                <li>
+                                    <a href="{{ route('subscription.plans') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Abonnement
+                                        @if (!auth()->user()->hasActiveSubscription())
+                                            <span class="badge-notification">!</span>
+                                        @endif
+                                    </a>
+                                </li>
+                            @endif
+                            {{-- 👑 ADMIN SUBSCRIPTION LINK - Footer --}}
+                            @if (auth()->check() && auth()->user()->role === 'admin')
+                                <li>
+                                    <a href="{{ route('admin.subscriptions.index') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Gestion Abonnements
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.subscriptions.transactions') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Transactions
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Gestion Section -->
                 <div class="footer-section">
-                    <h4>
-                        <i class="bi bi-briefcase"></i>
-                        Gestion d'Élevage
-                        <span class="section-divider"></span>
+                    <h4 onclick="toggleFooterSection(this)">
+                        <span style="display:flex;align-items:center;gap:8px;">
+                            <i class="bi bi-briefcase"></i>
+                            Gestion d’Élevage
+                        </span>
+                        <i class="bi bi-chevron-down footer-section-toggle"></i>
                     </h4>
-                    <ul class="footer-links">
-                        <li>
-                            <a href="{{ route('males.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Mâles
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('femelles.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Femelles
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('lapins.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Tous les Lapins
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('saillies.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Saillies
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('mises-bas.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Mises Bas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('naissances.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Naissances
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('sales.index') }}">
-                                <i class="bi bi-chevron-right"></i>
-                                Ventes
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="footer-section-body">
+                        <ul class="footer-links">
+                            <li><a href="{{ route('males.index') }}"><i class="bi bi-chevron-right"></i> Mâles</a></li>
+                            <li><a href="{{ route('femelles.index') }}"><i class="bi bi-chevron-right"></i> Femelles</a></li>
+                            <li><a href="{{ route('lapins.index') }}"><i class="bi bi-chevron-right"></i> Tous les Lapins</a></li>
+                            <li><a href="{{ route('saillies.index') }}"><i class="bi bi-chevron-right"></i> Saillies</a></li>
+                            <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i> Mises Bas</a></li>
+                            <li><a href="{{ route('naissances.index') }}"><i class="bi bi-chevron-right"></i> Naissances</a></li>
+                            <li><a href="{{ route('sales.index') }}"><i class="bi bi-chevron-right"></i> Ventes</a></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Contact Section -->
                 <div class="footer-section">
-                    <h4>
-                        <i class="bi bi-envelope"></i>
-                        Contact & Infos
-                        <span class="section-divider"></span>
+                    <h4 onclick="toggleFooterSection(this)">
+                        <span style="display:flex;align-items:center;gap:8px;">
+                            <i class="bi bi-envelope"></i>
+                            Contact &amp; Infos
+                        </span>
+                        <i class="bi bi-chevron-down footer-section-toggle"></i>
                     </h4>
-                    <div class="footer-contact">
-                        <div class="footer-contact-item">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <div>
-                                <strong>Adresse</strong>
-                                <span>Houéyiho après le pont devant Volta United, Cotonou, Bénin</span>
+                    <div class="footer-section-body">
+                        <div class="footer-contact">
+                            <div class="footer-contact-item">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <div>
+                                    <strong>Adresse</strong>
+                                    <span>Houé​yiho après le pont devant Volta United, Cotonou, Bénin</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="bi bi-whatsapp"></i>
-                            <div>
-                                <strong>WhatsApp</strong>
-                                <a href="https://www.linkedin.com/company/anyxtech-sarl/" _target>+229 01 52 41 52
-                                    41</a>
+                            <div class="footer-contact-item">
+                                <i class="bi bi-whatsapp"></i>
+                                <div>
+                                    <strong>WhatsApp</strong>
+                                    <a href="https://wa.me/22901524152" target="_blank">+229 01 52 41 52 41</a>
+                                </div>
                             </div>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="bi bi-envelope-fill"></i>
-                            <div>
-                                <strong>Email</strong>
-                                <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
+                            <div class="footer-contact-item">
+                                <i class="bi bi-envelope-fill"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="footer-contact-item">
-                        <i class="bi bi-linkedin"></i>
-                        <div>
-                            <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank"
-                                rel="noopener noreferrer">
-                                <strong>LinkedIn</strong>
-                            </a>
+                            <div class="footer-contact-item">
+                                <i class="bi bi-linkedin"></i>
+                                <div>
+                                    <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank" rel="noopener noreferrer">
+                                        <strong>LinkedIn</strong>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3722,6 +3501,13 @@
                 mobileNav.classList.toggle('active');
                 document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
             }
+        }
+
+        function toggleFooterSection(h4) {
+            // Only function as accordion below 600px
+            if (window.innerWidth >= 600) return;
+            const section = h4.closest('.footer-section');
+            if (section) section.classList.toggle('open');
         }
 
         const backToTop = document.getElementById('backToTop');
