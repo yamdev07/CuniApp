@@ -1358,6 +1358,7 @@
                                         class="form-input @error('password') error @enderror" placeholder="••••••••"
                                         required id="loginPassword">
                                     <i class="bi bi-lock"></i>
+                                    <i class="bi bi-eye toggle-password" data-target="loginPassword" style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
                                 </div>
                                 @error('password')
                                     <div class="validation-message error">
@@ -1757,6 +1758,20 @@
             window.addEventListener('offline', updateNetworkStatus);
             updateNetworkStatus();
 
+            // Auto-hide validation errors after 8 seconds
+            setTimeout(() => {
+                const hideElements = (selector) => {
+                    document.querySelectorAll(selector).forEach(el => {
+                        el.style.transition = 'opacity 0.5s ease';
+                        el.style.opacity = '0';
+                        setTimeout(() => el.style.display = 'none', 500);
+                    });
+                };
+                hideElements('.alert-box.error');
+                hideElements('.validation-message.error');
+                document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
+            }, 8000);
+
             // ==================== TAB SWITCHING ====================
             function switchTab(tabName) {
                 const tabs = document.querySelectorAll('.auth-tab');
@@ -1772,6 +1787,11 @@
                 if (selectedForm) selectedForm.classList.add('active');
 
                 sessionStorage.setItem('cuniapp_current_tab', tabName);
+
+                // Clear validation errors when switching tabs
+                document.querySelectorAll('.alert-box.error').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.validation-message.error').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
             }
 
             const tabs = document.querySelectorAll('.auth-tab');
@@ -2099,7 +2119,22 @@
                     }
                 });
 
-                if (!isValid) {
+                // Prevent moving to step 2 if password criteria are not met
+                if (step === 1 && isValid) {
+                    const password = document.getElementById('registerPassword').value;
+                    const criteria = [/.{8,}/, /[A-Z]/, /[a-z]/, /[0-9]/, /[!@#$%^&*(),.?":{}|<>]/];
+                    const passwordValid = criteria.every(regex => regex.test(password));
+                    
+                    if (!passwordValid) {
+                        isValid = false;
+                        showToast('⚠️ Le mot de passe ne respecte pas tous les critères requis', 'error');
+                        document.getElementById('registerPassword').classList.add('error');
+                    }
+                }
+
+                if (!isValid && step !== 1) {
+                    showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
+                } else if (!isValid && step === 1 && document.getElementById('registerPassword').value.trim() === '') {
                     showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
                 }
 
