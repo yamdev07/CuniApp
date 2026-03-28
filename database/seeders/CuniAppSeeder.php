@@ -221,7 +221,7 @@ class CuniAppSeeder extends Seeder
         $this->command->info("👑 Seeding Super Admin...");
 
         // ─────────────────────────────────────────────────────────────────────
-        // ADMIN — full access, active subscription, huge dataset
+        // ADMIN — system access without subscription
         // ─────────────────────────────────────────────────────────────────────
         $superAdmin =    User::create([
             'name'                    => 'Admin CuniApp',
@@ -234,9 +234,6 @@ class CuniAppSeeder extends Seeder
             'language'                => 'fr',
             'notifications_email'     => true,
             'notifications_dashboard' => true,
-            'subscription_status'     => 'active',
-            'subscription_ends_at'    => now()->addYears(5),
-            'last_subscription_at'    => now()->subDays(10),
         ]);
 
         $this->credentials['super_admin'] = [

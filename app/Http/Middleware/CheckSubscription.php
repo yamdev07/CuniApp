@@ -13,7 +13,7 @@ class CheckSubscription
         $user = $request->user();
         
         // Admin users have full access
-        if ($user->role === 'admin') {
+        if (in_array($user->role, ['admin', 'super_admin'])) {
             return $next($request);
         }
         
