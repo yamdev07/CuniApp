@@ -103,8 +103,14 @@
                                 {{ number_format($plan->price, 0, ',', ' ') }} FCFA
                             </div>
                             <div style="font-size: 13px; color: var(--text-tertiary); margin-top: 4px;">
-                                {{ $plan->duration_months }} mois •
-                                {{ number_format($plan->price / $plan->duration_months, 0, ',', ' ') }} FCFA/mois
+                                @if ($plan->duration_months > 0)
+                                    {{ $plan->duration_months }} mois •
+                                    {{ number_format($plan->price / $plan->duration_months, 0, ',', ' ') }} FCFA/mois
+                                @else
+                                    <span style="color: var(--accent-green); font-weight: 600;">
+                                        <i class="bi bi-gift"></i> Essai Gratuit (14 jours)
+                                    </span>
+                                @endif
                             </div>
                             {{-- ✅ MAX USERS BADGE --}}
                             <div style="margin-top: 12px;">

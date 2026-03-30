@@ -169,6 +169,20 @@ class CuniAppSeeder extends Seeder
         $this->command->info("📋 Seeding Subscription Plans...");
 
         $plans = [
+                [
+            'name' => 'Essai Gratuit',
+            'duration_months' => 0, 
+            'price' => 0,
+            'is_active' => true,
+            'max_users' => 5, 
+            'description' => 'Période d\'essai de 14 jours offerte',
+            'features' => json_encode([
+                'Accès complet 14 jours',
+                'Jusqu\'à 5 utilisateurs (employés)',
+                'Support de base',
+                'Sauvegarde journalière'
+            ]),
+        ],
             [
                 'name'           => 'Mensuel',
                 'duration_months' => 1,
