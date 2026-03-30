@@ -454,8 +454,8 @@
                 <div style="margin-bottom: 24px;">
                     <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Statut</label>
                     <select name="status" id="editEmployeeStatus" class="form-select" required>
-                        <option value="active" {{ $employee->status === 'active' ? 'selected' : '' }}>Actif</option>
-                        <option value="inactive" {{ $employee->status === 'inactive' ? 'selected' : '' }}>Inactif</option>
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
                     </select>
                 </div>
 
