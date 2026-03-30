@@ -17,10 +17,12 @@ return [
         'uncompromised' => 'Le :attribute apparaît dans une fuite de données. Veuillez en choisir un autre.',
     ],
 
+     'unique' => 'Le :attribute a déjà été utilisé.',
     // Noms de champs en français
     'attributes' => [
         'email' => 'adresse email',
         'password' => 'mot de passe',
+        'code' => 'code',
         'password_confirmation' => 'confirmation du mot de passe',
         'token' => 'jeton de réinitialisation',
     ],

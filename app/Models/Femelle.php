@@ -17,6 +17,7 @@ class Femelle extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'code',
         'nom',
         'race',

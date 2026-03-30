@@ -57,7 +57,7 @@ class NaissanceController extends Controller
 
         $naissances = $query->paginate(15)->withQueryString();
 
-        // 📊 Stats (inchangées)
+        // 📊 Stats
         $stats = [
             'total' => Naissance::count(),
             'this_month' => Naissance::whereHas(
@@ -77,6 +77,13 @@ class NaissanceController extends Controller
 
     public function create(Request $request)
     {
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $miseBas = null;
         if ($request->has('mise_bas_id')) {
             $miseBas = MiseBas::with('femelle')->find($request->mise_bas_id);
@@ -92,6 +99,13 @@ class NaissanceController extends Controller
 
     public function store(Request $request)
     {
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         // ✅ VALIDATION 1: Basic fields
         $validated = $request->validate([
             'mise_bas_id' => 'required|exists:mises_bas,id',
@@ -113,11 +127,6 @@ class NaissanceController extends Controller
         $maxMortNe = $miseBas->nb_mort_ne ?? 0;
         $maxTotal = $maxVivant + $maxMortNe;
 
-        // If mise_bas doesn't have counts, allow creation but warn
-        if ($maxTotal === 0) {
-            // Allow but this is unusual - mise_bas should have counts
-        }
-
         // ✅ VALIDATION 3: Lapereaux array
         $rabbitsRules = [
             'rabbits' => 'required|array|min:1',
@@ -127,7 +136,6 @@ class NaissanceController extends Controller
             'rabbits.*.poids_naissance' => 'nullable|numeric|min:0|max:200',
             'rabbits.*.etat_sante' => 'nullable|in:Excellent,Bon,Moyen,Faible',
             'rabbits.*.observations' => 'nullable|string|max:500',
-            // ✅ FIXED: Only validate uniqueness if code is provided
             'rabbits.*.code' => 'nullable|string|max:20',
         ];
 
@@ -140,23 +148,17 @@ class NaissanceController extends Controller
         $mortCount = collect($validated['rabbits'])
             ->where('etat', 'mort')
             ->count();
-        $venduCount = collect($validated['rabbits'])
-            ->where('etat', 'vendu')
-            ->count();
         $totalRabbits = count($validated['rabbits']);
 
         $errors = [];
 
-        // Check against mise_bas counts if they exist
         if ($maxTotal > 0) {
             if ($totalRabbits > $maxTotal) {
                 $errors[] = "Vous essayez de créer {$totalRabbits} lapereaux mais la mise bas indique un maximum de {$maxTotal} ({$maxVivant} vivants + {$maxMortNe} morts-nés).";
             }
-
             if ($vivantCount > $maxVivant) {
                 $errors[] = "Trop de lapereaux vivants déclarés ({$vivantCount}) par rapport à la mise bas ({$maxVivant}).";
             }
-
             if ($mortCount > $maxMortNe) {
                 $errors[] = "Trop de lapereaux morts-nés déclarés ({$mortCount}) par rapport à la mise bas ({$maxMortNe}).";
             }
@@ -172,9 +174,7 @@ class NaissanceController extends Controller
         }
 
         if (!empty($errors)) {
-            return back()
-                ->withErrors($errors)
-                ->withInput();
+            return back()->withErrors($errors)->withInput();
         }
 
         // ✅ Calculate sevrage date if not provided (6 weeks from birth)
@@ -186,20 +186,19 @@ class NaissanceController extends Controller
 
         DB::beginTransaction();
         try {
-            // ✅ Create Naissance record (NO femelle_id - comes through mise_bas)
+            // ✅ Create Naissance record (BelongsToUser trait will auto-assign user_id and firm_id)
             $naissance = Naissance::create(array_merge($validated, [
                 'user_id' => auth()->id(),
+                // firm_id will be auto-assigned by BelongsToUser trait
             ]));
 
             // ✅ Create Individual Lapereaux
             foreach ($validated['rabbits'] as $rabbitData) {
                 $rabbitData['naissance_id'] = $naissance->id;
-
                 // Auto-generate code if not provided
                 if (empty($rabbitData['code'])) {
                     $rabbitData['code'] = Lapereau::generateUniqueCode();
                 }
-
                 Lapereau::create($rabbitData);
             }
 
@@ -218,8 +217,9 @@ class NaissanceController extends Controller
 
             DB::commit();
 
+            // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
             FirmAuditLog::log(
-                auth()->user()->firm_id,
+                null,  // ✅ Let the model auto-detect from authenticated user
                 auth()->id(),
                 'naissance_created',
                 'nb_vivant',
@@ -239,18 +239,17 @@ class NaissanceController extends Controller
 
     public function show(Naissance $naissance, Request $request)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
-        $naissance->load(['miseBas.femelle', 'miseBas.saillie.male', 'lapereaux']);
 
+        $naissance->load(['miseBas.femelle', 'miseBas.saillie.male', 'lapereaux']);
         $canVerifySex = $naissance->can_verify_sex;
         $daysUntilVerification = max(0, 10 - $naissance->jours_depuis_naissance);
 
         // ✅ Search lapereaux
         $lapereauxQuery = $naissance->lapereaux();
-
         if ($request->has('search_lapereau')) {
             $search = $request->search_lapereau;
             $lapereauxQuery->where(function ($q) use ($search) {
@@ -277,25 +276,28 @@ class NaissanceController extends Controller
 
     public function edit(Naissance $naissance)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm (even for updates)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $naissance->load(['miseBas.femelle', 'lapereaux']);
         $canVerifySex = $naissance->can_verify_sex;
-
-        // ✅ ADD THIS: Calculate days until sex verification is allowed
         $daysUntilVerification = max(0, 10 - $naissance->jours_depuis_naissance);
-
-        // ✅ Get max allowed from mise_bas
         $maxAllowed = $naissance->max_allowed_lapereaux;
         $currentCount = $naissance->lapereaux()->count();
 
         return view('naissances.edit', compact(
             'naissance',
             'canVerifySex',
-            'daysUntilVerification',  // ✅ ADD THIS
+            'daysUntilVerification',
             'maxAllowed',
             'currentCount'
         ));
@@ -303,11 +305,17 @@ class NaissanceController extends Controller
 
     public function update(Request $request, Naissance $naissance)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
 
         $validated = $request->validate([
             'poids_moyen_naissance' => 'nullable|numeric|min:0|max:200',
@@ -316,8 +324,6 @@ class NaissanceController extends Controller
             'date_sevrage_prevue' => 'nullable|date|after:date_mise_bas',
             'date_vaccination_prevue' => 'nullable|date|after:date_mise_bas',
             'sex_verified' => 'nullable|boolean',
-
-            // ✅ Lapereaux with individual health/weight
             'rabbits' => 'required|array|min:1',
             'rabbits.*.id' => 'nullable|exists:lapereaux,id',
             'rabbits.*.nom' => 'nullable|string|max:50',
@@ -339,7 +345,6 @@ class NaissanceController extends Controller
         // ✅ VALIDATION: Count against mise_bas
         $maxAllowed = $naissance->max_allowed_lapereaux;
         $newCount = count($validated['rabbits']);
-
         if ($maxAllowed > 0 && $newCount > $maxAllowed) {
             return back()->withErrors([
                 'rabbits' => "Vous ne pouvez pas créer plus de {$maxAllowed} lapereaux pour cette mise bas."
@@ -360,7 +365,6 @@ class NaissanceController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update Naissance
             $wasUnverified = !$naissance->sex_verified;
             $naissance->update($validated);
 
@@ -373,7 +377,6 @@ class NaissanceController extends Controller
                     // Update existing
                     $lapereau = Lapereau::find($rabbitData['id']);
                     if ($lapereau && $lapereau->naissance_id === $naissance->id) {
-                        // Auto-generate code if empty
                         if (empty($rabbitData['code'])) {
                             $rabbitData['code'] = $lapereau->code;
                         }
@@ -409,6 +412,16 @@ class NaissanceController extends Controller
 
             DB::commit();
 
+            // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+            FirmAuditLog::log(
+                null,
+                auth()->id(),
+                'naissance_updated',
+                'sex_verified',
+                $wasUnverified ? 'false' : 'true',
+                $naissance->sex_verified ? 'true' : 'false'
+            );
+
             return redirect()->route('naissances.show', $naissance)
                 ->with('success', 'Naissance mise à jour !');
         } catch (\Exception $e) {
@@ -419,7 +432,6 @@ class NaissanceController extends Controller
         }
     }
 
-    // ✅ NEW: Check lapereau code availability (AJAX)
     public function checkCode(Request $request)
     {
         $exists = Lapereau::where('code', $request->code)->exists();
@@ -428,18 +440,24 @@ class NaissanceController extends Controller
 
     public function destroy(Naissance $naissance)
     {
-        // ✅ SECURITY FIX: Explicit Ownership Check
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($naissance->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
 
         $femelleName = $naissance->femelle->nom ?? 'Inconnue';
         $totalLapereaux = $naissance->total_lapereaux;
 
-
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,
             auth()->id(),
             'naissance_deleted',
             'id',

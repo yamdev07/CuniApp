@@ -79,30 +79,37 @@ class SaleController extends Controller
      */
     public function create()
     {
-        //  MÂLES : Exclure UNIQUEMENT 'vendu' 
-        // → Active, Inactive, Malade restent visibles pour la gestion
-        $males = Male::where('etat', '!=', 'vendu')
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
+        //  MÂLES : Exclure UNIQUEMENT 'vendu'
+        $males = Male::where('user_id', auth()->id())
+            ->where('etat', '!=', 'vendu')
             ->orderBy('nom')
             ->paginate(20, ['*'], 'males_page');
 
         //  FEMELLES : Exclure UNIQUEMENT 'vendu'
-        // → Active, Gestante, Allaitante, Vide restent visibles pour le suivi d'élevage
-        $femelles = Femelle::where('etat', '!=', 'vendu')
+        $femelles = Femelle::where('user_id', auth()->id())
+            ->where('etat', '!=', 'vendu')
             ->orderBy('nom')
             ->paginate(20, ['*'], 'females_page');
 
         //  LAPEREAUX : Montrer UNIQUEMENT 'vivant'
-        // → Exclut automatiquement 'vendu', 'mort', 'archivé'
-        $lapereaux = Lapereau::where('etat', 'vivant')
+        $lapereaux = Lapereau::where('user_id', auth()->id())
+            ->where('etat', 'vivant')
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
             ->paginate(20, ['*'], 'lapereaux_page');
 
-        //  Totaux pour l'affichage (mêmes filtres que ci-dessus)
+        //  Totaux pour l'affichage
         $totalCounts = [
-            'males' => Male::where('etat', '!=', 'vendu')->count(),
-            'females' => Femelle::where('etat', '!=', 'vendu')->count(),
-            'lapereaux' => Lapereau::where('etat', 'vivant')->count(),
+            'males' => Male::where('user_id', auth()->id())->where('etat', '!=', 'vendu')->count(),
+            'females' => Femelle::where('user_id', auth()->id())->where('etat', '!=', 'vendu')->count(),
+            'lapereaux' => Lapereau::where('user_id', auth()->id())->where('etat', 'vivant')->count(),
         ];
 
         return view('sales.create', compact('males', 'femelles', 'lapereaux', 'totalCounts'));
@@ -113,6 +120,13 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         //  VALIDATION: Accept arrays for individual prices
         $validated = $request->validate([
             'date_sale' => 'required|date',
@@ -122,18 +136,15 @@ class SaleController extends Controller
             'notes' => 'nullable|string',
             'payment_status' => 'required|in:paid,pending,partial',
             'amount_paid' => 'nullable|numeric|min:0',
-
             //  Rabbit selections with individual prices
             'selected_males' => 'nullable|array',
             'selected_males.*' => 'exists:males,id',
             'male_prices' => 'nullable|array',
             'male_prices.*' => 'nullable|numeric|min:0',
-
             'selected_females' => 'nullable|array',
             'selected_females.*' => 'exists:femelles,id',
             'female_prices' => 'nullable|array',
             'female_prices.*' => 'nullable|numeric|min:0',
-
             'selected_lapereaux' => 'nullable|array',
             'selected_lapereaux.*' => 'exists:lapereaux,id',
             'lapereau_prices' => 'nullable|array',
@@ -151,7 +162,6 @@ class SaleController extends Controller
         $selectedMales = $request->input('selected_males', []);
         $selectedFemales = $request->input('selected_females', []);
         $selectedLapereaux = $request->input('selected_lapereaux', []);
-
         $malePrices = $request->input('male_prices', []);
         $femalePrices = $request->input('female_prices', []);
         $lapereauPrices = $request->input('lapereau_prices', []);
@@ -167,21 +177,18 @@ class SaleController extends Controller
 
         //  VALIDATION: Ensure all selected rabbits have prices > 0
         $missingPrices = [];
-
         foreach ($selectedMales as $index => $maleId) {
             $price = isset($malePrices[$index]) ? (float) $malePrices[$index] : null;
             if (empty($price) || $price <= 0) {
                 $missingPrices[] = "Mâle #{$maleId}";
             }
         }
-
         foreach ($selectedFemales as $index => $femaleId) {
             $price = isset($femalePrices[$index]) ? (float) $femalePrices[$index] : null;
             if (empty($price) || $price <= 0) {
                 $missingPrices[] = "Femelle #{$femaleId}";
             }
         }
-
         foreach ($selectedLapereaux as $index => $lapereauId) {
             $price = isset($lapereauPrices[$index]) ? (float) $lapereauPrices[$index] : null;
             if (empty($price) || $price <= 0) {
@@ -223,7 +230,7 @@ class SaleController extends Controller
 
         DB::beginTransaction();
         try {
-            // Create sale
+            // Create sale - BelongsToUser trait will auto-assign user_id and firm_id
             $sale = Sale::create($validated);
 
             //  Link selected males with INDIVIDUAL prices
@@ -258,13 +265,13 @@ class SaleController extends Controller
 
             //  Update rabbit status to 'vendu' (CORRECTION PRINCIPALE)
             foreach ($selectedMales as $maleId) {
-                Male::where('id', $maleId)->update(['etat' => 'vendu']); // ← 'vendu' au lieu de 'Inactive'
+                Male::where('id', $maleId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
             foreach ($selectedFemales as $femaleId) {
-                Femelle::where('id', $femaleId)->update(['etat' => 'vendu']); // ← 'vendu' au lieu de 'Vide'
+                Femelle::where('id', $femaleId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
             foreach ($selectedLapereaux as $lapereauId) {
-                Lapereau::where('id', $lapereauId)->update(['etat' => 'vendu']); // ← Déjà correct
+                Lapereau::where('id', $lapereauId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
 
             // Notification
@@ -277,14 +284,16 @@ class SaleController extends Controller
 
             DB::commit();
 
+            // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
             FirmAuditLog::log(
-                auth()->user()->firm_id,
+                null,  // ✅ Let the model auto-detect from authenticated user
                 auth()->id(),
                 'sale_created',
                 'total_amount',
                 null,
                 $sale->total_amount
             );
+
             return redirect()->route('sales.index')
                 ->with('success', 'Vente enregistrée avec succès !');
         } catch (\Exception $e) {
@@ -300,12 +309,12 @@ class SaleController extends Controller
      */
     public function show(Sale $sale, Request $request)
     {
-        if ($sale->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access');
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
         }
 
         $sale->load(['user']);
-
         $rabbitsQuery = $sale->rabbits()->with('rabbit');
 
         if ($request->has('search_rabbit')) {
@@ -330,35 +339,45 @@ class SaleController extends Controller
      */
     public function edit(Sale $sale)
     {
-        if ($sale->user_id !== auth()->id()) {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Accès non autorisé à cette vente');
         }
 
-        $sale->load(['rabbits.rabbit']);
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
 
+        $sale->load(['rabbits.rabbit']);
         $currentSaleRabbitIds = $sale->rabbits->pluck('rabbit_id')->toArray();
 
         //  MÂLES : Disponibles OU déjà dans cette vente
-        $males = Male::where(function ($q) use ($currentSaleRabbitIds) {
-            $q->where('etat', '!=', 'vendu')
-                ->orWhereIn('id', $currentSaleRabbitIds);
-        })
+        $males = Male::where('user_id', auth()->id())
+            ->where(function ($q) use ($currentSaleRabbitIds) {
+                $q->where('etat', '!=', 'vendu')
+                    ->orWhereIn('id', $currentSaleRabbitIds);
+            })
             ->orderBy('nom')
             ->paginate(20, ['*'], 'males_page');
 
         //  FEMELLES : Disponibles OU déjà dans cette vente
-        $femelles = Femelle::where(function ($q) use ($currentSaleRabbitIds) {
-            $q->where('etat', '!=', 'vendu')
-                ->orWhereIn('id', $currentSaleRabbitIds);
-        })
+        $femelles = Femelle::where('user_id', auth()->id())
+            ->where(function ($q) use ($currentSaleRabbitIds) {
+                $q->where('etat', '!=', 'vendu')
+                    ->orWhereIn('id', $currentSaleRabbitIds);
+            })
             ->orderBy('nom')
             ->paginate(20, ['*'], 'females_page');
 
         //  LAPEREAUX : Vivants OU déjà dans cette vente
-        $lapereaux = Lapereau::where(function ($q) use ($currentSaleRabbitIds) {
-            $q->where('etat', 'vivant')
-                ->orWhereIn('id', $currentSaleRabbitIds);
-        })
+        $lapereaux = Lapereau::where('user_id', auth()->id())
+            ->where(function ($q) use ($currentSaleRabbitIds) {
+                $q->where('etat', 'vivant')
+                    ->orWhereIn('id', $currentSaleRabbitIds);
+            })
             ->with('naissance.miseBas.femelle')
             ->orderBy('code')
             ->paginate(20, ['*'], 'lapereaux_page');
@@ -377,8 +396,16 @@ class SaleController extends Controller
      */
     public function update(Request $request, Sale $sale)
     {
-        if ($sale->user_id !== auth()->id()) {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Accès non autorisé à cette vente');
+        }
+
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
         }
 
         $validated = $request->validate([
@@ -389,17 +416,14 @@ class SaleController extends Controller
             'notes' => 'nullable|string',
             'payment_status' => 'required|in:paid,pending,partial',
             'amount_paid' => 'nullable|numeric|min:0',
-
             'selected_males' => 'nullable|array',
             'selected_males.*' => 'exists:males,id',
             'male_prices' => 'nullable|array',
             'male_prices.*' => 'nullable|numeric|min:0',
-
             'selected_females' => 'nullable|array',
             'selected_females.*' => 'exists:femelles,id',
             'female_prices' => 'nullable|array',
             'female_prices.*' => 'nullable|numeric|min:0',
-
             'selected_lapereaux' => 'nullable|array',
             'selected_lapereaux.*' => 'exists:lapereaux,id',
             'lapereau_prices' => 'nullable|array',
@@ -490,7 +514,7 @@ class SaleController extends Controller
                     'rabbit_id' => $maleId,
                     'sale_price' => $malePrices[$index] ?? 0,
                 ]);
-                Male::where('id', $maleId)->update(['etat' => 'vendu']);
+                Male::where('id', $maleId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
 
             //  Link selected females with INDIVIDUAL prices + mark as 'vendu'
@@ -501,7 +525,7 @@ class SaleController extends Controller
                     'rabbit_id' => $femaleId,
                     'sale_price' => $femalePrices[$index] ?? 0,
                 ]);
-                Femelle::where('id', $femaleId)->update(['etat' => 'vendu']); // ← CORRECTION
+                Femelle::where('id', $femaleId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
 
             //  Link selected lapereaux with INDIVIDUAL prices + mark as 'vendu'
@@ -512,7 +536,7 @@ class SaleController extends Controller
                     'rabbit_id' => $lapereauId,
                     'sale_price' => $lapereauPrices[$index] ?? 0,
                 ]);
-                Lapereau::where('id', $lapereauId)->update(['etat' => 'vendu']);
+                Lapereau::where('id', $lapereauId)->where('user_id', auth()->id())->update(['etat' => 'vendu']);
             }
 
             $this->notifyUser([
@@ -537,6 +561,17 @@ class SaleController extends Controller
             }
 
             DB::commit();
+
+            // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+            FirmAuditLog::log(
+                null,  // ✅ Safe detection
+                auth()->id(),
+                'sale_updated',
+                'payment_status',
+                $oldStatus,
+                $newStatus
+            );
+
             return redirect()->route('sales.index')
                 ->with('success', 'Vente mise à jour avec succès !');
         } catch (\Exception $e) {
@@ -549,38 +584,39 @@ class SaleController extends Controller
 
     /**
      * Remove the specified sale (only after 60 days)
-     *  LES LAPINS SONT SUPPRIMÉS DÉFINITIVEMENT (pas de restauration)
      */
-
-
     public function destroy(Sale $sale)
     {
-
-
-        // ✅ SECURITY FIX: Explicit Ownership Check (Was missing in provided code)
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         // Vérification : Vente doit avoir plus de 60 jours
         $daysSinceSale = now()->diffInDays($sale->date_sale);
-
         if ($daysSinceSale < 60) {
             return back()->with(
                 'warning',
-                "⚠️ Vous ne pouvez supprimer cette vente qu'après 60 jours. 
-            Il reste " . (60 - $daysSinceSale) . " jours d'attente."
+                "⚠️ Vous ne pouvez supprimer cette vente qu'après 60 jours.
+Il reste " . (60 - $daysSinceSale) . " jours d'attente."
             );
         }
 
         // SUPPRIMER DÉFINITIVEMENT les lapins associés
         foreach ($sale->rabbits as $saleRabbit) {
             if ($saleRabbit->rabbit_type === 'male') {
-                Male::where('id', $saleRabbit->rabbit_id)->delete();
+                Male::where('id', $saleRabbit->rabbit_id)->where('user_id', auth()->id())->delete();
             } elseif ($saleRabbit->rabbit_type === 'female') {
-                Femelle::where('id', $saleRabbit->rabbit_id)->delete();
+                Femelle::where('id', $saleRabbit->rabbit_id)->where('user_id', auth()->id())->delete();
             } elseif ($saleRabbit->rabbit_type === 'lapereau') {
-                Lapereau::where('id', $saleRabbit->rabbit_id)->delete();
+                Lapereau::where('id', $saleRabbit->rabbit_id)->where('user_id', auth()->id())->delete();
             }
         }
 
@@ -588,9 +624,9 @@ class SaleController extends Controller
         $saleInfo = "{$sale->quantity} {$typeLabel} à {$sale->buyer_name} pour " .
             number_format($sale->total_amount, 2, ',', ' ') . " FCFA";
 
-
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'sale_deleted',
             'id',
@@ -628,12 +664,14 @@ class SaleController extends Controller
         $daysSinceSale = now()->diffInDays($sale->date_sale);
         return max(0, 60 - $daysSinceSale);
     }
+
     /**
      * Mark sale as paid
      */
     public function markAsPaid(Sale $sale)
     {
-        if ($sale->user_id !== auth()->id()) {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Accès non autorisé à cette vente');
         }
 
@@ -650,12 +688,15 @@ class SaleController extends Controller
         foreach ($sale->rabbits as $saleRabbit) {
             if ($saleRabbit->rabbit_type === 'male') {
                 \App\Models\Male::where('id', $saleRabbit->rabbit_id)
-                    ->update(['etat' => 'vendu']); // ← CORRECTION
+                    ->where('user_id', auth()->id())
+                    ->update(['etat' => 'vendu']);
             } elseif ($saleRabbit->rabbit_type === 'female') {
                 \App\Models\Femelle::where('id', $saleRabbit->rabbit_id)
-                    ->update(['etat' => 'vendu']); // ← CORRECTION
+                    ->where('user_id', auth()->id())
+                    ->update(['etat' => 'vendu']);
             } elseif ($saleRabbit->rabbit_type === 'lapereau') {
                 \App\Models\Lapereau::where('id', $saleRabbit->rabbit_id)
+                    ->where('user_id', auth()->id())
                     ->update(['etat' => 'vendu']);
             }
         }
@@ -676,6 +717,11 @@ class SaleController extends Controller
      */
     public function recordPartialPayment(Request $request, Sale $sale)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Accès non autorisé à cette vente');
+        }
+
         $request->validate([
             'amount_paid' => 'required|numeric|min:0|max:' . $sale->total_amount
         ]);
@@ -706,6 +752,11 @@ class SaleController extends Controller
      */
     public function changePaymentStatus(Request $request, Sale $sale)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($sale->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Accès non autorisé à cette vente');
+        }
+
         $request->validate([
             'payment_status' => 'required|in:paid,pending,partial'
         ]);
@@ -739,7 +790,7 @@ class SaleController extends Controller
      */
     public function export()
     {
-        $sales = Sale::with('user')->get();
+        $sales = Sale::where('user_id', auth()->id())->with('user')->get();
 
         $this->notifyUser([
             'type' => 'info',
@@ -767,7 +818,11 @@ class SaleController extends Controller
         ]);
 
         $count = count($request->ids);
-        Sale::whereIn('id', $request->ids)->delete();
+
+        // ✅ SECURITY: Only delete user's own sales
+        Sale::where('user_id', auth()->id())
+            ->whereIn('id', $request->ids)
+            ->delete();
 
         $this->notifyUser([
             'type' => 'warning',
@@ -812,7 +867,7 @@ class SaleController extends Controller
         switch ($request->type) {
             case 'males':
                 //  Exclure 'vendu' pour les mâles
-                $query = Male::where('etat', '!=', 'vendu')->orderBy('nom');
+                $query = Male::where('user_id', auth()->id())->where('etat', '!=', 'vendu')->orderBy('nom');
                 if ($search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('nom', 'LIKE', "%{$search}%")
@@ -820,10 +875,9 @@ class SaleController extends Controller
                     });
                 }
                 break;
-
             case 'females':
                 //  Exclure 'vendu' pour les femelles
-                $query = Femelle::where('etat', '!=', 'vendu')->orderBy('nom');
+                $query = Femelle::where('user_id', auth()->id())->where('etat', '!=', 'vendu')->orderBy('nom');
                 if ($search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('nom', 'LIKE', "%{$search}%")
@@ -831,10 +885,10 @@ class SaleController extends Controller
                     });
                 }
                 break;
-
             case 'lapereaux':
                 //  Montrer uniquement 'vivant' pour les lapereaux
-                $query = Lapereau::where('etat', 'vivant')
+                $query = Lapereau::where('user_id', auth()->id())
+                    ->where('etat', 'vivant')
                     ->with('naissance.miseBas.femelle')
                     ->orderBy('code');
                 if ($search) {
@@ -844,7 +898,6 @@ class SaleController extends Controller
                     });
                 }
                 break;
-
             default:
                 return response()->json(['error' => 'Invalid type'], 400);
         }

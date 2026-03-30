@@ -312,15 +312,7 @@ Route::middleware('auth')->group(function () {
         });
 
 
-        // ====================================================================
-        // EXPENSE ROUTES (Require active subscription)
-        // ====================================================================
-        Route::middleware('check.subscription')->prefix('expenses')->name('expenses.')->group(function () {
-            Route::get('/', [ExpenseController::class, 'index'])->name('index');
-            Route::get('/create', [ExpenseController::class, 'create'])->name('create');
-            Route::post('/', [ExpenseController::class, 'store'])->name('store');
-            Route::delete('/{expense}', [ExpenseController::class, 'destroy'])->name('destroy');
-        });
+
     }); // <--- FIN DU GROUPE VERIFIED
 
     // ========================================================================

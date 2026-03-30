@@ -10,7 +10,7 @@ class Male extends Model
     use BelongsToUser;
 
     protected $table = 'males'; // nom de la table
-    protected $fillable = ['user_id', 'code', 'nom', 'race', 'origine', 'date_naissance', 'etat'];
+    protected $fillable = ['user_id', 'firm_id', 'code', 'nom', 'race', 'origine', 'date_naissance', 'etat'];
 
     // ✅ ADD THIS: Cast date fields to Carbon instances
     protected $casts = [

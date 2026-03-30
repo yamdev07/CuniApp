@@ -16,6 +16,7 @@ class MiseBas extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'femelle_id',
         'saillie_id',
         'date_mise_bas',

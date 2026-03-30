@@ -122,8 +122,7 @@ class DashboardController extends Controller
                 ->toArray(),
 
             // Naissances (vert)
-            'naissances' => \App\Models\Naissance::where('user_id', $userId)
-                ->with(['femelle', 'miseBas'])
+            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->get()
@@ -136,8 +135,7 @@ class DashboardController extends Controller
                 ->toArray(),
 
             // Sexuations (bleu) - J+10
-            'sexuations' => \App\Models\Naissance::where('user_id', $userId)
-                ->with(['femelle', 'miseBas'])
+            'sexuations' => \App\Models\Naissance::with(['femelle', 'miseBas'])
                 ->where('sex_verified', false)
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
@@ -161,8 +159,7 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         // Naissances (vert)
-        $recentNaissances = Naissance::where('user_id', $userId)
-            ->with('femelle')
+        $recentNaissances = Naissance::with('femelle')
             ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
             ->latest('created_at')
             ->get()
@@ -263,6 +260,7 @@ class DashboardController extends Controller
 
         $financialData = $this->getFinancialChartData();
         $activityData = $this->getActivityChartData();
+        $survieData = $this->getSurvieChartData();
 
         // ====================================================================
         // RETURN VIEW
@@ -287,7 +285,8 @@ class DashboardController extends Controller
             'timelineActivities',
             'salesStats',
             'financialData',
-            'activityData'
+            'activityData',
+            'survieData'
         ));
     }
 
@@ -307,17 +306,38 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('total', 'month');
 
-        // Expenses data
-        $expenses = \App\Models\Expense::where('user_id', $userId)
-            ->whereYear('expense_date', now()->year)
-            ->selectRaw('MONTH(expense_date) as month, SUM(amount) as total')
-            ->groupBy('month')
-            ->pluck('total', 'month');
-
         return [
             'labels' => $months,
             'sales' => $months->map(fn($m, $i) => $sales->get($i + 1) ?? 0)->toArray(),
-            'expenses' => $months->map(fn($m, $i) => $expenses->get($i + 1) ?? 0)->toArray(),
+        ];
+    }
+
+    /**
+     * Prepare survival data for charts
+     */
+    private function getSurvieChartData()
+    {
+        $userId = auth()->id();
+        $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
+
+        $misesBas = \App\Models\MiseBas::where('user_id', $userId)
+            ->whereYear('date_mise_bas', now()->year)
+            ->with('lapereaux')
+            ->get();
+
+        $vivantsPerMonth = array_fill(1, 12, 0);
+        $mortsNesPerMonth = array_fill(1, 12, 0);
+
+        foreach ($misesBas as $mb) {
+            $month = \Carbon\Carbon::parse($mb->date_mise_bas)->month;
+            $vivantsPerMonth[$month] += $mb->nb_vivant;
+            $mortsNesPerMonth[$month] += $mb->nb_mort_ne;
+        }
+
+        return [
+            'labels' => $months,
+            'vivants' => array_values($vivantsPerMonth),
+            'morts_nes' => array_values($mortsNesPerMonth),
         ];
     }
 
@@ -335,8 +355,7 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        $naissances = \App\Models\Naissance::where('user_id', $userId)
-            ->whereYear('created_at', now()->year)
+        $naissances = \App\Models\Naissance::whereYear('created_at', now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');

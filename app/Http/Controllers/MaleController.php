@@ -34,10 +34,12 @@ class MaleController extends Controller
         }
 
         $males = $query->latest()->paginate(10);
+
         return view('males.index', compact('males'));
     }
+
     /**
-     * Store a newly created resource in storage.
+     * Show the form for creating a new resource.
      */
     public function create()
     {
@@ -57,6 +59,13 @@ class MaleController extends Controller
      */
     public function store(Request $request)
     {
+        // ✅ TODO.MD STEP 4: CRITICAL - Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'code' => 'required|unique:males,code',
             'nom' => 'required|string|max:255',
@@ -66,10 +75,12 @@ class MaleController extends Controller
             'etat' => 'required|in:Active,Inactive,Malade,vendu',
         ]);
 
+        // ✅ BelongsToUser Trait will automatically assign user_id and firm_id
         $male = Male::create($request->all());
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Let the model auto-detect from authenticated user
             auth()->id(),
             'male_created',
             'code',
@@ -105,10 +116,12 @@ class MaleController extends Controller
     public function show($id)
     {
         $male = Male::findOrFail($id);
+
         // ✅ SECURITY FIX: Explicit Ownership Check
         if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
         return view('males.show', compact('male'));
     }
 
@@ -118,10 +131,12 @@ class MaleController extends Controller
     public function edit($id)
     {
         $male = Male::findOrFail($id);
+
         // ✅ SECURITY FIX: Explicit Ownership Check
         if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
         return view('males.edit', compact('male'));
     }
 
@@ -137,17 +152,34 @@ class MaleController extends Controller
             abort(403, 'Unauthorized access to this record.');
         }
 
+        // ✅ TODO.MD STEP 4: Check if user has a firm (even for updates)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'code' => 'required|unique:males,code,' . $male->id,
             'nom' => 'required|string|max:255',
             'race' => 'nullable|string|max:255',
             'origine' => 'required|in:Interne,Achat',
             'date_naissance' => 'required|date',
-            'etat' => 'required|in:Active,Inactive,Malade,vendu',  // ← Correction
+            'etat' => 'required|in:Active,Inactive,Malade,vendu',
         ]);
 
         $oldNom = $male->nom;
         $male->update($request->all());
+
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+        FirmAuditLog::log(
+            null,  // ✅ Safe detection
+            auth()->id(),
+            'male_updated',
+            'nom',
+            $oldNom,
+            $male->nom
+        );
 
         // Create notification
         $this->notifyUser([
@@ -177,14 +209,24 @@ class MaleController extends Controller
     public function destroy($id)
     {
         $male = Male::findOrFail($id);
+
         // ✅ SECURITY FIX: Explicit Ownership Check
         if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
         $maleName = $male->nom;
-
         $male->delete();
+
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+        FirmAuditLog::log(
+            null,  // ✅ Safe detection
+            auth()->id(),
+            'male_deleted',
+            'nom',
+            $maleName,
+            null
+        );
 
         // Create notification
         $this->notifyUser([
@@ -212,6 +254,11 @@ class MaleController extends Controller
      */
     public function toggleEtat(Male $male)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check
+        if ($male->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $etats = ['Active', 'Inactive', 'Malade'];
         $currentIndex = array_search($male->etat, $etats);
         $nextIndex = ($currentIndex + 1) % count($etats);
@@ -220,6 +267,16 @@ class MaleController extends Controller
 
         $male->etat = $newEtat;
         $male->save();
+
+        // ✅ TODO.MD STEP 4: Pass null for firm_id
+        FirmAuditLog::log(
+            null,
+            auth()->id(),
+            'male_state_toggled',
+            'etat',
+            $oldEtat,
+            $newEtat
+        );
 
         // Create notification
         $this->notifyUser([
@@ -243,6 +300,9 @@ class MaleController extends Controller
             ->with('success', 'État mis à jour avec succès !');
     }
 
+    /**
+     * Check if a code is available (AJAX)
+     */
     public function checkCode(Request $request)
     {
         $exists = Male::where('code', $request->code)->exists();

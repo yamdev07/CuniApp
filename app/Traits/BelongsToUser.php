@@ -1,21 +1,12 @@
 <?php
-
+// app/Traits/BelongsToUser.php
 namespace App\Traits;
-use App\Models\Notification;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ActivityNotificationMail;
-use App\Models\Setting;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
-
-
 
 trait BelongsToUser
 {
     protected static function bootBelongsToUser()
     {
-        // Auto-assign user_id AND firm_id on create
+        // Auto-assign user_id and firm_id on creation
         static::creating(function ($model) {
             if (auth()->check()) {
                 $user = auth()->user();
@@ -24,42 +15,37 @@ trait BelongsToUser
                     $model->user_id = $user->id;
                 }
 
-                // ✅ NEW: Auto-assign firm_id for employees/firm_admins
+                // CRITICAL: Only set firm_id if user has one
                 if ($user->firm_id && !$model->firm_id) {
                     $model->firm_id = $user->firm_id;
+                } elseif (!$model->firm_id) {
+                    // Fallback: try to get firm from user relationship
+                    $model->firm_id = $user->firm?->id;
                 }
             }
         });
 
-        // Auto-filter queries by firm_id (multi-tenancy) OR user_id (legacy)
+        // Global Scope for data isolation
         static::addGlobalScope('firm', function ($builder) {
-            if (auth()->check()) {
-                $user = auth()->user();
+            if (!auth()->check()) {
+                return;
+            }
 
-                // Super Admin sees all data
-                if ($user->isSuperAdmin()) {
-                    Log::channel('audit')->info('Super Admin Data Access', [
-                        'admin_id' => $user->id,
-                        'model' => get_class($builder->getModel()),
-                        'timestamp' => now(),
-                    ]);
-                    return;
-                }
+            $user = auth()->user();
+            $modelTable = $builder->getModel()->getTable();
 
-                // ✅ FIRM-BASED SCOPING (Multi-Tenancy)
-                if ($user->firm_id && in_array($user->role, ['firm_admin', 'employee'])) {
-                    $table = $builder->getModel()->getTable();
-                    if (Schema::hasColumn($table, 'firm_id')) {
-                        $builder->where("{$table}.firm_id", $user->firm_id);
-                    }
-                }
-                // ✅ USER-BASED SCOPING (Legacy/Fallback)
-                else {
-                    $table = $builder->getModel()->getTable();
-                    if (Schema::hasColumn($table, 'user_id')) {
-                        $builder->where("{$table}.user_id", $user->id);
-                    }
-                }
+            // Super Admin sees all
+            if ($user->isSuperAdmin()) {
+                return;
+            }
+
+            // Firm Admin/Employee: scope by firm_id
+            if ($user->firm_id && in_array($user->role, ['firm_admin', 'employee'])) {
+                $builder->where("{$modelTable}.firm_id", $user->firm_id);
+            }
+            // Fallback: scope by user_id only (for users without firm)
+            elseif (auth()->id()) {
+                $builder->where("{$modelTable}.user_id", auth()->id());
             }
         });
     }
@@ -69,7 +55,6 @@ trait BelongsToUser
         return $this->belongsTo(\App\Models\User::class);
     }
 
-    // ✅ NEW: Firm relationship for models with firm_id
     public function firm()
     {
         return $this->belongsTo(\App\Models\Firm::class);

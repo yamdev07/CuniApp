@@ -16,6 +16,7 @@ class PaymentTransaction extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'subscription_id',
         'amount',
         'payment_method',

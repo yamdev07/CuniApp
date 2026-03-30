@@ -250,11 +250,7 @@
             @if ($paginatedRabbits->hasPages())
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
-                    <div class="text-muted" style="font-size: 13px;">
-                        Affichage de <strong>{{ $paginatedRabbits->firstItem() }}</strong> à
-                        <strong>{{ $paginatedRabbits->lastItem() }}</strong> sur
-                        <strong>{{ $paginatedRabbits->total() }}</strong> lapins
-                    </div>
+
                     <div>
                         {{ $paginatedRabbits->links('pagination.bootstrap-5-sm') }}
                     </div>

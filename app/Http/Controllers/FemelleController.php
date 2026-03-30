@@ -1,5 +1,5 @@
 <?php
-
+// app/Http/Controllers/FemelleController.php
 namespace App\Http\Controllers;
 
 use App\Models\Femelle;
@@ -27,6 +27,7 @@ class FemelleController extends Controller
         }
 
         $femelles = $query->latest()->paginate(10)->withQueryString();
+
         return view('femelles.index', compact('femelles'));
     }
 
@@ -35,10 +36,16 @@ class FemelleController extends Controller
      */
     public function create()
     {
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $lastCode = Femelle::where('code', 'LIKE', 'FEM-%')
             ->orderBy('code', 'desc')
             ->value('code');
-
         $nextNumber = $lastCode ? intval(substr($lastCode, 4)) + 1 : 1;
         $suggestedCode = 'FEM-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
 
@@ -50,6 +57,13 @@ class FemelleController extends Controller
      */
     public function store(Request $request)
     {
+        // ✅ CRITICAL: Check if user has a firm (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $request->validate([
             'code' => 'required|unique:femelles,code',
             'nom' => 'required|string',
@@ -59,10 +73,12 @@ class FemelleController extends Controller
             'etat' => 'required|in:Active,Gestante,Allaitante,Vide,vendu',
         ]);
 
+        // ✅ BelongsToUser Trait will automatically assign user_id and firm_id
         $femelle = Femelle::create($request->all());
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Let the model auto-detect from authenticated user
             auth()->id(),
             'femelle_created',
             'code',
@@ -98,10 +114,12 @@ class FemelleController extends Controller
     public function show($id)
     {
         $femelle = Femelle::findOrFail($id);
-        // ✅ SECURITY FIX: Explicit Ownership Check
+
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
         return view('femelles.show', compact('femelle'));
     }
 
@@ -111,10 +129,12 @@ class FemelleController extends Controller
     public function edit($id)
     {
         $femelle = Femelle::findOrFail($id);
-        // ✅ SECURITY FIX: Explicit Ownership Check
+
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
+
         return view('femelles.edit', compact('femelle'));
     }
 
@@ -124,9 +144,17 @@ class FemelleController extends Controller
     public function update(Request $request, $id)
     {
         $femelle = Femelle::findOrFail($id);
-        // ✅ SECURITY FIX: Explicit Ownership Check
+
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
+        }
+
+        // ✅ CRITICAL: Check if user has a firm (even for updates) (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
         }
 
         $request->validate([
@@ -141,8 +169,9 @@ class FemelleController extends Controller
         $oldNom = $femelle->nom;
         $femelle->update($request->all());
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'femelle_updated',
             'etat',
@@ -178,15 +207,24 @@ class FemelleController extends Controller
     public function destroy($id)
     {
         $femelle = Femelle::findOrFail($id);
-        // ✅ SECURITY FIX: Explicit Ownership Check
+
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
         if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized access to this record.');
         }
 
-
         $femelleName = $femelle->nom;
-
         $femelle->delete();
+
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+        FirmAuditLog::log(
+            null,  // ✅ Safe detection
+            auth()->id(),
+            'femelle_deleted',
+            'nom',
+            $femelleName,
+            null
+        );
 
         // Create notification
         $this->notifyUser([
@@ -214,6 +252,11 @@ class FemelleController extends Controller
      */
     public function toggleEtat(Femelle $femelle)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($femelle->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $etats = ['Active', 'Gestante', 'Allaitante', 'Vide'];
         $currentIndex = array_search($femelle->etat, $etats);
         $nextIndex = ($currentIndex + 1) % count($etats);
@@ -222,6 +265,16 @@ class FemelleController extends Controller
 
         $femelle->etat = $newEtat;
         $femelle->save();
+
+        // ✅ TODO.MD STEP 4: Pass null for firm_id
+        FirmAuditLog::log(
+            null,  // ✅ Safe detection
+            auth()->id(),
+            'femelle_state_toggled',
+            'etat',
+            $oldEtat,
+            $newEtat
+        );
 
         // Create notification
         $this->notifyUser([
@@ -245,6 +298,9 @@ class FemelleController extends Controller
             ->with('success', 'État mis à jour avec succès !');
     }
 
+    /**
+     * Check if a code is available (AJAX)
+     */
     public function checkCode(Request $request)
     {
         $exists = Femelle::where('code', $request->code)->exists();

@@ -1178,11 +1178,11 @@
         @endif
 
         {{-- ✅ VISUAL ANALYTICS SECTION --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <!-- Finance Chart -->
             <div class="cuni-card">
                 <div class="card-header-custom">
-                    <h3 class="card-title"><i class="bi bi-graph-up"></i> Finance ({{ now()->year }})</h3>
+                    <h3 class="card-title"><i class="bi bi-graph-up"></i> Ventes ({{ now()->year }})</h3>
                 </div>
                 <div class="card-body">
                     <canvas id="financeChart" height="200"></canvas>
@@ -1192,10 +1192,20 @@
             <!-- Activity Chart -->
             <div class="cuni-card">
                 <div class="card-header-custom">
-                    <h3 class="card-title"><i class="bi bi-activity"></i> Activité d'Élevage</h3>
+                    <h3 class="card-title"><i class="bi bi-activity"></i> Saillies & Naissances</h3>
                 </div>
                 <div class="card-body">
                     <canvas id="activityChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Survie Chart -->
+            <div class="cuni-card">
+                <div class="card-header-custom">
+                    <h3 class="card-title"><i class="bi bi-heart-pulse"></i> Taux de Survie</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="survieChart" height="200"></canvas>
                 </div>
             </div>
         </div>
@@ -1644,108 +1654,126 @@
     @endpush
 
     @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Finance Chart
-                const ctxFinance = document.getElementById('financeChart');
-                if (ctxFinance) {
-                    new Chart(ctxFinance.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: @json($financialData['labels']),
-                            datasets: [{
-                                    label: 'Ventes',
-                                    data: @json($financialData['sales']),
-                                    borderColor: '#10B981',
-                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                    tension: 0.4,
-                                    fill: true
-                                },
-                                {
-                                    label: 'Dépenses',
-                                    data: @json($financialData['expenses']),
-                                    borderColor: '#EF4444',
-                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                                    tension: 0.4,
-                                    fill: true
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        font: {
-                                            size: 11
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        callback: function(value) {
-                                            return value.toLocaleString('fr-FR') + ' FCFA';
-                                        }
-                                    }
-                                }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Finance Chart
+    const ctxFinance = document.getElementById('financeChart');
+    if (ctxFinance) {
+        let existingFinanceChart = Chart.getChart(ctxFinance);
+        if (existingFinanceChart) existingFinanceChart.destroy();
+        new Chart(ctxFinance.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: @json($financialData['labels']),
+                datasets: [
+                    {
+                        label: 'Ventes',
+                        data: @json($financialData['sales']),
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' FCFA';
                             }
                         }
                     });
                 }
+            }
+        });
+    }
+    
+    // Activity Chart
+    const ctxActivity = document.getElementById('activityChart');
+    if (ctxActivity) {
+        let existingActivityChart = Chart.getChart(ctxActivity);
+        if (existingActivityChart) existingActivityChart.destroy();
+        new Chart(ctxActivity.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: @json($activityData['labels']),
+                datasets: [
+                    {
+                        label: 'Saillies',
+                        data: @json($activityData['saillies']),
+                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                        borderColor: '#8B5CF6',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Naissances',
+                        data: @json($activityData['naissances']),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10B981',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
 
-                // Activity Chart
-                const ctxActivity = document.getElementById('activityChart');
-                if (ctxActivity) {
-                    new Chart(ctxActivity.getContext('2d'), {
-                        type: 'bar',
-                        data: {
-                            labels: @json($activityData['labels']),
-                            datasets: [{
-                                    label: 'Saillies',
-                                    data: @json($activityData['saillies']),
-                                    backgroundColor: 'rgba(139, 92, 246, 0.6)',
-                                    borderColor: '#8B5CF6',
-                                    borderWidth: 1
-                                },
-                                {
-                                    label: 'Naissances',
-                                    data: @json($activityData['naissances']),
-                                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                                    borderColor: '#10B981',
-                                    borderWidth: 1
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        font: {
-                                            size: 11
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1
-                                    }
-                                }
-                            }
-                        }
-                    });
+    // Survie Chart
+    const ctxSurvie = document.getElementById('survieChart');
+    if (ctxSurvie) {
+        let existingSurvieChart = Chart.getChart(ctxSurvie);
+        if (existingSurvieChart) existingSurvieChart.destroy();
+        new Chart(ctxSurvie.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: @json($survieData['labels']),
+                datasets: [
+                    {
+                        label: 'Nés Vivants',
+                        data: @json($survieData['vivants']),
+                        backgroundColor: 'rgba(52, 211, 153, 0.6)',
+                        borderColor: '#34D399',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Mort-Nés',
+                        data: @json($survieData['morts_nes']),
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: '#EF4444',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
                 }
-            });
-        </script>
-    @endpush
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection

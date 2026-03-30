@@ -14,6 +14,7 @@ class Saillie extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'femelle_id',
         'male_id',
         'date_saillie',

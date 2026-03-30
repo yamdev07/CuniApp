@@ -12,9 +12,9 @@ class CheckSubscription
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-
-        // 1. SUPER ADMIN : Accès total illimité (Pas de vérification)
-        if ($user->isSuperAdmin()) {
+        
+        // Admin users have full access
+        if (in_array($user->role, ['admin', 'super_admin'])) {
             return $next($request);
         }
 

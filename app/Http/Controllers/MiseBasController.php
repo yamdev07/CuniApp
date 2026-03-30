@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\MiseBas;
@@ -42,6 +41,13 @@ class MiseBasController extends Controller
 
     public function create()
     {
+        // ✅ CRITICAL: Check if user has a firm
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $femelles = Femelle::where('etat', 'Gestante')
             ->orderBy('nom')
             ->get();
@@ -56,6 +62,13 @@ class MiseBasController extends Controller
 
     public function store(Request $request)
     {
+        // ✅ CRITICAL: Check if user has a firm (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $validated = $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'saillie_id' => 'nullable|exists:saillies,id',
@@ -74,8 +87,9 @@ class MiseBasController extends Controller
 
         $miseBas = MiseBas::create($validated);
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'misebas_created',
             'nb_vivant',
@@ -102,19 +116,50 @@ class MiseBasController extends Controller
 
     public function show(MiseBas $miseBas)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($miseBas->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
         $miseBas->load(['femelle', 'saillie.male', 'naissances.lapereaux']);
+
         return view('mises_bas.show', compact('miseBas'));
     }
 
     public function edit(MiseBas $miseBas)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($miseBas->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+        // ✅ CRITICAL: Check if user has a firm (even for updates) (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $femelles = Femelle::all();
         $saillies = Saillie::with(['femelle', 'male'])->get();
+
         return view('mises_bas.edit', compact('miseBas', 'femelles', 'saillies'));
     }
 
     public function update(Request $request, MiseBas $miseBas)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($miseBas->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+        // ✅ CRITICAL: Check if user has a firm (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $validated = $request->validate([
             'femelle_id' => 'required|exists:femelles,id',
             'saillie_id' => 'nullable|exists:saillies,id',
@@ -125,17 +170,40 @@ class MiseBasController extends Controller
 
         $miseBas->update($validated);
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
+        FirmAuditLog::log(
+            null,  // ✅ Safe detection
+            auth()->id(),
+            'misebas_updated',
+            'date_mise_bas',
+            $miseBas->getOriginal('date_mise_bas'),
+            $miseBas->date_mise_bas
+        );
+
         return redirect()->route('mises_bas.show', $miseBas)
             ->with('success', 'Mise bas mise à jour !');
     }
 
     public function destroy(MiseBas $miseBas)
     {
+        // ✅ SECURITY FIX: Explicit Ownership Check (todo.md Step 4)
+        if ($miseBas->user_id !== auth()->id() && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized access to this record.');
+        }
+
+        // ✅ CRITICAL: Check if user has a firm (todo.md Step 4)
+        if (!auth()->user()->firm_id) {
+            return back()
+                ->withErrors(['error' => 'Votre compte n\'est associé à aucune entreprise. Contactez le support.'])
+                ->withInput();
+        }
+
         $femelleName = $miseBas->femelle->nom ?? 'Inconnue';
         $totalLapereaux = $miseBas->total_lapereaux;
 
+        // ✅ TODO.MD STEP 4: Pass null for firm_id to let Model handle auto-detection
         FirmAuditLog::log(
-            auth()->user()->firm_id,
+            null,  // ✅ Safe detection
             auth()->id(),
             'misebas_deleted',
             'id',

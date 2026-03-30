@@ -42,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.firm.admin' => \App\Http\Middleware\CheckFirmAdmin::class,
             'check.super.admin' => \App\Http\Middleware\CheckSuperAdmin::class,
             'check.admin' => \App\Http\Middleware\CheckAdminRole::class,
+            'firm.required' => \App\Http\Middleware\EnsureUserHasFirm::class,
         ]);
 
         // ✅ Trust proxies for production (Cloudflare, Load Balancer, etc.)

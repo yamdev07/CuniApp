@@ -17,6 +17,7 @@ class Naissance extends Model
 
     protected $fillable = [
         'user_id',
+        'firm_id',
         'mise_bas_id',
         'user_id',
         'poids_moyen_naissance',  // Garder pour moyenne de la portée
