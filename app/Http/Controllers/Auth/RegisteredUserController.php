@@ -78,7 +78,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => 'firm_admin', // ✅ Rôle par défaut : Administrateur de la ferme
-                'firm_id' => $firm->id,
+                'firm_id' => $firm->id, // ✅ LIEN IMMÉDIAT AVEC LA FIRME
                 'email_verified_at' => null, // Sera vérifié via le code
                 'theme' => 'light',
                 'language' => 'fr',
@@ -91,11 +91,10 @@ class RegisteredUserController extends Controller
             // ================================================================
             // ✅ 6. CRÉATION AUTOMATIQUE DE L'ESSAI GRATUIT (14 JOURS)
             // ================================================================
-            
-            // A. Trouver le plan "Essai Gratuit"
-            $trialPlan = SubscriptionPlan::where('name', 'LIKE', '%Essai%')->first();
+            // A. Trouver le plan "Essai Gratuit" (DOIT EXISTER VIA SEEDER)
+            $trialPlan = SubscriptionPlan::where('name', 'Essai Gratuit')->first();
 
-            // B. Si le plan n'existe pas, on le crée à la volée (Sécurité)
+            // B. Si le plan n'existe pas, on le crée (Sécurité - ne devrait pas arriver)
             if (!$trialPlan) {
                 Log::warning("Plan 'Essai Gratuit' introuvable. Création à la volée...");
                 $trialPlan = SubscriptionPlan::create([
@@ -103,7 +102,7 @@ class RegisteredUserController extends Controller
                     'duration_months' => 0,
                     'price' => 0,
                     'is_active' => true,
-                    'max_users' => 5, // Limite pour l'essai
+                    'max_users' => 5,
                     'description' => 'Période d\'essai automatique 14 jours',
                     'features' => json_encode(['Accès complet', 'Jusqu\'à 5 utilisateurs', 'Support de base']),
                 ]);
@@ -115,9 +114,9 @@ class RegisteredUserController extends Controller
             // D. Créer l'abonnement lié à la FIRME et à l'UTILISATEUR
             $subscription = Subscription::create([
                 'user_id' => $user->id,
-                'firm_id' => $firm->id, // ✅ Crucial en multi-tenant
+                'firm_id' => $firm->id, // ✅ CRUCIAL EN MULTI-TENANT (CORRECTION)
                 'subscription_plan_id' => $trialPlan->id,
-                'status' => 'active',
+                'status' => 'active', // ✅ STATUT ACTIF IMMÉDIATEMENT
                 'start_date' => now(),
                 'end_date' => $endDate,
                 'price' => 0,
@@ -133,8 +132,8 @@ class RegisteredUserController extends Controller
             ]);
 
             Log::info("✅ Essai gratuit créé avec succès pour la firme {$firm->id} (User: {$user->id}). Fin : {$endDate}");
-            // ================================================================
 
+            // ================================================================
             // ✅ 7. GÉNÉRER LE CODE DE VÉRIFICATION (6 chiffres)
             $code = sprintf('%06d', mt_rand(0, 999999));
 
@@ -145,7 +144,6 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password),
                 'firm_id' => $firm->id,
             ], 1800);
-
             Cache::put("verification_code_{$request->email}", $code, 1800);
 
             // ✅ 9. ENVOYER L'EMAIL DE VÉRIFICATION
@@ -181,7 +179,6 @@ class RegisteredUserController extends Controller
             return redirect()->route('welcome')
                 ->with('verification_pending', true)
                 ->with('verification_email', $request->email);
-
         } catch (Exception $e) {
             // ✅ 14. ROLLBACK EN CAS D'ERREUR (Rien n'est sauvegardé)
             DB::rollBack();
