@@ -199,12 +199,21 @@
                         @empty
                             <tr>
                                 <td colspan="7">
-                                    <div class="table-empty-state">
-                                        <i class="bi bi-inbox"></i>
-                                        <p>Aucun mâle enregistré pour le moment</p>
-                                        <a href="{{ route('males.create') }}" class="btn-cuni primary">
-                                            <i class="bi bi-plus-lg"></i> Ajouter un mâle
-                                        </a>
+                                    <div class="table-empty-state" style="padding: 48px; text-align: center;">
+                                        <i class="bi bi-search" style="font-size: 3rem; opacity: 0.2; color: var(--primary); margin-bottom: 16px; display: block;"></i>
+                                        @if(request()->anyFilled(['search', 'etat', 'origine']))
+                                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Aucun mâle trouvé</p>
+                                            <p class="text-muted" style="font-size: 14px; margin-bottom: 20px;">Aucun mâle ne correspond à vos critères de recherche.</p>
+                                            <a href="{{ route('males.index') }}" class="btn-cuni secondary">
+                                                <i class="bi bi-arrow-clockwise"></i> Réinitialiser les filtres
+                                            </a>
+                                        @else
+                                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Aucun mâle enregistré</p>
+                                            <p class="text-muted" style="font-size: 14px; margin-bottom: 20px;">Commencez par ajouter votre premier reproducteur mâle.</p>
+                                            <a href="{{ route('males.create') }}" class="btn-cuni primary">
+                                                <i class="bi bi-plus-lg"></i> Ajouter un mâle
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

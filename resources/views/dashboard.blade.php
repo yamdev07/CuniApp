@@ -934,6 +934,36 @@ if (auth()->check() && auth()->user()->firm_id) {
             z-index: 10;
             transform: scale(1.05);
         }
+
+        /* ✅ Placeholder pour graphiques vides */
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 200px;
+            background: var(--surface-alt);
+            border-radius: var(--radius-lg);
+            color: var(--text-tertiary);
+            text-align: center;
+            padding: 24px;
+            border: 1px dashed var(--surface-border);
+        }
+
+        .chart-placeholder i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.3;
+            color: var(--primary);
+        }
+
+        .chart-placeholder p {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+            max-width: 200px;
+        }
     </style>
 
     <div class="cuniapp-dashboard">
@@ -1641,20 +1671,54 @@ if (auth()->check() && auth()->user()->firm_id) {
     @endpush
 
     @push('scripts')
+        <style>
+            .chart-placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: #94a3b8;
+                padding: 20px;
+                text-align: center;
+            }
+            .chart-placeholder i { font-size: 2rem; margin-bottom: 0.5rem; }
+        </style>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Reusable placeholder function
+                function showChartPlaceholder(canvasId, message) {
+                    const canvas = document.getElementById(canvasId);
+                    if (!canvas) return;
+                    const container = canvas.parentElement;
+                    canvas.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'chart-placeholder';
+                    placeholder.innerHTML = `
+                        <i class="bi bi-bar-chart"></i>
+                        <p>${message}</p>
+                    `;
+                    container.appendChild(placeholder);
+                }
+
                 // Finance Chart
                 const ctxFinance = document.getElementById('financeChart');
                 if (ctxFinance) {
-                    let existingFinanceChart = Chart.getChart(ctxFinance);
-                    if (existingFinanceChart) existingFinanceChart.destroy();
-                    new Chart(ctxFinance.getContext('2d'), {
+                    let salesData = @json($financialData['sales']);
+                    let isFinanceEmpty = salesData.length === 0 || salesData.every(val => val === 0);
+
+                    if (isFinanceEmpty) {
+                        showChartPlaceholder('financeChart', 'Aucune vente enregistrée pour le moment.');
+                    } else {
+                        let existingFinanceChart = Chart.getChart(ctxFinance);
+                        if (existingFinanceChart) existingFinanceChart.destroy();
+                        new Chart(ctxFinance.getContext('2d'), {
                             type: 'line',
                             data: {
                                 labels: @json($financialData['labels']),
                                 datasets: [{
                                     label: 'Ventes',
-                                    data: @json($financialData['sales']),
+                                    data: salesData,
                                     borderColor: '#10B981',
                                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
                                     tension: 0.4,
@@ -1682,110 +1746,129 @@ if (auth()->check() && auth()->user()->firm_id) {
                                                 return value.toLocaleString('fr-FR') + ' FCFA';
                                             }
                                         }
-                                    });
+                                    }
+                                }
                             }
-                        }
-                    });
-            }
+                        });
+                    }
+                }
 
             // Activity Chart
             const ctxActivity = document.getElementById('activityChart');
             if (ctxActivity) {
-                let existingActivityChart = Chart.getChart(ctxActivity);
-                if (existingActivityChart) existingActivityChart.destroy();
-                new Chart(ctxActivity.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: @json($activityData['labels']),
-                        datasets: [{
-                                label: 'Saillies',
-                                data: @json($activityData['saillies']),
-                                backgroundColor: 'rgba(139, 92, 246, 0.6)',
-                                borderColor: '#8B5CF6',
-                                borderWidth: 1
+                let saillieData = @json($activityData['saillies']);
+                let naissanceData = @json($activityData['naissances']);
+                let isActivityEmpty = (saillieData.length === 0 || saillieData.every(val => val === 0)) &&
+                    (naissanceData.length === 0 || naissanceData.every(val => val === 0));
+
+                if (isActivityEmpty) {
+                    showChartPlaceholder('activityChart', 'Aucune saillie ou naissance enregistrée.');
+                } else {
+                    let existingActivityChart = Chart.getChart(ctxActivity);
+                    if (existingActivityChart) existingActivityChart.destroy();
+                    new Chart(ctxActivity.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: @json($activityData['labels']),
+                            datasets: [{
+                                    label: 'Saillies',
+                                    data: saillieData,
+                                    backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                                    borderColor: '#8B5CF6',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Naissances',
+                                    data: naissanceData,
+                                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                                    borderColor: '#10B981',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                }
                             },
-                            {
-                                label: 'Naissances',
-                                data: @json($activityData['naissances']),
-                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                                borderColor: '#10B981',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        size: 11
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
                                     }
                                 }
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             // Survie Chart
             const ctxSurvie = document.getElementById('survieChart');
             if (ctxSurvie) {
-                let existingSurvieChart = Chart.getChart(ctxSurvie);
-                if (existingSurvieChart) existingSurvieChart.destroy();
-                new Chart(ctxSurvie.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: @json($survieData['labels']),
-                        datasets: [{
-                                label: 'Nés Vivants',
-                                data: @json($survieData['vivants']),
-                                backgroundColor: 'rgba(52, 211, 153, 0.6)',
-                                borderColor: '#34D399',
-                                borderWidth: 1
+                let vivantData = @json($survieData['vivants']);
+                let mortData = @json($survieData['morts_nes']);
+                let isSurvieEmpty = (vivantData.length === 0 || vivantData.every(val => val === 0)) &&
+                    (mortData.length === 0 || mortData.every(val => val === 0));
+
+                if (isSurvieEmpty) {
+                    showChartPlaceholder('survieChart', 'Pas de données de survie disponibles.');
+                } else {
+                    let existingSurvieChart = Chart.getChart(ctxSurvie);
+                    if (existingSurvieChart) existingSurvieChart.destroy();
+                    new Chart(ctxSurvie.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: @json($survieData['labels']),
+                            datasets: [{
+                                    label: 'Nés Vivants',
+                                    data: vivantData,
+                                    backgroundColor: 'rgba(52, 211, 153, 0.6)',
+                                    borderColor: '#34D399',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Mort-Nés',
+                                    data: mortData,
+                                    backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                                    borderColor: '#EF4444',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            size: 11
+                                        }
+                                    }
+                                }
                             },
-                            {
-                                label: 'Mort-Nés',
-                                data: @json($survieData['morts_nes']),
-                                backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                                borderColor: '#EF4444',
-                                borderWidth: 1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        size: 11
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
                                     }
                                 }
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
                         }
-                    }
-                });
+                    });
+                }
             }
             });
         </script>

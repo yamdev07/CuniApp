@@ -26,6 +26,33 @@
             </div>
         </div>
 
+        <style>
+            .chart-placeholder {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                min-height: 150px;
+                background: var(--surface-alt);
+                border-radius: var(--radius-lg);
+                color: var(--text-tertiary);
+                text-align: center;
+                padding: 24px;
+                border: 1px dashed var(--surface-border);
+            }
+            .chart-placeholder i {
+                font-size: 2rem;
+                margin-bottom: 8px;
+                opacity: 0.3;
+                color: var(--primary);
+            }
+            .chart-placeholder p {
+                font-size: 13px;
+                margin: 0;
+            }
+        </style>
+
         {{-- Signup Evolution Chart --}}
         <div class="cuni-card mb-6">
             <div class="card-header-custom">
@@ -41,45 +68,60 @@
                 // Signup Evolution Chart
                 const ctxSignup = document.getElementById('signupChart');
                 if (ctxSignup) {
-                    new Chart(ctxSignup.getContext('2d'), {
-                        type: 'line',
-                        data: {
-                            labels: @json($signupLabels),
-                            datasets: [{
-                                label: 'Nouvelles entreprises',
-                                data: @json($signupCounts),
-                                borderColor: '#2563EB',
-                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 3,
-                                pointHoverRadius: 5
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                }
+                    const signupCounts = @json($signupCounts);
+                    const isSignupEmpty = signupCounts.length === 0 || signupCounts.every(val => val === 0);
+
+                    if (isSignupEmpty) {
+                        const container = ctxSignup.parentElement;
+                        ctxSignup.style.display = 'none';
+                        const placeholder = document.createElement('div');
+                        placeholder.className = 'chart-placeholder';
+                        placeholder.innerHTML = `
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <p>Aucune inscription récente à afficher.</p>
+                        `;
+                        container.appendChild(placeholder);
+                    } else {
+                        new Chart(ctxSignup.getContext('2d'), {
+                            type: 'line',
+                            data: {
+                                labels: @json($signupLabels),
+                                datasets: [{
+                                    label: 'Nouvelles entreprises',
+                                    data: signupCounts,
+                                    borderColor: '#2563EB',
+                                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 5
+                                }]
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
                                     }
                                 },
-                                x: {
-                                    ticks: {
-                                        maxRotation: 45,
-                                        minRotation: 45
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            maxRotation: 45,
+                                            minRotation: 45
+                                        }
                                     }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             </script>
         @endpush
