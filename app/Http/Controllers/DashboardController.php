@@ -120,9 +120,9 @@ class DashboardController extends Controller
                 })
                 ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
-
             // Naissances (vert)
-            'naissances' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+            'naissances' => \App\Models\Naissance::where('user_id', $userId)
+                ->with(['miseBas'])
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->get()
@@ -133,9 +133,8 @@ class DashboardController extends Controller
                 ->filter(fn($e) => $e['date'] !== null)
                 ->values()
                 ->toArray(),
-
             // Sexuations (bleu) - J+10
-            'sexuations' => \App\Models\Naissance::with(['femelle', 'miseBas'])
+            'sexuations' => \App\Models\Naissance::where('user_id', $userId)
                 ->where('sex_verified', false)
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
@@ -159,7 +158,8 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         // Naissances (vert)
-        $recentNaissances = Naissance::with('femelle')
+        $recentNaissances = Naissance::where('user_id', $userId)
+            ->with('femelle')
             ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
             ->latest('created_at')
             ->get()
@@ -256,7 +256,6 @@ class DashboardController extends Controller
             ->sortByDesc('date')
             ->take(5)
             ->values();
-
 
         $financialData = $this->getFinancialChartData();
         $activityData = $this->getActivityChartData();

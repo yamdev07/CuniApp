@@ -3,71 +3,70 @@
 @section('title', 'Tableau de Bord - CuniApp Élevage')
 
 @section('content')
+    {{-- ✅ BANDEAU ESSAI GRATUIT (LOGIQUE MULTI-TENANT CORRIGÉE) --}}
+    @php
+        $activeSub = null;
+        $isTrial = false;
+        $daysLeft = 0;
 
-{{-- ✅ BANDEAU ESSAI GRATUIT (LOGIQUE MULTI-TENANT CORRIGÉE) --}}
-@php
-    $activeSub = null;
-    $isTrial = false;
-    $daysLeft = 0;
+        // Vérification 1 : L'utilisateur est-il connecté et a-t-il une firme ?
+if (auth()->check() && auth()->user()->firm_id) {
+    // On cherche l'abonnement ACTIF de la FIRME (et non de l'user seul)
+    // C'est la ligne CRUCIALE pour le multi-tenant
+            $activeSub = \App\Models\Subscription::where('firm_id', auth()->user()->firm_id)
+                ->where('status', 'active')
+                ->where('end_date', '>=', now())
+                ->first();
 
-    // Vérification 1 : L'utilisateur est-il connecté et a-t-il une firme ?
-    if (auth()->check() && auth()->user()->firm_id) {
-        
-        // On cherche l'abonnement ACTIF de la FIRME (et non de l'user seul)
-        // C'est la ligne CRUCIALE pour le multi-tenant
-        $activeSub = \App\Models\Subscription::where('firm_id', auth()->user()->firm_id)
-            ->where('status', 'active')
-            ->where('end_date', '>=', now())
-            ->first();
-
-        // Vérification 2 : Est-ce un essai gratuit ? (Price == 0)
-        if ($activeSub && $activeSub->price == 0 && $activeSub->end_date) {
-            if (now()->isBefore($activeSub->end_date)) {
-                $isTrial = true;
-                $daysLeft = floor(now()->diffInDays($activeSub->end_date, false));
+            // Vérification 2 : Est-ce un essai gratuit ? (Price == 0)
+            if ($activeSub && $activeSub->price == 0 && $activeSub->end_date) {
+                if (now()->isBefore($activeSub->end_date)) {
+                    $isTrial = true;
+                    $daysLeft = floor(now()->diffInDays($activeSub->end_date, false));
+                }
             }
         }
-    }
-@endphp
+    @endphp
 
-@if ($isTrial)
-    <div class="cuni-card mb-6" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); border: 1px solid var(--primary);">
-        <div class="card-body p-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-start gap-4">
-                    <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
-                        <i class="bi bi-gift-fill text-2xl"></i>
+    @if ($isTrial)
+        <div class="cuni-card mb-6"
+            style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%); border: 1px solid var(--primary);">
+            <div class="card-body p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+                            <i class="bi bi-gift-fill text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold" style="color: var(--text-primary);">
+                                Période d'essai gratuite active !
+                            </h3>
+                            <p class="text-sm mt-1" style="color: var(--text-secondary);">
+                                Profitez de CuniApp gratuitement jusqu'au
+                                <strong>{{ $activeSub->end_date->format('d/m/Y') }}</strong>.
+                                Il vous reste <strong>{{ $daysLeft }} jours</strong>.
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-bold" style="color: var(--text-primary);">
-                            Période d'essai gratuite active ! 
-                        </h3>
-                        <p class="text-sm mt-1" style="color: var(--text-secondary);">
-                            Profitez de CuniApp gratuitement jusqu'au 
-                            <strong>{{ $activeSub->end_date->format('d/m/Y') }}</strong>.
-                            Il vous reste <strong>{{ $daysLeft }} jours</strong>.
-                        </p>
-                    </div>
+                    <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
+                        Voir les offres d'abonnement
+                    </a>
                 </div>
-                <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
-                    Voir les offres d'abonnement
-                </a>
             </div>
         </div>
-    </div>
-@endif
+    @endif
 
-{{-- DEBUG TEMPORAIRE --}}
-<div style="background: #ffcccc; border: 2px solid red; padding: 15px; margin-bottom: 20px; font-family: monospace;">
-    <strong>DEBUG BANDEAU :</strong><br>
-    User ID: {{ auth()->id() }}<br>
-    Firm ID: {{ auth()->user()->firm_id ?? 'NULL' }}<br>
-    Active Sub ID: {{ $activeSub ? $activeSub->id : 'NONE' }}<br>
-    Active Sub Price: {{ $activeSub ? $activeSub->price : 'N/A' }}<br>
-    Active Sub End: {{ $activeSub ? $activeSub->end_date : 'N/A' }}<br>
-    Is Trial: {{ $isTrial ? 'YES' : 'NO' }}<br>
-    Days Left: {{ $daysLeft }}
-</div>
+    {{-- DEBUG TEMPORAIRE (à supprimer en production) --}}
+    <div style="background: #ffcccc; border: 2px solid red; padding: 15px; margin-bottom: 20px; font-family: monospace;">
+        <strong>DEBUG BANDEAU :</strong><br>
+        User ID: {{ auth()->id() }}<br>
+        Firm ID: {{ auth()->user()->firm_id ?? 'NULL' }}<br>
+        Active Sub ID: {{ $activeSub ? $activeSub->id : 'NONE' }}<br>
+        Active Sub Price: {{ $activeSub ? $activeSub->price : 'N/A' }}<br>
+        Active Sub End: {{ $activeSub ? $activeSub->end_date : 'N/A' }}<br>
+        Is Trial: {{ $isTrial ? 'YES' : 'NO' }}<br>
+        Days Left: {{ $daysLeft }}
+    </div>
 
 
     <style>
@@ -1654,126 +1653,153 @@
     @endpush
 
     @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Finance Chart
-    const ctxFinance = document.getElementById('financeChart');
-    if (ctxFinance) {
-        let existingFinanceChart = Chart.getChart(ctxFinance);
-        if (existingFinanceChart) existingFinanceChart.destroy();
-        new Chart(ctxFinance.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: @json($financialData['labels']),
-                datasets: [
-                    {
-                        label: 'Ventes',
-                        data: @json($financialData['sales']),
-                        borderColor: '#10B981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString('fr-FR') + ' FCFA';
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Finance Chart
+                const ctxFinance = document.getElementById('financeChart');
+                if (ctxFinance) {
+                    let existingFinanceChart = Chart.getChart(ctxFinance);
+                    if (existingFinanceChart) existingFinanceChart.destroy();
+                    new Chart(ctxFinance.getContext('2d'), {
+                            type: 'line',
+                            data: {
+                                labels: @json($financialData['labels']),
+                                datasets: [{
+                                    label: 'Ventes',
+                                    data: @json($financialData['sales']),
+                                    borderColor: '#10B981',
+                                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                size: 11
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return value.toLocaleString('fr-FR') + ' FCFA';
+                                            }
+                                        }
+                                    });
                             }
                         }
                     });
-                }
             }
-        });
-    }
-    
-    // Activity Chart
-    const ctxActivity = document.getElementById('activityChart');
-    if (ctxActivity) {
-        let existingActivityChart = Chart.getChart(ctxActivity);
-        if (existingActivityChart) existingActivityChart.destroy();
-        new Chart(ctxActivity.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: @json($activityData['labels']),
-                datasets: [
-                    {
-                        label: 'Saillies',
-                        data: @json($activityData['saillies']),
-                        backgroundColor: 'rgba(139, 92, 246, 0.6)',
-                        borderColor: '#8B5CF6',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Naissances',
-                        data: @json($activityData['naissances']),
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                        borderColor: '#10B981',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                }
-            }
-        });
-    }
 
-    // Survie Chart
-    const ctxSurvie = document.getElementById('survieChart');
-    if (ctxSurvie) {
-        let existingSurvieChart = Chart.getChart(ctxSurvie);
-        if (existingSurvieChart) existingSurvieChart.destroy();
-        new Chart(ctxSurvie.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: @json($survieData['labels']),
-                datasets: [
-                    {
-                        label: 'Nés Vivants',
-                        data: @json($survieData['vivants']),
-                        backgroundColor: 'rgba(52, 211, 153, 0.6)',
-                        borderColor: '#34D399',
-                        borderWidth: 1
+            // Activity Chart
+            const ctxActivity = document.getElementById('activityChart');
+            if (ctxActivity) {
+                let existingActivityChart = Chart.getChart(ctxActivity);
+                if (existingActivityChart) existingActivityChart.destroy();
+                new Chart(ctxActivity.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: @json($activityData['labels']),
+                        datasets: [{
+                                label: 'Saillies',
+                                data: @json($activityData['saillies']),
+                                backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                                borderColor: '#8B5CF6',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Naissances',
+                                data: @json($activityData['naissances']),
+                                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                                borderColor: '#10B981',
+                                borderWidth: 1
+                            }
+                        ]
                     },
-                    {
-                        label: 'Mort-Nés',
-                        data: @json($survieData['morts_nes']),
-                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                        borderColor: '#EF4444',
-                        borderWidth: 1
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
                     }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 11 } } }
-                },
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                }
+                });
             }
-        });
-    }
-});
-</script>
-@endpush
+
+            // Survie Chart
+            const ctxSurvie = document.getElementById('survieChart');
+            if (ctxSurvie) {
+                let existingSurvieChart = Chart.getChart(ctxSurvie);
+                if (existingSurvieChart) existingSurvieChart.destroy();
+                new Chart(ctxSurvie.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: @json($survieData['labels']),
+                        datasets: [{
+                                label: 'Nés Vivants',
+                                data: @json($survieData['vivants']),
+                                backgroundColor: 'rgba(52, 211, 153, 0.6)',
+                                borderColor: '#34D399',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Mort-Nés',
+                                data: @json($survieData['morts_nes']),
+                                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                                borderColor: '#EF4444',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            });
+        </script>
+    @endpush
 @endsection
