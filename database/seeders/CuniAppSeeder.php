@@ -37,106 +37,25 @@ class CuniAppSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-
-
-
     public function run(): void
     {
-        // ✅ CRÉER LE PLAN "ESSAI GRATUIT" (14 jours)
-        SubscriptionPlan::updateOrCreate(
-            ['name' => 'Essai Gratuit'],
-            [
-                'duration_months' => 0,
-                'price' => 0,
-                'is_active' => true,
-                'max_users' => 5,
-                'description' => 'Période d\'essai automatique 14 jours',
-                'features' => json_encode([
-                    'Accès complet à toutes les fonctionnalités',
-                    'Jusqu\'à 5 utilisateurs',
-                    'Support de base',
-                    '14 jours gratuits'
-                ]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
+        $this->printHeader();
+        $this->command->info('🧹 Cleaning existing data...');
+        $this->cleanTables();
 
-        // ✅ CRÉER LES AUTRES PLANS D'ABONNEMENT
-        $plans = [
-            [
-                'name' => 'Mensuel',
-                'duration_months' => 1,
-                'price' => 15000,
-                'is_active' => true,
-                'max_users' => 5,
-                'description' => 'Abonnement mensuel',
-                'features' => json_encode(['Accès complet', '5 utilisateurs', 'Support email']),
-            ],
-            [
-                'name' => 'Trimestriel',
-                'duration_months' => 3,
-                'price' => 40000,
-                'is_active' => true,
-                'max_users' => 8,
-                'description' => 'Abonnement trimestriel',
-                'features' => json_encode(['Accès complet', '8 utilisateurs', 'Support prioritaire']),
-            ],
-            [
-                'name' => 'Annuel',
-                'duration_months' => 12,
-                'price' => 150000,
-                'is_active' => true,
-                'max_users' => 10,
-                'description' => 'Abonnement annuel',
-                'features' => json_encode(['Accès complet', '10 utilisateurs', 'Support 24/7']),
-            ],
-        ];
+        $this->command->info("🚀 Starting CuniApp Multi-Tenancy Database Seeding...\n");
 
-        foreach ($plans as $plan) {
-            SubscriptionPlan::updateOrCreate(
-                ['name' => $plan['name']],
-                array_merge($plan, [
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ])
-            );
-        }
+        // Seed in correct order (respecting foreign keys)
+        $this->seedSettings();
+        $this->seedSubscriptionPlans();
+        $this->seedSuperAdmin();
+        $this->seedFirmsAndUsers();
+        $this->seedBreedingData();
+        $this->seedSales();
+        $this->seedNotifications();
 
-        // ✅ CRÉER L'ADMINISTRATEUR PAR DÉFAUT
-        User::updateOrCreate(
-            ['email' => 'admin@cuniapp.com'],
-            [
-                'name' => 'Administrateur',
-                'password' => Hash::make('password'),
-                'role' => 'super_admin',
-                'email_verified_at' => now(),
-                'subscription_status' => 'active',
-                'status' => 'active',
-                'theme' => 'light',
-                'language' => 'fr',
-            ]
-        );
-
-        // ✅ CRÉER LES PARAMÈTRES PAR DÉFAUT
-        $settings = [
-            ['key' => 'farm_name', 'value' => 'CuniApp Élevage', 'type' => 'string', 'group' => 'general'],
-            ['key' => 'gestation_days', 'value' => '31', 'type' => 'number', 'group' => 'breeding'],
-            ['key' => 'weaning_weeks', 'value' => '6', 'type' => 'number', 'group' => 'breeding'],
-            ['key' => 'verification_initial_days', 'value' => '10', 'type' => 'number', 'group' => 'breeding'],
-            ['key' => 'verification_reminder_days', 'value' => '15', 'type' => 'number', 'group' => 'breeding'],
-            ['key' => 'verification_interval_days', 'value' => '5', 'type' => 'number', 'group' => 'breeding'],
-            ['key' => 'default_price_male', 'value' => '25000', 'type' => 'number', 'group' => 'sales'],
-            ['key' => 'default_price_female', 'value' => '30000', 'type' => 'number', 'group' => 'sales'],
-            ['key' => 'default_price_lapereau', 'value' => '15000', 'type' => 'number', 'group' => 'sales'],
-        ];
-
-        foreach ($settings as $setting) {
-            Setting::updateOrCreate(
-                ['key' => $setting['key']],
-                $setting
-            );
-        }
+        $this->printFooter();
+        $this->printLoginCredentials();
     }
 
     // ========================================================================
@@ -256,20 +175,20 @@ class CuniAppSeeder extends Seeder
         $this->command->info("📋 Seeding Subscription Plans...");
 
         $plans = [
-            [
-                'name' => 'Essai Gratuit',
-                'duration_months' => 0,
-                'price' => 0,
-                'is_active' => true,
-                'max_users' => 5,
-                'description' => 'Période d\'essai de 14 jours offerte',
-                'features' => json_encode([
-                    'Accès complet 14 jours',
-                    'Jusqu\'à 5 utilisateurs (employés)',
-                    'Support de base',
-                    'Sauvegarde journalière'
-                ]),
-            ],
+                [
+            'name' => 'Essai Gratuit',
+            'duration_months' => 0, 
+            'price' => 0,
+            'is_active' => true,
+            'max_users' => 5, 
+            'description' => 'Période d\'essai de 14 jours offerte',
+            'features' => json_encode([
+                'Accès complet 14 jours',
+                'Jusqu\'à 5 utilisateurs (employés)',
+                'Support de base',
+                'Sauvegarde journalière'
+            ]),
+        ],
             [
                 'name' => 'Mensuel',
                 'duration_months' => 1,
