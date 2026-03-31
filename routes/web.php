@@ -279,8 +279,8 @@ Route::middleware('auth')->group(function () {
             });
         });
 
-        // Invoice Routes (Require verification, optionally add check.subscription)
-        Route::prefix('invoices')->name('invoices.')->group(function () {
+        // Invoice Routes (Require active subscription)
+        Route::middleware('check.subscription')->prefix('invoices')->name('invoices.')->group(function () {
             Route::get('/', [InvoiceController::class, 'index'])->name('index');
             Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
             Route::get('/{invoice}/download', [InvoiceController::class, 'download'])->name('download');
@@ -289,9 +289,9 @@ Route::middleware('auth')->group(function () {
         });
 
         // ========================================================================
-        // 👑 FIRM ADMIN ROUTES (Inside auth group for consistency)
+        // 👑 FIRM ADMIN ROUTES (Require active subscription)
         // ========================================================================
-        Route::middleware(['verified', 'check.firm.admin'])->prefix('firm')->name('firm.')->group(function () {
+        Route::middleware(['verified', 'check.firm.admin', 'check.subscription'])->prefix('firm')->name('firm.')->group(function () {
             Route::get('/', [FirmController::class, 'index'])->name('index');
             Route::post('/employee', [FirmController::class, 'storeEmployee'])->name('employee.store');
             Route::patch('/employee/{userId}', [FirmController::class, 'updateEmployee'])->name('employee.update');

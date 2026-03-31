@@ -473,7 +473,14 @@
             </div>
 
             <div style="position: relative; height: 320px; width: 100%;">
-                <canvas id="employeeActivityChart"></canvas>
+                <div id="activityChartContainer" style="height: 300px; position: relative;">
+                    <canvas id="employeeActivityChart"></canvas>
+                    <div id="noActivityPlaceholder" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; flex-direction: column; align-items: center; justify-content: center; background: var(--surface-alt); border-radius: var(--radius-md); border: 2px dashed var(--surface-border);">
+                        <i class="bi bi-bar-chart" style="font-size: 3rem; color: var(--text-tertiary); margin-bottom: 1rem;"></i>
+                        <span style="color: var(--text-secondary); font-weight: 500;">Aucune activité enregistrée pour cette période</span>
+                        <small style="color: var(--text-tertiary);">L'employé ne s'est pas connecté récemment.</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -547,7 +554,19 @@
                 fetch(url)
                     .then(res => res.json())
                     .then(data => {
-                        const ctx = document.getElementById('employeeActivityChart').getContext('2d');
+                        const chartCanvas = document.getElementById('employeeActivityChart');
+                        const placeholder = document.getElementById('noActivityPlaceholder');
+
+                        if (!data.data || data.data.length === 0 || data.data.every(v => v === 0)) {
+                            chartCanvas.style.display = 'none';
+                            placeholder.style.display = 'flex';
+                            return;
+                        }
+
+                        chartCanvas.style.display = 'block';
+                        placeholder.style.display = 'none';
+
+                        const ctx = chartCanvas.getContext('2d');
                         
                         if (activityChart) {
                             activityChart.destroy();

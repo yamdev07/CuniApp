@@ -20,6 +20,7 @@ use App\Models\SaleRabbit;
 use App\Models\Notification;
 use App\Models\Invoice;
 use Carbon\Carbon;
+use App\Models\UserDailyActivity;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -53,6 +54,7 @@ class CuniAppSeeder extends Seeder
         $this->seedBreedingData();
         $this->seedSales();
         $this->seedNotifications();
+        $this->seedEmployeeActivity(); // ✅ Seed activity graphs
 
         $this->printFooter();
         $this->printLoginCredentials();
@@ -409,6 +411,32 @@ class CuniAppSeeder extends Seeder
         }
 
         $this->command->info("  ✓ 10 firms created with admins and employees");
+    }
+
+    private function seedEmployeeActivity(): void
+    {
+        $this->command->info("📈 Seeding employee activity history (30 days)...");
+
+        $employees = User::where('role', 'employee')->get();
+        $now = now();
+
+        foreach ($employees as $employee) {
+            // Seed last 30 days
+            for ($d = 0; $d < 30; $d++) {
+                $date = $now->copy()->subDays($d);
+                
+                // Randomly skip some days to make it look realistic
+                if (rand(0, 10) > 2) {
+                    UserDailyActivity::create([
+                        'user_id' => $employee->id,
+                        'date' => $date->format('Y-m-d'),
+                        'hits' => rand(5, 150), // Realistic range of daily actions
+                    ]);
+                }
+            }
+        }
+
+        $this->command->info("  ✓ Activity history seeded for " . $employees->count() . " employees");
     }
 
     private function seedBreedingData(): void
