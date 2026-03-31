@@ -36,11 +36,7 @@ return new class extends Migration
                     }
                 }
                 
-                try {
-                    $table->dropIndex('naissances_femelle_id_index');
-                } catch (\Exception $e) {
-                    // index may not exist
-                }
+                // Index may not exist and cannot be caught easily here. Drop column handles it mostly.
                 
                 $table->dropColumn('femelle_id');
             }
@@ -48,21 +44,9 @@ return new class extends Migration
             // Drop redundant count/date columns
             $colsToDrop = ['nb_vivant', 'nb_mort_ne', 'nb_total', 'date_naissance', 'heure_naissance', 'lieu_naissance'];
             
-            // For SQLite, we need to check if indexes exist first
-            $existingIndexes = [];
-            if (DB::getDriverName() === 'sqlite') {
-                $existingIndexes = collect(DB::select("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='naissances'"))->pluck('name')->toArray();
-            }
-
             foreach ($colsToDrop as $col) {
                 if (in_array($col, $columns)) {
-                    Schema::table('naissances', function (Blueprint $table) use ($col, $existingIndexes) {
-                        $indexName = "naissances_{$col}_index";
-                        if (DB::getDriverName() !== 'sqlite' || in_array($indexName, $existingIndexes)) {
-                            try {
-                                $table->dropIndex($indexName);
-                            } catch (\Exception $e) {}
-                        }
+                    Schema::table('naissances', function (Blueprint $table) use ($col) {
                         $table->dropColumn($col);
                     });
                 }
