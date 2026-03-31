@@ -10,7 +10,7 @@ class CheckAdminRole
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || $request->user()->role !== 'admin') {
+        if (!$request->user() || ($request->user()->role !== 'admin' && !$request->user()->isSuperAdmin())) {
             abort(403, 'Accès réservé aux administrateurs.');
         }
         

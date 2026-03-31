@@ -24,29 +24,61 @@ return new class extends Migration
         Schema::table('naissances', function (Blueprint $table) {
             $columns = Schema::getColumnListing('naissances');
 
-            // Drop femelle_id foreign key and column
+            // Drop femelle_id foreign key, index and column
             if (in_array('femelle_id', $columns)) {
                 try {
                     $table->dropForeign(['femelle_id']);
                 } catch (\Exception $e) {
-                    DB::statement('ALTER TABLE naissances DROP FOREIGN KEY naissances_femelle_id_foreign');
+                    try {
+                        DB::statement('ALTER TABLE naissances DROP FOREIGN KEY naissances_femelle_id_foreign');
+                    } catch (\Exception $e2) {
+                        // ignore if not mysql or not exists
+                    }
                 }
+                
+                try {
+                    $table->dropIndex('naissances_femelle_id_index');
+                } catch (\Exception $e) {
+                    // index may not exist
+                }
+                
                 $table->dropColumn('femelle_id');
             }
 
             // Drop redundant count/date columns
-            foreach (['nb_vivant', 'nb_mort_ne', 'nb_total', 'date_naissance', 'heure_naissance', 'lieu_naissance'] as $col) {
-                if (in_array($col, $columns)) $table->dropColumn($col);
+            $colsToDrop = ['nb_vivant', 'nb_mort_ne', 'nb_total', 'date_naissance', 'heure_naissance', 'lieu_naissance'];
+            
+            // For SQLite, we need to check if indexes exist first
+            $existingIndexes = [];
+            if (DB::getDriverName() === 'sqlite') {
+                $existingIndexes = collect(DB::select("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='naissances'"))->pluck('name')->toArray();
+            }
+
+            foreach ($colsToDrop as $col) {
+                if (in_array($col, $columns)) {
+                    Schema::table('naissances', function (Blueprint $table) use ($col, $existingIndexes) {
+                        $indexName = "naissances_{$col}_index";
+                        if (DB::getDriverName() !== 'sqlite' || in_array($indexName, $existingIndexes)) {
+                            try {
+                                $table->dropIndex($indexName);
+                            } catch (\Exception $e) {}
+                        }
+                        $table->dropColumn($col);
+                    });
+                }
             }
 
             // Add verification tracking if not exists
-            if (!in_array('sex_verified', $columns)) {
-                $table->boolean('sex_verified')->default(false);
-                $table->timestamp('sex_verified_at')->nullable();
-                $table->timestamp('first_reminder_sent_at')->nullable();
-                $table->timestamp('last_reminder_sent_at')->nullable();
-                $table->integer('reminder_count')->default(0);
-            }
+            Schema::table('naissances', function (Blueprint $table) {
+                $columns = Schema::getColumnListing('naissances');
+                if (!in_array('sex_verified', $columns)) {
+                    $table->boolean('sex_verified')->default(false);
+                    $table->timestamp('sex_verified_at')->nullable();
+                    $table->timestamp('first_reminder_sent_at')->nullable();
+                    $table->timestamp('last_reminder_sent_at')->nullable();
+                    $table->integer('reminder_count')->default(0);
+                }
+            });
         });
 
         // ✅ FIX: Update mise_bas_id FK in a SEPARATE Schema::table call

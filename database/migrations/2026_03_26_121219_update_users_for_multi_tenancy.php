@@ -22,8 +22,9 @@ return new class extends Migration
         });
 
         // ✅ STEP 1: Expand ENUM to include BOTH old and new values
-        // so existing rows (with 'admin') stay valid during the data update
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'super_admin', 'firm_admin', 'employee') DEFAULT 'user'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'super_admin', 'firm_admin', 'employee') DEFAULT 'user'");
+        }
 
         // ✅ STEP 2: Remap existing 'admin' rows to new roles
         $firstAdmin = DB::table('users')->where('role', 'admin')->orderBy('id')->first();
@@ -39,7 +40,9 @@ return new class extends Migration
         }
 
         // ✅ STEP 3: Now that no rows use 'admin' anymore, tighten the ENUM
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'firm_admin', 'employee', 'user') DEFAULT 'user'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('super_admin', 'firm_admin', 'employee', 'user') DEFAULT 'user'");
+        }
     }
 
     public function down(): void
@@ -52,7 +55,9 @@ return new class extends Migration
 
             // Revert ENUM (map firm_admin/super_admin back to admin)
             DB::table('users')->whereIn('role', ['firm_admin', 'super_admin'])->update(['role' => 'admin']);
-            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin') DEFAULT 'user'");
+            if (DB::getDriverName() === 'mysql') {
+                DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin') DEFAULT 'user'");
+            }
         });
     }
 };

@@ -10,7 +10,7 @@ class CheckFirmAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->isFirmAdmin()) {
+        if (!$request->user() || (!$request->user()->isFirmAdmin() && !$request->user()->isSuperAdmin())) {
             abort(403, 'Accès réservé aux administrateurs de l\'entreprise.');
         }
 

@@ -38,6 +38,10 @@ class AuthenticatedSessionController extends Controller
                 ->withErrors(['error' => 'Votre entreprise a été suspendue. Contactez le support.']);
         }
 
+        if ($user->isSuperAdmin()) {
+            return redirect()->intended(route('super.admin.dashboard'));
+        }
+
         return redirect()->intended(route('dashboard'));
     }
 
