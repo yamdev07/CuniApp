@@ -36,7 +36,7 @@ class Subscription extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'cancelled_at' => 'datetime',
-                'archived_at' => 'datetime', 
+        'archived_at' => 'datetime',
         'price' => 'decimal:2',
         'auto_renew' => 'boolean',
 
@@ -73,37 +73,66 @@ class Subscription extends Model
     {
         return $query->where('status', 'active')
             ->where('end_date', '>=', now())
-            ->whereNull('archived_at'); 
+            ->whereNull('archived_at');
     }
 
     /**
      * Scope: Expiring soon (within X days)
      */
-public function scopeExpiringSoon($query, int $days = 7)
+    public function scopeExpiringSoon($query, int $days = 7)
     {
         return $query->where('status', 'active')
             ->whereBetween('end_date', [now(), now()->addDays($days)])
             ->whereNull('archived_at'); // <-- On exclut aussi les archivés ici
     }
 
+    //     /**
+//      * Check if subscription is currently active
+//      */
+//   public function isActive(): bool
+//     {
+//         return $this->status === 'active'
+//             && $this->end_date?->isFuture()
+//             && $this->archived_at === null; // <-- Vérification ajoutée
+//     }
+
+    //     /**
+//      * Get days remaining
+//      */
+//     public function getDaysRemainingAttribute(): ?int
+//     {
+//         if (!$this->end_date) return null;
+//         return max(0, Carbon::parse($this->end_date)->diffInDays(now(), false));
+//     }
+
+
+
     /**
-     * Check if subscription is currently active
+     * Get remaining days for subscription (integer, non-negative)
      */
-  public function isActive(): bool
+    public function getDaysRemainingAttribute(): int
     {
-        return $this->status === 'active'
-            && $this->end_date?->isFuture()
-            && $this->archived_at === null; // <-- Vérification ajoutée
+        // Pas de date de fin ou déjà expiré
+        if (!$this->end_date || now()->greaterThan($this->end_date)) {
+            return 0;
+        }
+
+        // Calcul en jours entiers, valeur absolue
+        $days = now()->diffInDays($this->end_date, false);
+
+        // Retourner 0 minimum (éviter les négatifs)
+        return max(0, (int) $days);
     }
 
     /**
-     * Get days remaining
+     * Check if subscription is currently active
      */
-    public function getDaysRemainingAttribute(): ?int
+    public function isActive(): bool
     {
-        if (!$this->end_date) return null;
-        return max(0, Carbon::parse($this->end_date)->diffInDays(now(), false));
+        return $this->end_date && now()->lessThanOrEqualTo($this->end_date);
     }
+
+
 
     /**
      * Check if expired

@@ -4,6 +4,20 @@
 @section('title', 'Abonnements - CuniApp Élevage')
 
 @section('content')
+
+
+{{-- DEBUG : À supprimer après test --}}
+@php
+    Log::info('Subscription Debug', [
+        'current_subscription' => $currentSubscription?->toArray(),
+        'end_date' => $currentSubscription?->end_date,
+        'days_remaining' => $currentSubscription?->days_remaining,
+        'plans' => $plans->map(fn($p) => ['name' => $p->name, 'price' => $p->price]),
+    ]);
+@endphp
+
+
+
     <div class="page-header">
         <div>
             <h2 class="page-title">

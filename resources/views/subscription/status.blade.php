@@ -63,12 +63,23 @@
                         <div style="font-size: 24px; font-weight: 700;">{{ $subscription->end_date->format('d/m/Y') }}</div>
                     </div>
                 </div>
-                <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <button type="button" class="btn-cuni" style="background: white; color: var(--primary); border: none;"
-                        onclick="showRenewalModal()">
-                        <i class="bi bi-arrow-repeat"></i> Renouveler
-                    </button>
-                </div>
+
+
+                {{-- ✅ REMPLACE le bloc bouton existant par ceci --}}
+                @if ($subscription && $subscription->isActive())
+                    @if (!$subscription->plan->isFreeTrial())
+                        {{-- Abonnement payant : ouvrir le modal --}}
+                        <button type="button" class="btn-cuni"
+                            style="background: white; color: var(--primary); border: none;" onclick="showRenewalModal()">
+                            <i class="bi bi-arrow-repeat"></i> Renouveler
+                        </button>
+                    @else
+                        {{-- Essai gratuit : rediriger vers les plans payants --}}
+                        <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
+                            <i class="bi bi-cart-plus"></i> Choisir un abonnement payant
+                        </a>
+                    @endif
+                @endif
             </div>
         </div>
 
@@ -208,7 +219,8 @@ if (!$retryTransaction) {
     @endif
 
     {{-- ✅ RENEWAL MODAL (For Active Subscriptions) --}}
-    @if ($subscription && $subscription->isActive())
+    {{-- @if ($subscription && $subscription->isActive()) --}}
+@if ($subscription && $subscription->isActive() && !$subscription->plan->isFreeTrial())
         <div id="renewalModal"
             style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
             <div

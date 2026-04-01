@@ -72,4 +72,22 @@ class SubscriptionPlan extends Model
             default => "{$this->duration_months} mois",
         };
     }
+
+
+    /**
+     * Scope: Get only paid plans (exclude free trial)
+     */
+    public function scopePaid($query)
+    {
+        return $query->where('price', '>', 0);
+    }
+
+
+    /**
+     * Check if plan is a free trial
+     */
+    public function isFreeTrial(): bool
+    {
+        return $this->price <= 0 && $this->duration_months <= 0;
+    }
 }
