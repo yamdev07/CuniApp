@@ -465,9 +465,34 @@ class SubscriptionManagementController extends Controller
 
   
         /**
+     * Archiver TOUS les abonnements d'un utilisateur (Sauve du temps)
+     */
+    public function archiveAll($userId)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $user = \App\Models\User::findOrFail($userId);
+        
+        // On archive tout ce qui ne l'est pas
+        \App\Models\Subscription::where('user_id', $userId)
+            ->whereNull('archived_at')
+            ->update(['archived_at' => now()]);
+
+        // Sync user status
+        $user->subscription_status = 'inactive';
+        $user->subscription_ends_at = null;
+        $user->save();
+
+        return back()->with('success', 'Tous les abonnements de ' . $user->name . ' ont été archivés.');
+    }
+
+    /**
      * Supprimer DÉFINITIVEMENT un abonnement (Irréversible)
      */
     public function destroy($id) {
+
         $subscription = \App\Models\Subscription::findOrFail($id);
         
         // forceDelete() contourne le SoftDelete et efface vraiment la ligne de la BDD

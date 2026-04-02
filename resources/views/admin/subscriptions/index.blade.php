@@ -196,18 +196,35 @@
 
 
                                             @if ($subscriptionToManage)
-                                                {{-- CAS 1 : Un abonnement existe (Actif OU Expiré) -> BOUTON ARCHIVER --}}
-                                                <form
-                                                    action="{{ route('admin.subscriptions.archive', $subscriptionToManage->id) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Archiver cet abonnement ? Il disparaîtra de la liste principale.');">
-                                                    @csrf
-                                                    <button type="submit" class="btn-cuni sm light"
-                                                        title="Archiver (Actif ou Expiré)"
-                                                        style="color: var(--accent-orange); border-color: var(--accent-orange); background: rgba(245, 158, 11, 0.05);">
-                                                        <i class="bi bi-archive"></i>
-                                                    </button>
-                                                </form>
+                                                <div style="display: flex; gap: 4px;">
+                                                    {{-- CAS 1 : Un abonnement existe (Actif OU Expiré) -> BOUTON ARCHIVER --}}
+                                                    <form
+                                                        action="{{ route('admin.subscriptions.archive', $subscriptionToManage->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Archiver cet abonnement ?');">
+                                                        @csrf
+                                                        <button type="submit" class="btn-cuni sm light"
+                                                            title="Archiver"
+                                                            style="color: var(--accent-orange); border-color: var(--accent-orange); background: rgba(245, 158, 11, 0.05);">
+                                                            <i class="bi bi-archive"></i>
+                                                        </button>
+                                                    </form>
+
+                                                    {{-- ✅ NOUVEAU : Archiver TOUT si plusieurs subs --}}
+                                                    @if($user->subscriptions->count() > 1)
+                                                        <form
+                                                            action="{{ route('admin.subscriptions.archive-all', $user->id) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Archiver TOUS les abonnements de cet utilisateur ? ({{ $user->subscriptions->count() }} trouvés)');">
+                                                            @csrf
+                                                            <button type="submit" class="btn-cuni sm light"
+                                                                title="Archiver Tout"
+                                                                style="color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.05);">
+                                                                <i class="bi bi-archive-fill"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
                                             @else
                                                 {{-- CAS 2 : Aucun abonnement -> BOUTON ACTIVER --}}
                                                 <button type="button" class="btn-cuni sm primary"
@@ -216,6 +233,7 @@
                                                     <i class="bi bi-check-circle"></i>
                                                 </button>
                                             @endif
+
                                         </div>
                                     </td>
                                 </tr>

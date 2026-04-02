@@ -334,8 +334,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/activate', [SubscriptionManagementController::class, 'activate'])->name('activate');
             Route::post('/deactivate', [SubscriptionManagementController::class, 'deactivate'])->name('deactivate');
             Route::post('/extend', [SubscriptionManagementController::class, 'extend'])->name('extend');
-            Route::post('/{id}/archive', [SubscriptionManagementController::class, 'archive'])->name('archive');
-            Route::post('/{id}/restore', [SubscriptionManagementController::class, 'restore'])->name('restore');
+            Route::post('/archive/{id}', [SubscriptionManagementController::class, 'archive'])->name('archive');
+            Route::post('/archive-all/{userId}', [SubscriptionManagementController::class, 'archiveAll'])->name('archive-all');
+            Route::post('/restore/{id}', [SubscriptionManagementController::class, 'restore'])->name('restore');
             Route::delete('/{id}/destroy', [SubscriptionManagementController::class, 'destroy'])->name('destroy');
         });
     });

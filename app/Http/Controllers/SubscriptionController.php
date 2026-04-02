@@ -92,7 +92,8 @@ public function create(Request $request)
 
     // ✅ CORRECTION : Bloquer seulement si l'utilisateur a déjà un abonnement PAYANT actif
     // Autoriser l'upgrade depuis un essai gratuit (price = 0)
-    if ($currentSubscription && optional($currentSubscription->end_date)->isFuture() && $currentSubscription->price > 0) {
+    if ($currentSubscription && $currentSubscription->end_date?->isFuture() && $currentSubscription->price > 0) {
+
 
         return redirect()->route('subscription.status')
             ->with('warning', 'Vous avez déjà un abonnement actif. Veuillez attendre son expiration ou le annuler pour souscrire à un nouveau plan.');
@@ -261,8 +262,22 @@ public function store(Request $request)
     DB::beginTransaction();
 
     try {
+        // ✅ GUARD: Prevent multiple free trials (even if expired/cancelled)
+        if ($plan->price <= 0) {
+            $hasHadTrial = Subscription::where('user_id', $user->id)
+                ->whereHas('plan', function($q) {
+                    $q->where('price', '<=', 0);
+                })->exists();
+            
+            if ($hasHadTrial) {
+                return redirect()->route('subscription.plans')
+                    ->with('error', 'Vous avez déjà bénéficié d\'un essai gratuit. Veuillez choisir un plan payant.');
+            }
+        }
+
         // ✅ Si l'utilisateur a un essai gratuit actif, on ne le modifie pas
         // Il expirera naturellement, le nouvel abonnement prendra le relais
+
         
         // Créer la nouvelle subscription
         $subscription = Subscription::create([

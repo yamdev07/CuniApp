@@ -30,8 +30,9 @@ class SuperAdminController extends Controller
                 ->whereYear('created_at', $now->year)
                 ->sum('amount'),
             'active_subscriptions' => Subscription::where('status', 'active')
-                ->where('end_date', '>=', $now)
+                ->where('end_date', '>=', $now->toDateTimeString())
                 ->whereNull('archived_at')
+
                 ->count(),
             'expiring_soon' => Subscription::where('status', 'active')
                 ->whereBetween('end_date', [$now, $now->copy()->addDays(7)])
@@ -62,7 +63,8 @@ class SuperAdminController extends Controller
 
         // Login Activity (Last 24h)
         $activeUsers24h = \Illuminate\Support\Facades\DB::table('sessions')
-            ->where('last_activity', '>=', $now->copy()->subHours(24)->timestamp)
+            ->where('last_activity', '>=', (int) $now->copy()->subHours(24)->timestamp)
+
             ->whereNotNull('user_id')
             ->distinct('user_id')
             ->count('user_id');
