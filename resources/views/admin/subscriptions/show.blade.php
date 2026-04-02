@@ -93,7 +93,7 @@
                             $daysLeft = $sub->end_date->diffInDays(now(), false);
                         @endphp
                         @if($daysLeft < 0)
-                            <span style="color: var(--accent-red); font-size: 12px;"> (Expiré depuis {{ abs($daysLeft) }} jours)</span>
+                            <span style="color: var(--accent-red); font-size: 12px;"> (Expiré dans {{ abs($daysLeft) }} jours)</span>
                         @elseif($daysLeft <= 7)
                             <span style="color: var(--accent-orange); font-size: 12px;"> (Expire dans {{ $daysLeft }} jours)</span>
                         @endif
