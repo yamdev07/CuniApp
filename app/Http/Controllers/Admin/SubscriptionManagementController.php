@@ -386,8 +386,16 @@ class SubscriptionManagementController extends Controller
 
         $subscription->update(['archived_at' => now()]);
 
+        // ✅ Sync User status if this was the active sub
+        if ($subscription->user && $subscription->user->subscription_status === 'active') {
+            // Re-evaluating status (might be expired or none now)
+            $newStatus = $subscription->user->hasActiveSubscription() ? 'active' : 'inactive';
+            $subscription->user->update(['subscription_status' => $newStatus]);
+        }
+
         return back()->with('success', 'Abonnement archivé avec succès.');
     }
+
 
 
 
@@ -443,25 +451,19 @@ class SubscriptionManagementController extends Controller
      */
     public function archives()
     {
-        // On récupère les utilisateurs ayant des abonnements archivés
-        $users = \App\Models\User::whereHas('subscriptions', function ($query) {
-                $query->whereNotNull('archived_at');
-            })
-            ->with(['subscriptions' => function ($q) {
-                // On charge les abonnements archivés AVEC leur plan
-                $q->whereNotNull('archived_at')
-                  ->with('plan') 
-                  ->orderBy('archived_at', 'desc');
-            }])
-            ->latest()
+        // On récupère les ABONNEMENTS archivés directement
+        $archivedSubscriptions = \App\Models\Subscription::with(['user', 'plan'])
+            ->whereNotNull('archived_at')
+            ->orderBy('archived_at', 'desc')
             ->paginate(20);
 
         $stats = [
             'total_archived' => \App\Models\Subscription::whereNotNull('archived_at')->count(),
         ];
 
-        return view('admin.subscriptions.archives', compact('users', 'stats'));
+        return view('admin.subscriptions.archives', compact('archivedSubscriptions', 'stats'));
     }
+
 
 
   
