@@ -77,7 +77,7 @@
                     </div>
                     <div>
                         <p class="stats-label-small">Revenus (Mois)</p>
-                        <p class="stats-value-small">{{ number_format($stats['revenue_this_month'], 0, ',', ' ') }} <small class="text-xs">FCFA</small></p>
+                        <p class="stats-value-small">{{ number_format($stats['total_revenue'], 0, ',', ' ') }} <small class="text-xs">FCFA</small></p>
                     </div>
                 </div>
             </div>
