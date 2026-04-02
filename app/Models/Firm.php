@@ -47,8 +47,10 @@ class Firm extends Model
         return $this->hasOne(Subscription::class)
             ->where('status', 'active')
             ->where('end_date', '>=', now())
+            ->whereNull('archived_at') // ✅ EXCLUDE ARCHIVED
             ->orderBy('created_at', 'desc');
     }
+
 
     // Breeding Data Relationships
     public function males(): HasMany

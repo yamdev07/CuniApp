@@ -79,9 +79,14 @@ class SubscriptionManagementController extends Controller
         $stats = [
             'total_users' => User::count(),
             'active_subscriptions' => Subscription::where('status', 'active')
-                ->where('end_date', '>=', now())->count(),
+                ->where('end_date', '>=', now())
+                ->whereNull('archived_at')
+                ->count(),
             'expiring_soon' => Subscription::where('status', 'active')
-                ->whereBetween('end_date', [now(), now()->addDays(7)])->count(),
+                ->whereBetween('end_date', [now(), now()->addDays(7)])
+                ->whereNull('archived_at')
+                ->count(),
+
             'revenue_this_month' => PaymentTransaction::where('status', 'completed')
                 ->whereMonth('created_at', now()->month)
                 ->sum('amount'),
@@ -98,8 +103,10 @@ class SubscriptionManagementController extends Controller
         $user = User::with(['subscriptions.plan', 'paymentTransactions', 'firm.activeSubscription.plan'])->findOrFail($userId);
 
         $subscriptions = Subscription::where('user_id', $userId)
+            ->whereNull('archived_at') // ✅ EXCLUDE ARCHIVED
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+
 
         // If employee and no direct subscriptions, maybe show firm's history? 
         // For now, let's just make sure the view has access to the firm's active sub.

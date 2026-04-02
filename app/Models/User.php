@@ -115,8 +115,10 @@ class User extends Authenticatable
         return $this->subscriptions()
             ->where('status', 'active')
             ->where('end_date', '>=', now())
+            ->whereNull('archived_at') // ✅ EXCLUDE ARCHIVED
             ->first();
     }
+
 
     /**
      * ✅ NEW: Get the effective subscription (own or firm's)

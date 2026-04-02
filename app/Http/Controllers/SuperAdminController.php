@@ -31,10 +31,13 @@ class SuperAdminController extends Controller
                 ->sum('amount'),
             'active_subscriptions' => Subscription::where('status', 'active')
                 ->where('end_date', '>=', $now)
+                ->whereNull('archived_at')
                 ->count(),
             'expiring_soon' => Subscription::where('status', 'active')
                 ->whereBetween('end_date', [$now, $now->copy()->addDays(7)])
+                ->whereNull('archived_at')
                 ->count(),
+
         ];
 
         // Top Firms by Revenue (Leaderboard)
