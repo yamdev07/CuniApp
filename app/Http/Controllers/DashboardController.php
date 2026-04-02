@@ -63,6 +63,14 @@ class DashboardController extends Controller
             $revenuePercent = 0;
         }
 
+        // ====================================================================
+        // ALERTES
+        // ====================================================================
+        $nbAlertes = \App\Models\Notification::where('user_id', $userId)
+            ->whereIn('type', ['warning', 'error', 'danger'])
+            ->where('is_read', false)
+            ->count();
+
         $salesStats = [
             'change' => ($revenuePercent >= 0 ? '+' : '') . number_format($revenuePercent, 1) . '%',
             'trend' => $revenuePercent > 0 ? 'up' : ($revenuePercent < 0 ? 'down' : 'neutral'),
@@ -285,7 +293,8 @@ class DashboardController extends Controller
             'salesStats',
             'financialData',
             'activityData',
-            'survieData'
+            'survieData',
+            'nbAlertes'
         ));
     }
 

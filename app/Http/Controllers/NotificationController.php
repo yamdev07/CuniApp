@@ -55,6 +55,8 @@ class NotificationController extends Controller
             $query->where('is_read', false);
         } elseif ($filter === 'read') {
             $query->where('is_read', true);
+        } elseif ($filter === 'alerts') {
+            $query->whereIn('type', ['warning', 'error', 'danger']);
         }
 
         $notifications = $query->paginate(25);

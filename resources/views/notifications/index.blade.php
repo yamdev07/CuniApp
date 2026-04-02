@@ -36,6 +36,11 @@
                    style="border-radius: 6px; font-size: 0.85rem; padding: 6px 12px;">
                     Lues
                 </a>
+                <a href="{{ route('notifications.index', ['filter' => 'alerts']) }}" 
+                   class="btn-cuni sm {{ $filter === 'alerts' ? 'primary' : 'light' }}"
+                   style="border-radius: 6px; font-size: 0.85rem; padding: 6px 12px;">
+                    <i class="bi bi-exclamation-triangle"></i> Alertes
+                </a>
             </div>
 
             {{-- Bouton Tout lire --}}
@@ -59,6 +64,7 @@
                 <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">
                     @if($filter === 'unread') Aucune notification non lue
                     @elseif($filter === 'read') Aucune notification lue
+                    @elseif($filter === 'alerts') Aucune alerte
                     @else Aucune notification
                     @endif
                 </h3>
@@ -113,6 +119,7 @@
                             <i class="bi bi-list-ul"></i> 
                             @if($filter === 'unread') Notifications Non Lues
                             @elseif($filter === 'read') Notifications Lues
+                            @elseif($filter === 'alerts') Alertes
                             @else Historique des notifications
                             @endif
                         </h3>

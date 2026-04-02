@@ -1065,12 +1065,13 @@ if (auth()->check() && auth()->user()->firm_id) {
                         ],
                         [
                             'icon' => 'alert',
-                            'value' => 3,
+                            'value' => $nbAlertes ?? 0,
                             'label' => 'Alertes',
                             'type' => 'orange',
                             'change' => '0%',
                             'trend' => 'neutral',
                             'route' => 'notifications.index',
+                            'route_params' => ['filter' => 'alerts'],
                         ],
                         [
                             'icon' => 'sales',
@@ -1084,7 +1085,7 @@ if (auth()->check() && auth()->user()->firm_id) {
                     ];
                 @endphp
                 @foreach ($metricsData as $metric)
-                    <a href="{{ Route::has($metric['route']) ? route($metric['route']) : '#' }}">
+                    <a href="{{ isset($metric['route_params']) ? route($metric['route'], $metric['route_params']) : route($metric['route']) }}">
                         <div class="metric-card {{ $metric['type'] }}" data-trend="{{ $metric['trend'] }}">
                             <div class="metric-icon">
                                 @if ($metric['icon'] === 'total')
@@ -1437,7 +1438,7 @@ if (auth()->check() && auth()->user()->firm_id) {
                 <div class="widget alerts-widget">
                     <div class="widget-head">
                         <h3>Notifications</h3>
-                        <a href="{{ route('notifications.index') }}" class="text-link flex items-center gap-1">
+                        <a href="{{ route('notifications.index', ['filter' => 'unread']) }}" class="text-link flex items-center gap-1">
                             Voir tout <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
