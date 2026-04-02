@@ -20,21 +20,21 @@ class SuperAdminController extends Controller
         // Global Stats
         $stats = [
             'total_firms' => Firm::count(),
-            'active_firms' => Firm::where('status', 'active')->count(),
-            'banned_firms' => Firm::where('status', 'banned')->count(),
+            'active_firms' => Firm::where(fn($q) => $q->where('status', 'active'))->count(),
+            'banned_firms' => Firm::where(fn($q) => $q->where('status', 'banned'))->count(),
             'total_users' => User::count(),
-            'total_revenue_month' => PaymentTransaction::where('status', 'completed')
+            'total_revenue_month' => PaymentTransaction::where(fn($q) => $q->where('status', 'completed'))
                 ->whereMonth('created_at', $now->month)
                 ->sum('amount'),
-            'total_revenue_year' => PaymentTransaction::where('status', 'completed')
+            'total_revenue_year' => PaymentTransaction::where(fn($q) => $q->where('status', 'completed'))
                 ->whereYear('created_at', $now->year)
                 ->sum('amount'),
-            'active_subscriptions' => Subscription::where('status', 'active')
-                ->where('end_date', '>=', $now->toDateTimeString())
+            'active_subscriptions' => Subscription::where(fn($q) => $q->where('status', 'active'))
+                ->where(fn($q) => $q->where('end_date', '>=', $now->toDateTimeString()))
                 ->whereNull('archived_at')
 
                 ->count(),
-            'expiring_soon' => Subscription::where('status', 'active')
+            'expiring_soon' => Subscription::where(fn($q) => $q->where('status', 'active'))
                 ->whereBetween('end_date', [$now, $now->copy()->addDays(7)])
                 ->whereNull('archived_at')
                 ->count(),
@@ -43,19 +43,19 @@ class SuperAdminController extends Controller
 
         // Top Firms by Revenue (Leaderboard)
         $topFirms = Firm::with(['owner', 'activeSubscription'])
-            ->where('status', 'active')
+            ->where(fn($q) => $q->where('status', 'active'))
             ->withCount(['sales as total_sales' => function ($q) {
-                $q->where('payment_status', 'paid');
+                $q->where(fn($sub) => $sub->where('payment_status', 'paid'));
             }])
             ->withSum(['sales as total_revenue' => function ($q) {
-                $q->where('payment_status', 'paid');
+                $q->where(fn($sub) => $sub->where('payment_status', 'paid'));
             }], 'total_amount')
             ->orderByDesc('total_revenue')
             ->limit(5)
             ->get();
 
         // Recent Signups (Last 7 days)
-        $recentSignups = User::where('role', 'firm_admin')
+        $recentSignups = User::where(fn($q) => $q->where('role', 'firm_admin'))
             ->whereBetween('created_at', [$now->copy()->subDays(7), $now])
             ->with('firm')
             ->orderByDesc('created_at')
@@ -63,14 +63,14 @@ class SuperAdminController extends Controller
 
         // Login Activity (Last 24h)
         $activeUsers24h = \Illuminate\Support\Facades\DB::table('sessions')
-            ->where('last_activity', '>=', (int) $now->copy()->subHours(24)->timestamp)
+            ->where(fn($q) => $q->where('last_activity', '>=', (int) $now->copy()->subHours(24)->timestamp))
 
             ->whereNotNull('user_id')
             ->distinct('user_id')
             ->count('user_id');
 
         // ✅ SIGNUP EVOLUTION DATA (Last 30 days) - ADD THIS
-        $signupEvolution = User::where('role', 'firm_admin')
+        $signupEvolution = User::where(fn($q) => $q->where('role', 'firm_admin'))
             ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
             ->whereBetween('created_at', [now()->subDays(30), now()])
             ->groupBy('date')
@@ -88,7 +88,7 @@ class SuperAdminController extends Controller
 
         // Detailed Recent Activities (Last 48h)
         $recentActivities = \App\Models\UserDailyActivity::with(['user.firm'])
-            ->where('date', '>=', now()->subDays(2))
+            ->where(fn($q) => $q->where('date', '>=', now()->subDays(2)))
             ->orderByDesc('updated_at')
             ->limit(10)
             ->get();
@@ -110,7 +110,7 @@ class SuperAdminController extends Controller
         $query = Firm::with(['owner', 'activeSubscription']);
 
         if ($request->has('status')) {
-            $query->where('status', $request->status);
+            $query->where(fn($q) => $q->where('status', $request->status));
         }
 
         if ($request->has('search')) {
@@ -146,7 +146,7 @@ class SuperAdminController extends Controller
         }
 
         // Logout all users from this firm
-        User::where('firm_id', $firm->id)->update(['status' => 'inactive']);
+        User::where(fn($q) => $q->where('firm_id', $firm->id))->update(['status' => 'inactive']);
 
         return back()->with('success', "L'entreprise {$firm->name} a été bannie.");
     }
@@ -157,7 +157,7 @@ class SuperAdminController extends Controller
 
         $firm->update(['status' => 'active']);
 
-        User::where('firm_id', $firm->id)->update(['status' => 'active']);
+        User::where(fn($q) => $q->where('firm_id', $firm->id))->update(['status' => 'active']);
 
         return back()->with('success', "L'entreprise {$firm->name} a été activée.");
     }

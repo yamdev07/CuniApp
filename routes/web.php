@@ -129,6 +129,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store']);
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+    // ✅ ONBOARDING: Firm Setup (Accessible once authenticated, even if not fully verified if needed)
+    Route::get('/firm/setup', [FirmController::class, 'setup'])->name('firm.setup');
+    Route::post('/firm/setup', [FirmController::class, 'setupStore'])->name('firm.setup.store');
+
     // ====================================================================
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)
     // ====================================================================

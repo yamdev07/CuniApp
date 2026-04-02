@@ -155,7 +155,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($saillies as $s)
+                    @if(count($saillies) > 0)
+                        @foreach($saillies as $s)
                     <tr class="border-bottom border-light">
                         <td class="ps-4 fw-semibold text-dark">
                             <a href="{{ route('femelles.show', $s->femelle_id) }}" style="color: var(--primary); text-decoration: none;">
@@ -211,7 +212,8 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
+                    @endforeach
+                    @else
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
                             <i class="bi bi-inbox" style="font-size: 2rem;"></i>
@@ -224,7 +226,7 @@
                             </a>
                         </td>
                     </tr>
-                    @endforelse
+                    @endif
                 </tbody>
             </table>
         </div>

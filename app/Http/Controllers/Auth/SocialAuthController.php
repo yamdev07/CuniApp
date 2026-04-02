@@ -66,6 +66,11 @@ class SocialAuthController extends Controller
             $request->session()->regenerate();
             Auth::login($user, true);
 
+            // ✅ REDIRECTION: If no firm, go to setup. Otherwise, go to intended.
+            if (!$user->firm_id) {
+                return redirect()->route('firm.setup');
+            }
+
             return redirect()->intended(route('dashboard'));
         } catch (Exception $e) {
             \Illuminate\Support\Facades\Log::error('Google Auth Error: ' . $e->getMessage());

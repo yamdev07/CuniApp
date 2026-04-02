@@ -28,30 +28,30 @@ class DashboardController extends Controller
         // ====================================================================
         // TOTAUX ACTUELS - ✅ EXPLICIT USER FILTER
         // ====================================================================
-        $nbMales = Male::where('user_id', $userId)->count();
-        $nbFemelles = Femelle::where('user_id', $userId)->count();
-        $nbSaillies = Saillie::where('user_id', $userId)->count();
-        $nbMisesBas = MiseBas::where('user_id', $userId)->count();
+        $nbMales = Male::where(fn($q) => $q->where('user_id', $userId))->count();
+        $nbFemelles = Femelle::where(fn($q) => $q->where('user_id', $userId))->count();
+        $nbSaillies = Saillie::where(fn($q) => $q->where('user_id', $userId))->count();
+        $nbMisesBas = MiseBas::where(fn($q) => $q->where('user_id', $userId))->count();
 
         // ====================================================================
         // CHIFFRE D'AFFAIRES - ✅ EXPLICIT USER FILTER
         // ====================================================================
         try {
-            $totalRevenue = Sale::where('user_id', $userId)
-                ->where('payment_status', 'paid')
+            $totalRevenue = Sale::where(fn($q) => $q->where('user_id', $userId))
+                ->where(fn($q) => $q->where('payment_status', 'paid'))
                 ->sum('total_amount');
 
             $startOfWeek = Carbon::now()->startOfWeek();
             $endOfWeek = Carbon::now()->endOfWeek();
-            $revenueThisWeek = Sale::where('user_id', $userId)
-                ->where('payment_status', 'paid')
+            $revenueThisWeek = Sale::where(fn($q) => $q->where('user_id', $userId))
+                ->where(fn($q) => $q->where('payment_status', 'paid'))
                 ->whereBetween('date_sale', [$startOfWeek, $endOfWeek])
                 ->sum('total_amount');
 
             $startLastWeek = Carbon::now()->subWeek()->startOfWeek();
             $endLastWeek = Carbon::now()->subWeek()->endOfWeek();
-            $revenueLastWeek = Sale::where('user_id', $userId)
-                ->where('payment_status', 'paid')
+            $revenueLastWeek = Sale::where(fn($q) => $q->where('user_id', $userId))
+                ->where(fn($q) => $q->where('payment_status', 'paid'))
                 ->whereBetween('date_sale', [$startLastWeek, $endLastWeek])
                 ->sum('total_amount');
 
@@ -67,7 +67,6 @@ class DashboardController extends Controller
         // ALERTES
         // ====================================================================
         $nbAlertes = \App\Models\Notification::where('user_id', $userId)
-            ->whereIn('type', ['warning', 'error', 'danger'])
             ->where('is_read', false)
             ->count();
 
@@ -84,16 +83,16 @@ class DashboardController extends Controller
         $startLastWeek = Carbon::now()->subWeek()->startOfWeek();
         $endLastWeek = Carbon::now()->subWeek()->endOfWeek();
 
-        $oldMales = Male::where('user_id', $userId)
+        $oldMales = Male::where(fn($q) => $q->where('user_id', $userId))
             ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
             ->count();
-        $oldFemelles = Femelle::where('user_id', $userId)
+        $oldFemelles = Femelle::where(fn($q) => $q->where('user_id', $userId))
             ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
             ->count();
-        $oldSaillies = Saillie::where('user_id', $userId)
+        $oldSaillies = Saillie::where(fn($q) => $q->where('user_id', $userId))
             ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
             ->count();
-        $oldMisesBas = MiseBas::where('user_id', $userId)
+        $oldMisesBas = MiseBas::where(fn($q) => $q->where('user_id', $userId))
             ->whereBetween('created_at', [$startLastWeek, $endLastWeek])
             ->count();
 
@@ -105,15 +104,15 @@ class DashboardController extends Controller
         // ====================================================================
         // LISTES RÉCENTES - ✅ EXPLICIT USER FILTER
         // ====================================================================
-        $males = Male::where('user_id', $userId)->latest()->paginate(10);
-        $femelles = Femelle::where('user_id', $userId)->latest()->paginate(10);
+        $males = Male::where(fn($q) => $q->where('user_id', $userId))->latest()->paginate(10);
+        $femelles = Femelle::where(fn($q) => $q->where('user_id', $userId))->latest()->paginate(10);
 
         // ====================================================================
         // ÉVÉNEMENTS POUR LE CALENDRIER - ✅ EXPLICIT USER FILTER
         // ====================================================================
         $events = [
             // Saillies (violet)
-            'saillies' => Saillie::where('user_id', $userId)
+            'saillies' => Saillie::where(fn($q) => $q->where('user_id', $userId))
                 ->with(['femelle', 'male'])
                 ->select('id', 'date_saillie', 'femelle_id', 'male_id')
                 ->get()
@@ -129,7 +128,7 @@ class DashboardController extends Controller
                 ->filter(fn($e) => $e['date'] !== null)
                 ->toArray(),
             // Naissances (vert)
-            'naissances' => \App\Models\Naissance::where('user_id', $userId)
+            'naissances' => \App\Models\Naissance::where(fn($q) => $q->where('user_id', $userId))
                 ->with(['miseBas'])
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
@@ -142,8 +141,8 @@ class DashboardController extends Controller
                 ->values()
                 ->toArray(),
             // Sexuations (bleu) - J+10
-            'sexuations' => \App\Models\Naissance::where('user_id', $userId)
-                ->where('sex_verified', false)
+            'sexuations' => \App\Models\Naissance::where(fn($q) => $q->where('user_id', $userId))
+                ->where(fn($q) => $q->where('sex_verified', false))
                 ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
                 ->whereHas('miseBas', fn($q) => $q->whereNotNull('date_mise_bas'))
                 ->get()
@@ -166,7 +165,7 @@ class DashboardController extends Controller
         $timelineActivities = collect();
 
         // Naissances (vert)
-        $recentNaissances = Naissance::where('user_id', $userId)
+        $recentNaissances = Naissance::where(fn($q) => $q->where('user_id', $userId))
             ->with('femelle')
             ->whereHas('lapereaux', fn($q) => $q->where('etat', 'vivant'))
             ->latest('created_at')
@@ -181,7 +180,7 @@ class DashboardController extends Controller
             ]);
 
         // Saillies (violet)
-        $recentSaillies = Saillie::where('user_id', $userId)
+        $recentSaillies = Saillie::where(fn($q) => $q->where('user_id', $userId))
             ->with('femelle', 'male')
             ->latest('date_saillie')
             ->limit(1)
@@ -196,7 +195,7 @@ class DashboardController extends Controller
             ]);
 
         // Ventes (bleu)
-        $recentSales = Sale::where('user_id', $userId)
+        $recentSales = Sale::where(fn($q) => $q->where('user_id', $userId))
             ->latest('created_at')
             ->limit(1)
             ->get()
@@ -210,7 +209,7 @@ class DashboardController extends Controller
             ]);
 
         // Mises Bas (amber)
-        $recentMisesBas = MiseBas::where('user_id', $userId)
+        $recentMisesBas = MiseBas::where(fn($q) => $q->where('user_id', $userId))
             ->with('saillie.femelle')
             ->latest('date_mise_bas')
             ->limit(1)
@@ -225,7 +224,7 @@ class DashboardController extends Controller
             ]);
 
         // Nouveaux Lapins (cyan)
-        $nouveauxMales = Male::where('user_id', $userId)
+        $nouveauxMales = Male::where(fn($q) => $q->where('user_id', $userId))
             ->latest('created_at')
             ->limit(1)
             ->get()
@@ -238,7 +237,7 @@ class DashboardController extends Controller
                 'url' => route('males.show', $m->id),
             ]);
 
-        $nouvellesFemelles = Femelle::where('user_id', $userId)
+        $nouvellesFemelles = Femelle::where(fn($q) => $q->where('user_id', $userId))
             ->latest('created_at')
             ->limit(1)
             ->get()
@@ -307,8 +306,8 @@ class DashboardController extends Controller
         $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
 
         // Sales data
-        $sales = Sale::where('user_id', $userId)
-            ->where('payment_status', 'paid')
+        $sales = Sale::where(fn($q) => $q->where('user_id', $userId))
+            ->where(fn($q) => $q->where('payment_status', 'paid'))
             ->whereYear('date_sale', now()->year)
             ->selectRaw('MONTH(date_sale) as month, SUM(total_amount) as total')
             ->groupBy('month')
@@ -328,7 +327,7 @@ class DashboardController extends Controller
         $userId = auth()->id();
         $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
 
-        $misesBas = \App\Models\MiseBas::where('user_id', $userId)
+        $misesBas = \App\Models\MiseBas::where(fn($q) => $q->where('user_id', $userId))
             ->whereYear('date_mise_bas', now()->year)
             ->with('lapereaux')
             ->get();
@@ -357,13 +356,14 @@ class DashboardController extends Controller
         $userId = auth()->id();
         $months = collect(range(1, 12))->map(fn($m) => \Carbon\Carbon::create()->month($m)->format('M'));
 
-        $saillies = \App\Models\Saillie::where('user_id', $userId)
+        $saillies = \App\Models\Saillie::where(fn($q) => $q->where('user_id', $userId))
             ->whereYear('created_at', now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        $naissances = \App\Models\Naissance::whereYear('created_at', now()->year)
+        $naissances = \App\Models\Naissance::where(fn($q) => $q->where('user_id', $userId))
+            ->whereYear('created_at', now()->year)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->pluck('count', 'month');

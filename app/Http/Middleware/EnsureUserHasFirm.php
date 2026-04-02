@@ -10,8 +10,10 @@ class EnsureUserHasFirm
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check() && !auth()->user()->firm_id) {
-            return redirect()->route('profile.edit')
-                ->withErrors(['error' => 'Votre compte doit être associé à une entreprise. Contactez le support.']);
+            // ✅ Only redirect to setup if not already on the setup page
+            if (!$request->routeIs('firm.setup') && !$request->routeIs('firm.setup.store') && !$request->routeIs('logout')) {
+                return redirect()->route('firm.setup');
+            }
         }
 
         return $next($request);

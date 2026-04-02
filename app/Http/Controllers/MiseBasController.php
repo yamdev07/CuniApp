@@ -48,12 +48,12 @@ class MiseBasController extends Controller
                 ->withInput();
         }
 
-        $femelles = Femelle::where('user_id', auth()->id())
+        $femelles = Femelle::where(fn($q) => $q->where('user_id', auth()->id()))
             ->orderBy('nom')
             ->get();
 
         $saillies = Saillie::with(['femelle', 'male'])
-            ->where('user_id', auth()->id())
+            ->where(fn($q) => $q->where('user_id', auth()->id()))
             ->whereHas('femelle', fn($q) => $q->where('etat', 'Gestante'))
             ->orderBy('date_saillie', 'desc')
             ->get();

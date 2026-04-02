@@ -90,9 +90,11 @@ public function create(Request $request)
     $user = Auth::user();
     $currentSubscription = $user->activeSubscription();
 
-    // ✅ CORRECTION : Bloquer seulement si l'utilisateur a déjà un abonnement PAYANT actif
-    // Autoriser l'upgrade depuis un essai gratuit (price = 0)
-    if ($currentSubscription && $currentSubscription->end_date?->isFuture() && $currentSubscription->price > 0) {
+    // ✅ Si l'utilisateur a déjà un abonnement PAYANT actif et futur, on bloque
+    if ($currentSubscription instanceof \App\Models\Subscription && 
+        $currentSubscription->end_date && 
+        $currentSubscription->end_date->isFuture() && 
+        $currentSubscription->price > 0) {
 
 
         return redirect()->route('subscription.status')

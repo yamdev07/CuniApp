@@ -599,6 +599,47 @@
         .btn-cuni.danger:hover {
             background: var(--accent-red);
             color: var(--white);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Global Utility Overrides for Light Mode Contrast */
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        .fw-semibold {
+            font-weight: 600 !important;
+            color: var(--text-primary);
+        }
+
+        .bg-light {
+            background-color: var(--surface-alt) !important;
+        }
+
+        .theme-dark .fw-semibold {
+            color: var(--text-primary) !important;
+        }
+
+        .theme-dark .text-muted {
+            color: var(--text-tertiary) !important;
+        }
+
+        /* Alert Animations */
+        .alert-cuni {
+            transition: opacity 0.5s ease, transform 0.5s ease, margin 0.5s ease;
+        }
+
+        .alert-cuni.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            height: 0;
+            overflow: hidden;
+        }
+            color: var(--white);
             border-color: var(--accent-red);
         }
 
@@ -3854,6 +3895,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             window.headerOverflowManager = new HeaderOverflowManager();
             highlightActiveNavLinks();
+
+            // ============================================
+            // ✅ AUTO-DISMISS ALERTS (Success/Error/Warning)
+            // ============================================
+            const alerts = document.querySelectorAll('.alert-cuni');
+            alerts.forEach(alert => {
+                // Auto-dimiss after 5 seconds
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500); // Wait for transition
+                }, 5000);
+
+                // Optional: Add click to dismiss early
+                alert.style.cursor = 'pointer';
+                alert.title = 'Cliquer pour fermer';
+                alert.addEventListener('click', () => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                });
+            });
         });
     </script>
 </body>

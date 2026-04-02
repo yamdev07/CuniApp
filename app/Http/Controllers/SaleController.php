@@ -331,7 +331,7 @@ class SaleController extends Controller
         }
 
         if ($request->has('filter_category')) {
-            $rabbitsQuery->where('rabbit_type', $request->filter_category);
+            $rabbitsQuery->where(fn($q) => $q->where('rabbit_type', $request->filter_category));
         }
 
         $rabbits = $rabbitsQuery->paginate(10)->withQueryString();

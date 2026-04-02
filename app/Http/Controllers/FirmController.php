@@ -302,5 +302,100 @@ class FirmController extends Controller
 
         return back()->with('success', "L'employé {$employeeName} a été supprimé définitivement.");
     }
+
+    public function patchUpdate(Request $request)
+    {
+        return $this->updateFirm($request);
+    }
+
+    /**
+     * ✅ NEW: Show firm onboarding form (for Google Auth users or missing firms)
+     */
+    public function setup()
+    {
+        $user = auth()->user();
+        if ($user->firm_id) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('firm.setup');
+    }
+
+    /**
+     * ✅ NEW: Store firm created during onboarding
+     */
+    public function setupStore(Request $request)
+    {
+        $user = auth()->user();
+        if ($user->firm_id) {
+            return redirect()->route('dashboard');
+        }
+
+        $request->validate([
+            'firm_name' => ['required', 'string', 'max:255', 'min:3'],
+            'firm_description' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'firm_name.required' => 'Le nom de votre élevage/entreprise est obligatoire.',
+            'firm_name.min' => 'Le nom doit contenir au moins 3 caractères.',
+        ]);
+
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            // 1. Create Firm
+            $firm = Firm::create([
+                'name' => $request->firm_name,
+                'description' => $request->firm_description,
+                'status' => 'active',
+                'owner_id' => $user->id,
+            ]);
+
+            // 2. Link User to Firm and set role
+            $user->update([
+                'firm_id' => $firm->id,
+                'role' => 'firm_admin', // Onboarding user becomes admin
+            ]);
+
+            // 3. Create 14-day trial (matching RegisteredUserController logic)
+            $trialPlan = SubscriptionPlan::where('name', 'Essai Gratuit')->first();
+            if (!$trialPlan) {
+                $trialPlan = SubscriptionPlan::create([
+                    'name' => 'Essai Gratuit',
+                    'duration_months' => 0,
+                    'price' => 0,
+                    'is_active' => true,
+                    'max_users' => 5,
+                    'description' => 'Période d\'essai automatique 14 jours',
+                    'features' => json_encode(['Accès complet', 'Jusqu\'à 5 utilisateurs', 'Support de base']),
+                ]);
+            }
+
+            $endDate = now()->addDays(14);
+            \App\Models\Subscription::create([
+                'user_id' => $user->id,
+                'firm_id' => $firm->id,
+                'subscription_plan_id' => $trialPlan->id,
+                'status' => 'active',
+                'start_date' => now(),
+                'end_date' => $endDate,
+                'price' => 0,
+                'payment_method' => 'manual',
+                'payment_reference' => 'TRIAL_ONBOARDING_' . $user->id,
+                'auto_renew' => false,
+            ]);
+
+            $user->update([
+                'subscription_status' => 'active',
+                'subscription_ends_at' => $endDate,
+            ]);
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()->route('dashboard')->with('success', '✅ Entreprise créée avec succès ! Votre essai gratuit de 14 jours est actif.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Onboarding Error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Une erreur est survenue lors de la création: ' . $e->getMessage()])->withInput();
+        }
+    }
 }
     

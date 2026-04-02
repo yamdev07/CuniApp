@@ -35,81 +35,74 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-        <div class="cuni-card">
+        <div class="cuni-card stats-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total des ventes</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">{{ $stats['total_sales'] }}</p>
+                        <p class="stats-label">Total des ventes</p>
+                        <p class="stats-value">{{ $stats['total_sales'] }}</p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(59, 130, 246, 0.1)">
+                    <div class="stats-icon" style="background: rgba(59, 130, 246, 0.1)">
                         <i class="bi bi-cart text-blue-500 text-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cuni-card">
+        <div class="cuni-card stats-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Chiffre d'affaires</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
+                        <p class="stats-label">Chiffre d'affaires</p>
+                        <p class="stats-value">
                             {{ number_format($stats['total_revenue'], 2, ',', ' ') }} FCFA
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(16, 185, 129, 0.1)">
+                    <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1)">
                         <i class="bi bi-cash-stack text-green-500 text-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cuni-card">
+        <div class="cuni-card stats-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Ce mois-ci</p>
-                        <p class="text-2xl font-bold mt-1 text-gray-800 dark:text-gray-100">
+                        <p class="stats-label">Ce mois-ci</p>
+                        <p class="stats-value">
                             {{ number_format($stats['this_month'], 2, ',', ' ') }} FCFA
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(139, 92, 246, 0.1)">
+                    <div class="stats-icon" style="background: rgba(139, 92, 246, 0.1)">
                         <i class="bi bi-graph-up text-purple-500 text-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cuni-card">
+        <div class="cuni-card stats-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Paiements en attente</p>
-                        <p class="text-2xl font-bold mt-1 text-amber-600 dark:text-amber-400">
+                        <p class="stats-label">Paiements en attente</p>
+                        <p class="stats-value" style="color: #D97706;">
                             {{ number_format($stats['pending_payments'], 2, ',', ' ') }} FCFA
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(245, 158, 11, 0.1)">
+                    <div class="stats-icon" style="background: rgba(245, 158, 11, 0.1)">
                         <i class="bi bi-hourglass-split text-amber-500 text-lg"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="cuni-card">
+        <div class="cuni-card stats-card">
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Supprimables (60j+)
-                        </p>
-                        <p class="text-2xl font-bold mt-1 text-danger">
+                        <p class="stats-label">Supprimables (60j+)</p>
+                        <p class="stats-value text-danger">
                             {{ $stats['deletable_sales'] ?? 0 }}
                         </p>
                     </div>
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        style="background: rgba(239, 68, 68, 0.1)">
+                    <div class="stats-icon" style="background: rgba(239, 68, 68, 0.1)">
                         <i class="bi bi-trash text-danger text-lg"></i>
                     </div>
                 </div>
@@ -375,19 +368,15 @@
                 </table>
             </div>
             @if ($sales->hasPages())
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--surface-border);">
-                    <div class="text-muted dark:text-gray-400" style="font-size: 13px;">
-                        Affichage de <strong class="text-dark dark:text-gray-100">{{ $sales->firstItem() }}</strong> à
-                        <strong class="text-dark dark:text-gray-100">{{ $sales->lastItem() }}</strong> sur
-                        <strong class="text-dark dark:text-gray-100">{{ $sales->total() }}</strong> ventes
+                <div class="pagination-footer">
+                    <div class="pagination-info">
+                        Affichage de <strong>{{ $sales->firstItem() }}</strong> à
+                        <strong>{{ $sales->lastItem() }}</strong> sur
+                        <strong>{{ $sales->total() }}</strong> ventes
                     </div>
-                    @if ($sales->hasPages())
-                        <div class="cuni-card"
-                            style="margin-top: 0; border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
-                            {{ $sales->links('pagination.bootstrap-5-sm') }}
-                        </div>
-                    @endif
+                    <div class="pagination-links">
+                        {{ $sales->links('pagination.bootstrap-5-sm') }}
+                    </div>
                 </div>
             @endif
         </div>
@@ -442,6 +431,79 @@
 
     @push('styles')
         <style>
+            /* Stats Cards Styling */
+            .stats-card {
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .stats-card:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+            .stats-label {
+                font-size: 13px;
+                font-weight: 500;
+                color: var(--text-secondary);
+                margin-bottom: 4px;
+            }
+            .stats-value {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin: 0;
+            }
+            .stats-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            /* Table Header Styling */
+            .table thead th {
+                background: var(--surface-alt);
+                border-top: none;
+                border-bottom: 1px solid var(--surface-border);
+                color: var(--text-secondary);
+                font-weight: 600;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                padding: 14px 16px;
+            }
+
+            /* Pagination Container Fix */
+            .pagination-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 20px;
+                padding-top: 16px;
+                border-top: 1px solid var(--surface-border);
+            }
+            .pagination-info {
+                font-size: 13px;
+                color: var(--text-secondary);
+            }
+            .pagination-info strong {
+                color: var(--text-primary);
+            }
+            .pagination-links {
+                background: none !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            /* Fix nested card ghost boxes */
+            .pagination-links .cuni-card {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+
             .theme-dark .text-gray-500 {
                 color: #9CA3AF !important;
             }

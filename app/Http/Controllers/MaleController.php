@@ -30,12 +30,12 @@ class MaleController extends Controller
 
         // Filtre par état
         if ($request->filled('etat')) {
-            $query->where('etat', $request->get('etat'));
+            $query->where(fn($q) => $q->where('etat', $request->get('etat')));
         }
 
         // Filtre par origine
         if ($request->filled('origine')) {
-            $query->where('origine', $request->get('origine'));
+            $query->where(fn($q) => $q->where('origine', $request->get('origine')));
         }
 
         $males = $query->latest()->paginate(10)->withQueryString();

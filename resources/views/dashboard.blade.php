@@ -141,29 +141,59 @@ if (auth()->check() && auth()->user()->firm_id) {
 
         /* Metrics Grid */
         .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
             padding: 24px;
+            justify-content: center; /* Center items in the last row */
+        }
+        
+        .metrics-grid > a {
+            flex: 1 1 280px;
+            max-width: 400px; /* Prevent over-stretching */
+            text-decoration: none;
+            display: flex;
         }
 
         .metric-card {
             background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            border-radius: var(--radius-xl);
+            padding: 24px;
             display: flex;
-            align-items: flex-start;
-            gap: 16px;
+            align-items: center;
+            gap: 20px;
             border: 1px solid var(--surface-border);
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            width: max-content;
+            min-width: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+        }
+
+        .theme-dark .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
         }
 
         .metric-card:hover {
             border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 16px -8px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px);
+        }
+
+        /* Specialized Cards */
+        .metric-card.orange {
+            border-left: 4px solid var(--accent-orange);
+        }
+        .metric-card.purple-gold {
+            background: linear-gradient(135deg, var(--surface) 0%, rgba(139, 92, 246, 0.08) 100%);
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .theme-dark .metric-card.purple-gold {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(139, 92, 246, 0.1) 100%);
         }
 
         .metric-icon {
@@ -802,8 +832,13 @@ if (auth()->check() && auth()->user()->firm_id) {
                 align-items: flex-start;
             }
 
+            .metrics-grid > a {
+                flex: 1 1 160px;
+                padding: 0;
+            }
             .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
+                padding: 16px;
+                gap: 12px;
             }
 
             .performance-grid,
@@ -821,8 +856,22 @@ if (auth()->check() && auth()->user()->firm_id) {
                 font-size: 28px;
             }
 
+            .metrics-grid > a {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            
             .metrics-grid {
-                grid-template-columns: 1fr;
+                padding: 12px;
+                gap: 10px;
+            }
+            
+            .dash-header {
+                margin-bottom: 16px;
+            }
+            
+            .header-wrapper-dash {
+                padding: 16px;
             }
         }
 
@@ -1073,15 +1122,6 @@ if (auth()->check() && auth()->user()->firm_id) {
                             'route' => 'notifications.index',
                             'route_params' => ['filter' => 'alerts'],
                         ],
-                        [
-                            'icon' => 'sales',
-                            'value' => number_format($totalRevenue, 0, ',', ' ') . ' FCFA', // ← Format avec devise
-                            'label' => 'CA Total',
-                            'type' => 'purple',
-                            'change' => $salesStats['change'],
-                            'trend' => $salesStats['trend'],
-                            'route' => 'sales.index',
-                        ],
                     ];
                 @endphp
                 @foreach ($metricsData as $metric)
@@ -1148,11 +1188,10 @@ if (auth()->check() && auth()->user()->firm_id) {
                         <div
                             style="text-align: center; padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-lg);">
                             <div style="font-size: 32px; font-weight: 700; color: var(--primary);">
-                                {{ auth()->user()->firm->active_users_count }} /
-                                {{ auth()->user()->firm->subscription_limit }}
+                                {{ auth()->user()->firm->active_users_count }}
                             </div>
                             <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">
-                                <i class="bi bi-people"></i> Utilisateurs Actifs
+                                <i class="bi bi-people"></i> Collaborateurs
                             </div>
                             @if (auth()->user()->firm->usage_percentage >= 80)
                                 <div style="font-size: 11px; color: var(--accent-orange); margin-top: 8px;">
@@ -1202,8 +1241,8 @@ if (auth()->check() && auth()->user()->firm_id) {
                 <div class="card-header-custom">
                     <h3 class="card-title"><i class="bi bi-graph-up"></i> Ventes ({{ now()->year }})</h3>
                 </div>
-                <div class="card-body">
-                    <canvas id="financeChart" height="200"></canvas>
+                <div class="card-body" style="height: 280px; padding: 20px;">
+                    <canvas id="financeChart"></canvas>
                 </div>
             </div>
 
@@ -1212,8 +1251,8 @@ if (auth()->check() && auth()->user()->firm_id) {
                 <div class="card-header-custom">
                     <h3 class="card-title"><i class="bi bi-activity"></i> Saillies & Naissances</h3>
                 </div>
-                <div class="card-body">
-                    <canvas id="activityChart" height="200"></canvas>
+                <div class="card-body" style="height: 280px; padding: 20px;">
+                    <canvas id="activityChart"></canvas>
                 </div>
             </div>
 
@@ -1222,150 +1261,106 @@ if (auth()->check() && auth()->user()->firm_id) {
                 <div class="card-header-custom">
                     <h3 class="card-title"><i class="bi bi-heart-pulse"></i> Taux de Survie</h3>
                 </div>
-                <div class="card-body">
-                    <canvas id="survieChart" height="200"></canvas>
+                <div class="card-body" style="height: 280px; padding: 20px;">
+                    <canvas id="survieChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Main Grid -->
+        {{-- ✅ QUICK ACTIONS SECTION --}}
+        <div class="section-block mb-6">
+            <div class="section-title">
+                <h2><i class="bi bi-lightning-charge"></i> Actions Rapides</h2>
+            </div>
+            <div class="actions-grid">
+                @foreach ([['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'], ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'], ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple']] as $action)
+                    <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
+                        <div class="tile-icon">
+                            @if ($action['icon'] === 'male')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="10" cy="14" r="6" />
+                                    <path d="M16 8h6V2M22 2l-8.5 8.5" />
+                                </svg>
+                            @elseif($action['icon'] === 'female')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="8" r="6" />
+                                    <path d="M12 14v8M9 19h6" />
+                                </svg>
+                            @elseif($action['icon'] === 'breed')
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                </svg>
+                            @else
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                            @endif
+                        </div>
+                        <h3>{{ $action['title'] }}</h3>
+                        <p>{{ $action['desc'] }}</p>
+                        <div class="tile-arrow">→</div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+
         <div class="main-grid">
-            <!-- Left Column -->
-            <div class="primary-col">
-                <!-- Performance Overview -->
-                <div class="section-block">
-                    <div class="section-title">
-                        <h2>Performance</h2>
+            <div class="content-col">
+                {{-- Recent Rabbits Widget --}}
+                <div class="widget">
+                    <div class="widget-head">
+                        <h3>Derniers Lapins</h3>
+                        <a href="{{ route('lapins.index') }}" class="text-link">Voir tout</a>
                     </div>
-                    <div class="performance-grid">
-                        @php
-                            $totalCheptel = max($nbMales + $nbFemelles, 1);
-                            $perfCards = [
-                                [
-                                    'type' => 'blue',
-                                    'icon' => 'male',
-                                    'value' => $nbMales,
-                                    'title' => 'Mâles Reproducteurs',
-                                    'progress' => ($nbMales / $totalCheptel) * 100,
-                                    'trend' => number_format($malePercent, 1) . '%',
-                                    'isUp' => $malePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'pink',
-                                    'icon' => 'female',
-                                    'value' => $nbFemelles,
-                                    'title' => 'Femelles Reproductrices',
-                                    'progress' => ($nbFemelles / $totalCheptel) * 100,
-                                    'trend' => number_format($femalePercent, 1) . '%',
-                                    'isUp' => $femalePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'purple',
-                                    'icon' => 'breed',
-                                    'value' => $nbSaillies,
-                                    'title' => 'Saillies Totales',
-                                    'progress' => $nbFemelles > 0 ? min(($nbSaillies / $nbFemelles) * 100, 100) : 0,
-                                    'trend' => number_format($sailliePercent, 1) . '%',
-                                    'isUp' => $sailliePercent >= 0,
-                                ],
-                                [
-                                    'type' => 'green',
-                                    'icon' => 'birth',
-                                    'value' => $nbMisesBas,
-                                    'title' => 'Mises Bas',
-                                    'progress' => $nbSaillies > 0 ? min(($nbMisesBas / $nbSaillies) * 100, 100) : 0,
-                                    'trend' => number_format($miseBasPercent, 1) . '%',
-                                    'isUp' => $miseBasPercent >= 0,
-                                ],
-                            ];
-                        @endphp
-                        @foreach ($perfCards as $card)
-                            <div class="perf-card {{ $card['type'] }}">
-                                <div class="card-top">
-                                    <span class="card-label">{{ $card['title'] }}</span>
-                                    <div class="card-badge {{ $card['type'] }}">
-                                        @if ($card['icon'] === 'male')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <circle cx="10" cy="14" r="6" />
-                                                <path d="M16 8h6V2M22 2l-8.5 8.5" />
-                                            </svg>
-                                        @elseif($card['icon'] === 'female')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <circle cx="12" cy="8" r="6" />
-                                                <path d="M12 14v8M9 19h6" />
-                                            </svg>
-                                        @elseif($card['icon'] === 'breed')
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path
-                                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                            </svg>
-                                        @else
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <polygon
-                                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                            </svg>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="card-number">{{ $card['value'] }}</div>
-                                <div class="progress-track">
-                                    <div class="progress-bar {{ $card['type'] }}"
-                                        style="width: {{ $card['progress'] }}%"></div>
-                                </div>
-                                <div class="card-footer">
-                                    <span class="progress-label">{{ round($card['progress']) }}% du flux</span>
-                                    <span class="trend-badge" style="color: {{ $card['isUp'] ? '#10b981' : '#ef4444' }}">
-                                        {{ $card['isUp'] ? '↑' : '↓' }} {{ $card['trend'] }} </span>
-                                </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                        @foreach($males->take(2) as $m)
+                            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                                <div style="font-weight: 600; font-size: 14px;">{{ $m->nom }}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Mâle • {{ $m->code }}</div>
+                            </div>
+                        @endforeach
+                        @foreach($femelles->take(2) as $f)
+                            <div style="background: var(--surface-alt); padding: 12px; border-radius: var(--radius); border-left: 3px solid var(--accent-pink);">
+                                <div style="font-weight: 600; font-size: 14px;">{{ $f->nom }}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Femelle • {{ $f->code }}</div>
                             </div>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="section-block">
-                    <div class="section-title">
-                        <h2>Actions Rapides</h2>
+                {{-- Recent Sales Widget --}}
+                <div class="widget mt-6">
+                    <div class="widget-head">
+                        <h3>Dernières Ventes</h3>
+                        <a href="{{ route('ventes.index') }}" class="text-link">Historique</a>
                     </div>
-                    <div class="actions-grid">
-                        @foreach ([['url' => route('males.index'), 'icon' => 'male', 'title' => 'Gérer Mâles', 'desc' => 'Consulter et modifier', 'color' => 'blue'], ['url' => route('femelles.index'), 'icon' => 'female', 'title' => 'Gérer Femelles', 'desc' => 'Suivi reproduction', 'color' => 'pink'], ['url' => route('saillies.index'), 'icon' => 'breed', 'title' => 'Planifier Saillie', 'desc' => 'Nouveau croisement', 'color' => 'purple']] as $action)
-                            <a href="{{ $action['url'] }}" class="action-tile {{ $action['color'] }}">
-                                <div class="tile-icon">
-                                    @if ($action['icon'] === 'male')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="10" cy="14" r="6" />
-                                            <path d="M16 8h6V2M22 2l-8.5 8.5" />
-                                        </svg>
-                                    @elseif($action['icon'] === 'female')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="8" r="6" />
-                                            <path d="M12 14v8M9 19h6" />
-                                        </svg>
-                                    @elseif($action['icon'] === 'breed')
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path
-                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                                        </svg>
-                                    @else
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polygon
-                                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                        </svg>
-                                    @endif
-                                </div>
-                                <h3>{{ $action['title'] }}</h3>
-                                <p>{{ $action['desc'] }}</p>
-                                <div class="tile-arrow">→</div>
-                            </a>
-                        @endforeach
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Client</th>
+                                    <th class="text-end">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentSales->take(4) as $sale)
+                                    <tr>
+                                        <td>{{ $sale->date_sale->format('d/m/y') }}</td>
+                                        <td>{{ Str::limit($sale->client_name ?? 'Client Divers', 15) }}</td>
+                                        <td class="text-end fw-bold">{{ number_format($sale->total_amount, 0, ',', ' ') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="3" class="text-center text-muted">Aucune vente</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
             <div class="sidebar-col">
                 <!-- Calendar -->
                 <div class="widget calendar-widget">
