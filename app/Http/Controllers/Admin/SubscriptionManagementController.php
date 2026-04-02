@@ -22,9 +22,18 @@ class SubscriptionManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['activeSubscriptionRelation.plan']);
+        // On ne liste que :
+        // 1. Les utilisateurs sans aucun abonnement (nouveaux)
+        // 2. Les utilisateurs ayant au moins un abonnement NON-ARCHIVÉ
+        $query = User::where(function($q) {
+            $q->whereDoesntHave('subscriptions')
+              ->orWhereHas('subscriptions', function($subQuery) {
+                  $subQuery->whereNull('archived_at');
+              });
+        })->with(['activeSubscriptionRelation.plan']);
 
         // Filter by subscription status
+
         if ($request->has('status')) {
             $status = $request->status;
             if ($status === 'active') {
