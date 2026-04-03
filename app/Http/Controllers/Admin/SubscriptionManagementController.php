@@ -43,6 +43,14 @@ class SubscriptionManagementController extends Controller
                 $query->whereHas('subscriptions', function ($q) {
                     $q->where('status', 'cancelled');
                 });
+            } elseif ($status === 'inactive') {
+                // User status is explicitly inactive
+                $query->where('status', 'inactive');
+            } elseif ($status === 'failed') {
+                // User has at least one failed payment transaction
+                $query->whereHas('paymentTransactions', function ($q) {
+                    $q->where('status', 'failed');
+                });
             }
         }
 

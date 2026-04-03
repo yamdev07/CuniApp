@@ -104,6 +104,8 @@
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actifs</option>
                         <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expirés</option>
                         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulés</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactifs</option>
+                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Échoués</option>
                     </select>
                     <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
                         class="form-control" style="width: 250px;">
