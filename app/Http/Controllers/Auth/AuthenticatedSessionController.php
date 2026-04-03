@@ -27,15 +27,19 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
-        // ✅ ADD THIS: Check if user's firm is banned
         $user = auth()->user();
-        if ($user->firm && $user->firm->isBanned()) {
+        
+        // Security check: User deactivated or Firm banned
+        if ($user->status === 'inactive' || ($user->firm && $user->firm->isBanned())) {
+            $message = ($user->status === 'inactive') 
+                ? 'Votre compte est désactivé. Veuillez contacter contact@anyxtech.com'
+                : 'Votre entreprise a été suspendue. Veuillez contacter contact@anyxtech.com';
+
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('welcome')
-                ->withErrors(['error' => 'Votre entreprise a été suspendue. Contactez le support.']);
+            return redirect()->route('welcome')->withErrors(['error' => $message]);
         }
 
         if ($user->isSuperAdmin()) {

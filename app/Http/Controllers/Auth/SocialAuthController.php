@@ -42,6 +42,15 @@ class SocialAuthController extends Controller
             }
 
             if ($user) {
+                // Security check: User deactivated or Firm banned
+                if ($user->status === 'inactive' || ($user->firm && $user->firm->isBanned())) {
+                    $message = ($user->status === 'inactive') 
+                        ? 'Votre compte est désactivé. Veuillez contacter contact@anyxtech.com'
+                        : 'Votre entreprise a été suspendue. Veuillez contacter contact@anyxtech.com';
+                        
+                    return redirect()->route('welcome')->with('error', $message);
+                }
+
                 // ✅ EXISTING USER: Only update tokens and google_id, never touch name or role
                 $user->update([
                     'google_id'            => $googleUser->getId(),
