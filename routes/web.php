@@ -277,7 +277,7 @@ Route::middleware('auth')->group(function () {
                 Route::post('/', [SettingsController::class, 'update'])->name('update');
                 Route::post('/profile', [SettingsController::class, 'updateProfile'])->name('updateProfile');
                 Route::get('/export', [SettingsController::class, 'exportData'])->name('export');
-                Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clear-cache');
+                Route::post('/clear-cache', [SettingsController::class, 'clearCache'])->name('clearCache');
             });
 
             Route::prefix('notifications')->name('notifications.')->group(function () {

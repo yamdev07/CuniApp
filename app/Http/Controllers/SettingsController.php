@@ -66,28 +66,33 @@ class SettingsController extends Controller
         $user->save();
 
         // Save general settings
-        Setting::set('farm_name', $request->farm_name, 'string', 'general', 'Nom de la ferme');
-        Setting::set('farm_address', $request->farm_address, 'string', 'general', 'Adresse');
-        Setting::set('farm_phone', $request->farm_phone, 'string', 'general', 'Téléphone');
-        Setting::set('farm_email', $request->farm_email, 'string', 'general', 'Email');
-        Setting::set('gestation_days', $request->gestation_days ?? 31, 'number', 'breeding', 'Jours de gestation');
-        Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
-        Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', "Seuil d'alerte (%)");
+        // Save general settings (if present)
+        if ($request->has('farm_name')) Setting::set('farm_name', $request->farm_name, 'string', 'general', 'Nom de la ferme');
+        if ($request->has('farm_address')) Setting::set('farm_address', $request->farm_address, 'string', 'general', 'Adresse');
+        if ($request->has('farm_phone')) Setting::set('farm_phone', $request->farm_phone, 'string', 'general', 'Téléphone');
+        if ($request->has('farm_email')) Setting::set('farm_email', $request->farm_email, 'string', 'general', 'Email');
+        
+        if ($request->has('gestation_days')) Setting::set('gestation_days', $request->gestation_days ?? 31, 'number', 'breeding', 'Jours de gestation');
+        if ($request->has('weaning_weeks')) Setting::set('weaning_weeks', $request->weaning_weeks ?? 6, 'number', 'breeding', 'Semaines de sevrage');
+        if ($request->has('alert_threshold')) Setting::set('alert_threshold', $request->alert_threshold ?? 80, 'number', 'breeding', "Seuil d'alerte (%)");
 
         // ✅ NEW: Save verification settings
-        Setting::set('verification_initial_days', $request->verification_initial_days ?? 10, 'number', 'breeding', 'Délai initial de vérification (jours)');
-        Setting::set('verification_reminder_days', $request->verification_reminder_days ?? 15, 'number', 'breeding', 'Délai premier rappel (jours)');
-        Setting::set('verification_interval_days', $request->verification_interval_days ?? 5, 'number', 'breeding', 'Intervalle des rappels (jours)');
+        // ✅ NEW: Save verification settings
+        if ($request->has('verification_initial_days')) Setting::set('verification_initial_days', $request->verification_initial_days ?? 10, 'number', 'breeding', 'Délai initial de vérification (jours)');
+        if ($request->has('verification_reminder_days')) Setting::set('verification_reminder_days', $request->verification_reminder_days ?? 15, 'number', 'breeding', 'Délai premier rappel (jours)');
+        if ($request->has('verification_interval_days')) Setting::set('verification_interval_days', $request->verification_interval_days ?? 5, 'number', 'breeding', 'Intervalle des rappels (jours)');
 
         // In SettingsController@update method
-        Setting::set('default_price_male', $request->default_price_male ?? 25000, 'number', 'sales', 'Prix par défaut - Mâles');
-        Setting::set('default_price_female', $request->default_price_female ?? 30000, 'number', 'sales', 'Prix par défaut - Femelles');
-        Setting::set('default_price_lapereau', $request->default_price_lapereau ?? 15000, 'number', 'sales', 'Prix par défaut - Lapereaux');
+        // In SettingsController@update method
+        if ($request->has('default_price_male')) Setting::set('default_price_male', $request->default_price_male ?? 25000, 'number', 'sales', 'Prix par défaut - Mâles');
+        if ($request->has('default_price_female')) Setting::set('default_price_female', $request->default_price_female ?? 30000, 'number', 'sales', 'Prix par défaut - Femelles');
+        if ($request->has('default_price_lapereau')) Setting::set('default_price_lapereau', $request->default_price_lapereau ?? 15000, 'number', 'sales', 'Prix par défaut - Lapereaux');
 
         // Dans la méthode update(), après les autres Setting::set()
-        Setting::set('fedapay_public_key', $request->fedapay_public_key ?? '', 'string', 'payments', 'Clé Publique FedaPay');
-        Setting::set('fedapay_secret_key', $request->fedapay_secret_key ?? '', 'string', 'payments', 'Clé Secrète FedaPay');
-        Setting::set('fedapay_environment', $request->fedapay_environment ?? 'sandbox', 'string', 'payments', 'Environnement FedaPay');
+        // Dans la méthode update(), après les autres Setting::set()
+        if ($request->has('fedapay_public_key')) Setting::set('fedapay_public_key', $request->fedapay_public_key ?? '', 'string', 'payments', 'Clé Publique FedaPay');
+        if ($request->has('fedapay_secret_key')) Setting::set('fedapay_secret_key', $request->fedapay_secret_key ?? '', 'string', 'payments', 'Clé Secrète FedaPay');
+        if ($request->has('fedapay_environment')) Setting::set('fedapay_environment', $request->fedapay_environment ?? 'sandbox', 'string', 'payments', 'Environnement FedaPay');
 
 
         // In SettingsController@update method, ADD THIS after the existing Setting::set() calls:
@@ -112,7 +117,7 @@ class SettingsController extends Controller
 
         return redirect()->route('settings.index')
             ->with('success', 'Paramètres enregistrés avec succès !')
-            ->with('active_tab', $request->has('theme') ? 'system-tab' : ($request->has('notifications_email') || $request->has('notifications_dashboard') ? 'notifications-tab' : ($request->has('verification_initial_days') ? 'breeding-tab' : 'general-tab')));
+            ->with('active_tab', $request->active_tab ?? 'system-tab');
     }
 
     public function updateProfile(Request $request)

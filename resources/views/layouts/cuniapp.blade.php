@@ -3022,19 +3022,6 @@
                     <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i class="bi bi-card-checklist"></i> Gestion Abonnements</a>
                     <a href="{{ route('super.admin.firms') }}" class="mobile-nav-link"><i class="bi bi-buildings"></i> Toutes les Entreprises</a>
                     <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"><i class="bi bi-cash-stack"></i> Transactions </a>
-                        <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                            <i class="bi bi-speedometer2"></i> {{ __('Dashboard') }}
-                        </a>
-                        <div class="mobile-nav-divider"></div>
-                        <a href="{{ route('femelles.index') }}" class="mobile-nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
-                            <i class="bi bi-gender-female"></i> {{ __('Elevage') }}
-                        </a>
-                        <a href="{{ route('dashboard') }}" class="mobile-nav-link">
-                            <i class="bi bi-wallet2"></i> {{ __('Financement') }}
-                        </a>
-                        <a href="{{ route('subscription.plans') }}" class="mobile-nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
-                            <i class="bi bi-card-checklist"></i> {{ __('Abonnements') }}
-                        </a>
                 @endif
 
                 @if (!auth()->user()->isSuperAdmin())

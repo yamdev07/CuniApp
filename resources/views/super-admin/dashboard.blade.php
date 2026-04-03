@@ -2,11 +2,43 @@
 @extends('layouts.cuniapp')
 @section('title', 'Super Admin - Tableau de Bord')
 @section('content')
-    <div class="page-header">
-        <h2 class="page-title">
-            <i class="bi bi-star-fill" style="color: var(--accent-orange);"></i>
-            Administration Super Admin
-        </h2>
+    <div class="page-header mb-6">
+        <div>
+            <h2 class="page-title">
+                <i class="bi bi-star-fill" style="color: var(--accent-orange);"></i>
+                Administration Super Admin
+            </h2>
+            <div class="breadcrumb text-xs">
+                <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
+                <span>/</span>
+                <span>Super Admin</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- ✅ Lovely CuniApp Banner for Super Admin --}}
+    <div class="cuni-card mb-6 overflow-hidden position-relative" style="background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%); border: 1px solid var(--surface-border);">
+        <div class="card-body p-6">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <div class="p-2 rounded-circle bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-shield-check fs-4"></i>
+                        </div>
+                        <h3 class="h4 fw-bold mb-0">Espace Haute Administration</h3>
+                    </div>
+                    <p class="text-secondary mb-0">
+                        Bienvenue dans votre centre de contrôle maître. Gere les abonnements, surveillez les transactions et pilotez la croissance de <strong>CuniApp</strong> en temps réel.
+                    </p>
+                </div>
+                <div class="col-lg-4 d-none d-lg-block text-end">
+                    <img src="https://img.freepik.com/free-vector/rabbit-concept-illustration_114360-1122.jpg" alt="Admin" style="height: 120px; opacity: 0.8; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">
+                </div>
+            </div>
+        </div>
+        {{-- Subtle decorative elements --}}
+        <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: var(--primary); opacity: 0.05; border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -10px; left: 20%; width: 60px; height: 60px; background: var(--accent-orange); opacity: 0.03; border-radius: 50%;"></div>
     </div>
 
     {{-- Stats Grid - More Compact & Modern --}}
