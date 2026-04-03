@@ -80,16 +80,6 @@
                             <input type="email" name="email" class="form-control" value="{{ auth()->user()->email }}"
                                 required {{ auth()->user()->google_id ? 'readonly' : '' }}>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">{{ __('Language') }} *</label>
-                            <select name="language" class="form-control" required>
-                                <option value="fr" {{ auth()->user()->language == 'fr' ? 'selected' : '' }}>{{ __('French') }}</option>
-                                <option value="en" {{ auth()->user()->language == 'en' ? 'selected' : '' }}>{{ __('English') }}</option>
-                            </select>
-                            @error('language')
-                                <div class="field-error"><i class="bi bi-x-circle"></i> {{ $message }}</div>
-                            @enderror
-                        </div>
                         @if (!auth()->user()->google_id)
                             <div class="form-group">
                                 <label class="form-label">Mot de passe actuel</label>

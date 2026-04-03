@@ -464,7 +464,45 @@ $pendingVerifications = \App\Models\Naissance::pendingVerification()
                     </div>
                     <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-save"></i> Enregistrer le thème
+                            <i class="bi bi-save"></i> {{ __('Save theme') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Language Section -->
+        <div class="cuni-card" style="margin-top: 24px;">
+            <div class="card-header-custom">
+                <h3 class="card-title">
+                    <i class="bi bi-translate"></i> {{ __('Language') }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('settings.update') }}" method="POST">
+                    @csrf
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label class="form-label" style="font-size: 15px; font-weight: 600; margin-bottom: 16px; display: block;">
+                            {{ __('Choose your preferred language') }}
+                        </label>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                            <label class="theme-option-card {{ (auth()->user()->language ?? 'fr') === 'fr' ? 'active' : '' }}" 
+                                   style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid var(--surface-border); border-radius: var(--radius-lg); cursor: pointer; background: var(--surface-alt);">
+                                <input type="radio" name="language" value="fr" {{ (auth()->user()->language ?? 'fr') === 'fr' ? 'checked' : '' }} style="display: none;">
+                                <span style="font-size: 24px; margin-bottom: 8px;">🇫🇷</span>
+                                <span style="font-weight: 600; color: var(--text-primary);">Français</span>
+                            </label>
+                            <label class="theme-option-card {{ (auth()->user()->language ?? 'fr') === 'en' ? 'active' : '' }}" 
+                                   style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid var(--surface-border); border-radius: var(--radius-lg); cursor: pointer; background: var(--surface-alt);">
+                                <input type="radio" name="language" value="en" {{ (auth()->user()->language ?? 'fr') === 'en' ? 'checked' : '' }} style="display: none;">
+                                <span style="font-size: 24px; margin-bottom: 8px;">🇺🇸</span>
+                                <span style="font-weight: 600; color: var(--text-primary);">English</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--surface-border);">
+                        <button type="submit" class="btn-cuni primary">
+                            <i class="bi bi-save"></i> {{ __('Save language') }}
                         </button>
                     </div>
                 </form>

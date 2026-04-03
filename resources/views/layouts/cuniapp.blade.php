@@ -2922,21 +2922,6 @@
             {{-- ✅ USER SIDE NAV --}}
             @auth
                 <div class="nav-user-side d-none d-md-flex" style="overflow: visible !important;">
-                    {{-- Language Switcher --}}
-                    <div class="dropdown-container">
-                        <button class="notification-trigger" onclick="toggleLanguageDropdown(event)" title="{{ __('Language') }}">
-                            <i class="bi bi-translate"></i>
-                            <span style="font-size: 10px; font-weight: 700; margin-left: 2px; text-transform: uppercase;">{{ app()->getLocale() }}</span>
-                        </button>
-                        <div class="dropdown-menu-custom" id="languageDropdown" style="width: 160px;">
-                            <a href="{{ route('lang.switch', 'fr') }}" class="dropdown-item-custom {{ app()->getLocale() == 'fr' ? 'active' : '' }}">
-                                <i class="bi bi-check2 {{ app()->getLocale() == 'fr' ? 'text-primary' : 'text-transparent' }}"></i> Français
-                            </a>
-                            <a href="{{ route('lang.switch', 'en') }}" class="dropdown-item-custom {{ app()->getLocale() == 'en' ? 'active' : '' }}">
-                                <i class="bi bi-check2 {{ app()->getLocale() == 'en' ? 'text-primary' : 'text-transparent' }}"></i> English
-                            </a>
-                        </div>
-                    </div>
 
                     {{-- Notifications --}}
                     <a href="{{ route('notifications.index') }}" class="notification-trigger"
@@ -3434,44 +3419,27 @@
         function toggleUserDropdown(event) {
             event.stopPropagation();
             const dropdown = document.getElementById('userDropdown');
-            const langDropdown = document.getElementById('languageDropdown');
             const breedingDropdown = document.getElementById('breedingDropdown');
-            if (langDropdown) langDropdown.classList.remove('show');
             if (breedingDropdown) breedingDropdown.classList.remove('show');
             dropdown.classList.toggle('show');
         }
 
-        function toggleLanguageDropdown(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('languageDropdown');
-            const userDropdown = document.getElementById('userDropdown');
-            const breedingDropdown = document.getElementById('breedingDropdown');
-            if (userDropdown) userDropdown.classList.remove('show');
-            if (breedingDropdown) breedingDropdown.classList.remove('show');
-            dropdown.classList.toggle('show');
-        }
 
         function toggleBreedingDropdown(event) {
             event.stopPropagation();
             const dropdown = document.getElementById('breedingDropdown');
             const userDropdown = document.getElementById('userDropdown');
-            const langDropdown = document.getElementById('languageDropdown');
             if (userDropdown) userDropdown.classList.remove('show');
-            if (langDropdown) langDropdown.classList.remove('show');
             dropdown.classList.toggle('show');
         }
 
         // Close dropdowns on outside click
         window.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
-            const langDropdown = document.getElementById('languageDropdown');
             const breedingDropdown = document.getElementById('breedingDropdown');
 
             if (userDropdown && !userDropdown.contains(e.target) && !e.target.closest('.user-trigger')) {
                 userDropdown.classList.remove('show');
-            }
-            if (langDropdown && !langDropdown.contains(e.target) && !e.target.closest('.notification-trigger')) {
-                langDropdown.classList.remove('show');
             }
             if (breedingDropdown && !breedingDropdown.contains(e.target) && !e.target.closest('button.nav-link')) {
                 breedingDropdown.classList.remove('show');
