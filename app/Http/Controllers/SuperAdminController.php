@@ -65,13 +65,14 @@ class SuperAdminController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        // Login Activity (Last 24h)
+        // Login Activity (Last 24h) - Only Firm Admins
         $activeUsers24h = \Illuminate\Support\Facades\DB::table('sessions')
-            ->where(fn($q) => $q->where('last_activity', '>=', (int) $now->copy()->subHours(24)->timestamp))
-
-            ->whereNotNull('user_id')
-            ->distinct('user_id')
-            ->count('user_id');
+            ->join('users', 'sessions.user_id', '=', 'users.id')
+            ->where('users.role', 'firm_admin')
+            ->where('sessions.last_activity', '>=', (int) $now->copy()->subHours(24)->timestamp)
+            ->whereNotNull('sessions.user_id')
+            ->distinct('sessions.user_id')
+            ->count('sessions.user_id');
 
         // ✅ SIGNUP EVOLUTION DATA (Last 30 days) - ADD THIS
         $signupEvolution = User::where(fn($q) => $q->where('role', 'firm_admin'))
@@ -90,9 +91,12 @@ class SuperAdminController extends Controller
             $signupCounts[] = $signupEvolution->get($date) ?? 0;  // 0 if no signups that day
         }
 
-        // Detailed Recent Activities (Last 48h)
+        // Detailed Recent Activities (Last 48h) - Only Firm Admins
         $recentActivities = \App\Models\UserDailyActivity::with(['user.firm'])
-            ->where(fn($q) => $q->where('date', '>=', now()->subDays(2)))
+            ->whereHas('user', function($q) {
+                $q->where('role', 'firm_admin');
+            })
+            ->where('date', '>=', now()->subDays(2))
             ->orderByDesc('updated_at')
             ->limit(10)
             ->get();
