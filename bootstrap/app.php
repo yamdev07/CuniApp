@@ -48,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\TrackUserActivity::class,
             \App\Http\Middleware\EnforcePasswordChange::class,
+            \App\Http\Middleware\SetAppLocale::class,
         ]);
 
         // ✅ Trust proxies for production (Cloudflare, Load Balancer, etc.)

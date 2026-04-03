@@ -1,20 +1,20 @@
 {{-- resources/views/admin/subscriptions/transactions.blade.php --}}
 @extends('layouts.cuniapp')
 
-@section('title', 'Transactions Globales - Admin')
+@section('title', __('Global Transactions') . ' - Admin')
 
 @section('content')
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-cash-stack"></i> Transactions Globales
+                <i class="bi bi-cash-stack"></i> {{ __('Global Transactions') }}
             </h2>
             <div class="breadcrumb">
-                <a href="{{ route('dashboard') }}">Tableau de bord</a>
+                <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
                 <span>/</span>
                 <span>Admin</span>
                 <span>/</span>
-                <span>Transactions</span>
+                <span>{{ __('Transactions') }}</span>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                         <i class="bi bi-currency-euro text-green-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Revenus Totaux</p>
+                        <p class="stats-label-small">{{ __('Total Revenue') }}</p>
                         <p class="stats-value-small text-green-600">{{ number_format($stats['total_revenue'], 0, ',', ' ') }} <small class="text-xs">FCFA</small></p>
                     </div>
                 </div>
@@ -151,7 +151,7 @@
                         @endforeach
                         @if($transactions->isEmpty())
                             <tr>
-                                <td colspan="6" class="text-center py-8 text-gray-500">Aucune transaction trouvée.</td>
+                                <td colspan="6" class="text-center py-8 text-gray-500">{{ __('No transaction found.') }}</td>
                             </tr>
                         @endif
                     </tbody>

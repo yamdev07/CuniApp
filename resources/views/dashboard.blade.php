@@ -1,6 +1,6 @@
 @extends('layouts.cuniapp')
 
-@section('title', 'Tableau de Bord - CuniApp Élevage')
+@section('title', __('Dashboard') . ' - CuniApp Élevage')
 
 @section('content')
     {{-- ✅ BANDEAU ESSAI GRATUIT (LOGIQUE MULTI-TENANT CORRIGÉE) --}}
@@ -39,17 +39,17 @@ if (auth()->check() && auth()->user()->firm_id) {
                         </div>
                         <div>
                             <h3 class="text-lg font-bold" style="color: var(--text-primary);">
-                                Période d'essai gratuite active !
+                                {{ __('Free trial period active!') }}
                             </h3>
                             <p class="text-sm mt-1" style="color: var(--text-secondary);">
-                                Profitez de CuniApp gratuitement jusqu'au
+                                {{ __('Enjoy CuniApp for free until') }}
                                 <strong>{{ $activeSub->end_date->format('d/m/Y') }}</strong>.
-                                Il vous reste <strong>{{ $daysLeft }} jours</strong>.
+                                {{ __('Remaining') }} <strong>{{ $daysLeft }} {{ __('days') }}</strong>.
                             </p>
                         </div>
                     </div>
                     <a href="{{ route('subscription.plans') }}" class="btn-cuni primary">
-                        Voir les offres d'abonnement
+                        {{ __('View subscription offers') }}
                     </a>
                 </div>
             </div>

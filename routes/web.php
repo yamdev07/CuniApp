@@ -372,6 +372,9 @@ Route::middleware(['web'])->group(function () {
     Route::get('/lang/{locale}', function ($locale) {
         if (in_array($locale, ['fr', 'en'])) {
             session(['locale' => $locale]);
+            if (auth()->check()) {
+                auth()->user()->update(['language' => $locale]);
+            }
         }
         return redirect()->back();
     })->name('lang.switch');

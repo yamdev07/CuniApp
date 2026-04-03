@@ -2922,6 +2922,22 @@
             {{-- ✅ USER SIDE NAV --}}
             @auth
                 <div class="nav-user-side d-none d-md-flex" style="overflow: visible !important;">
+                    {{-- Language Switcher --}}
+                    <div class="dropdown-container">
+                        <button class="notification-trigger" onclick="toggleLanguageDropdown(event)" title="{{ __('Language') }}">
+                            <i class="bi bi-translate"></i>
+                            <span style="font-size: 10px; font-weight: 700; margin-left: 2px; text-transform: uppercase;">{{ app()->getLocale() }}</span>
+                        </button>
+                        <div class="dropdown-menu-custom" id="languageDropdown" style="width: 160px;">
+                            <a href="{{ route('lang.switch', 'fr') }}" class="dropdown-item-custom {{ app()->getLocale() == 'fr' ? 'active' : '' }}">
+                                <i class="bi bi-check2 {{ app()->getLocale() == 'fr' ? 'text-primary' : 'text-transparent' }}"></i> Français
+                            </a>
+                            <a href="{{ route('lang.switch', 'en') }}" class="dropdown-item-custom {{ app()->getLocale() == 'en' ? 'active' : '' }}">
+                                <i class="bi bi-check2 {{ app()->getLocale() == 'en' ? 'text-primary' : 'text-transparent' }}"></i> English
+                            </a>
+                        </div>
+                    </div>
+
                     {{-- Notifications --}}
                     <a href="{{ route('notifications.index') }}" class="notification-trigger"
                         style="position: relative;">
@@ -2951,10 +2967,10 @@
                                 <small>{{ auth()->user()->email }}</small>
                             </div>
                             <a href="{{ route('profile.edit') }}" class="dropdown-item-custom">
-                                <i class="bi bi-person"></i> Profil
+                                <i class="bi bi-person"></i> {{ __('Profile') }}
                             </a>
                             <a href="{{ route('settings.index') }}" class="dropdown-item-custom">
-                                <i class="bi bi-gear"></i> Paramètres
+                                <i class="bi bi-gear"></i> {{ __('Settings') }}
                             </a>
                             {{-- Entreprise link for firm admins --}}
                             @if (auth()->check() && auth()->user()->isFirmAdmin())
@@ -3020,7 +3036,20 @@
                     <a href="{{ route('super.admin.dashboard') }}" class="mobile-nav-link" style="color: var(--accent-orange); font-weight: 700;"><i class="bi bi-star-fill"></i> Super Admin</a>
                     <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i class="bi bi-card-checklist"></i> Gestion Abonnements</a>
                     <a href="{{ route('super.admin.firms') }}" class="mobile-nav-link"><i class="bi bi-buildings"></i> Toutes les Entreprises</a>
-                    <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"><i class="bi bi-cash-stack"></i> Transactions Globales</a>
+                    <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"><i class="bi bi-cash-stack"></i> Transactions </a>
+                        <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <i class="bi bi-speedometer2"></i> {{ __('Dashboard') }}
+                        </a>
+                        <div class="mobile-nav-divider"></div>
+                        <a href="{{ route('femelles.index') }}" class="mobile-nav-link {{ request()->routeIs('femelles.*') ? 'active' : '' }}">
+                            <i class="bi bi-gender-female"></i> {{ __('Elevage') }}
+                        </a>
+                        <a href="{{ route('dashboard') }}" class="mobile-nav-link">
+                            <i class="bi bi-wallet2"></i> {{ __('Financement') }}
+                        </a>
+                        <a href="{{ route('subscription.plans') }}" class="mobile-nav-link {{ request()->routeIs('subscription.*') ? 'active' : '' }}">
+                            <i class="bi bi-card-checklist"></i> {{ __('Abonnements') }}
+                        </a>
                 @endif
 
                 @if (!auth()->user()->isSuperAdmin())
@@ -3402,6 +3431,53 @@
             }
         });
 
+        function toggleUserDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            const langDropdown = document.getElementById('languageDropdown');
+            const breedingDropdown = document.getElementById('breedingDropdown');
+            if (langDropdown) langDropdown.classList.remove('show');
+            if (breedingDropdown) breedingDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        function toggleLanguageDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('languageDropdown');
+            const userDropdown = document.getElementById('userDropdown');
+            const breedingDropdown = document.getElementById('breedingDropdown');
+            if (userDropdown) userDropdown.classList.remove('show');
+            if (breedingDropdown) breedingDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        function toggleBreedingDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('breedingDropdown');
+            const userDropdown = document.getElementById('userDropdown');
+            const langDropdown = document.getElementById('languageDropdown');
+            if (userDropdown) userDropdown.classList.remove('show');
+            if (langDropdown) langDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdowns on outside click
+        window.addEventListener('click', function(e) {
+            const userDropdown = document.getElementById('userDropdown');
+            const langDropdown = document.getElementById('languageDropdown');
+            const breedingDropdown = document.getElementById('breedingDropdown');
+
+            if (userDropdown && !userDropdown.contains(e.target) && !e.target.closest('.user-trigger')) {
+                userDropdown.classList.remove('show');
+            }
+            if (langDropdown && !langDropdown.contains(e.target) && !e.target.closest('.notification-trigger')) {
+                langDropdown.classList.remove('show');
+            }
+            if (breedingDropdown && !breedingDropdown.contains(e.target) && !e.target.closest('button.nav-link')) {
+                breedingDropdown.classList.remove('show');
+            }
+        });
+        
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');

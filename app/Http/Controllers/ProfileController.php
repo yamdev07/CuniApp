@@ -35,11 +35,14 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:50',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'language' => 'required|in:en,fr',
             'current_password' => 'nullable|required_with:new_password',
             'new_password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ], [
             'name.required' => 'Le nom est obligatoire.',
             'email.unique' => 'Cette adresse email est déjà prise.',
+            'language.required' => 'La langue est obligatoire.',
+            'language.in' => 'La langue sélectionnée est invalide.',
             'current_password.required_with' => 'Le mot de passe actuel est requis pour définir un nouveau mot de passe.',
             'new_password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
             'new_password' => 'Le mot de passe doit contenir au moins 8 caractères, incluant des majuscules, minuscules, chiffres et caractères spéciaux.',
@@ -47,6 +50,7 @@ class ProfileController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->language = $request->language;
 
         if ($request->filled('new_password')) {
             // Security check: Google users should not be changing passwords here

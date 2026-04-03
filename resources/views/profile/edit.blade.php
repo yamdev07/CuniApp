@@ -32,7 +32,7 @@
                     <div class="alert-custom alert-custom-success alert-to-fade">
                         <i class="bi bi-check2-circle alert-icon"></i>
                         <div>
-                            <strong>Génial !</strong> Votre profil a été mis à jour avec succès.
+                            <strong>{{ __('Success') }}</strong> {{ __('Profile updated successfully') }}
                         </div>
                     </div>
                 @endif
@@ -79,12 +79,16 @@
                             <label class="form-label">Email *</label>
                             <input type="email" name="email" class="form-control" value="{{ auth()->user()->email }}"
                                 required {{ auth()->user()->google_id ? 'readonly' : '' }}>
-                            @if (auth()->user()->google_id)
-                                <small style="color: var(--primary); font-size: 11px; margin-top: 4px; display: block;">
-                                    <i class="bi bi-info-circle"></i> L'email est lié à votre compte Google et ne peut pas
-                                    être modifié.
-                                </small>
-                            @endif
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">{{ __('Language') }} *</label>
+                            <select name="language" class="form-control" required>
+                                <option value="fr" {{ auth()->user()->language == 'fr' ? 'selected' : '' }}>{{ __('French') }}</option>
+                                <option value="en" {{ auth()->user()->language == 'en' ? 'selected' : '' }}>{{ __('English') }}</option>
+                            </select>
+                            @error('language')
+                                <div class="field-error"><i class="bi bi-x-circle"></i> {{ $message }}</div>
+                            @enderror
                         </div>
                         @if (!auth()->user()->google_id)
                             <div class="form-group">
@@ -138,11 +142,11 @@
                                         <p class="fw-semibold">{{ auth()->user()->firm->name }}</p>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Votre Rôle</label>
+                                        <label class="form-label">{{ __('Role') }}</label>
                                         <p>
                                             <span class="badge"
                                                 style="background: {{ auth()->user()->isFirmAdmin() ? 'rgba(139, 92, 246, 0.1); color: #8B5CF6;' : 'rgba(59, 130, 246, 0.1); color: #3B82F6;' }}">
-                                                {{ auth()->user()->isFirmAdmin() ? 'Administrateur' : 'Employé' }}
+                                                {{ auth()->user()->isFirmAdmin() ? __('Administrator') : __('Employee') }}
                                             </span>
                                         </p>
                                     </div>
@@ -161,7 +165,7 @@
                     <div style="margin-top: 24px;">
                         <button type="submit" class="btn-cuni primary">
                             <i class="bi bi-save"></i>
-                            Mettre à jour le profil
+                            {{ __('Update Profile') }}
                         </button>
                     </div>
                 </form>
