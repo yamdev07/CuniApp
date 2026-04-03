@@ -86,12 +86,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/auth/google/complete', [SocialAuthController::class, 'completeRegistration'])
         ->name('auth.google.complete.store');
 
-    // ✅ FORCE PASSWORD CHANGE ROUTES
-    Route::get('/auth/password/change', [App\Http\Controllers\Auth\PasswordChangeController::class, 'showChangeForm'])
-        ->name('password.change.notice');
-    Route::post('/auth/password/change', [App\Http\Controllers\Auth\PasswordChangeController::class, 'updatePassword'])
-        ->name('password.change.update');
-
     // Registration
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -138,6 +132,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
     Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store']);
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    // ✅ FORCE PASSWORD CHANGE ROUTES
+    Route::get('/auth/password/change', [App\Http\Controllers\Auth\PasswordChangeController::class, 'showChangeForm'])
+        ->name('password.change.notice');
+    Route::post('/auth/password/change', [App\Http\Controllers\Auth\PasswordChangeController::class, 'updatePassword'])
+        ->name('password.change.update');
 
     // ====================================================================
     // 🛡️ FULLY VERIFIED ROUTES (Login + Email Verification Required)

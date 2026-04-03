@@ -307,6 +307,7 @@
                             <div class="req-item" id="req-low"><i class="bi bi-circle"></i> Une minuscule</div>
                             <div class="req-item" id="req-num"><i class="bi bi-circle"></i> Un chiffre</div>
                             <div class="req-item" id="req-spec"><i class="bi bi-circle"></i> Un caractère spécial</div>
+                            <div class="req-item" id="req-diff"><i class="bi bi-circle"></i> Différent du mot de passe admin</div>
                         </div>
                     </div>
 

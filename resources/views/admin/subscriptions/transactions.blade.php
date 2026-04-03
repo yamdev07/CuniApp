@@ -158,9 +158,71 @@
                 </table>
             </div>
 
+            {{-- ✅ PAGINATION STYLISÉE CuniApp --}}
             @if ($transactions->hasPages())
-                <div class="mt-4 flex justify-center pb-4">
-                    {{ $transactions->links() }}
+                <div class="flex flex-col md:flex-row justify-between items-center mt-8 gap-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+
+                    {{-- Résumé --}}
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        Affichage de <strong>{{ $transactions->firstItem() }}</strong> à
+                        <strong>{{ $transactions->lastItem() }}</strong> sur
+                        <strong>{{ $transactions->total() }}</strong> transactions
+                    </div>
+
+                    <div class="flex gap-2 flex-wrap justify-center">
+
+                        {{-- Bouton Précédent --}}
+                        @if ($transactions->onFirstPage())
+                            <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                                <i class="bi bi-chevron-left"></i> Précédent
+                            </span>
+                        @else
+                            <a href="{{ $transactions->previousPageUrl() }}" class="btn-cuni secondary sm">
+                                <i class="bi bi-chevron-left"></i> Précédent
+                            </a>
+                        @endif
+
+                        {{-- Numéros de pages --}}
+                        @php
+                            $start = max($transactions->currentPage() - 2, 1);
+                            $end = min($transactions->currentPage() + 2, $transactions->lastPage());
+                        @endphp
+
+                        @if ($start > 1)
+                            <a href="{{ $transactions->url(1) }}" class="btn-cuni sm" style="min-width: 40px; justify-content: center;">1</a>
+                            @if ($start > 2)
+                                <span class="text-gray-400 px-2 flex items-center">...</span>
+                            @endif
+                        @endif
+
+                        @for ($i = $start; $i <= $end; $i++)
+                            <a href="{{ $transactions->url($i) }}"
+                                class="btn-cuni sm {{ $i == $transactions->currentPage() ? 'primary' : 'secondary' }}"
+                                style="min-width: 40px; justify-content: center;">
+                                {{ $i }}
+                            </a>
+                        @endfor
+
+                        @if ($end < $transactions->lastPage())
+                            @if ($end < $transactions->lastPage() - 1)
+                                <span class="text-gray-400 px-2 flex items-center">...</span>
+                            @endif
+                            <a href="{{ $transactions->url($transactions->lastPage()) }}" class="btn-cuni sm" style="min-width: 40px; justify-content: center;">
+                                {{ $transactions->lastPage() }}
+                            </a>
+                        @endif
+
+                        {{-- Bouton Suivant --}}
+                        @if ($transactions->hasMorePages())
+                            <a href="{{ $transactions->nextPageUrl() }}" class="btn-cuni secondary sm">
+                                Suivant <i class="bi bi-chevron-right"></i>
+                            </a>
+                        @else
+                            <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed" style="pointer-events: none;">
+                                Suivant <i class="bi bi-chevron-right"></i>
+                            </span>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>

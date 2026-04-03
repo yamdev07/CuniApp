@@ -65,20 +65,6 @@
             <div class="cuni-card stats-card-compact">
                 <div class="card-body p-3">
                     <div class="flex items-center gap-3">
-                        <div class="stats-icon-small" style="background: rgba(59, 130, 246, 0.1);">
-                            <i class="bi bi-people text-blue-500"></i>
-                        </div>
-                        <div>
-                            <p class="stats-label-small">Utilisateurs</p>
-                            <p class="stats-value-small">{{ $stats['user_count'] }} <small class="text-xs text-gray-400">/ {{ $stats['subscription_limit'] ?: '∞' }}</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cuni-card stats-card-compact">
-                <div class="card-body p-3">
-                    <div class="flex items-center gap-3">
                         <div class="stats-icon-small" style="background: rgba(16, 185, 129, 0.1);">
                             <i class="bi bi-currency-euro text-green-500"></i>
                         </div>
@@ -128,10 +114,10 @@
         .stats-value-small { font-size: 1.1rem; font-weight: 700; margin: 0; color: var(--text-primary); line-height: 1.2; }
     </style>
 
-    {{-- Users List --}}
+    {{-- Admin Account --}}
     <div class="cuni-card mt-6">
         <div class="card-header-custom">
-            <h3 class="card-title"><i class="bi bi-people"></i> Utilisateurs de l'entreprise</h3>
+            <h3 class="card-title"><i class="bi bi-person-badge"></i> Administrateur de l'entreprise</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive">

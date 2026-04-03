@@ -22,11 +22,15 @@ class SuperAdminController extends Controller
             'total_firms' => Firm::count(),
             'active_firms' => Firm::where('status', 'active')->count(),
             'banned_firms' => Firm::where('status', 'banned')->count(),
-            'total_users' => User::count(),
-            'total_revenue_month' => PaymentTransaction::where('status', 'completed')
+            'total_users' => User::where('role', 'firm_admin')->count(),
+            'total_revenue_month' => PaymentTransaction::whereHas('user', function($q) {
+                    $q->where('role', 'firm_admin');
+                })->where('status', 'completed')
                 ->whereMonth('created_at', $now->month)
                 ->sum('amount'),
-            'total_revenue_year' => PaymentTransaction::where('status', 'completed')
+            'total_revenue_year' => PaymentTransaction::whereHas('user', function($q) {
+                    $q->where('role', 'firm_admin');
+                })->where('status', 'completed')
                 ->whereYear('created_at', $now->year)
                 ->sum('amount'),
             'active_subscriptions' => Subscription::where('status', 'active')
@@ -151,14 +155,16 @@ class SuperAdminController extends Controller
     // ✅ NEW: View Firm Details
     public function showFirm($id)
     {
-        $firm = Firm::with(['owner', 'activeSubscription.plan', 'users'])->findOrFail($id);
+        $firm = Firm::with(['owner', 'activeSubscription.plan', 'users' => function($q) {
+            $q->where('role', 'firm_admin');
+        }])->findOrFail($id);
 
         $stats = [
             'total_males' => $firm->total_males,
             'total_femelles' => $firm->total_femelles,
             'total_sales' => $firm->sales()->count(),
             'total_revenue' => $firm->total_revenue,
-            'user_count' => $firm->users()->count(),
+            'user_count' => $firm->users()->where('role', 'firm_admin')->count(),
             'subscription_limit' => $firm->subscription_limit,
         ];
 

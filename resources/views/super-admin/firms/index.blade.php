@@ -71,7 +71,6 @@
                     <tr>
                         <th>Entreprise</th>
                         <th>Administrateur</th>
-                        <th>Utilisateurs</th>
                         <th>Abonnement</th>
                         <th>Revenus</th>
                         <th>Statut</th>
@@ -86,12 +85,6 @@
                             <small class="text-muted">{{ $firm->created_at->format('d/m/Y') }}</small>
                         </td>
                         <td>{{ $firm->owner->name ?? 'N/A' }}</td>
-                        <td>
-                            {{ $firm->active_users_count }} / {{ $firm->subscription_limit }}
-                            <div style="height: 4px; background: var(--gray-200); border-radius: 2px; margin-top: 4px;">
-                                <div style="height: 100%; width: {{ $firm->usage_percentage }}%; background: {{ $firm->usage_percentage >= 80 ? 'var(--accent-orange)' : 'var(--primary)' }}; border-radius: 2px;"></div>
-                            </div>
-                        </td>
                         <td>
                             @if($firm->activeSubscription)
                             <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">

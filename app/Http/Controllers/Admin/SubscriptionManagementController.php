@@ -22,7 +22,7 @@ class SubscriptionManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with(['activeSubscriptionRelation.plan']);
+        $query = User::where('role', 'firm_admin')->with(['activeSubscriptionRelation.plan']);
 
         // Filter by subscription status
         if ($request->has('status')) {
@@ -59,7 +59,7 @@ class SubscriptionManagementController extends Controller
 
         // Statistics
         $stats = [
-            'total_users' => User::count(),
+            'total_users' => User::where('role', 'firm_admin')->count(),
             'active_subscriptions' => Subscription::where('status', 'active')
                 ->where('end_date', '>=', now())->count(),
             'expiring_soon' => Subscription::where('status', 'active')
@@ -258,7 +258,9 @@ class SubscriptionManagementController extends Controller
      */
     public function transactions(Request $request)
     {
-        $query = PaymentTransaction::with(['user', 'subscription']);
+        $query = PaymentTransaction::whereHas('user', function($q) {
+            $q->where('role', 'firm_admin');
+        })->with(['user', 'subscription']);
 
         // Filter by status
         if ($request->has('status')) {
@@ -406,7 +408,8 @@ class SubscriptionManagementController extends Controller
     public function archives()
     {
         // On récupère les utilisateurs ayant des abonnements archivés
-        $users = \App\Models\User::whereHas('subscriptions', function ($query) {
+        $users = \App\Models\User::where('role', 'firm_admin')
+            ->whereHas('subscriptions', function ($query) {
                 $query->whereNotNull('archived_at');
             })
             ->with(['subscriptions' => function ($q) {

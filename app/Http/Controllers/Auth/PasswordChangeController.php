@@ -31,6 +31,11 @@ class PasswordChangeController extends Controller
         ]);
 
         $user = auth()->user();
+
+        // Security check: must not be the same as the current temporary password
+        if (Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Votre nouveau mot de passe doit être différent de celui créé par votre administrateur.']);
+        }
         
         $user->update([
             'password' => Hash::make($request->password),
