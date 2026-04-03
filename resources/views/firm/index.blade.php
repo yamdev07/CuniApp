@@ -183,7 +183,6 @@
                                     <td class="ps-4 fw-semibold text-dark">{{ $employee->name }}</td>
                                     <td class="text-muted">{{ $employee->email }}</td>
                                     <td>
-                                    <td>
                                         @if ($employee->isOnline())
                                             <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981; font-size: 11px; padding: 4px 10px; border-radius: 20px;">
                                                 <i class="bi bi-circle-fill" style="margin-right: 4px; font-size: 8px;"></i>
