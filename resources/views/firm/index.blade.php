@@ -206,9 +206,16 @@
                                                 <i class="bi bi-graph-up"></i>
                                             </button>
                                             <button type="button" class="btn-cuni sm secondary"
-                                                onclick="showEditEmployeeModal({{ $employee->id }}, '{{ addslashes($employee->name) }}', '{{ addslashes($employee->email) }}')">
+                                                onclick="showEditEmployeeModal({{ $employee->id }}, '{{ addslashes($employee->name) }}', '{{ addslashes($employee->email) }}')" title="Modifier">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
+                                            <form action="{{ route('firm.employee.delete', $employee->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Supprimer définitivement cet employé ? Cette action est irréversible.')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-cuni sm danger" title="Supprimer">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

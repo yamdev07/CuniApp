@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('welcome')->withErrors(['error' => $message]);
+            return redirect()->route('welcome')->withErrors(['email' => $message]);
         }
 
         if ($user->isSuperAdmin()) {
@@ -52,7 +52,7 @@ class AuthenticatedSessionController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('welcome')->withErrors(['error' => 'Votre abonnement a expiré. Veuillez contacter votre administrateur ou contact@anyxtech.com pour le réactiver.']);
+            return redirect()->route('welcome')->with('error', 'Votre abonnement a expiré. Veuillez contacter votre administrateur ou contact@anyxtech.com pour le réactiver.');
         }
 
         return redirect()->intended(route('dashboard'));

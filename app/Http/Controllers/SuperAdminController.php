@@ -99,15 +99,18 @@ class SuperAdminController extends Controller
     {
         $query = Firm::with(['owner', 'activeSubscription']);
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if ($request->has('search')) {
-            $query->where('name', 'LIKE', "%{$request->search}%")
-                ->orWhereHas('owner', function ($q) use ($request) {
-                    $q->where('name', 'LIKE', "%{$request->search}%");
-                });
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('owner', function ($sq) use ($searchTerm) {
+                        $sq->where('name', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
         }
 
         $firms = $query->orderByDesc('created_at')->paginate(20);
