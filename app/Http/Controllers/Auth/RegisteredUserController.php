@@ -161,12 +161,7 @@ class RegisteredUserController extends Controller
             // ✅ 10. VALIDER LA TRANSACTION
             DB::commit();
 
-            // ✅ 11. DÉFINIR LES FLAGS DE SESSION POUR LE MODAL DE VÉRIFICATION
-            session()->flash('verification_pending', true);
-            session()->flash('verification_email', $request->email);
-            session()->flash('success', 'Compte créé avec succès ! Un essai gratuit de 14 jours a été activé. Vérifiez votre email pour activer votre compte.');
-
-            // ✅ 12. LOGGER L'INSCRIPTION (Audit)
+            // ✅ 11. LOGGER L'INSCRIPTION (Audit)
             Log::info('Nouvelle inscription fermier avec essai gratuit', [
                 'user_id' => $user->id,
                 'email' => $user->email,
@@ -176,9 +171,11 @@ class RegisteredUserController extends Controller
             ]);
 
             // ✅ 13. REDIRIGER VERS LA PAGE D'ACCUEIL (Le modal apparaîtra)
-            return redirect()->route('welcome')
+            return redirect()
+                ->route('welcome')
                 ->with('verification_pending', true)
-                ->with('verification_email', $request->email);
+                ->with('verification_email', $request->email)
+                ->with('success', 'Compte créé avec succès ! Un essai gratuit de 14 jours a été activé. Vérifiez votre email pour activer votre compte.');
         } catch (Exception $e) {
             // ✅ 14. ROLLBACK EN CAS D'ERREUR (Rien n'est sauvegardé)
             DB::rollBack();

@@ -1303,30 +1303,31 @@
                         <form method="POST" action="{{ route('login') }}" class="auth-form active" id="form-login">
                             @csrf
 
-                            @if ($errors->any())
+                            <!-- ✅ Login-specific error display -->
+                            @if ($errors->has('email') || $errors->has('password') || $errors->has('auth') || session('error'))
                                 <div class="alert-box error">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                     <div>
-                                        <strong>Erreurs de connexion</strong>
+                                        <strong>Erreur de connexion</strong>
                                         <ul class="validation-summary-list">
-                                            @foreach ($errors->all() as $error)
+                                            @if($errors->has('email'))
                                                 <li>
                                                     <i class="bi bi-x-circle-fill"></i>
-                                                    <span>
-                                                        @if ($error === 'auth.failed' || str_contains($error, 'auth.failed'))
-                                                            Ces identifiants ne correspondent pas à nos enregistrements.
-                                                            Veuillez vérifier votre email et mot de passe.
-                                                        @elseif(str_contains($error, 'throttle'))
-                                                            Trop de tentatives de connexion. Veuillez réessayer plus
-                                                            tard.
-                                                        @elseif(str_contains($error, 'validation.'))
-                                                            {{ str_replace('validation.', '', $error) }}
-                                                        @else
-                                                            {{ $error }}
-                                                        @endif
-                                                    </span>
+                                                    <span>{{ $errors->first('email') }}</span>
                                                 </li>
-                                            @endforeach
+                                            @endif
+                                            @if($errors->has('password'))
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>{{ $errors->first('password') }}</span>
+                                                </li>
+                                            @endif
+                                            @if(session('error'))
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>{{ session('error') }}</span>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </div>
@@ -1728,7 +1729,9 @@
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const overlay = document.getElementById('verificationOverlay');
-                if (overlay && {{ session('verification_pending') ? 'true' : 'false' }}) {
+                const verificationPending = {{ session('verification_pending') ? 'true' : 'false' }};
+
+                if (overlay && verificationPending) {
                     // Force display
                     overlay.style.display = 'flex';
                     overlay.classList.add('active');
@@ -1737,11 +1740,17 @@
                     // Focus first input after short delay
                     setTimeout(() => {
                         const firstInput = document.querySelector('.verification-code-input');
-                        if (firstInput) firstInput.focus();
-                    }, 500);
+                        if (firstInput) {
+                            firstInput.focus();
+                        }
+                    }, 300);
 
                     // Start resend timer
-                    startResendTimer();
+                    if (typeof startResendTimer === 'function') {
+                        startResendTimer();
+                    }
+
+                    console.log('✅ Verification modal opened');
                 }
             });
         </script>
@@ -1765,10 +1774,12 @@
             window.addEventListener('offline', updateNetworkStatus);
             updateNetworkStatus();
 
-            // Auto-hide validation errors after 8 seconds
+            // Auto-hide validation errors after 12 seconds (except login errors which stay visible)
             setTimeout(() => {
                 const hideElements = (selector) => {
                     document.querySelectorAll(selector).forEach(el => {
+                        // Don't auto-hide login form errors - let user read them
+                        if (el.closest('#form-login')) return;
                         el.style.transition = 'opacity 0.5s ease';
                         el.style.opacity = '0';
                         setTimeout(() => el.style.display = 'none', 500);
@@ -1776,8 +1787,10 @@
                 };
                 hideElements('.alert-box.error');
                 hideElements('.validation-message.error');
-                document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
-            }, 8000);
+                document.querySelectorAll('.form-input.error').forEach(el => {
+                    if (!el.closest('#form-login')) el.classList.remove('error');
+                });
+            }, 12000);
 
             // ==================== TAB SWITCHING ====================
             function switchTab(tabName, isInitialLoad = false) {
