@@ -1873,6 +1873,10 @@
                             <i class="bi bi-check-circle"></i>
                         </button>
                     </form>
+                    <!-- Debug: Show captured code -->
+                    <div style="text-align:center; margin-top:8px; font-size:12px; color: var(--gray-400);">
+                        Code: <span id="codeDebugDisplay" style="font-family: monospace; letter-spacing: 4px; font-size: 16px; color: var(--primary); font-weight: 700;">______</span>
+                    </div>
                     <div class="verification-info">
                         <p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode"
                                 onclick="resendVerificationCode(event)">Renvoyer</a></p>
@@ -1890,46 +1894,7 @@
             </div>
         </div>
 
-        {{-- ✅ FORCE MODAL TO STAY OPEN WITH JAVASCRIPT --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const overlay = document.getElementById('verificationOverlay');
-                const verificationPending = {{ session('verification_pending') ? 'true' : 'false' }};
-
-                // Also check meta tag as fallback
-                const metaTag = document.querySelector('meta[name="verification-pending"]');
-                const metaValue = metaTag ? metaTag.getAttribute('content') : '0';
-                const shouldShow = verificationPending || metaValue === '1';
-
-                if (shouldShow) {
-                    if (overlay) {
-                        // Force display
-                        overlay.style.display = 'flex';
-                        overlay.classList.add('active');
-                        document.body.style.overflow = 'hidden'; // Prevent scrolling
-
-                        // Focus first input after short delay
-                        setTimeout(() => {
-                            const firstInput = document.querySelector('.verification-code-input');
-                            if (firstInput) {
-                                firstInput.focus();
-                            }
-                        }, 300);
-
-                        // Start resend timer
-                        if (typeof startResendTimer === 'function') {
-                            startResendTimer();
-                        }
-
-                        console.log('✅ Verification modal opened');
-                    } else {
-                        // Modal HTML not rendered - fallback: show alert
-                        const email = document.querySelector('meta[name="verification-email"]')?.getAttribute('content') || 'votre email';
-                        console.warn('⚠️ Verification modal HTML missing. Check @@if(session("verification_pending")) in blade.');
-                    }
-                }
-            });
-        </script>
+        {{-- ✅ Verification modal will be force-opened by main script below --}}
     @endif
 
     <script>
@@ -1950,75 +1915,19 @@
             window.addEventListener('offline', updateNetworkStatus);
             updateNetworkStatus();
 
-            // ==================== VERIFICATION MODAL FALLBACK ====================
-            // If session says verification is pending but modal HTML is missing, build it via JS
+            // Force-open verification modal if session says so
             const verificationMeta = document.querySelector('meta[name="verification-pending"]');
-            const verificationEmailMeta = document.querySelector('meta[name="verification-email"]');
-            if (verificationMeta && verificationMeta.getAttribute('content') === '1') {
-                const existingOverlay = document.getElementById('verificationOverlay');
-                if (!existingOverlay) {
-                    console.warn('⚠️ Verification modal HTML not rendered by Blade, building via JS fallback...');
-                    const email = verificationEmailMeta ? verificationEmailMeta.getAttribute('content') : 'votre email';
+            const metaValue = verificationMeta ? verificationMeta.getAttribute('content') : '0';
+            const shouldShowModal = {{ session('verification_pending') ? 'true' : 'false' }} || metaValue === '1';
 
-                    // Build modal HTML
-                    const modalHTML = `
-                    <!-- Success banner -->
-                    @if(session('success'))
-                    <div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:1001;
-                        background:#10B981;color:white;padding:12px 24px;border-radius:12px;
-                        box-shadow:0 10px 25px rgba(16,185,129,0.3);font-size:14px;font-weight:600;
-                        display:flex;align-items:center;gap:8px;max-width:90%;">
-                        <i class="bi bi-check-circle-fill" style="font-size:18px;"></i>
-                        <span>{{ session('success') }}</span>
-                    </div>
-                    @endif
-                    <div class="verification-overlay active" id="verificationOverlay" style="display:flex;">
-                        <div class="verification-modal">
-                            <div class="verification-header">
-                                <h3><i class="bi bi-shield-check"></i> Vérification Email</h3>
-                                <button type="button" class="modal-close" onclick="closeVerificationModal()"><i class="bi bi-x-lg"></i></button>
-                            </div>
-                            <div class="verification-body">
-                                <p class="verification-message">Un code de vérification a été envoyé à<br><strong id="verificationEmailDisplay">${email}</strong></p>
-                                <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
-                                    @csrf
-                                    <input type="hidden" name="email" value="${email}">
-                                    <div class="verification-code-inputs">
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="0" required autofocus autocomplete="one-time-code">
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="1" required>
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="2" required>
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="3" required>
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="4" required>
-                                        <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="5" required>
-                                    </div>
-                                    <input type="hidden" name="code" id="verificationCodeInput">
-                                    <button type="submit" class="btn-submit"><span>Vérifier</span><i class="bi bi-check-circle"></i></button>
-                                </form>
-                                <div class="verification-info"><p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode" onclick="resendVerificationCode(event)">Renvoyer</a></p></div>
-                                <div class="resend-timer disabled" id="resendTimer">Renvoyer dans <span id="timerCount">60</span>s</div>
-                            </div>
-                        </div>
-                    </div>`;
-
-                    document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-                    // Attach event listeners to dynamically created inputs
-                    attachVerificationInputListeners();
-                }
-
-                // Force show the modal
+            if (shouldShowModal) {
                 const overlay = document.getElementById('verificationOverlay');
-                overlay.style.display = 'flex';
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-
-                setTimeout(() => {
-                    const firstInput = document.querySelector('.verification-code-input');
-                    if (firstInput) firstInput.focus();
-                }, 300);
-
-                if (typeof startResendTimer === 'function') startResendTimer();
-                console.log('✅ Verification modal shown');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    console.log('✅ Verification modal opened');
+                }
             }
 
             // Auto-hide validation errors after 12 seconds (except login errors which stay visible)
@@ -2190,13 +2099,6 @@
                 });
             });
 
-            // Attach listeners to verification inputs NOW (DOM is already ready)
-            setTimeout(() => {
-                if (typeof attachVerificationInputListeners === 'function') {
-                    attachVerificationInputListeners();
-                }
-            }, 100);
-
             // ==================== VERIFICATION MODAL ====================
             let resendTimerInterval;
 
@@ -2214,91 +2116,137 @@
             // ==================== VERIFICATION CODE INPUT HANDLING ====================
             function attachVerificationInputListeners() {
                 const inputs = document.querySelectorAll('.verification-code-input');
-                if (inputs.length === 0) return; // No inputs yet, skip
+                if (inputs.length === 0) return;
+
+                console.log(`🔧 Attaching verification listeners to ${inputs.length} inputs`);
 
                 inputs.forEach((input, index) => {
-                    // Skip if already has listeners
                     if (input.dataset.listenerAttached) return;
                     input.dataset.listenerAttached = 'true';
 
-                    // Handle character input
-                    input.addEventListener('input', function(e) {
-                        const val = this.value;
-                        // Only process single digits
-                        if (val && /^[0-9]$/.test(val.trim())) {
-                            this.value = val.trim();
-                            this.classList.add('filled');
-                            updateVerificationCode();
-                            // Auto-advance to next input
-                            if (index < inputs.length - 1) {
-                                setTimeout(() => inputs[index + 1].focus(), 50);
-                            } else {
-                                // Last digit entered - check if all inputs are filled and auto-submit
-                                setTimeout(() => {
-                                    let fullCode = '';
-                                    inputs.forEach(inp => fullCode += inp.value);
-                                    if (fullCode.length === 6) {
-                                        const form = document.getElementById('verificationForm');
-                                        if (form) {
-                                            console.log('🚀 All 6 digits entered, auto-submitting form...');
-                                            form.submit();
-                                        }
-                                    }
-                                }, 150);
-                            }
-                        } else if (val.length > 1) {
-                            // Handle paste of multiple digits
-                            const digits = val.replace(/[^0-9]/g, '').split('');
-                            if (digits.length > 0) {
-                                inputs.forEach((inp, i) => {
-                                    if (digits[i]) {
-                                        inp.value = digits[i];
-                                        inp.classList.add('filled');
-                                    }
-                                });
-                                updateVerificationCode();
-                                // Focus next empty input
-                                const nextIdx = Math.min(digits.length, inputs.length - 1);
-                                if (nextIdx < inputs.length) {
-                                    inputs[nextIdx].focus();
-                                }
-                            }
-                        } else if (val === '') {
-                            this.classList.remove('filled');
-                            updateVerificationCode();
-                        }
-                    });
-
-                    // Handle backspace and navigation via keydown
+                    // Use keydown instead of input for more reliable behavior
                     input.addEventListener('keydown', function(e) {
-                        // Backspace: move to previous input if current is empty
-                        if (e.key === 'Backspace') {
-                            if (!this.value && index > 0) {
+                        // Allow: backspace, delete, tab, escape, enter, arrows
+                        if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+                            if (e.key === 'Backspace' && !this.value && index > 0) {
                                 e.preventDefault();
-                                inputs[index - 1].focus();
                                 inputs[index - 1].value = '';
                                 inputs[index - 1].classList.remove('filled');
+                                inputs[index - 1].focus();
                                 updateVerificationCode();
                             }
+                            if (e.key === 'ArrowLeft' && index > 0) {
+                                e.preventDefault();
+                                inputs[index - 1].focus();
+                            }
+                            if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+                                e.preventDefault();
+                                inputs[index + 1].focus();
+                            }
+                            return;
                         }
-                        // Arrow keys: navigate between inputs
-                        if (e.key === 'ArrowLeft' && index > 0) {
+
+                        // Only allow single digit 0-9
+                        if (!/^[0-9]$/.test(e.key)) {
                             e.preventDefault();
-                            inputs[index - 1].focus();
+                            return;
                         }
-                        if (e.key === 'ArrowRight' && index < inputs.length - 1) {
-                            e.preventDefault();
-                            inputs[index + 1].focus();
+
+                        e.preventDefault();
+                        this.value = e.key;
+                        this.classList.add('filled');
+                        updateVerificationCode();
+
+                        // Auto-advance to next input
+                        if (index < inputs.length - 1) {
+                            setTimeout(() => {
+                                inputs[index + 1].focus();
+                                inputs[index + 1].select();
+                            }, 50);
+                        } else {
+                            // Last digit - auto-submit after a moment
+                            setTimeout(() => {
+                                let fullCode = '';
+                                inputs.forEach(inp => fullCode += inp.value);
+                                if (fullCode.length === 6) {
+                                    const form = document.getElementById('verificationForm');
+                                    if (form) {
+                                        console.log('🚀 Auto-submitting verification form...');
+                                        form.submit();
+                                    }
+                                }
+                            }, 200);
                         }
                     });
 
-                    // Select content on focus for easy overwrite
+                    // Handle paste events (copy-paste full code)
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+                        const digits = paste.replace(/[^0-9]/g, '').slice(0, 6).split('');
+
+                        if (digits.length > 0) {
+                            digits.forEach((digit, i) => {
+                                if (inputs[i]) {
+                                    inputs[i].value = digit;
+                                    inputs[i].classList.add('filled');
+                                }
+                            });
+                            updateVerificationCode();
+
+                            // Focus next empty or last filled
+                            const nextEmpty = Array.from(inputs).find(inp => !inp.value);
+                            if (nextEmpty) {
+                                nextEmpty.focus();
+                            } else if (digits.length === 6) {
+                                // All filled - submit
+                                const form = document.getElementById('verificationForm');
+                                if (form) {
+                                    console.log('🚀 Pasted full code, submitting...');
+                                    form.submit();
+                                }
+                            } else {
+                                inputs[Math.min(digits.length, inputs.length - 1)].focus();
+                            }
+                        }
+                    });
+
+                    // Select content on focus
                     input.addEventListener('focus', function() {
                         this.select();
                     });
+
+                    // Handle input event as fallback
+                    input.addEventListener('input', function(e) {
+                        const val = this.value;
+                        // If multiple chars pasted
+                        if (val.length > 1) {
+                            const digits = val.replace(/[^0-9]/g, '').split('');
+                            digits.forEach((d, i) => {
+                                const targetIdx = index + i;
+                                if (inputs[targetIdx]) {
+                                    inputs[targetIdx].value = d;
+                                    inputs[targetIdx].classList.add('filled');
+                                }
+                            });
+                            updateVerificationCode();
+                            const nextIdx = Math.min(index + digits.length, inputs.length - 1);
+                            inputs[nextIdx].focus();
+                            return;
+                        }
+                        // If single digit
+                        if (/^[0-9]$/.test(val)) {
+                            this.value = val;
+                            this.classList.add('filled');
+                            updateVerificationCode();
+                            if (index < inputs.length - 1) {
+                                setTimeout(() => inputs[index + 1].focus(), 50);
+                            }
+                        }
+                    });
                 });
 
-                console.log(`✅ Verification input listeners attached to ${inputs.length} inputs`);
+                console.log(`✅ Verification listeners attached successfully`);
             }
 
             // Call immediately since DOM is already ready
@@ -2312,7 +2260,12 @@
                 const codeInput = document.getElementById('verificationCodeInput');
                 if (codeInput) {
                     codeInput.value = code;
-                    console.log(`🔑 Verification code updated: ${code} (length: ${code.length})`);
+                }
+                // Update debug display
+                const debugDisplay = document.getElementById('codeDebugDisplay');
+                if (debugDisplay) {
+                    const display = code.padEnd(6, '_');
+                    debugDisplay.textContent = display;
                 }
             }
 
@@ -2548,6 +2501,24 @@
                     toast.style.animation = 'slideOutRight 0.3s ease';
                     setTimeout(() => toast.remove(), 300);
                 }, 3000);
+            }
+
+            // Start resend timer and focus first input if verification modal is shown
+            if (shouldShowModal) {
+                const overlay = document.getElementById('verificationOverlay');
+                if (overlay) {
+                    // Focus first input
+                    setTimeout(() => {
+                        const firstInput = document.querySelector('.verification-code-input');
+                        if (firstInput) firstInput.focus();
+                    }, 300);
+
+                    // Start resend timer
+                    if (typeof startResendTimer === 'function') {
+                        startResendTimer();
+                    }
+                    console.log('✅ Verification modal ready, timer started');
+                }
             }
 
             // Add animation styles

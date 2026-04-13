@@ -5,7 +5,10 @@
       "Bash(cp *)",
       "Bash(grep *)",
       "Bash(curl *)",
-      "Bash(mysql *)"
+      "Bash(mysql *)",
+      "Bash(kill *)",
+      "Bash(sleep *)",
+      "Bash(node *)"
     ]
   },
   "$version": 3
