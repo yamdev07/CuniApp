@@ -1210,6 +1210,172 @@
         .form-step[data-step="2"] .social-login {
             display: none;
         }
+
+        /* ============================================
+        ✅ RESPONSIVE FIXES FOR ALIGNMENT
+        ============================================ */
+        @media (max-width: 1024px) {
+            .welcome-content {
+                gap: 40px;
+            }
+
+            .brand-title {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .welcome-container {
+                padding: 20px;
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+
+            .welcome-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                max-width: 520px;
+            }
+
+            .brand-section {
+                order: 1;
+                text-align: center;
+            }
+
+            .auth-section {
+                order: 2;
+            }
+
+            .features-list {
+                display: inline-block;
+                text-align: left;
+            }
+
+            .features-list li {
+                justify-content: flex-start;
+            }
+
+            .brand-title {
+                font-size: 36px;
+            }
+
+            .brand-tagline {
+                font-size: 16px;
+            }
+
+            .steps-illustration {
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .welcome-container {
+                padding: 16px;
+                padding-top: 24px;
+            }
+
+            .auth-forms {
+                padding: 24px 20px !important;
+            }
+
+            .brand-title {
+                font-size: 28px;
+            }
+
+            .brand-tagline {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .logo-container {
+                width: 64px;
+                height: 64px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .logo-container svg {
+                width: 40px;
+                height: 40px;
+            }
+
+            .steps-illustration {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .farmer-popout {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-container {
+                padding: 12px;
+                padding-top: 16px;
+            }
+
+            .auth-forms {
+                padding: 20px 16px !important;
+            }
+
+            .brand-title {
+                font-size: 24px;
+            }
+
+            .brand-tagline {
+                font-size: 13px;
+            }
+
+            .auth-tabs {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .auth-tab {
+                padding: 12px 16px;
+            }
+
+            .form-title {
+                font-size: 20px;
+            }
+
+            .form-subtitle {
+                font-size: 13px;
+            }
+
+            .verification-modal {
+                width: 95%;
+                margin: 16px;
+            }
+
+            .verification-code-inputs {
+                gap: 8px;
+            }
+
+            .verification-code-input {
+                width: 40px;
+                height: 48px;
+                font-size: 18px;
+            }
+        }
+
+        /* Fix animation overflow on small screens */
+        @media (max-width: 768px) {
+            .brand-section {
+                animation: none !important;
+            }
+
+            .auth-section {
+                animation: none !important;
+            }
+
+            .features-list li {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 
