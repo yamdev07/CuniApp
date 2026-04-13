@@ -60,13 +60,7 @@ Route::get('/contact', function () {
     return view('pages.contact');
 })->name('contact');
 
-Route::get('/privacy', function () {
-    return view('pages.privacy');
-})->name('privacy');
 
-Route::get('/terms', function () {
-    return view('pages.terms');
-})->name('terms');
 
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
@@ -470,3 +464,7 @@ Route::fallback(function () {
     }
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
+
+
+Route::view('/legal/terms', 'legal.terms')->name('terms');
+Route::view('/legal/privacy', 'legal.privacy')->name('privacy'); // À créer de même
