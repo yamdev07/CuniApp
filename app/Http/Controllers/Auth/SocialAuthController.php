@@ -22,7 +22,17 @@ class SocialAuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $redirectUrl = rtrim(config('app.url'), '/') . '/customer/social-login/google/callback';
+    
+        Log::info('Google OAuth redirect initiated', [
+            'redirect_uri' => $redirectUrl,
+            'client_id' => config('services.google.client_id'),
+            'app_url' => config('app.url'),
+        ]);
+
+        return Socialite::driver('google')
+            ->redirectUrl($redirectUrl)
+            ->redirect();
     }
 
     /**
