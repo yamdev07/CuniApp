@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\LegalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -466,5 +468,13 @@ Route::fallback(function () {
 })->name('fallback');
 
 
-Route::view('/legal/terms', 'legal.terms')->name('terms');
-Route::view('/legal/privacy', 'legal.privacy')->name('privacy'); // À créer de même
+
+// ✅ DANS le groupe middleware('web') - TRÈS IMPORTANT
+Route::middleware(['web'])->group(function () {
+
+
+    // ✅ Routes légales avec controller
+    Route::get('/legal/terms', [LegalController::class, 'terms'])->name('terms');
+    Route::get('/legal/privacy', [LegalController::class, 'privacy'])->name('privacy');
+
+});

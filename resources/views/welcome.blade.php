@@ -1633,10 +1633,11 @@
                                             style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
                                         <span style="font-size: 13px; color: var(--gray-600);">
                                             J'accepte les
-                                            <a href="{{ route('terms') }}" target="_blank"
+                                            {{-- <a href="{{ route('terms') }}" target="_blank"
                                                 style="color: var(--primary);">
                                                 Conditions d'utilisation
-                                            </a>
+                                            </a> --}}
+                                            <a href="{{ route('terms') }}?step={{ request('step', 1) }}" style="color: var(--primary);" target="_blank">Conditions d'utilisation</a>
                                             et la
                                             <a href="{{ route('privacy') }}" target="_blank"
                                                 style="color: var(--primary);">
@@ -1764,8 +1765,19 @@
     @endif
 
     <script>
+
+
+// Après window.close(), si on veut forcer l'étape (optionnel)
+const urlParams = new URLSearchParams(window.location.search);
+const step = urlParams.get('step');
+if (step && window.opener) {
+    // Optionnel : injecter un script dans l'onglet parent pour restaurer l'étape
+    // Mais normalement, l'état du formulaire est déjà en mémoire ✅
+}
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Welcome page loaded successfully');
+            console.log('Welcome page loaded successfully');
 
             // ==================== NETWORK STATUS ====================
             function updateNetworkStatus() {
