@@ -1,26 +1,26 @@
 {{-- resources/views/admin/subscriptions/index.blade.php --}}
 @extends('layouts.cuniapp')
 
-@section('title', 'Gestion des Abonnements - Admin')
+@section('title', __('Gestion des Abonnements') . ' - Admin')
 
 @section('content')
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-shield-lock"></i> Gestion des Abonnements
+                <i class="bi bi-shield-lock"></i> {{ __('Gestion des Abonnements') }}
             </h2>
             <div class="breadcrumb">
-                <a href="{{ route('dashboard') }}">Tableau de bord</a>
+                <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
                 <span>/</span>
                 <span>Admin</span>
                 <span>/</span>
-                <span>Abonnements</span>
+                <span>{{ __('Abonnements') }}</span>
             </div>
         </div>
 
         <div class="header-actions">
             <a href="{{ route('admin.subscriptions.archives') }}" class="btn-cuni secondary">
-                <i class="bi bi-archive"></i> Voir les Archives
+                <i class="bi bi-archive"></i> {{ __('Voir les Archives') }}
             </a>
         </div>
     </div>
@@ -34,7 +34,7 @@
                         <i class="bi bi-people text-blue-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Utilisateurs Total</p>
+                        <p class="stats-label-small">{{ __('Utilisateurs Total') }}</p>
                         <p class="stats-value-small">{{ number_format($stats['total_users']) }}</p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                         <i class="bi bi-check-circle text-green-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Abonnements Actifs</p>
+                        <p class="stats-label-small">{{ __('Abonnements Actifs') }}</p>
                         <p class="stats-value-small text-green-600">{{ number_format($stats['active_subscriptions']) }}</p>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <i class="bi bi-clock text-amber-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Expire Bientôt</p>
+                        <p class="stats-label-small">{{ __('Expire Bientôt') }}</p>
                         <p class="stats-value-small text-amber-600">{{ $stats['expiring_soon'] }}</p>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         <i class="bi bi-currency-euro text-purple-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Revenus (Mois)</p>
+                        <p class="stats-label-small">{{ __('Revenus (Mois)') }}</p>
                         <p class="stats-value-small">{{ number_format($stats['total_revenue'], 0, ',', ' ') }} <small class="text-xs">FCFA</small></p>
                     </div>
                 </div>
@@ -96,18 +96,18 @@
         <div class="cuni-card">
             <div class="card-header-custom">
                 <h3 class="card-title">
-                    <i class="bi bi-list-ul"></i> Utilisateurs et Abonnements
+                    <i class="bi bi-list-ul"></i> {{ __('Utilisateurs et Abonnements') }}
                 </h3>
                 <form method="GET" style="display: flex; gap: 12px;">
                     <select name="status" class="form-select" style="width: auto;" onchange="this.form.submit()">
-                        <option value="">Tous les statuts</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actifs</option>
-                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expirés</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Annulés</option>
-                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactifs</option>
-                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Échoués</option>
+                        <option value="">{{ __('Tous les statuts') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Actifs') }}</option>
+                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>{{ __('Expirés') }}</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Annulés') }}</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactifs') }}</option>
+                        <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>{{ __('Échoués') }}</option>
                     </select>
-                    <input type="text" name="search" placeholder="Rechercher..." value="{{ request('search') }}"
+                    <input type="text" name="search" placeholder="{{ __('Rechercher...') }}" value="{{ request('search') }}"
                         class="form-control" style="width: 250px;">
                     <button type="submit" class="btn-cuni primary">
                         <i class="bi bi-search"></i>
@@ -119,12 +119,12 @@
                     <table class="table" style="width: 100%;">
                         <thead>
                             <tr style="border-bottom: 2px solid var(--surface-border);">
-                                <th style="padding: 12px; text-align: left;">Utilisateur</th>
-                                <th style="padding: 12px; text-align: left;">Email</th>
-                                <th style="padding: 12px; text-align: left;">Abonnement</th>
-                                <th style="padding: 12px; text-align: left;">Statut</th>
-                                <th style="padding: 12px; text-align: left;">Expiration</th>
-                                <th style="padding: 12px; text-align: left;">Actions</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Utilisateur') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Email') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Abonnement') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Statut') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Expiration') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,10 +138,10 @@
                                     <td style="padding: 12px;">
                                         @if ($user->hasActiveSubscription())
                                             <span class="badge"
-                                                style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">Actif</span>
+                                                style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">{{ __('Actif') }}</span>
                                         @else
                                             <span class="badge"
-                                                style="background: rgba(107, 114, 128, 0.1); color: var(--gray-500);">Inactif</span>
+                                                style="background: rgba(107, 114, 128, 0.1); color: var(--gray-500);">{{ __('Inactif') }}</span>
                                         @endif
                                     </td>
 
@@ -153,33 +153,6 @@
                                         @endif
                                     </td>
 
-                                    {{-- <td style="padding: 12px;">
-                                        <a href="{{ route('admin.subscriptions.show', $user->id) }}"
-                                            class="btn-cuni sm secondary">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-
-                                        @if ($user->hasActiveSubscription())
-                                            <form
-                                                action="{{ route('admin.subscriptions.archive', $user->activeSubscriptionRelation->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('Voulez-vous vraiment archiver cet abonnement ? Il sera retiré de la liste principale.');">
-                                                @csrf
-                                                <button type="submit" class="btn-cuni sm light" title="Archiver"
-                                                    style="color: var(--accent-orange);">
-                                                    <i class="bi bi-archive"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        @if (!$user->hasActiveSubscription())
-                                            <button type="button" class="btn-cuni sm primary"
-                                                onclick="showActivateModal({{ $user->id }}, '{{ $user->name }}')">
-                                                <i class="bi bi-check-circle"></i>
-                                            </button>
-                                        @endif
-                                    </td> --}}
-
 
                                     <td style="padding: 12px;">
                                         <div
@@ -187,7 +160,7 @@
 
                                             {{-- BOUTON VOIR (Toujours visible) --}}
                                             <a href="{{ route('admin.subscriptions.show', $user->id) }}"
-                                                class="btn-cuni sm secondary" title="Voir détails">
+                                                class="btn-cuni sm secondary" title="{{ __('Voir détails') }}">
                                                 <i class="bi bi-eye"></i>
                                             </a>
 
@@ -203,10 +176,10 @@
                                                     <form
                                                         action="{{ route('admin.subscriptions.archive', $subscriptionToManage->id) }}"
                                                         method="POST"
-                                                        onsubmit="return confirm('Archiver cet abonnement ?');">
+                                                        onsubmit="return confirm('{{ __('Archiver cet abonnement ?') }}');">
                                                         @csrf
                                                         <button type="submit" class="btn-cuni sm light"
-                                                            title="Archiver"
+                                                            title="{{ __('Archiver') }}"
                                                             style="color: var(--accent-orange); border-color: var(--accent-orange); background: rgba(245, 158, 11, 0.05);">
                                                             <i class="bi bi-archive"></i>
                                                         </button>
@@ -217,10 +190,10 @@
                                                         <form
                                                             action="{{ route('admin.subscriptions.archive-all', $user->id) }}"
                                                             method="POST"
-                                                            onsubmit="return confirm('Archiver TOUS les abonnements de cet utilisateur ? ({{ $user->subscriptions->count() }} trouvés)');">
+                                                            onsubmit="return confirm('{{ __('Archiver TOUS les abonnements de cet utilisateur ?') }} ({{ $user->subscriptions->count() }} {{ __('trouvés') }});">
                                                             @csrf
                                                             <button type="submit" class="btn-cuni sm light"
-                                                                title="Archiver Tout"
+                                                                title="{{ __('Archiver Tout') }}"
                                                                 style="color: #dc2626; border-color: #dc2626; background: rgba(220, 38, 38, 0.05);">
                                                                 <i class="bi bi-archive-fill"></i>
                                                             </button>
@@ -231,7 +204,7 @@
                                                 {{-- CAS 2 : Aucun abonnement -> BOUTON ACTIVER --}}
                                                 <button type="button" class="btn-cuni sm primary"
                                                     onclick="showActivateModal({{ $user->id }}, '{{ $user->name }}')"
-                                                    title="Créer un abonnement">
+                                                    title="{{ __('Créer un abonnement') }}">
                                                     <i class="bi bi-check-circle"></i>
                                                 </button>
                                             @endif
@@ -251,9 +224,9 @@
 
                         {{-- Résumé --}}
                         <div class="text-sm text-gray-500 dark:text-gray-400">
-                            Affichage de <strong>{{ $users->firstItem() }}</strong> à
-                            <strong>{{ $users->lastItem() }}</strong> sur
-                            <strong>{{ $users->total() }}</strong> utilisateurs
+                            {{ __('Affichage de') }} <strong>{{ $users->firstItem() }}</strong> {{ __('à') }}
+                            <strong>{{ $users->lastItem() }}</strong> {{ __('sur') }}
+                            <strong>{{ $users->total() }}</strong> {{ __('utilisateurs') }}
                         </div>
 
                         <div class="flex gap-2 flex-wrap justify-center">
@@ -262,11 +235,11 @@
                             @if ($users->onFirstPage())
                                 <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed"
                                     style="pointer-events: none;">
-                                    <i class="bi bi-chevron-left"></i> Précédent
+                                    <i class="bi bi-chevron-left"></i> {{ __('Précédent') }}
                                 </span>
                             @else
                                 <a href="{{ $users->previousPageUrl() }}" class="btn-cuni secondary sm">
-                                    <i class="bi bi-chevron-left"></i> Précédent
+                                    <i class="bi bi-chevron-left"></i> {{ __('Précédent') }}
                                 </a>
                             @endif
 
@@ -308,12 +281,12 @@
                             {{-- Bouton Suivant --}}
                             @if ($users->hasMorePages())
                                 <a href="{{ $users->nextPageUrl() }}" class="btn-cuni secondary sm">
-                                    Suivant <i class="bi bi-chevron-right"></i>
+                                    {{ __('Suivant') }} <i class="bi bi-chevron-right"></i>
                                 </a>
                             @else
                                 <span class="btn-cuni secondary sm opacity-50 cursor-not-allowed"
                                     style="pointer-events: none;">
-                                    Suivant <i class="bi bi-chevron-right"></i>
+                                    {{ __('Suivant') }} <i class="bi bi-chevron-right"></i>
                                 </span>
                             @endif
                         </div>
@@ -345,19 +318,19 @@
         padding: 32px;
     ">
                 <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">
-                    Activer un Abonnement
+                    {{ __('Activer un Abonnement') }}
                 </h3>
                 <form action="{{ route('admin.subscriptions.activate') }}" method="POST">
                     @csrf
                     <input type="hidden" name="user_id" id="activateUserId">
                     <div style="margin-bottom: 16px;">
                         <label
-                            style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Utilisateur</label>
+                            style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Utilisateur') }}</label>
                         <input type="text" id="activateUserName" class="form-control" readonly
                             style="background: var(--surface-alt);">
                     </div>
                     <div style="margin-bottom: 16px;">
-                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Plan</label>
+                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Plan') }}</label>
                         <select name="plan_id" class="form-select" required>
                             @foreach (\App\Models\SubscriptionPlan::where('is_active', true)->where('price', '>', 0)->get() as $plan)
                                 <option value="{{ $plan->id }}">{{ $plan->name }} -
@@ -366,18 +339,18 @@
                         </select>
                     </div>
                     <div style="margin-bottom: 16px;">
-                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Durée
-                            (mois)</label>
+                        <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Durée') }}
+                            ({{ __('mois') }})</label>
                         <input type="number" name="duration_months" class="form-control" value="1" min="1"
                             max="24">
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                         <button type="button" class="btn-cuni secondary"
                             onclick="document.getElementById('activateModal').style.display='none'">
-                            Annuler
+                            {{ __('Annuler') }}
                         </button>
                         <button type="submit" class="btn-cuni primary">
-                            <i class="bi bi-check-circle"></i> Activer
+                            <i class="bi bi-check-circle"></i> {{ __('Activer') }}
                         </button>
                     </div>
                 </form>

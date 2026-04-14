@@ -11,6 +11,10 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Verification modal data (always available for JS) -->
+    <meta name="verification-pending" content="{{ session('verification_pending') ? '1' : '0' }}">
+    <meta name="verification-email" content="{{ session('verification_email') ?? '' }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
@@ -1210,6 +1214,172 @@
         .form-step[data-step="2"] .social-login {
             display: none;
         }
+
+        /* ============================================
+        ✅ RESPONSIVE FIXES FOR ALIGNMENT
+        ============================================ */
+        @media (max-width: 1024px) {
+            .welcome-content {
+                gap: 40px;
+            }
+
+            .brand-title {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .welcome-container {
+                padding: 20px;
+                align-items: flex-start;
+                padding-top: 40px;
+            }
+
+            .welcome-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                max-width: 520px;
+            }
+
+            .brand-section {
+                order: 1;
+                text-align: center;
+            }
+
+            .auth-section {
+                order: 2;
+            }
+
+            .features-list {
+                display: inline-block;
+                text-align: left;
+            }
+
+            .features-list li {
+                justify-content: flex-start;
+            }
+
+            .brand-title {
+                font-size: 36px;
+            }
+
+            .brand-tagline {
+                font-size: 16px;
+            }
+
+            .steps-illustration {
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .welcome-container {
+                padding: 16px;
+                padding-top: 24px;
+            }
+
+            .auth-forms {
+                padding: 24px 20px !important;
+            }
+
+            .brand-title {
+                font-size: 28px;
+            }
+
+            .brand-tagline {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .logo-container {
+                width: 64px;
+                height: 64px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .logo-container svg {
+                width: 40px;
+                height: 40px;
+            }
+
+            .steps-illustration {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .farmer-popout {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-container {
+                padding: 12px;
+                padding-top: 16px;
+            }
+
+            .auth-forms {
+                padding: 20px 16px !important;
+            }
+
+            .brand-title {
+                font-size: 24px;
+            }
+
+            .brand-tagline {
+                font-size: 13px;
+            }
+
+            .auth-tabs {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .auth-tab {
+                padding: 12px 16px;
+            }
+
+            .form-title {
+                font-size: 20px;
+            }
+
+            .form-subtitle {
+                font-size: 13px;
+            }
+
+            .verification-modal {
+                width: 95%;
+                margin: 16px;
+            }
+
+            .verification-code-inputs {
+                gap: 8px;
+            }
+
+            .verification-code-input {
+                width: 40px;
+                height: 48px;
+                font-size: 18px;
+            }
+        }
+
+        /* Fix animation overflow on small screens */
+        @media (max-width: 768px) {
+            .brand-section {
+                animation: none !important;
+            }
+
+            .auth-section {
+                animation: none !important;
+            }
+
+            .features-list li {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 
@@ -1303,30 +1473,31 @@
                         <form method="POST" action="{{ route('login') }}" class="auth-form active" id="form-login">
                             @csrf
 
-                            @if ($errors->any())
-                                <div class="alert-box error">
+                            <!-- ✅ Login-specific error display (includes session('error') as fallback) -->
+                            @if ($errors->has('email') || $errors->has('password') || $errors->has('auth') || session('error'))
+                                <div class="alert-box error" id="loginErrorAlert">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                     <div>
-                                        <strong>Erreurs de connexion</strong>
+                                        <strong>Erreur de connexion</strong>
                                         <ul class="validation-summary-list">
-                                            @foreach ($errors->all() as $error)
+                                            @if($errors->has('email'))
                                                 <li>
                                                     <i class="bi bi-x-circle-fill"></i>
-                                                    <span>
-                                                        @if ($error === 'auth.failed' || str_contains($error, 'auth.failed'))
-                                                            Ces identifiants ne correspondent pas à nos enregistrements.
-                                                            Veuillez vérifier votre email et mot de passe.
-                                                        @elseif(str_contains($error, 'throttle'))
-                                                            Trop de tentatives de connexion. Veuillez réessayer plus
-                                                            tard.
-                                                        @elseif(str_contains($error, 'validation.'))
-                                                            {{ str_replace('validation.', '', $error) }}
-                                                        @else
-                                                            {{ $error }}
-                                                        @endif
-                                                    </span>
+                                                    <span>{{ $errors->first('email') }}</span>
                                                 </li>
-                                            @endforeach
+                                            @endif
+                                            @if($errors->has('password'))
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>{{ $errors->first('password') }}</span>
+                                                </li>
+                                            @endif
+                                            @if(session('error'))
+                                                <li>
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>{{ session('error') }}</span>
+                                                </li>
+                                            @endif
                                         </ul>
                                     </div>
                                 </div>
@@ -1408,7 +1579,7 @@
                         <form method="POST" action="{{ route('register') }}" class="auth-form" id="form-register">
                             @csrf
 
-                            @if ($errors->has('name') || $errors->has('email') || $errors->has('password') || $errors->has('password_confirmation'))
+                            @if ($errors->has('name') || $errors->has('email') || $errors->has('password') || $errors->has('password_confirmation') || $errors->has('firm_name') || $errors->has('terms') || $errors->has('firm_description'))
                                 <div class="alert-box error">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                     <div>
@@ -1417,24 +1588,7 @@
                                             @foreach ($errors->all() as $error)
                                                 <li>
                                                     <i class="bi bi-x-circle-fill"></i>
-                                                    <span>
-                                                        @if (str_contains($error, 'validation.unique'))
-                                                            Cette adresse email est déjà utilisée. Veuillez en choisir
-                                                            une autre.
-                                                        @elseif(str_contains($error, 'validation.email'))
-                                                            Format d'email invalide.
-                                                        @elseif(str_contains($error, 'validation.min'))
-                                                            Le champ est trop court.
-                                                        @elseif(str_contains($error, 'validation.required'))
-                                                            Ce champ est obligatoire.
-                                                        @elseif(str_contains($error, 'validation.confirmed'))
-                                                            Les mots de passe ne correspondent pas.
-                                                        @elseif(str_contains($error, 'validation.'))
-                                                            {{ str_replace('validation.', '', $error) }}
-                                                        @else
-                                                            {{ $error }}
-                                                        @endif
-                                                    </span>
+                                                    <span>{{ $error }}</span>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -1685,6 +1839,17 @@
 
     <!-- ==================== VERIFICATION MODAL ==================== -->
     @if (session('verification_pending'))
+        <!-- Success message shown above the modal -->
+        @if (session('success'))
+            <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1001;
+                        background: #10B981; color: white; padding: 12px 24px; border-radius: 12px;
+                        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); font-size: 14px; font-weight: 600;
+                        display: flex; align-items: center; gap: 8px; max-width: 90%;">
+                <i class="bi bi-check-circle-fill" style="font-size: 18px;"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         <div class="verification-overlay active" id="verificationOverlay" style="display: flex;">
             <div class="verification-modal">
                 <div class="verification-header">
@@ -1706,7 +1871,8 @@
                         <input type="hidden" name="email" value="{{ session('verification_email') }}">
                         <div class="verification-code-inputs">
                             <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
-                                inputmode="numeric" data-index="0" required autofocus>
+                                inputmode="numeric" data-index="0" required autofocus
+                                autocomplete="one-time-code">
                             <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
                                 inputmode="numeric" data-index="1" required>
                             <input type="text" class="verification-code-input" maxlength="1" pattern="[0-9]"
@@ -1724,6 +1890,10 @@
                             <i class="bi bi-check-circle"></i>
                         </button>
                     </form>
+                    <!-- Debug: Show captured code -->
+                    <div style="text-align:center; margin-top:8px; font-size:12px; color: var(--gray-400);">
+                        Code: <span id="codeDebugDisplay" style="font-family: monospace; letter-spacing: 4px; font-size: 16px; color: var(--primary); font-weight: 700;">______</span>
+                    </div>
                     <div class="verification-info">
                         <p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode"
                                 onclick="resendVerificationCode(event)">Renvoyer</a></p>
@@ -1741,27 +1911,7 @@
             </div>
         </div>
 
-        {{-- ✅ FORCE MODAL TO STAY OPEN WITH JAVASCRIPT --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const overlay = document.getElementById('verificationOverlay');
-                if (overlay && {{ session('verification_pending') ? 'true' : 'false' }}) {
-                    // Force display
-                    overlay.style.display = 'flex';
-                    overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden'; // Prevent scrolling
-
-                    // Focus first input after short delay
-                    setTimeout(() => {
-                        const firstInput = document.querySelector('.verification-code-input');
-                        if (firstInput) firstInput.focus();
-                    }, 500);
-
-                    // Start resend timer
-                    startResendTimer();
-                }
-            });
-        </script>
+        {{-- ✅ Verification modal will be force-opened by main script below --}}
     @endif
 
     <script>
@@ -1793,10 +1943,27 @@ if (step && window.opener) {
             window.addEventListener('offline', updateNetworkStatus);
             updateNetworkStatus();
 
-            // Auto-hide validation errors after 8 seconds
+            // Force-open verification modal if session says so
+            const verificationMeta = document.querySelector('meta[name="verification-pending"]');
+            const metaValue = verificationMeta ? verificationMeta.getAttribute('content') : '0';
+            const shouldShowModal = {{ session('verification_pending') ? 'true' : 'false' }} || metaValue === '1';
+
+            if (shouldShowModal) {
+                const overlay = document.getElementById('verificationOverlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    console.log('✅ Verification modal opened');
+                }
+            }
+
+            // Auto-hide validation errors after 12 seconds (except login errors which stay visible)
             setTimeout(() => {
                 const hideElements = (selector) => {
                     document.querySelectorAll(selector).forEach(el => {
+                        // Don't auto-hide login form errors - let user read them
+                        if (el.closest('#form-login')) return;
                         el.style.transition = 'opacity 0.5s ease';
                         el.style.opacity = '0';
                         setTimeout(() => el.style.display = 'none', 500);
@@ -1804,11 +1971,13 @@ if (step && window.opener) {
                 };
                 hideElements('.alert-box.error');
                 hideElements('.validation-message.error');
-                document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
-            }, 8000);
+                document.querySelectorAll('.form-input.error').forEach(el => {
+                    if (!el.closest('#form-login')) el.classList.remove('error');
+                });
+            }, 12000);
 
             // ==================== TAB SWITCHING ====================
-            function switchTab(tabName, isInitialLoad = false) {
+            function switchTab(tabName, fromClick = false) {
                 const tabs = document.querySelectorAll('.auth-tab');
                 const forms = document.querySelectorAll('.auth-form');
 
@@ -1823,8 +1992,9 @@ if (step && window.opener) {
 
                 sessionStorage.setItem('cuniapp_current_tab', tabName);
 
-                // Clear validation errors when switching tabs, unless initial load
-                if (!isInitialLoad) {
+                // Clear validation errors ONLY when user manually clicks a tab
+                // NEVER clear errors on initial page load (fromClick=false)
+                if (fromClick) {
                     document.querySelectorAll('.alert-box.error').forEach(el => el.style.display = 'none');
                     document.querySelectorAll('.validation-message.error').forEach(el => el.style.display = 'none');
                     document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
@@ -1835,19 +2005,30 @@ if (step && window.opener) {
             tabs.forEach(tab => {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
-                    switchTab(this.getAttribute('data-tab'), true); // true = fromClick
+                    switchTab(this.getAttribute('data-tab'), true); // true = user clicked
                 });
             });
 
-            // Restore saved tab - Initial Load (isInitialLoad = true, so fromClick = false)
-            @if ($errors->has('email') || $errors->has('password'))
-                switchTab('login', false);
-            @elseif ($errors->has('name') || $errors->has('password_confirmation') || $errors->has('email_register'))
-                switchTab('register', false);
-            @else
-                const savedTab = sessionStorage.getItem('cuniapp_current_tab');
-                if (savedTab) switchTab(savedTab, false);
-            @endif
+            // Restore correct tab on page load (fromClick=false → preserves errors)
+            @php
+                // Use old() input to determine which form was submitted
+                $wasRegistrationForm = old('name') !== null || old('firm_name') !== null || old('firm_description') !== null;
+                $wasLoginForm = old('email') !== null && !$wasRegistrationForm && !old('firm_name');
+
+                if ($wasRegistrationForm) {
+                    // Any error after registration submission → show register tab
+                    echo "switchTab('register', false);";
+                } elseif ($wasLoginForm) {
+                    // Only email+password submitted → show login tab
+                    echo "switchTab('login', false);";
+                } elseif (session('verification_pending')) {
+                    // Successful registration → show register tab (modal will overlay)
+                    echo "switchTab('register', false);";
+                } else {
+                    // No form data → use saved tab or default to login
+                    echo "const savedTab = sessionStorage.getItem('cuniapp_current_tab'); if (savedTab) switchTab(savedTab, false);";
+                }
+            @endphp
 
             // ==================== PASSWORD STRENGTH ====================
             const registerPassword = document.getElementById('registerPassword');
@@ -1974,27 +2155,144 @@ if (step && window.opener) {
                 }
             };
 
-            // Verification Code Input Handling
-            document.querySelectorAll('.verification-code-input').forEach((input, index, inputs) => {
-                input.addEventListener('input', function() {
-                    if (this.value.length === 1) {
-                        this.classList.add('filled');
-                        if (index < inputs.length - 1) {
-                            inputs[index + 1].focus();
+            // ==================== VERIFICATION CODE INPUT HANDLING ====================
+            function attachVerificationInputListeners() {
+                const inputs = document.querySelectorAll('.verification-code-input');
+                if (inputs.length === 0) return;
+
+                console.log(`🔧 Attaching verification listeners to ${inputs.length} inputs`);
+
+                inputs.forEach((input, index) => {
+                    if (input.dataset.listenerAttached) return;
+                    input.dataset.listenerAttached = 'true';
+
+                    // Use keydown instead of input for more reliable behavior
+                    input.addEventListener('keydown', function(e) {
+                        // Allow: backspace, delete, tab, escape, enter, arrows
+                        if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+                            if (e.key === 'Backspace' && !this.value && index > 0) {
+                                e.preventDefault();
+                                inputs[index - 1].value = '';
+                                inputs[index - 1].classList.remove('filled');
+                                inputs[index - 1].focus();
+                                updateVerificationCode();
+                            }
+                            if (e.key === 'ArrowLeft' && index > 0) {
+                                e.preventDefault();
+                                inputs[index - 1].focus();
+                            }
+                            if (e.key === 'ArrowRight' && index < inputs.length - 1) {
+                                e.preventDefault();
+                                inputs[index + 1].focus();
+                            }
+                            return;
                         }
-                    }
-                    updateVerificationCode();
+
+                        // Only allow single digit 0-9
+                        if (!/^[0-9]$/.test(e.key)) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        e.preventDefault();
+                        this.value = e.key;
+                        this.classList.add('filled');
+                        updateVerificationCode();
+
+                        // Auto-advance to next input
+                        if (index < inputs.length - 1) {
+                            setTimeout(() => {
+                                inputs[index + 1].focus();
+                                inputs[index + 1].select();
+                            }, 50);
+                        } else {
+                            // Last digit - auto-submit after a moment
+                            setTimeout(() => {
+                                let fullCode = '';
+                                inputs.forEach(inp => fullCode += inp.value);
+                                if (fullCode.length === 6) {
+                                    const form = document.getElementById('verificationForm');
+                                    if (form) {
+                                        console.log('🚀 Auto-submitting verification form...');
+                                        form.submit();
+                                    }
+                                }
+                            }, 200);
+                        }
+                    });
+
+                    // Handle paste events (copy-paste full code)
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+                        const digits = paste.replace(/[^0-9]/g, '').slice(0, 6).split('');
+
+                        if (digits.length > 0) {
+                            digits.forEach((digit, i) => {
+                                if (inputs[i]) {
+                                    inputs[i].value = digit;
+                                    inputs[i].classList.add('filled');
+                                }
+                            });
+                            updateVerificationCode();
+
+                            // Focus next empty or last filled
+                            const nextEmpty = Array.from(inputs).find(inp => !inp.value);
+                            if (nextEmpty) {
+                                nextEmpty.focus();
+                            } else if (digits.length === 6) {
+                                // All filled - submit
+                                const form = document.getElementById('verificationForm');
+                                if (form) {
+                                    console.log('🚀 Pasted full code, submitting...');
+                                    form.submit();
+                                }
+                            } else {
+                                inputs[Math.min(digits.length, inputs.length - 1)].focus();
+                            }
+                        }
+                    });
+
+                    // Select content on focus
+                    input.addEventListener('focus', function() {
+                        this.select();
+                    });
+
+                    // Handle input event as fallback
+                    input.addEventListener('input', function(e) {
+                        const val = this.value;
+                        // If multiple chars pasted
+                        if (val.length > 1) {
+                            const digits = val.replace(/[^0-9]/g, '').split('');
+                            digits.forEach((d, i) => {
+                                const targetIdx = index + i;
+                                if (inputs[targetIdx]) {
+                                    inputs[targetIdx].value = d;
+                                    inputs[targetIdx].classList.add('filled');
+                                }
+                            });
+                            updateVerificationCode();
+                            const nextIdx = Math.min(index + digits.length, inputs.length - 1);
+                            inputs[nextIdx].focus();
+                            return;
+                        }
+                        // If single digit
+                        if (/^[0-9]$/.test(val)) {
+                            this.value = val;
+                            this.classList.add('filled');
+                            updateVerificationCode();
+                            if (index < inputs.length - 1) {
+                                setTimeout(() => inputs[index + 1].focus(), 50);
+                            }
+                        }
+                    });
                 });
 
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value === '' && index > 0) {
-                        inputs[index - 1].focus();
-                        inputs[index - 1].value = '';
-                        inputs[index - 1].classList.remove('filled');
-                        updateVerificationCode();
-                    }
-                });
-            });
+                console.log(`✅ Verification listeners attached successfully`);
+            }
+
+            // Call immediately since DOM is already ready
+            attachVerificationInputListeners();
 
             function updateVerificationCode() {
                 let code = '';
@@ -2002,7 +2300,15 @@ if (step && window.opener) {
                     code += input.value;
                 });
                 const codeInput = document.getElementById('verificationCodeInput');
-                if (codeInput) codeInput.value = code;
+                if (codeInput) {
+                    codeInput.value = code;
+                }
+                // Update debug display
+                const debugDisplay = document.getElementById('codeDebugDisplay');
+                if (debugDisplay) {
+                    const display = code.padEnd(6, '_');
+                    debugDisplay.textContent = display;
+                }
             }
 
             function startResendTimer() {
@@ -2238,6 +2544,24 @@ if (step && window.opener) {
                     toast.style.animation = 'slideOutRight 0.3s ease';
                     setTimeout(() => toast.remove(), 300);
                 }, 3000);
+            }
+
+            // Start resend timer and focus first input if verification modal is shown
+            if (shouldShowModal) {
+                const overlay = document.getElementById('verificationOverlay');
+                if (overlay) {
+                    // Focus first input
+                    setTimeout(() => {
+                        const firstInput = document.querySelector('.verification-code-input');
+                        if (firstInput) firstInput.focus();
+                    }, 300);
+
+                    // Start resend timer
+                    if (typeof startResendTimer === 'function') {
+                        startResendTimer();
+                    }
+                    console.log('✅ Verification modal ready, timer started');
+                }
             }
 
             // Add animation styles

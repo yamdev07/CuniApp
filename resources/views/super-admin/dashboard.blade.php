@@ -1,17 +1,17 @@
 {{-- resources/views/super-admin/dashboard.blade.php --}}
 @extends('layouts.cuniapp')
-@section('title', 'Super Admin - Tableau de Bord')
+@section('title', __('Super Admin') . ' - ' . __('Tableau de bord'))
 @section('content')
     <div class="page-header mb-6">
         <div>
             <h2 class="page-title">
                 <i class="bi bi-star-fill" style="color: var(--accent-orange);"></i>
-                Administration Super Admin
+                {{ __('Administration Super Admin') }}
             </h2>
             <div class="breadcrumb text-xs">
                 <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
                 <span>/</span>
-                <span>Super Admin</span>
+                <span>{{ __('Super Admin') }}</span>
             </div>
         </div>
     </div>
@@ -25,10 +25,10 @@
                         <div class="p-2 rounded-circle bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-shield-check fs-4"></i>
                         </div>
-                        <h3 class="h4 fw-bold mb-0">Espace Haute Administration</h3>
+                        <h3 class="h4 fw-bold mb-0">{{ __('Espace Haute Administration') }}</h3>
                     </div>
                     <p class="text-secondary mb-0">
-                        Bienvenue dans votre centre de contrôle maître. Gere les abonnements, surveillez les transactions et pilotez la croissance de <strong>CuniApp</strong> en temps réel.
+                        {{ __('Bienvenue dans votre centre de contrôle maître. Gérez les abonnements, surveillez les transactions et pilotez la croissance de CuniApp en temps réel.') }}
                     </p>
                 </div>
                 <div class="col-lg-4 d-none d-lg-block text-end">
@@ -50,7 +50,7 @@
                         <i class="bi bi-building text-blue-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Entreprises</p>
+                        <p class="stats-label-small">{{ __('Entreprises') }}</p>
                         <p class="stats-value-small">{{ number_format($stats['total_firms']) }}</p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         <i class="bi bi-cash-stack text-green-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Revenus (Mois)</p>
+                        <p class="stats-label-small">{{ __('Revenus (Mois)') }}</p>
                         <p class="stats-value-small text-green-600">{{ number_format($stats['total_revenue_month'], 0, ',', ' ') }} <small class="text-xs">FCFA</small></p>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         <i class="bi bi-check-circle text-purple-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Abonnements Actifs</p>
+                        <p class="stats-label-small">{{ __('Abonnements Actifs') }}</p>
                         <p class="stats-value-small">{{ number_format($stats['active_subscriptions']) }}</p>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                         <i class="bi bi-clock text-amber-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Expire Bientôt (7j)</p>
+                        <p class="stats-label-small">{{ __('Expire Bientôt (7j)') }}</p>
                         <p class="stats-value-small text-amber-600">{{ $stats['expiring_soon'] }}</p>
                     </div>
                 </div>
@@ -160,11 +160,11 @@
         <div class="lg:col-span-2">
             <div class="cuni-card h-full">
                 <div class="card-header-custom flex items-center justify-between py-3">
-                    <h3 class="card-title text-sm"><i class="bi bi-graph-up-arrow"></i> Évolution des Inscriptions (30 jours)</h3>
+                    <h3 class="card-title text-sm"><i class="bi bi-graph-up-arrow"></i> {{ __('Évolution des Inscriptions (30 jours)') }}</h3>
                     <div class="flex items-center gap-3">
-                        <span class="badge secondary sm">{{ array_sum($signupCounts) }} total</span>
+                        <span class="badge secondary sm">{{ array_sum($signupCounts) }} {{ __('total') }}</span>
                         <a href="{{ route('admin.subscriptions.index') }}" class="btn-cuni sm secondary" style="font-size: 0.75rem; padding: 4px 8px;">
-                            Voir plus <i class="bi bi-arrow-right ml-1"></i>
+                            {{ __('Voir plus') }} <i class="bi bi-arrow-right ml-1"></i>
                         </a>
                     </div>
                 </div>
@@ -180,10 +180,10 @@
         <div>
             <div class="cuni-card h-full">
                 <div class="card-header-custom py-3 flex items-center justify-between">
-                    <h3 class="card-title text-sm"><i class="bi bi-activity"></i> Activité Globale</h3>
+                    <h3 class="card-title text-sm"><i class="bi bi-activity"></i> {{ __('Activité Globale') }}</h3>
                     <div class="flex items-center gap-2">
                         <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6; font-size: 0.7rem;">
-                            {{ $activeUsers24h }} actifs (24h)
+                            {{ $activeUsers24h }} {{ __('actifs (24h)') }}
                         </span>
                     </div>
                 </div>
@@ -192,16 +192,16 @@
                         <table class="table table-sm" style="font-size: 0.8rem; margin: 0;">
                             <thead>
                                 <tr style="background: var(--surface-alt);">
-                                    <th style="padding: 8px 12px;">Utilisateur</th>
-                                    <th style="padding: 8px 12px;">Entreprise</th>
-                                    <th style="padding: 8px 12px; text-align: right;">Vues</th>
+                                    <th style="padding: 8px 12px;">{{ __('Utilisateur') }}</th>
+                                    <th style="padding: 8px 12px;">{{ __('Entreprise') }}</th>
+                                    <th style="padding: 8px 12px; text-align: right;">{{ __('Vues') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($recentActivities as $activity)
                                     <tr>
                                         <td style="padding: 8px 12px;">
-                                            <div class="fw-semibold">{{ $activity->user->name ?? 'Inconnu' }}</div>
+                                            <div class="fw-semibold">{{ $activity->user->name ?? __('Inconnu') }}</div>
                                             <div style="font-size: 0.7rem; color: var(--text-tertiary);">{{ $activity->updated_at->diffForHumans() }}</div>
                                         </td>
                                         <td style="padding: 8px 12px;">
@@ -213,7 +213,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="text-center py-4 text-muted">Aucune activité récente</td>
+                                        <td colspan="3" class="text-center py-4 text-muted">{{ __('Aucune activité récente') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -229,10 +229,10 @@
     <div class="cuni-card mb-6">
         <div class="card-header-custom flex items-center justify-between">
             <h3 class="card-title">
-                <i class="bi bi-trophy"></i> Top 5 Entreprises (Par Revenus)
+                <i class="bi bi-trophy"></i> {{ __('Top 5 Entreprises (Par Revenus)') }}
             </h3>
             <a href="{{ route('super.admin.firms') }}" class="btn-cuni sm secondary">
-                Voir plus <i class="bi bi-arrow-right ml-1"></i>
+                {{ __('Voir plus') }} <i class="bi bi-arrow-right ml-1"></i>
             </a>
         </div>
         <div class="card-body">
@@ -240,12 +240,12 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Rang</th>
-                            <th>Entreprise</th>
-                            <th>Administrateur</th>
-                            <th>Abonnement</th>
-                            <th>Revenus</th>
-                            <th>Ventes</th>
+                            <th>{{ __('Rang') }}</th>
+                            <th>{{ __('Entreprise') }}</th>
+                            <th>{{ __('Administrateur') }}</th>
+                            <th>{{ __('Abonnement') }}</th>
+                            <th>{{ __('Revenus') }}</th>
+                            <th>{{ __('Ventes') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -271,7 +271,7 @@
                                         </span>
                                     @else
                                         <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
-                                            Aucun
+                                            {{ __('Aucun') }}
                                         </span>
                                     @endif
                                 </td>
@@ -291,10 +291,10 @@
     <div class="cuni-card">
         <div class="card-header-custom flex items-center justify-between">
             <h3 class="card-title">
-                <i class="bi bi-person-plus"></i> Inscriptions Récentes (7 jours)
+                <i class="bi bi-person-plus"></i> {{ __('Inscriptions Récentes (7 jours)') }}
             </h3>
             <a href="{{ route('admin.subscriptions.index') }}" class="btn-cuni sm secondary">
-                Voir plus <i class="bi bi-arrow-right ml-1"></i>
+                {{ __('Voir plus') }} <i class="bi bi-arrow-right ml-1"></i>
             </a>
         </div>
         <div class="card-body">
@@ -303,11 +303,11 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Entreprise</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <th>{{ __('Nom') }}</th>
+                                <th>{{ __('Email') }}</th>
+                                <th>{{ __('Entreprise') }}</th>
+                                <th>{{ __('Date') }}</th>
+                                <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -329,7 +329,7 @@
                     </table>
                 </div>
             @else
-                <p class="text-center text-gray-500 py-8">Aucune inscription récente</p>
+                <p class="text-center text-gray-500 py-8">{{ __('Aucune inscription récente') }}</p>
             @endif
         </div>
     </div>

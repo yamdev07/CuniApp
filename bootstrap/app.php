@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // ✅ Register your custom middleware
         $middleware->alias([
+            'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
             'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
             'check.firm.admin' => \App\Http\Middleware\CheckFirmAdmin::class,
             'check.super.admin' => \App\Http\Middleware\CheckSuperAdmin::class,

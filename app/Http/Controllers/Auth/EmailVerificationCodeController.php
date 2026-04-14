@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Firm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 
 class EmailVerificationCodeController extends Controller
 {
@@ -86,12 +88,22 @@ class EmailVerificationCodeController extends Controller
 
             if ($existingUser) {
                 // User already exists - just verify their email
-                if (!$existingUser->hasVerifiedEmail()) {
-                    $existingUser->update([
-                        'email_verified_at' => now(),
-                    ]);
-                    event(new Verified($existingUser));
-                }
+                Log::info('📧 Verification: User exists, marking email as verified', [
+                    'user_id' => $existingUser->id,
+                    'email' => $existingUser->email,
+                    'was_verified' => $existingUser->hasVerifiedEmail(),
+                ]);
+
+                $existingUser->email_verified_at = now();
+                $existingUser->save();
+
+                Log::info('✅ Email verified', [
+                    'user_id' => $existingUser->id,
+                    'verified_at' => $existingUser->email_verified_at,
+                    'hasVerifiedEmail' => $existingUser->hasVerifiedEmail(),
+                ]);
+
+                event(new Verified($existingUser));
 
                 // Clean up cache
                 Cache::forget("registration_pending_{$email}");
@@ -99,7 +111,7 @@ class EmailVerificationCodeController extends Controller
 
                 session()->forget(['verification_pending', 'verification_email']);
                 return redirect()->route('login')
-                    ->with('success', '✅ Email déjà vérifié ! Vous pouvez vous connecter.');
+                    ->with('success', '✅ Email vérifié avec succès ! Vous pouvez maintenant vous connecter.');
             }
 
             // Create new user only if email doesn't exist
@@ -125,6 +137,11 @@ class EmailVerificationCodeController extends Controller
         } else {
             $user = User::where('email', $email)->first();
             if ($user) {
+                Log::info('📧 Verification: No pending registration, marking existing user as verified', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                ]);
+
                 $user->email_verified_at = now();
                 $user->save();
             } else {

@@ -1,16 +1,16 @@
 {{-- resources/views/admin/subscriptions/show.blade.php --}}
 @extends('layouts.cuniapp')
 
-@section('title', 'Détails Utilisateur - Admin')
+@section('title', __('Détails Utilisateur - Admin'))
 
 @section('content')
 <div class="page-header">
     <div>
         <h2 class="page-title">
-            <i class="bi bi-shield-lock"></i> Gestion des Abonnements
+            <i class="bi bi-shield-lock"></i> {{ __('Gestion des Abonnements') }}
         </h2>
         <div class="breadcrumb">
-            <a href="{{ route('dashboard') }}">Tableau de bord</a>
+            <a href="{{ route('dashboard') }}">{{ __('Tableau de bord') }}</a>
             <span>/</span>
             <a href="{{ route('admin.subscriptions.index') }}">Admin</a>
             <span>/</span>
@@ -18,7 +18,7 @@
         </div>
     </div>
     <a href="{{ route('admin.subscriptions.index') }}" class="btn-cuni secondary">
-        <i class="bi bi-arrow-left"></i> Retour
+        <i class="bi bi-arrow-left"></i> {{ __('Retour') }}
     </a>
 </div>
 
@@ -40,21 +40,21 @@
 <div class="cuni-card mb-6">
     <div class="card-header-custom">
         <h3 class="card-title">
-            <i class="bi bi-person-circle"></i> Informations Utilisateur
+            <i class="bi bi-person-circle"></i> {{ __('Informations Utilisateur') }}
         </h3>
     </div>
     <div class="card-body">
         <div class="settings-grid">
             <div class="form-group">
-                <label class="form-label">Nom</label>
+                <label class="form-label">{{ __('Nom') }}</label>
                 <p class="fw-semibold">{{ $user->name }}</p>
             </div>
             <div class="form-group">
-                <label class="form-label">Email</label>
+                <label class="form-label">{{ __('Email') }}</label>
                 <p class="fw-semibold">{{ $user->email }}</p>
             </div>
             <div class="form-group">
-                <label class="form-label">Rôle</label>
+                <label class="form-label">{{ __('Rôle') }}</label>
                 <p>
                     <span class="badge" style="background: {{ $user->role === 'admin' ? 'rgba(139, 92, 246, 0.1); color: #8B5CF6;' : 'rgba(59, 130, 246, 0.1); color: #3B82F6;' }}">
                         {{ ucfirst($user->role) }}
@@ -62,27 +62,27 @@
                 </p>
             </div>
             <div class="form-group">
-                <label class="form-label">Statut Abonnement</label>
+                <label class="form-label">{{ __('Statut Abonnement') }}</label>
                 <p>
                     @if($user->hasActiveSubscription())
                         <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">
-                            <i class="bi bi-check-circle"></i> Actif
+                            <i class="bi bi-check-circle"></i> {{ __('Actif') }}
                         </span>
                     @else
                         <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: var(--gray-500);">
-                            <i class="bi bi-x-circle"></i> Inactif
+                            <i class="bi bi-x-circle"></i> {{ __('Inactif') }}
                         </span>
                     @endif
                 </p>
             </div>
             <div class="form-group">
-                <label class="form-label">Plan Actuel</label>
+                <label class="form-label">{{ __('Plan Actuel') }}</label>
                 <p class="fw-bold" style="color: var(--primary);">
                     {{ $user->effective_plan_name }}
                 </p>
             </div>
             <div class="form-group">
-                <label class="form-label">Expiration</label>
+                <label class="form-label">{{ __('Expiration') }}</label>
                 <p class="fw-semibold">
                     @php
                         $sub = $user->effective_subscription;
@@ -93,9 +93,9 @@
                             $daysLeft = $sub->end_date->diffInDays(now(), false);
                         @endphp
                         @if($daysLeft < 0)
-                            <span style="color: var(--accent-red); font-size: 12px;"> (Expiré dans {{ abs($daysLeft) }} jours)</span>
+                            <span style="color: var(--accent-red); font-size: 12px;"> ({{ __('Expiré dans') }} {{ abs($daysLeft) }} {{ __('jours') }})</span>
                         @elseif($daysLeft <= 7)
-                            <span style="color: var(--accent-orange); font-size: 12px;"> (Expire dans {{ $daysLeft }} jours)</span>
+                            <span style="color: var(--accent-orange); font-size: 12px;"> ({{ __('Expire dans') }} {{ $daysLeft }} {{ __('jours') }})</span>
                         @endif
                     @else
                         <span style="color: var(--text-tertiary);">-</span>
@@ -104,7 +104,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Inscrit le</label>
+                <label class="form-label">{{ __('Inscrit le') }}</label>
                 <p style="color: var(--text-secondary); font-size: 13px;">
                     {{ $user->created_at->format('d/m/Y H:i') }}
                 </p>
@@ -115,15 +115,15 @@
         <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--surface-border); display: flex; gap: 12px; flex-wrap: wrap;">
             @if(!$user->hasActiveSubscription())
             <button type="button" class="btn-cuni primary" onclick="showActivateModal()">
-                <i class="bi bi-check-circle"></i> Activer Abonnement
+                <i class="bi bi-check-circle"></i> {{ __('Activer Abonnement') }}
             </button>
             @endif
             @if($user->activeSubscription())
             <button type="button" class="btn-cuni secondary" onclick="showExtendModal()">
-                <i class="bi bi-calendar-plus"></i> Prolonger
+                <i class="bi bi-calendar-plus"></i> {{ __('Prolonger') }}
             </button>
             <button type="button" class="btn-cuni danger" onclick="showDeactivateModal()">
-                <i class="bi bi-x-circle"></i> Désactiver
+                <i class="bi bi-x-circle"></i> {{ __('Désactiver') }}
             </button>
             @endif
         </div>
@@ -134,10 +134,10 @@
 <div class="cuni-card mb-6">
     <div class="card-header-custom">
         <h3 class="card-title">
-            <i class="bi bi-credit-card"></i> Historique des Abonnements
+            <i class="bi bi-credit-card"></i> {{ __('Historique des Abonnements') }}
         </h3>
         <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
-            {{ $subscriptions->total() }} abonnement(s)
+            {{ $subscriptions->total() }} {{ __('abonnement(s)') }}
         </span>
     </div>
     <div class="card-body">
@@ -146,12 +146,12 @@
             <table class="table" style="width: 100%;">
                 <thead>
                     <tr style="border-bottom: 2px solid var(--surface-border);">
-                        <th style="padding: 12px; text-align: left;">Plan</th>
-                        <th style="padding: 12px; text-align: left;">Prix</th>
-                        <th style="padding: 12px; text-align: left;">Début</th>
-                        <th style="padding: 12px; text-align: left;">Fin</th>
-                        <th style="padding: 12px; text-align: left;">Statut</th>
-                        <th style="padding: 12px; text-align: left;">Paiement</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Plan') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Prix') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Début') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Fin') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Statut') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Paiement') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,7 +161,7 @@
                             {{ $sub->plan->name ?? 'N/A' }}
                         </td>
                         <td style="padding: 12px; font-weight: 600;">
-                            {{ number_format($sub->price, 0, ',', ' ') }} FCFA
+                            {{ number_format($sub->price, 0, ',', ' ') }} {{ __('FCFA') }}
                         </td>
                         <td style="padding: 12px;">
                             {{ $sub->start_date->format('d/m/Y') }}
@@ -171,13 +171,13 @@
                         </td>
                         <td style="padding: 12px;">
                             @if ($sub->status === 'active')
-                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">Actif</span>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">{{ __('Actif') }}</span>
                             @elseif($sub->status === 'expired')
-                                <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: var(--gray-500);">Expiré</span>
+                                <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: var(--gray-500);">{{ __('Expiré') }}</span>
                             @elseif($sub->status === 'cancelled')
-                                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red);">Annulé</span>
+                                <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red);">{{ __('Annulé') }}</span>
                             @else
-                                <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-orange);">En attente</span>
+                                <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-orange);">{{ __('En attente') }}</span>
                             @endif
                         </td>
                         <td style="padding: 12px;">
@@ -197,7 +197,7 @@
         @else
         <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
             <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;"></i>
-            <p>Aucun abonnement trouvé</p>
+            <p>{{ __('Aucun abonnement trouvé') }}</p>
         </div>
         @endif
     </div>
@@ -207,10 +207,10 @@
 <div class="cuni-card">
     <div class="card-header-custom">
         <h3 class="card-title">
-            <i class="bi bi-clock-history"></i> Historique des Paiements
+            <i class="bi bi-clock-history"></i> {{ __('Historique des Paiements') }}
         </h3>
         <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green);">
-            {{ $paymentHistory->total() }} transaction(s)
+            {{ $paymentHistory->total() }} {{ __('transaction(s)') }}
         </span>
     </div>
     <div class="card-body">
@@ -219,11 +219,11 @@
             <table class="table" style="width: 100%;">
                 <thead>
                     <tr style="border-bottom: 2px solid var(--surface-border);">
-                        <th style="padding: 12px; text-align: left;">Date</th>
-                        <th style="padding: 12px; text-align: left;">Montant</th>
-                        <th style="padding: 12px; text-align: left;">Méthode</th>
-                        <th style="padding: 12px; text-align: left;">Statut</th>
-                        <th style="padding: 12px; text-align: left;">Référence</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Date') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Montant') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Méthode') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Statut') }}</th>
+                        <th style="padding: 12px; text-align: left;">{{ __('Référence') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -233,7 +233,7 @@
                             {{ $payment->created_at->format('d/m/Y H:i') }}
                         </td>
                         <td style="padding: 12px; font-size: 13px; font-weight: 600;">
-                            {{ number_format($payment->amount, 0, ',', ' ') }} FCFA
+                            {{ number_format($payment->amount, 0, ',', ' ') }} {{ __('FCFA') }}
                         </td>
                         <td style="padding: 12px; font-size: 13px;">
                             <span style="background: rgba(59, 130, 246, 0.1); color: #3B82F6; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">
@@ -243,15 +243,15 @@
                         <td style="padding: 12px; font-size: 13px;">
                             @if ($payment->status === 'completed')
                                 <span style="color: var(--accent-green);">
-                                    <i class="bi bi-check-circle"></i> Payé
+                                    <i class="bi bi-check-circle"></i> {{ __('Payé') }}
                                 </span>
                             @elseif($payment->status === 'pending')
                                 <span style="color: var(--accent-orange);">
-                                    <i class="bi bi-clock"></i> En attente
+                                    <i class="bi bi-clock"></i> {{ __('En attente') }}
                                 </span>
                             @elseif($payment->status === 'failed')
                                 <span style="color: var(--accent-red);">
-                                    <i class="bi bi-x-circle"></i> Échoué
+                                    <i class="bi bi-x-circle"></i> {{ __('Échoué') }}
                                 </span>
                             @else
                                 <span style="color: var(--gray-500);">
@@ -276,7 +276,7 @@
         @else
         <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
             <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;"></i>
-            <p>Aucun paiement trouvé</p>
+            <p>{{ __('Aucun paiement trouvé') }}</p>
         </div>
         @endif
     </div>
@@ -286,35 +286,35 @@
 <div id="activateModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: var(--surface); border-radius: var(--radius-lg); max-width: 500px; width: 90%; padding: 32px;">
         <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">
-            Activer un Abonnement
+            {{ __('Activer un Abonnement') }}
         </h3>
         <form action="{{ route('admin.subscriptions.activate') }}" method="POST">
             @csrf
             <input type="hidden" name="user_id" value="{{ $user->id }}">
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Utilisateur</label>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Utilisateur') }}</label>
                 <input type="text" class="form-control" value="{{ $user->name }}" readonly style="background: var(--surface-alt);">
             </div>
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Plan</label>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Plan') }}</label>
                 <select name="plan_id" class="form-select" required>
                     @foreach (\App\Models\SubscriptionPlan::where('is_active', true)->get() as $plan)
                         <option value="{{ $plan->id }}">
-                            {{ $plan->name }} - {{ number_format($plan->price, 0, ',', ' ') }} FCFA
+                            {{ $plan->name }} - {{ number_format($plan->price, 0, ',', ' ') }} {{ __('FCFA') }}
                         </option>
                     @endforeach
                 </select>
             </div>
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Durée (mois)</label>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Durée (mois)') }}</label>
                 <input type="number" name="duration_months" class="form-control" value="1" min="1" max="24">
             </div>
             <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                 <button type="button" class="btn-cuni secondary" onclick="document.getElementById('activateModal').style.display='none'">
-                    Annuler
+                    {{ __('Annuler') }}
                 </button>
                 <button type="submit" class="btn-cuni primary">
-                    <i class="bi bi-check-circle"></i> Activer
+                    <i class="bi bi-check-circle"></i> {{ __('Activer') }}
                 </button>
             </div>
         </form>
@@ -325,25 +325,25 @@
 <div id="extendModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: var(--surface); border-radius: var(--radius-lg); max-width: 500px; width: 90%; padding: 32px;">
         <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">
-            Prolonger l'Abonnement
+            {{ __("Prolonger l'Abonnement") }}
         </h3>
         <form action="{{ route('admin.subscriptions.extend') }}" method="POST">
             @csrf
             <input type="hidden" name="subscription_id" value="{{ $user->activeSubscription()?->id }}">
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Utilisateur</label>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Utilisateur') }}</label>
                 <input type="text" class="form-control" value="{{ $user->name }}" readonly style="background: var(--surface-alt);">
             </div>
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Mois à ajouter</label>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Mois à ajouter') }}</label>
                 <input type="number" name="months" class="form-control" value="1" min="1" max="24">
             </div>
             <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                 <button type="button" class="btn-cuni secondary" onclick="document.getElementById('extendModal').style.display='none'">
-                    Annuler
+                    {{ __('Annuler') }}
                 </button>
                 <button type="submit" class="btn-cuni primary">
-                    <i class="bi bi-calendar-plus"></i> Prolonger
+                    <i class="bi bi-calendar-plus"></i> {{ __('Prolonger') }}
                 </button>
             </div>
         </form>
@@ -354,24 +354,24 @@
 <div id="deactivateModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;">
     <div style="background: var(--surface); border-radius: var(--radius-lg); max-width: 500px; width: 90%; padding: 32px;">
         <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--accent-red);">
-            <i class="bi bi-exclamation-triangle"></i> Désactiver l'Abonnement
+            <i class="bi bi-exclamation-triangle"></i> {{ __("Désactiver l'Abonnement") }}
         </h3>
         <p style="color: var(--text-secondary); margin-bottom: 24px;">
-            Êtes-vous sûr de vouloir désactiver l'abonnement de cet utilisateur ? Cette action est irréversible.
+            {{ __("Êtes-vous sûr de vouloir désactiver l'abonnement de cet utilisateur ? Cette action est irréversible.") }}
         </p>
         <form action="{{ route('admin.subscriptions.deactivate') }}" method="POST">
             @csrf
             <input type="hidden" name="subscription_id" value="{{ $user->activeSubscription()?->id }}">
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">Raison (optionnel)</label>
-                <textarea name="reason" class="form-control" rows="3" placeholder="Raison de la désactivation..."></textarea>
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">{{ __('Raison (optionnel)') }}</label>
+                <textarea name="reason" class="form-control" rows="3" placeholder="{{ __('Raison de la désactivation...') }}"></textarea>
             </div>
             <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
                 <button type="button" class="btn-cuni secondary" onclick="document.getElementById('deactivateModal').style.display='none'">
-                    Annuler
+                    {{ __('Annuler') }}
                 </button>
                 <button type="submit" class="btn-cuni danger">
-                    <i class="bi bi-trash"></i> Désactiver
+                    <i class="bi bi-trash"></i> {{ __('Désactiver') }}
                 </button>
             </div>
         </form>

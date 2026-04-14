@@ -1,6 +1,6 @@
 @extends('layouts.cuniapp')
 
-@section('title', 'Archives des Abonnements - Admin')
+@section('title', __('Archives des Abonnements') . ' - Admin')
 
 @section('content')
     {{-- Affichage des messages de succès/erreur --}}
@@ -19,19 +19,19 @@
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-archive"></i> Archives des Abonnements
+                <i class="bi bi-archive"></i> {{ __('Archives des Abonnements') }}
             </h2>
             <div class="breadcrumb">
-                <a href="{{ route('dashboard') }}">Tableau de bord</a>
+                <a href="{{ route('dashboard') }}">{{ __('Tableau de bord') }}</a>
                 <span>/</span>
-                <a href="{{ route('admin.subscriptions.index') }}">Abonnements</a>
+                <a href="{{ route('admin.subscriptions.index') }}">{{ __('Abonnements') }}</a>
                 <span>/</span>
-                <span>Archives</span>
+                <span>{{ __('Archives') }}</span>
             </div>
         </div>
         <div class="header-actions">
             <a href="{{ route('admin.subscriptions.index') }}" class="btn-cuni primary">
-                <i class="bi bi-arrow-left"></i> Retour aux Actifs
+                <i class="bi bi-arrow-left"></i> {{ __('Retour aux Actifs') }}
             </a>
         </div>
     </div>
@@ -42,7 +42,7 @@
             <div class="card-body p-4">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Total Archivés</p>
+                        <p style="font-size: 13px; color: var(--text-secondary);">{{ __('Total Archivés') }}</p>
                         <p style="font-size: 28px; font-weight: 700; color: var(--text-primary);">{{ $stats['total_archived'] ?? 0 }}</p>
                     </div>
                     <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: rgba(107, 114, 128, 0.1); display: flex; align-items: center; justify-content: center;">
@@ -56,7 +56,7 @@
             <div class="card-body p-4">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Dernier Archivage</p>
+                        <p style="font-size: 13px; color: var(--text-secondary);">{{ __('Dernier Archivage') }}</p>
                         @php
                             try {
                                 $lastArchived = \App\Models\Subscription::whereNotNull('archived_at')->latest('archived_at')->first();
@@ -75,27 +75,27 @@
     <div class="cuni-card">
         <div class="card-header-custom">
             <h3 class="card-title">
-                <i class="bi bi-list-ul"></i> Historique des Abonnements Archivés
+                <i class="bi bi-list-ul"></i> {{ __('Historique des Abonnements Archivés') }}
             </h3>
         </div>
         <div class="card-body">
             @if(!$archivedSubscriptions || $archivedSubscriptions->isEmpty())
                 <div class="text-center py-16 text-gray-500">
                     <i class="bi bi-inbox" style="font-size: 4rem; opacity: 0.3;"></i>
-                    <p class="mt-4 text-lg">Aucune archive trouvée.</p>
+                    <p class="mt-4 text-lg">{{ __('Aucune archive trouvée.') }}</p>
                 </div>
             @else
                 <div style="overflow-x: auto;">
                     <table class="table" style="width: 100%;">
                         <thead>
                             <tr style="border-bottom: 2px solid var(--surface-border);">
-                                <th style="padding: 12px; text-align: left;">Utilisateur</th>
-                                <th style="padding: 12px; text-align: left;">Email</th>
-                                <th style="padding: 12px; text-align: left;">Abonnement</th>
-                                <th style="padding: 12px; text-align: left;">Statut</th>
-                                <th style="padding: 12px; text-align: left;">Expiration</th>
-                                <th style="padding: 12px; text-align: left;">Date d'archivage</th>
-                                <th style="padding: 12px; text-align: right;">Actions</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Utilisateur') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Email') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Abonnement') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Statut') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Expiration') }}</th>
+                                <th style="padding: 12px; text-align: left;">{{ __('Date d\'archivage') }}</th>
+                                <th style="padding: 12px; text-align: right;">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,15 +104,15 @@
                                     <td style="padding: 12px; font-weight: 600;">{{ $sub->user->name ?? 'N/A' }}</td>
                                     <td style="padding: 12px;">{{ $sub->user->email ?? 'N/A' }}</td>
                                     <td style="padding: 12px;">
-                                        {{ $sub->plan->name ?? 'Plan inconnu' }}
+                                        {{ $sub->plan->name ?? __('Plan inconnu') }}
                                     </td>
                                     <td style="padding: 12px;">
                                         @if($sub->status === 'active')
-                                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">Actif</span>
+                                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">{{ __('Actif') }}</span>
                                         @elseif($sub->status === 'expired')
-                                            <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">Expiré</span>
+                                            <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">{{ __('Expiré') }}</span>
                                         @elseif($sub->status === 'cancelled')
-                                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">Annulé</span>
+                                            <span class="badge" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">{{ __('Annulé') }}</span>
                                         @else
                                             <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">{{ ucfirst($sub->status) }}</span>
                                         @endif
@@ -128,15 +128,15 @@
                                     <td style="padding: 12px;">
                                         <div style="display: flex; gap: 8px; justify-content: flex-end;">
                                             {{-- BOUTON RESTAURER --}}
-                                            <form action="{{ route('admin.subscriptions.restore', $sub->id) }}" method="POST" onsubmit="return confirm('Restaurer cet abonnement ?');">
+                                            <form action="{{ route('admin.subscriptions.restore', $sub->id) }}" method="POST" onsubmit="return confirm('{{ __('Restaurer cet abonnement ?') }}');">
                                                 @csrf
                                                 <button type="submit" class="btn-cuni sm secondary">
-                                                    <i class="bi bi-box-arrow-in-right"></i> Restaurer
+                                                    <i class="bi bi-box-arrow-in-right"></i> {{ __('Restaurer') }}
                                                 </button>
                                             </form>
 
                                             {{-- BOUTON SUPPRIMER --}}
-                                            <form action="{{ route('admin.subscriptions.destroy', $sub->id) }}" method="POST" onsubmit="return confirm('SUPPRIMER DÉFINITIVEMENT ?');">
+                                            <form action="{{ route('admin.subscriptions.destroy', $sub->id) }}" method="POST" onsubmit="return confirm('{{ __('Supprimer définitivement ?') }}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-cuni sm light" style="color: red;">

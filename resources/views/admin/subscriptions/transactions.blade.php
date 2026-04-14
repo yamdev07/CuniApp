@@ -42,7 +42,7 @@
                         <i class="bi bi-check-circle text-blue-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Complétées</p>
+                        <p class="stats-label-small">{{ __('Completed') }}</p>
                         <p class="stats-value-small text-blue-600">{{ number_format($stats['completed_count']) }}</p>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                         <i class="bi bi-clock text-amber-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">En attente</p>
+                        <p class="stats-label-small">{{ __('Pending') }}</p>
                         <p class="stats-value-small text-amber-600">{{ number_format($stats['pending_count']) }}</p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                         <i class="bi bi-x-circle text-red-500"></i>
                     </div>
                     <div>
-                        <p class="stats-label-small">Échouées</p>
+                        <p class="stats-label-small">{{ __('Failed') }}</p>
                         <p class="stats-value-small text-red-600">{{ number_format($stats['failed_count']) }}</p>
                     </div>
                 </div>
@@ -89,14 +89,14 @@
     <div class="cuni-card">
         <div class="card-header-custom flex items-center justify-between">
             <h3 class="card-title">
-                <i class="bi bi-list-ul"></i> Historique des Transactions
+                <i class="bi bi-list-ul"></i> {{ __('Transaction History') }}
             </h3>
             <form method="GET" style="display: flex; gap: 12px;">
                 <select name="status" class="form-select" style="width: auto;" onchange="this.form.submit()">
-                    <option value="">Tous les statuts</option>
-                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Complétées</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                    <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Échouées</option>
+                    <option value="">{{ __('All statuses') }}</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                    <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>{{ __('Failed') }}</option>
                 </select>
             </form>
         </div>

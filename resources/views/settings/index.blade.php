@@ -4,7 +4,7 @@
     <div class="page-header">
         <div>
             <h2 class="page-title">
-                <i class="bi bi-gear-wide-connected"></i> {{ __('application_settings') }}
+                <i class="bi bi-gear-wide-connected"></i> {{ __('Application Settings') }}
             </h2>
             <div class="breadcrumb">
                 <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>

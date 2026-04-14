@@ -22,17 +22,16 @@ class SubscriptionManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('role', 'firm_admin')->with(['activeSubscriptionRelation.plan']);
-
-        // La requête de base : on ne liste que les utilisateurs gérables (prospects ou abonnés non-archivés)
-        $query = User::where(function($q) {
-            $q->whereDoesntHave('subscriptions')
-              ->orWhereHas('subscriptions', function($sq) {
-                  $sq->whereNull('archived_at');
-              });
-        })->with(['activeSubscriptionRelation.plan', 'subscriptions' => function($q) {
-            $q->whereNull('archived_at')->latest();
-        }]);
+        // Only list firm_admin users (never employees)
+        $query = User::where('role', 'firm_admin')
+            ->where(function($q) {
+                $q->whereDoesntHave('subscriptions')
+                  ->orWhereHas('subscriptions', function($sq) {
+                      $sq->whereNull('archived_at');
+                  });
+            })->with(['activeSubscriptionRelation.plan', 'subscriptions' => function($q) {
+                $q->whereNull('archived_at')->latest();
+            }]);
 
         // Filtre par statut d'abonnement
         if ($request->has('status')) {

@@ -1,21 +1,20 @@
-{{-- resources/views/super-admin/firms/index.blade.php --}}
 @extends('layouts.cuniapp')
 
-@section('title', 'Gestion des Entreprises - Super Admin')
+@section('title', __('Gestion des Entreprises') . ' - Super Admin')
 
 @section('content')
 <div class="page-header">
     <div>
         <h2 class="page-title">
             <i class="bi bi-building" style="color: var(--accent-orange);"></i>
-            Gestion des Entreprises
+            {{ __('Gestion des Entreprises') }}
         </h2>
         <div class="breadcrumb">
-            <a href="{{ route('dashboard') }}">Tableau de bord</a>
+            <a href="{{ route('dashboard') }}">{{ __('Tableau de bord') }}</a>
             <span>/</span>
-            <a href="{{ route('super.admin.dashboard') }}">Super Admin</a>
+            <a href="{{ route('super.admin.dashboard') }}">{{ __('Super Admin') }}</a>
             <span>/</span>
-            <span>Entreprises</span>
+            <span>{{ __('Entreprises') }}</span>
         </div>
     </div>
 </div>
@@ -33,20 +32,20 @@
         <form method="GET" action="{{ route('super.admin.firms') }}">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
                 <div>
-                    <label class="form-label">Recherche</label>
-                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nom d'entreprise...">
+                    <label class="form-label">{{ __('Recherche') }}</label>
+                    <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="{{ __("Nom d'entreprise...") }}">
                 </div>
                 <div>
-                    <label class="form-label">Statut</label>
+                    <label class="form-label">{{ __('Statut') }}</label>
                     <select name="status" class="form-select">
-                        <option value="">Tous</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
-                        <option value="banned" {{ request('status') === 'banned' ? 'selected' : '' }}>Banni</option>
+                        <option value="">{{ __('Tous') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Actif') }}</option>
+                        <option value="banned" {{ request('status') === 'banned' ? 'selected' : '' }}>{{ __('Banni') }}</option>
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
                     <button type="submit" class="btn-cuni primary" style="flex: 1;">
-                        <i class="bi bi-search"></i> Filtrer
+                        <i class="bi bi-search"></i> {{ __('Filtrer') }}
                     </button>
                 </div>
             </div>
@@ -58,10 +57,10 @@
 <div class="cuni-card">
     <div class="card-header-custom">
         <h3 class="card-title">
-            <i class="bi bi-list-ul"></i> Liste des Entreprises
+            <i class="bi bi-list-ul"></i> {{ __('Liste des Entreprises') }}
         </h3>
         <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
-            {{ $firms->total() }} entreprise(s)
+            {{ $firms->total() }} {{ __('entreprise(s)') }}
         </span>
     </div>
     <div class="card-body">
@@ -69,12 +68,12 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Entreprise</th>
-                        <th>Administrateur</th>
-                        <th>Abonnement</th>
-                        <th>Revenus</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                        <th>{{ __('Entreprise') }}</th>
+                        <th>{{ __('Administrateur') }}</th>
+                        <th>{{ __('Abonnement') }}</th>
+                        <th>{{ __('Revenus') }}</th>
+                        <th>{{ __('Statut') }}</th>
+                        <th>{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,7 +91,7 @@
                             </span>
                             @else
                             <span class="badge" style="background: rgba(107, 114, 128, 0.1); color: #6B7280;">
-                                Aucun
+                                {{ __('Aucun') }}
                             </span>
                             @endif
                         </td>
@@ -101,9 +100,9 @@
                         </td>
                         <td>
                             @if($firm->status === 'active')
-                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">Actif</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">{{ __('Actif') }}</span>
                             @else
-                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">Banni</span>
+                            <span class="badge" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">{{ __('Banni') }}</span>
                             @endif
                         </td>
                         <td>
@@ -114,7 +113,7 @@
                                 @if($firm->status === 'active')
                                 <form action="{{ route('super.admin.firms.ban', $firm->id) }}" method="POST" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn-cuni sm danger" onclick="return confirm('Bannir cette entreprise ?')">
+                                    <button type="submit" class="btn-cuni sm danger" onclick="return confirm('{{ __('Bannir cette entreprise ?') }}')">
                                         <i class="bi bi-ban"></i>
                                     </button>
                                 </form>
@@ -133,14 +132,14 @@
                     <tr>
                         <td colspan="7" class="text-center py-8">
                             <i class="bi bi-inbox" style="font-size: 48px; opacity: 0.5;"></i>
-                            <p class="mt-4">Aucune entreprise trouvée</p>
+                            <p class="mt-4">{{ __('Aucune entreprise trouvée') }}</p>
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        
+
         @if ($firms->hasPages())
         <div style="margin-top: 24px;">
             {{ $firms->links('pagination.bootstrap-5-sm') }}

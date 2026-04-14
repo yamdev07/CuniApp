@@ -25,3 +25,4 @@ Thumbs.db
 test.txt
 cuniApp.sql
 test.txt/app/Http/Controllers/Auth/googleAuth.json
+.qwen
