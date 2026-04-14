@@ -1536,7 +1536,8 @@
                                         class="form-input @error('password') error @enderror" placeholder="••••••••"
                                         required id="loginPassword">
                                     <i class="bi bi-lock"></i>
-                                    <i class="bi bi-eye toggle-password" data-target="loginPassword" style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
+                                    <i class="bi bi-eye toggle-password" data-target="loginPassword"
+                                        style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
                                 </div>
                                 @error('password')
                                     <div class="validation-message error">
@@ -1666,37 +1667,44 @@
                                             placeholder="••••••••" required id="registerPassword" minlength="8"
                                             autocomplete="new-password">
                                         <i class="bi bi-lock"></i>
-                                        <i class="bi bi-eye toggle-password" data-target="registerPassword" style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
+                                        <i class="bi bi-eye toggle-password" data-target="registerPassword"
+                                            style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
                                     </div>
                                     <div class="password-strength-container">
                                         <div class="password-strength-bar">
                                             <div class="password-strength-fill" id="passwordStrengthFill"></div>
                                         </div>
                                         <div class="password-strength-text" id="passwordStrengthText">Faible</div>
-                                        
+
                                         <div class="password-requirements">
                                             <div class="password-requirements-title">
-                                                <i class="bi bi-shield-lock" style="font-size: 14px; position: static; transform: none; display: inline; color: inherit;"></i>
+                                                <i class="bi bi-shield-lock"
+                                                    style="font-size: 14px; position: static; transform: none; display: inline; color: inherit;"></i>
                                                 Critères du mot de passe
                                             </div>
                                             <div class="password-requirement" id="req-length">
-                                                <i class="bi bi-x-circle" style="position: static; transform: none; display: inline;"></i>
+                                                <i class="bi bi-x-circle"
+                                                    style="position: static; transform: none; display: inline;"></i>
                                                 <span>Au moins 8 caractères</span>
                                             </div>
                                             <div class="password-requirement" id="req-upper">
-                                                <i class="bi bi-x-circle" style="position: static; transform: none; display: inline;"></i>
+                                                <i class="bi bi-x-circle"
+                                                    style="position: static; transform: none; display: inline;"></i>
                                                 <span>Une majuscule</span>
                                             </div>
                                             <div class="password-requirement" id="req-lower">
-                                                <i class="bi bi-x-circle" style="position: static; transform: none; display: inline;"></i>
+                                                <i class="bi bi-x-circle"
+                                                    style="position: static; transform: none; display: inline;"></i>
                                                 <span>Une minuscule</span>
                                             </div>
                                             <div class="password-requirement" id="req-number">
-                                                <i class="bi bi-x-circle" style="position: static; transform: none; display: inline;"></i>
+                                                <i class="bi bi-x-circle"
+                                                    style="position: static; transform: none; display: inline;"></i>
                                                 <span>Un chiffre</span>
                                             </div>
                                             <div class="password-requirement" id="req-special">
-                                                <i class="bi bi-x-circle" style="position: static; transform: none; display: inline;"></i>
+                                                <i class="bi bi-x-circle"
+                                                    style="position: static; transform: none; display: inline;"></i>
                                                 <span>Un caractère spécial (!@#$...)</span>
                                             </div>
                                         </div>
@@ -1716,7 +1724,8 @@
                                             class="form-input step1-required" placeholder="••••••••" required
                                             id="passwordConfirmation">
                                         <i class="bi bi-lock-fill"></i>
-                                        <i class="bi bi-eye toggle-password" data-target="passwordConfirmation" style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
+                                        <i class="bi bi-eye toggle-password" data-target="passwordConfirmation"
+                                            style="left: auto; right: 14px; cursor: pointer; pointer-events: auto; z-index: 5;"></i>
                                     </div>
                                     @error('password_confirmation')
                                         <div class="validation-message error">
@@ -1777,9 +1786,17 @@
                                         <input type="checkbox" name="terms" required
                                             style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
                                         <span style="font-size: 13px; color: var(--gray-600);">
-                                            J'accepte les <a href="#" style="color: var(--primary);">Conditions
-                                                d'utilisation</a> et la <a href="#"
-                                                style="color: var(--primary);">Politique de confidentialité</a>
+                                            J'accepte les
+                                            {{-- <a href="{{ route('terms') }}" target="_blank"
+                                                style="color: var(--primary);">
+                                                Conditions d'utilisation
+                                            </a> --}}
+                                            <a href="{{ route('terms') }}?step={{ request('step', 1) }}" style="color: var(--primary);" target="_blank">Conditions d'utilisation</a>
+                                            et la
+                                            <a href="{{ route('privacy') }}" target="_blank"
+                                                style="color: var(--primary);">
+                                                Politique de confidentialité
+                                            </a>
                                         </span>
                                     </label>
                                     @error('terms')
@@ -1898,8 +1915,19 @@
     @endif
 
     <script>
+
+
+// Après window.close(), si on veut forcer l'étape (optionnel)
+const urlParams = new URLSearchParams(window.location.search);
+const step = urlParams.get('step');
+if (step && window.opener) {
+    // Optionnel : injecter un script dans l'onglet parent pour restaurer l'étape
+    // Mais normalement, l'état du formulaire est déjà en mémoire ✅
+}
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Welcome page loaded successfully');
+            console.log('Welcome page loaded successfully');
 
             // ==================== NETWORK STATUS ====================
             function updateNetworkStatus() {
@@ -2043,12 +2071,26 @@
             }
 
             function validatePasswordCriteria(password) {
-                const criteria = [
-                    { id: 'req-length', regex: /.{8,}/ },
-                    { id: 'req-upper', regex: /[A-Z]/ },
-                    { id: 'req-lower', regex: /[a-z]/ },
-                    { id: 'req-number', regex: /[0-9]/ },
-                    { id: 'req-special', regex: /[!@#$%^&*(),.?":{}|<>]/ }
+                const criteria = [{
+                        id: 'req-length',
+                        regex: /.{8,}/
+                    },
+                    {
+                        id: 'req-upper',
+                        regex: /[A-Z]/
+                    },
+                    {
+                        id: 'req-lower',
+                        regex: /[a-z]/
+                    },
+                    {
+                        id: 'req-number',
+                        regex: /[0-9]/
+                    },
+                    {
+                        id: 'req-special',
+                        regex: /[!@#$%^&*(),.?":{}|<>]/
+                    }
                 ];
 
                 criteria.forEach(c => {
@@ -2439,7 +2481,7 @@
                     const password = document.getElementById('registerPassword').value;
                     const criteria = [/.{8,}/, /[A-Z]/, /[a-z]/, /[0-9]/, /[!@#$%^&*(),.?":{}|<>]/];
                     const passwordValid = criteria.every(regex => regex.test(password));
-                    
+
                     if (!passwordValid) {
                         isValid = false;
                         showToast('⚠️ Le mot de passe ne respecte pas tous les critères requis', 'error');
@@ -2449,7 +2491,8 @@
 
                 if (!isValid && step !== 1) {
                     showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
-                } else if (!isValid && step === 1 && document.getElementById('registerPassword').value.trim() === '') {
+                } else if (!isValid && step === 1 && document.getElementById('registerPassword').value.trim() ===
+                    '') {
                     showToast('⚠️ Veuillez remplir tous les champs obligatoires', 'error');
                 }
 

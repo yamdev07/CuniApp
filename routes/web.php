@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\LegalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -60,13 +62,7 @@ Route::get('/contact', function () {
     return view('pages.contact');
 })->name('contact');
 
-Route::get('/privacy', function () {
-    return view('pages.privacy');
-})->name('privacy');
 
-Route::get('/terms', function () {
-    return view('pages.terms');
-})->name('terms');
 
 // ========================================================================
 // 👤 GUEST ROUTES (Only accessible to unauthenticated users)
@@ -470,3 +466,15 @@ Route::fallback(function () {
     }
     return response()->view('errors.404', ['path' => request()->path()], 404);
 })->name('fallback');
+
+
+
+// ✅ DANS le groupe middleware('web') - TRÈS IMPORTANT
+Route::middleware(['web'])->group(function () {
+
+
+    // ✅ Routes légales avec controller
+    Route::get('/legal/terms', [LegalController::class, 'terms'])->name('terms');
+    Route::get('/legal/privacy', [LegalController::class, 'privacy'])->name('privacy');
+
+});

@@ -42,7 +42,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'terms' => ['accepted'],
+            'terms' => ['required','accepted'],
             // ✅ Champs pour la Firme (Entreprise)
             'firm_name' => ['required', 'string', 'max:255'],
             'firm_description' => ['nullable', 'string', 'max:1000'],

@@ -639,8 +639,9 @@
             height: 0;
             overflow: hidden;
         }
-            color: var(--white);
-            border-color: var(--accent-red);
+
+        color: var(--white);
+        border-color: var(--accent-red);
         }
 
         .btn-cuni.sm {
@@ -891,7 +892,8 @@
            =========================================================== */
         .footer-grid {
             display: grid;
-            grid-template-columns: 1fr; /* mobile: single column */
+            grid-template-columns: 1fr;
+            /* mobile: single column */
             gap: 0;
             margin-bottom: 0;
         }
@@ -903,12 +905,15 @@
                 gap: 32px;
                 margin-bottom: 32px;
             }
+
             .footer-brand {
                 grid-column: 1 / -1;
             }
+
             .footer-section:last-child {
                 grid-column: 1 / -1;
             }
+
             /* Accordion is disabled on tablet+ — always show section bodies */
             .footer-section-body {
                 max-height: none !important;
@@ -924,9 +929,11 @@
                 gap: 48px;
                 margin-bottom: 48px;
             }
+
             .footer-brand {
                 grid-column: auto;
             }
+
             .footer-section:last-child {
                 grid-column: auto;
             }
@@ -2146,13 +2153,16 @@
             .cuni-footer {
                 padding: 36px 0 16px 0;
             }
+
             .footer-container {
                 padding: 0 1.25rem;
             }
+
             .footer-grid {
                 gap: 0;
                 margin-bottom: 0;
             }
+
             /* Brand stacks full-width, centered */
             .footer-brand {
                 text-align: center;
@@ -2161,17 +2171,21 @@
                 margin-bottom: 0;
                 border-bottom: 1px solid var(--surface-border);
             }
+
             .footer-logo {
                 justify-content: center;
             }
+
             .footer-tagline {
                 max-width: 100%;
                 font-size: 0.88rem;
             }
+
             /* Each section becomes an accordion */
             .footer-section {
                 border-bottom: 1px solid var(--surface-border);
             }
+
             .footer-section h4 {
                 margin-bottom: 0;
                 padding: 16px 0;
@@ -2182,32 +2196,39 @@
                 justify-content: space-between;
                 width: 100%;
             }
+
             .footer-section h4 .section-divider {
                 display: none;
             }
+
             .footer-section-toggle {
                 display: inline-block;
                 font-size: 18px;
                 transition: transform 0.25s ease;
                 color: var(--text-tertiary);
             }
+
             .footer-section.open .footer-section-toggle {
                 transform: rotate(180deg);
             }
+
             .footer-section-body {
                 max-height: 0;
                 overflow: hidden;
                 transition: max-height 0.3s ease, padding 0.3s ease;
                 padding: 0;
             }
+
             .footer-section.open .footer-section-body {
                 max-height: 600px;
                 padding-bottom: 16px;
             }
+
             /* Contact full-width */
             .footer-section:last-child {
                 border-bottom: none;
             }
+
             /* Footer bottom stacks */
             .footer-bottom {
                 flex-direction: column;
@@ -2216,12 +2237,14 @@
                 padding-top: 20px;
                 margin-top: 16px;
             }
+
             .footer-legal {
                 justify-content: center;
                 flex-wrap: wrap;
                 gap: 12px;
                 width: 100%;
             }
+
             .footer-copyright {
                 width: 100%;
             }
@@ -2231,21 +2254,26 @@
             .footer-container {
                 padding: 0 2rem;
             }
+
             .footer-brand {
                 text-align: center;
                 align-items: center;
             }
+
             .footer-logo {
                 justify-content: center;
             }
+
             .footer-tagline {
                 max-width: 100%;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 text-align: center;
                 gap: 14px;
             }
+
             .footer-legal {
                 justify-content: center;
                 flex-wrap: wrap;
@@ -2772,14 +2800,16 @@
         <div class="header-wrapper" style="overflow: visible !important;">
             <div class="brand-identity">
                 {{-- Logo and Brand --}}
-                <a href="{{ auth()->check() && auth()->user()->isFirmAdmin() ? route('firm.index') : route('dashboard') }}" class="cuniapp-logo">
+                <a href="{{ auth()->check() && auth()->user()->isFirmAdmin() ? route('firm.index') : route('dashboard') }}"
+                    class="cuniapp-logo">
                     <svg viewBox="0 0 40 40" fill="none" style="width: 40px; height: 40px;">
                         <path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white" />
                         <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                     </svg>
                 </a>
                 <div class="brand-info">
-                    <a href="{{ auth()->check() && auth()->user()->isFirmAdmin() ? route('firm.index') : route('dashboard') }}">
+                    <a
+                        href="{{ auth()->check() && auth()->user()->isFirmAdmin() ? route('firm.index') : route('dashboard') }}">
                         <h1 class="brand-title">
                             CuniApp <span>Élevage</span>
                             @if (auth()->check() && auth()->user()->firm)
@@ -2814,103 +2844,114 @@
                         <i class="bi bi-buildings"></i>
                         <span>{{ __('Entreprises') }}</span>
                     </a>
-                    <a href="{{ route('admin.subscriptions.transactions') }}" class="nav-link nav-item" data-priority="1.3"
-                        data-route="admin.subscriptions.transactions">
+                    <a href="{{ route('admin.subscriptions.transactions') }}" class="nav-link nav-item"
+                        data-priority="1.3" data-route="admin.subscriptions.transactions">
                         <i class="bi bi-cash-stack"></i>
                         <span>{{ __('Transactions') }}</span>
                     </a>
                 @endif
 
-                @if (!auth()->user()->isSuperAdmin())
-                <a href="{{ route('dashboard') }}" class="nav-link nav-item" data-priority="2" data-route="dashboard">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>{{ __('Tableau de bord') }}</span>
-                </a>
-                <a href="{{ route('males.index') }}" class="nav-link nav-item" data-priority="3" data-route="males.*">
-                    <i class="bi bi-arrow-up-right-square"></i>
-                    <span>{{ __('Mâles') }}</span>
-                </a>
-                <a href="{{ route('femelles.index') }}" class="nav-link nav-item" data-priority="4"
-                    data-route="femelles.*">
-                    <i class="bi bi-arrow-down-right-square"></i>
-                    <span>{{ __('Femelles') }}</span>
-                </a>
-                <a href="{{ route('lapins.index') }}" class="nav-link nav-item" data-priority="5" data-route="lapins.*">
-                    <i class="bi bi-collection"></i>
-                    <span>{{ __('Tous les Lapins') }}</span>
-                </a>
-                <a href="{{ route('mises-bas.index') }}" class="nav-link nav-item" data-priority="6"
-                    data-route="mises-bas.*">
-                    <i class="bi bi-egg"></i>
-                    <span>{{ __('Mises Bas') }}</span>
-                </a>
+                {{-- @if (!auth()->user()->isSuperAdmin()) --}}
+                @if (auth()->check() && !auth()->user()->isSuperAdmin())
+                    <a href="{{ route('dashboard') }}" class="nav-link nav-item" data-priority="2"
+                        data-route="dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Tableau de bord</span>
+                    </a>
+                    <a href="{{ route('males.index') }}" class="nav-link nav-item" data-priority="3"
+                        data-route="males.*">
+                        <i class="bi bi-arrow-up-right-square"></i>
+                        <span>Mâles</span>
+                    </a>
+                    <a href="{{ route('femelles.index') }}" class="nav-link nav-item" data-priority="4"
+                        data-route="femelles.*">
+                        <i class="bi bi-arrow-down-right-square"></i>
+                        <span>Femelles</span>
+                    </a>
+                    <a href="{{ route('lapins.index') }}" class="nav-link nav-item" data-priority="5"
+                        data-route="lapins.*">
+                        <i class="bi bi-collection"></i>
+                        <span>Tous les Lapins</span>
+                    </a>
+                    <a href="{{ route('mises-bas.index') }}" class="nav-link nav-item" data-priority="6"
+                        data-route="mises-bas.*">
+                        <i class="bi bi-egg"></i>
+                        <span>Mises Bas</span>
+                    </a>
                 @endif
                 {{-- Entreprise link moved to user dropdown for cleaner nav --}}
 
                 {{-- ✅ MORE DROPDOWN - Will receive overflow items --}}
-                @if (!auth()->user()->isSuperAdmin())
-                <div class="dropdown-container" style="position: relative; display: inline-block;">
-                    <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton"
-                        style="position: relative;">
-                        <i class="bi bi-three-dots"></i>
-                        <span>{{ __('Plus') }}</span>
-                        <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
-                    </button>
-                    {{-- ✅ DROPDOWN MENU --}}
-                    <div class="dropdown-menu-custom" id="moreDropdown"
-                        style="position: absolute; top: calc(100% + 8px); right: 0; min-width: 240px; z-index: 9999 !important; display: none;">
-                        {{-- Static items always in dropdown --}}
-                        @if (!auth()->user()->isSuperAdmin())
-                        <a href="{{ route('saillies.index') }}" class="dropdown-item-custom static-dropdown-item">
-                            <i class="bi bi-heart"></i> {{ __('Saillies') }}
-                        </a>
-                        <a href="{{ route('naissances.index') }}" class="dropdown-item-custom static-dropdown-item">
-                            <i class="bi bi-egg-fill"></i> {{ __('Naissances') }}
-                        </a>
-                        <a href="{{ route('sales.index') }}" class="dropdown-item-custom static-dropdown-item">
-                            <i class="bi bi-cart"></i> {{ __('Ventes') }}
-                        </a>
-                        <a href="{{ route('activites.index') }}" class="dropdown-item-custom static-dropdown-item">
-                            <i class="bi bi-clock-history"></i> {{ __('Activités') }}
-                        </a>
-                        @endif
+                {{-- @if (!auth()->user()->isSuperAdmin()) --}}
+                @if (auth()->check() && !auth()->user()->isSuperAdmin())
 
-                        @if (auth()->check() && auth()->user()->isFirmAdmin())
-                            <a href="{{ route('invoices.index') }}" class="dropdown-item-custom static-dropdown-item">
-                                <i class="bi bi-receipt"></i>
-                                <span>{{ __('Mes Factures') }}</span>
-                            </a>
+                    <div class="dropdown-container" style="position: relative; display: inline-block;">
+                        <button class="nav-link" type="button" onclick="toggleMoreDropdown(event)" id="moreButton"
+                            style="position: relative;">
+                            <i class="bi bi-three-dots"></i>
+                            <span>Plus</span>
+                            <i class="bi bi-chevron-down" style="font-size: 10px;"></i>
+                        </button>
+                        {{-- ✅ DROPDOWN MENU --}}
+                        <div class="dropdown-menu-custom" id="moreDropdown"
+                            style="position: absolute; top: calc(100% + 8px); right: 0; min-width: 240px; z-index: 9999 !important; display: none;">
+                            {{-- Static items always in dropdown --}}
+                            @if (!auth()->user()->isSuperAdmin())
+                                <a href="{{ route('saillies.index') }}"
+                                    class="dropdown-item-custom static-dropdown-item">
+                                    <i class="bi bi-heart"></i> Saillies
+                                </a>
+                                <a href="{{ route('naissances.index') }}"
+                                    class="dropdown-item-custom static-dropdown-item">
+                                    <i class="bi bi-egg-fill"></i> Naissances
+                                </a>
+                                <a href="{{ route('sales.index') }}"
+                                    class="dropdown-item-custom static-dropdown-item">
+                                    <i class="bi bi-cart"></i> Ventes
+                                </a>
+                                <a href="{{ route('activites.index') }}"
+                                    class="dropdown-item-custom static-dropdown-item">
+                                    <i class="bi bi-clock-history"></i> Activités
+                                </a>
+                            @endif
 
-                            <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
-                            <a href="{{ route('subscription.plans') }}" class="dropdown-item-custom"
-                                style="position:relative; {{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
-                                <i class="bi bi-credit-card"></i>
-                                <span style="flex: 1;">{{ __('Abonnement') }}</span>
-                                @if (!auth()->user()->hasActiveSubscription())
-                                    <span class="notification-badge"
-                                        style="background: var(--accent-orange); position: absolute; top: 8px; right: 12px; min-width: 18px; height: 18px; font-size: 10px;">!</span>
-                                @endif
-                            </a>
-                            <a href="{{ route('subscription.status') }}" class="dropdown-item-custom">
-                                <i class="bi bi-pie-chart"></i>
-                                <span>{{ __('Mon Abonnement') }}</span>
-                                @if (auth()->user()->hasActiveSubscription())
-                                    <span class="badge"
-                                        style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-size: 10px; margin-left: auto;">{{ __('Actif') }}</span>
-                                @else
-                                    <span class="badge"
-                                        style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red); font-size: 10px; margin-left: auto;">{{ __('Inactif') }}</span>
-                                @endif
-                            </a>
-                        @endif
+                            @if (auth()->check() && auth()->user()->isFirmAdmin())
+                                <a href="{{ route('invoices.index') }}"
+                                    class="dropdown-item-custom static-dropdown-item">
+                                    <i class="bi bi-receipt"></i>
+                                    <span>Mes Factures</span>
+                                </a>
 
-                        {{-- ✅ OVERFLOW ITEMS CONTAINER --}}
-                        <div id="overflowItemsContainer"
-                            style="border-top: 1px solid var(--surface-border); margin: 8px 0; padding-top: 8px;">
-                            {{-- Dynamic overflow items will be injected here --}}
+                                <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
+                                <a href="{{ route('subscription.plans') }}" class="dropdown-item-custom"
+                                    style="position:relative; {{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
+                                    <i class="bi bi-credit-card"></i>
+                                    <span style="flex: 1;">Abonnement</span>
+                                    @if (!auth()->user()->hasActiveSubscription())
+                                        <span class="notification-badge"
+                                            style="background: var(--accent-orange); position: absolute; top: 8px; right: 12px; min-width: 18px; height: 18px; font-size: 10px;">!</span>
+                                    @endif
+                                </a>
+                                <a href="{{ route('subscription.status') }}" class="dropdown-item-custom">
+                                    <i class="bi bi-pie-chart"></i>
+                                    <span>Mon Abonnement</span>
+                                    @if (auth()->user()->hasActiveSubscription())
+                                        <span class="badge"
+                                            style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-size: 10px; margin-left: auto;">Actif</span>
+                                    @else
+                                        <span class="badge"
+                                            style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red); font-size: 10px; margin-left: auto;">Inactif</span>
+                                    @endif
+                                </a>
+                            @endif
+
+                            {{-- ✅ OVERFLOW ITEMS CONTAINER --}}
+                            <div id="overflowItemsContainer"
+                                style="border-top: 1px solid var(--surface-border); margin: 8px 0; padding-top: 8px;">
+                                {{-- Dynamic overflow items will be injected here --}}
+                            </div>
                         </div>
                     </div>
-                </div>
                 @endif
             </nav>
 
@@ -2927,10 +2968,17 @@
                     <a href="{{ route('notifications.index') }}" class="notification-trigger"
                         style="position: relative;">
                         <i class="bi bi-bell"></i>
-                        @php
+                        {{-- @php
                             $unread = \App\Models\Notification::where('user_id', auth()->id())
                                 ->where('is_read', false)
                                 ->count();
+                        @endphp --}}
+                        @php
+                            $unread = auth()->check()
+                                ? \App\Models\Notification::where('user_id', auth()->id())
+                                    ->where('is_read', false)
+                                    ->count()
+                                : 0;
                         @endphp
                         @if ($unread > 0)
                             <span class="notification-badge"
@@ -2987,7 +3035,8 @@
                             @if (auth()->check() && auth()->user()->role === 'admin')
                                 <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 8px 0;">
                                 <div class="dropdown-header" style="background: var(--surface-alt);">
-                                    <span style="font-size: 12px; color: var(--text-tertiary);">👑 {{ __('Administration') }}</span>
+                                    <span style="font-size: 12px; color: var(--text-tertiary);">👑
+                                        {{ __('Administration') }}</span>
                                 </div>
                                 <a href="{{ route('admin.subscriptions.index') }}" class="dropdown-item-custom">
                                     <i class="bi bi-shield-lock"></i> {{ __('Gestion Abonnements') }}
@@ -3011,61 +3060,85 @@
 
         {{-- ✅ MOBILE NAV OVERLAY --}}
         <div class="mobile-nav-overlay" id="mobileNavOverlay">
-            <div class="mobile-nav-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--surface-border);">
+            <div class="mobile-nav-header"
+                style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--surface-border);">
                 <h3 style="margin: 0; font-size: 18px; font-weight: 600;">{{ __('Menu') }}</h3>
-                <button class="mobile-nav-close" onclick="toggleMobileNav()" style="background: none; border: none; font-size: 24px; color: var(--text-primary); cursor: pointer;"><i class="bi bi-x"></i></button>
+                <button class="mobile-nav-close" onclick="toggleMobileNav()"
+                    style="background: none; border: none; font-size: 24px; color: var(--text-primary); cursor: pointer;"><i
+                        class="bi bi-x"></i></button>
             </div>
             <div class="mobile-nav-links" style="padding: 20px;">
                 @if (auth()->check() && auth()->user()->isSuperAdmin())
                     <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('super.admin.dashboard') }}" class="mobile-nav-link" style="color: var(--accent-orange); font-weight: 700;"><i class="bi bi-star-fill"></i> {{ __('Super Admin') }}</a>
-                    <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i class="bi bi-card-checklist"></i> {{ __('Gestion Abonnements') }}</a>
-                    <a href="{{ route('super.admin.firms') }}" class="mobile-nav-link"><i class="bi bi-buildings"></i> {{ __('Toutes les Entreprises') }}</a>
-                    <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"><i class="bi bi-cash-stack"></i> {{ __('Transactions') }} </a>
+                    <a href="{{ route('super.admin.dashboard') }}" class="mobile-nav-link"
+                        style="color: var(--accent-orange); font-weight: 700;"><i class="bi bi-star-fill"></i>
+                        {{ __('Super Admin') }}</a>
+                    <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i
+                            class="bi bi-card-checklist"></i> {{ __('Gestion Abonnements') }}</a>
+                    <a href="{{ route('super.admin.firms') }}" class="mobile-nav-link"><i
+                            class="bi bi-buildings"></i> {{ __('Toutes les Entreprises') }}</a>
+                    <a href="{{ route('admin.subscriptions.transactions') }}" class="mobile-nav-link"><i
+                            class="bi bi-cash-stack"></i> {{ __('Transactions') }} </a>
                 @endif
 
                 @if (!auth()->user()->isSuperAdmin())
-                <a href="{{ route('dashboard') }}" class="mobile-nav-link"><i class="bi bi-speedometer2"></i> {{ __('Tableau de bord') }}</a>
+                    <a href="{{ route('dashboard') }}" class="mobile-nav-link"><i class="bi bi-speedometer2"></i>
+                        {{ __('Tableau de bord') }}</a>
 
-                <a href="{{ route('males.index') }}" class="mobile-nav-link"><i class="bi bi-arrow-up-right-square"></i> {{ __('Mâles') }}</a>
-                <a href="{{ route('femelles.index') }}" class="mobile-nav-link"><i class="bi bi-arrow-down-right-square"></i> {{ __('Femelles') }}</a>
-                <a href="{{ route('lapins.index') }}" class="mobile-nav-link"><i class="bi bi-collection"></i> {{ __('Tous les Lapins') }}</a>
-                <a href="{{ route('mises-bas.index') }}" class="mobile-nav-link"><i class="bi bi-egg"></i> {{ __('Mises Bas') }}</a>
+                    <a href="{{ route('males.index') }}" class="mobile-nav-link"><i
+                            class="bi bi-arrow-up-right-square"></i> {{ __('Mâles') }}</a>
+                    <a href="{{ route('femelles.index') }}" class="mobile-nav-link"><i
+                            class="bi bi-arrow-down-right-square"></i> {{ __('Femelles') }}</a>
+                    <a href="{{ route('lapins.index') }}" class="mobile-nav-link"><i class="bi bi-collection"></i>
+                        {{ __('Tous les Lapins') }}</a>
+                    <a href="{{ route('mises-bas.index') }}" class="mobile-nav-link"><i class="bi bi-egg"></i>
+                        {{ __('Mises Bas') }}</a>
 
-                <div class="mobile-nav-divider"></div>
+                    <div class="mobile-nav-divider"></div>
 
-                <a href="{{ route('saillies.index') }}" class="mobile-nav-link"><i class="bi bi-heart"></i> {{ __('Saillies') }}</a>
-                <a href="{{ route('naissances.index') }}" class="mobile-nav-link"><i class="bi bi-egg-fill"></i> {{ __('Naissances') }}</a>
-                <a href="{{ route('sales.index') }}" class="mobile-nav-link"><i class="bi bi-cart"></i> {{ __('Ventes') }}</a>
-                <a href="{{ route('activites.index') }}" class="mobile-nav-link"><i class="bi bi-clock-history"></i> {{ __('Activités') }}</a>
+                    <a href="{{ route('saillies.index') }}" class="mobile-nav-link"><i class="bi bi-heart"></i>
+                        {{ __('Saillies') }}</a>
+                    <a href="{{ route('naissances.index') }}" class="mobile-nav-link"><i class="bi bi-egg-fill"></i>
+                        {{ __('Naissances') }}</a>
+                    <a href="{{ route('sales.index') }}" class="mobile-nav-link"><i class="bi bi-cart"></i>
+                        {{ __('Ventes') }}</a>
+                    <a href="{{ route('activites.index') }}" class="mobile-nav-link"><i
+                            class="bi bi-clock-history"></i> {{ __('Activités') }}</a>
                 @endif
 
                 @if (auth()->check() && auth()->user()->isFirmAdmin())
-                    <a href="{{ route('invoices.index') }}" class="mobile-nav-link"><i class="bi bi-receipt"></i> {{ __('Mes Factures') }}</a>
+                    <a href="{{ route('invoices.index') }}" class="mobile-nav-link"><i class="bi bi-receipt"></i>
+                        {{ __('Mes Factures') }}</a>
                     <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('firm.index') }}" class="mobile-nav-link"><i class="bi bi-building"></i> {{ __('Mon Entreprise') }}</a>
+                    <a href="{{ route('firm.index') }}" class="mobile-nav-link"><i class="bi bi-building"></i>
+                        {{ __('Mon Entreprise') }}</a>
                 @endif
 
                 <div class="mobile-nav-divider"></div>
-                <a href="{{ route('profile.edit') }}" class="mobile-nav-link"><i class="bi bi-person"></i> {{ __('Profil') }}</a>
-                <a href="{{ route('settings.index') }}" class="mobile-nav-link"><i class="bi bi-gear"></i> {{ __('Paramètres') }}</a>
+                <a href="{{ route('profile.edit') }}" class="mobile-nav-link"><i class="bi bi-person"></i>
+                    {{ __('Profil') }}</a>
+                <a href="{{ route('settings.index') }}" class="mobile-nav-link"><i class="bi bi-gear"></i>
+                    {{ __('Paramètres') }}</a>
 
                 @if (auth()->check() && auth()->user()->role !== 'admin' && !auth()->user()->isSuperAdmin())
                     <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('subscription.plans') }}" class="mobile-nav-link" style="{{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
+                    <a href="{{ route('subscription.plans') }}" class="mobile-nav-link"
+                        style="{{ !auth()->user()->hasActiveSubscription() ? 'color: var(--accent-orange);' : '' }}">
                         <i class="bi bi-credit-card"></i> {{ __('Abonnement') }}
                     </a>
                 @endif
 
                 @if (auth()->check() && auth()->user()->role === 'admin')
                     <div class="mobile-nav-divider"></div>
-                    <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i class="bi bi-shield-lock"></i> {{ __('Gestion Abonnements') }}</a>
+                    <a href="{{ route('admin.subscriptions.index') }}" class="mobile-nav-link"><i
+                            class="bi bi-shield-lock"></i> {{ __('Gestion Abonnements') }}</a>
                 @endif
 
                 <div class="mobile-nav-divider"></div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="mobile-nav-link" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: var(--accent-red);">
+                    <button type="submit" class="mobile-nav-link"
+                        style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; color: var(--accent-red);">
                         <i class="bi bi-box-arrow-right"></i> {{ __('Déconnexion') }}
                     </button>
                 </form>
@@ -3110,27 +3183,35 @@
                     </h4>
                     <div class="footer-section-body">
                         <ul class="footer-links">
-                            @if(!auth()->user()->isSuperAdmin())
-                            <li>
-                                <a href="{{ route('dashboard') }}">
-                                    <i class="bi bi-chevron-right"></i>
-                                    {{ __('Tableau de bord') }}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('activites.index') }}">
-                                    <i class="bi bi-chevron-right"></i>
-                                    {{ __('Activités') }}
-                                </a>
-                            </li>
+                            {{-- @if (!auth()->user()->isSuperAdmin()) --}}
+                            @if (auth()->check() && !auth()->user()->isSuperAdmin())
+                                <li>
+                                    <a href="{{ route('dashboard') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Tableau de bord
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('activites.index') }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                        Activités
+                                    </a>
+                                </li>
                             @endif
                             <li>
                                 <a href="{{ route('notifications.index') }}">
-                                    <i class="bi bi-chevron-right"></i> {{ __('Notifications') }}
-                                    @php
+                                    <i class="bi bi-chevron-right"></i> Notifications
+                                    {{-- @php
                                         $unread = \App\Models\Notification::where('user_id', auth()->id() ?? 0)
                                             ->where('is_read', false)
                                             ->count();
+                                    @endphp --}}
+                                    @php
+                                        $unread = auth()->check()
+                                            ? \App\Models\Notification::where('user_id', auth()->id())
+                                                ->where('is_read', false)
+                                                ->count()
+                                            : 0;
                                     @endphp
                                     @if ($unread > 0)
                                         <span class="badge-notification">{{ $unread > 99 ? '99+' : $unread }}</span>
@@ -3167,7 +3248,8 @@
                             @endif
                             @if (auth()->check() && auth()->user()->isSuperAdmin())
                                 <li>
-                                    <a href="{{ route('super.admin.dashboard') }}" style="color: var(--accent-orange);">
+                                    <a href="{{ route('super.admin.dashboard') }}"
+                                        style="color: var(--accent-orange);">
                                         <i class="bi bi-chevron-right"></i>
                                         {{ __('Super Admin') }}
                                     </a>
@@ -3205,27 +3287,35 @@
                 </div>
 
                 <!-- Gestion Section -->
-                @if(!auth()->user()->isSuperAdmin())
-                <div class="footer-section">
-                    <h4 onclick="toggleFooterSection(this)">
-                        <span style="display:flex;align-items:center;gap:8px;">
-                            <i class="bi bi-briefcase"></i>
-                            {{ __("Gestion d'Élevage") }}
-                        </span>
-                        <i class="bi bi-chevron-down footer-section-toggle"></i>
-                    </h4>
-                    <div class="footer-section-body">
-                        <ul class="footer-links">
-                            <li><a href="{{ route('males.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Mâles') }}</a></li>
-                            <li><a href="{{ route('femelles.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Femelles') }}</a></li>
-                            <li><a href="{{ route('lapins.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Tous les Lapins') }}</a></li>
-                            <li><a href="{{ route('saillies.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Saillies') }}</a></li>
-                            <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Mises Bas') }}</a></li>
-                            <li><a href="{{ route('naissances.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Naissances') }}</a></li>
-                            <li><a href="{{ route('sales.index') }}"><i class="bi bi-chevron-right"></i> {{ __('Ventes') }}</a></li>
-                        </ul>
+                {{-- @if (!auth()->user()->isSuperAdmin()) --}}
+                @if (auth()->check() && !auth()->user()->isSuperAdmin())
+                    <div class="footer-section">
+                        <h4 onclick="toggleFooterSection(this)">
+                            <span style="display:flex;align-items:center;gap:8px;">
+                                <i class="bi bi-briefcase"></i>
+                                Gestion d’Élevage
+                            </span>
+                            <i class="bi bi-chevron-down footer-section-toggle"></i>
+                        </h4>
+                        <div class="footer-section-body">
+                            <ul class="footer-links">
+                                <li><a href="{{ route('males.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Mâles</a></li>
+                                <li><a href="{{ route('femelles.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Femelles</a></li>
+                                <li><a href="{{ route('lapins.index') }}"><i class="bi bi-chevron-right"></i> Tous
+                                        les Lapins</a></li>
+                                <li><a href="{{ route('saillies.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Saillies</a></li>
+                                <li><a href="{{ route('mises-bas.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Mises Bas</a></li>
+                                <li><a href="{{ route('naissances.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Naissances</a></li>
+                                <li><a href="{{ route('sales.index') }}"><i class="bi bi-chevron-right"></i>
+                                        Ventes</a></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 <!-- Contact Section -->
@@ -3263,7 +3353,8 @@
                             <div class="footer-contact-item">
                                 <i class="bi bi-linkedin"></i>
                                 <div>
-                                    <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://www.linkedin.com/company/anyxtech-sarl/" target="_blank"
+                                        rel="noopener noreferrer">
                                         <strong>LinkedIn</strong>
                                     </a>
                                 </div>
@@ -3389,7 +3480,8 @@
                 applyTheme = getSystemTheme();
             }
             applyThemeVisuals(applyTheme, theme);
-            const label = theme === 'system' ? '{{ __('Système') }}' : (theme === 'light' ? '{{ __('Clair') }}' : '{{ __('Sombre') }}');
+            const label = theme === 'system' ? '{{ __('Système') }}' : (theme === 'light' ? '{{ __('Clair') }}' :
+                '{{ __('Sombre') }}');
             showToast('{{ __('Thème mis à jour') }}: ' + label);
             setTimeout(() => {
                 window.location.reload();
@@ -3432,7 +3524,7 @@
                 breedingDropdown.classList.remove('show');
             }
         });
-        
+
         document.addEventListener('click', function(e) {
             const userDropdown = document.getElementById('userDropdown');
             const moreDropdown = document.getElementById('moreDropdown');
@@ -3717,7 +3809,8 @@
                 const moreDropdownWidth = document.querySelector('.dropdown-container')?.offsetWidth || 0;
                 const padding = 150; // Safety margin for gaps and dropdown
 
-                const availableWidth = containerWidth - brandWidth - userSideWidth - mobileTriggerWidth - moreDropdownWidth - padding;
+                const availableWidth = containerWidth - brandWidth - userSideWidth - mobileTriggerWidth -
+                    moreDropdownWidth - padding;
 
                 // Calculate total width of all nav items
                 let totalWidth = 0;
@@ -3759,7 +3852,8 @@
 
                 // Calculate which items need to move
                 sortedItems.forEach(item => {
-                    if (currentTotalWidth > availableWidth && items.length - itemsToMove.length > this.minVisibleItems) {
+                    if (currentTotalWidth > availableWidth && items.length - itemsToMove.length > this
+                        .minVisibleItems) {
                         itemsToMove.push(item);
                         currentTotalWidth -= item.offsetWidth;
                     }
