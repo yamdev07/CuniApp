@@ -56,7 +56,7 @@
                         <li><i class="bi bi-person"></i> <strong>Données de compte</strong> : nom, email, mot de passe
                             chiffré</li>
                         <li><i class="bi bi-building"></i> <strong>Données d'entreprise</strong> : nom de la ferme,
-                            description, logo</li>
+                            description</li>
                         <li><i class="bi bi-piggy-bank"></i> <strong>Données de facturation</strong> : historique des
                             paiements (via FedaPay)</li>
                         <li><i class="bi bi-calendar-event"></i> <strong>Données d'élevage</strong> : informations sur vos
@@ -92,8 +92,7 @@
                     <h2>3. Partage & Transmission</h2>
                     <p>Vos données peuvent être partagées uniquement avec :</p>
                     <ul class="legal-list">
-                        <li><i class="bi bi-cloud"></i> <strong>Hébergeurs</strong> : pour le stockage sécurisé (serveurs
-                            conformes RGPD)</li>
+                        <li><i class="bi bi-cloud"></i> <strong>Hébergeurs</strong> : pour le stockage sécurisé </li>
                         <li><i class="bi bi-credit-card"></i> <strong>FedaPay</strong> : pour le traitement des paiements
                             (nous ne stockons pas vos coordonnées bancaires)</li>
                         <li><i class="bi bi-shield"></i> <strong>Autorités</strong> : uniquement sur réquisition légale
@@ -130,11 +129,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            {{-- <tr>
                                 <td style="padding: 12px; border: 1px solid var(--surface-border);">Données de compte</td>
                                 <td style="padding: 12px; border: 1px solid var(--surface-border);">Jusqu'à suppression du
                                     compte + 30 jours</td>
-                            </tr>
+                            </tr> --}}
                             <tr>
                                 <td style="padding: 12px; border: 1px solid var(--surface-border);">Données d'élevage</td>
                                 <td style="padding: 12px; border: 1px solid var(--surface-border);">Illimitée (vous les
@@ -171,7 +170,7 @@
                     </ul>
                     <p>
                         Pour exercer ces droits : <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
-                        ou via <strong>Paramètres → Exporter mes données</strong> dans l'application.
+                       .
                     </p>
                 </article>
 
@@ -213,7 +212,7 @@
                         <ul class="contact-list">
                             <li>
                                 <i class="bi bi-envelope-fill"></i>
-                                <a href="mailto:privacy@anyxtech.com">privacy@anyxtech.com</a>
+                                <a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a>
                             </li>
                             <li>
                                 <i class="bi bi-geo-alt-fill"></i>
@@ -221,7 +220,7 @@
                             </li>
                             <li>
                                 <i class="bi bi-building"></i>
-                                <span>AnyxTech SARL - Responsable du traitement</span>
+                                <span>AnyxTech - Responsable du traitement</span>
                             </li>
                         </ul>
                     </div>
@@ -230,24 +229,7 @@
             </div>
         </div>
 
-        {{-- Footer Actions --}}
-        {{-- <div class="cuni-card mt-6" style="border-left: 4px solid var(--accent-purple);">
-        <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-            <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
-                <i class="bi bi-info-circle-fill" style="color: var(--accent-purple); margin-right: 8px;"></i>
-                Cette politique s'applique à tous les utilisateurs de CuniApp.
-            </p>
-            <div style="display: flex; gap: 12px;">
-                <a href="{{ route('terms') }}" class="btn-cuni secondary">
-                    <i class="bi bi-file-text"></i> Conditions d'Utilisation
-                </a>
-                <a href="{{ url()->previous() }}" class="btn-cuni primary">
-                    <i class="bi bi-arrow-left"></i> Retour
-                </a>
-            </div>
-        </div>
-    </div> --}}
-
+       
         {{-- ✅ FOOTER AVEC DÉTECTION EXPLICITE DE L'AUTHENTIFICATION --}}
         @php
             $isAuthenticated = auth()->check();

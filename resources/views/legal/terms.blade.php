@@ -98,10 +98,10 @@
                         <li><i class="bi bi-shield-check"></i> De toute activité effectuée sous votre compte</li>
                         <li><i class="bi bi-shield-check"></i> De nous signaler immédiatement tout accès non autorisé</li>
                     </ul>
-                    <p>
+                    {{-- <p>
                         L'âge minimum pour utiliser CuniApp est de <strong>18 ans</strong> ou l'âge de la majorité légale
                         dans votre juridiction.
-                    </p>
+                    </p> --}}
                 </article>
 
                 {{-- Article 4 --}}
@@ -124,13 +124,13 @@
                     <h3>4.3 Paiements & Renouvellement</h3>
                     <p>
                         Les paiements sont sécurisés via l'API <strong>FedaPay</strong> et acceptent :
-                        Mobile Money (MoMo, Moov), cartes bancaires, et autres moyens locaux selon votre région.
+                        Mobile Money (MoMo, Moov).
                     </p>
                     <ul class="legal-list">
                         <li><i class="bi bi-arrow-repeat"></i> Les abonnements sont renouvelés automatiquement sauf
                             résiliation avant la date d'échéance</li>
-                        <li><i class="bi bi-arrow-repeat"></i> Vous pouvez gérer votre abonnement et annuler le
-                            renouvellement depuis votre espace « Paramètres »</li>
+                        {{-- <li><i class="bi bi-arrow-repeat"></i> Vous pouvez gérer votre abonnement et annuler le
+                            renouvellement depuis votre espace « Paramètres »</li> --}}
                         <li><i class="bi bi-arrow-repeat"></i> Aucun remboursement partiel n'est accordé pour les périodes
                             non utilisées, sauf obligation légale</li>
                     </ul>
@@ -153,8 +153,8 @@
                     <ul class="legal-list">
                         <li><i class="bi bi-database"></i> Nous collectons les données nécessaires au fonctionnement du
                             service (compte, données d'élevage, facturation)</li>
-                        <li><i class="bi bi-database"></i> Vos données d'élevage vous appartiennent ; vous pouvez les
-                            exporter ou supprimer votre compte à tout moment</li>
+                        {{-- <li><i class="bi bi-database"></i> Vos données d'élevage vous appartiennent ; vous pouvez les
+                            exporter ou supprimer votre compte à tout moment</li> --}}
                         <li><i class="bi bi-database"></i> Nous ne vendons pas vos données à des tiers. Le partage se limite
                             aux prestataires techniques nécessaires (hébergement, paiement)</li>
                         <li><i class="bi bi-database"></i> Conformément au RGPD et aux lois locales, vous disposez d'un
@@ -167,13 +167,10 @@
                     <h2>6. Propriété Intellectuelle</h2>
                     <p>
                         CuniApp, son code source, son design, son logo, sa documentation et tous les éléments constitutifs
-                        sont la propriété exclusive de l'équipe CuniApp et protégés par les lois sur la propriété
-                        intellectuelle.
+                        sont la propriété exclusive de l'équipe CuniApp .
                     </p>
                     <p>
-                        L'utilisation du service vous accorde une licence personnelle, non exclusive, non transférable et
-                        révocable
-                        d'accéder et d'utiliser CuniApp conformément aux présentes CGU. Toute reproduction, modification,
+                       Toute reproduction, modification,
                         reverse engineering ou distribution non autorisée est strictement interdite.
                     </p>
                 </article>
@@ -262,11 +259,7 @@
                                 <i class="bi bi-geo-alt-fill"></i>
                                 <span>Houéyiho après le pont devant Volta United, Cotonou, Bénin</span>
                             </li>
-                            <li>
-                                <i class="bi bi-github"></i>
-                                <a href="https://github.com/yamdev07/CuniApp"
-                                    target="_blank">github.com/yamdev07/CuniApp</a>
-                            </li>
+                           
                         </ul>
                     </div>
                 </article>
@@ -274,28 +267,8 @@
             </div>
         </div>
 
-        {{-- Acceptance Banner --}}
-        {{-- <div class="cuni-card mt-6" style="border-left: 4px solid var(--primary);">
-            <div class="card-body"
-                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-                <p style="margin: 0; color: var(--text-secondary); font-size: 14px;">
-                    <i class="bi bi-info-circle-fill" style="color: var(--primary); margin-right: 8px;"></i>
-                    En continuant à utiliser CuniApp, vous confirmez avoir lu et accepté ces Conditions Générales
-                    d'Utilisation.
-                </p>
-                <div style="display: flex; gap: 12px;">
-                    <a href="{{ route('privacy') }}" class="btn-cuni secondary">
-                        <i class="bi bi-shield-check"></i> Politique de Confidentialité
-                    </a>
-                    <a href="{{ route('welcome') }}" class="btn-cuni secondary">
-                        <i class="bi bi-arrow-left"></i> Retour à l'inscription
-                    </a>
 
-                </div>
-            </div>
-        </div> --}}
-
-        {{-- ✅ FOOTER AVEC DÉTECTION EXPLICITE DE L'AUTHENTIFICATION --}}
+        {{-- FOOTER AVEC DÉTECTION EXPLICITE DE L'AUTHENTIFICATION --}}
         @php
             $isAuthenticated = auth()->check();
             $returnText = $isAuthenticated ? 'au tableau de bord' : 'à l\'inscription';

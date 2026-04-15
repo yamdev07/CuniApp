@@ -3081,7 +3081,7 @@
                             class="bi bi-cash-stack"></i> {{ __('Transactions') }} </a>
                 @endif
 
-                @if (!auth()->user()->isSuperAdmin())
+                @if(auth()->check() && !auth()->user()->isSuperAdmin())
                     <a href="{{ route('dashboard') }}" class="mobile-nav-link"><i class="bi bi-speedometer2"></i>
                         {{ __('Tableau de bord') }}</a>
 
