@@ -1,6 +1,19 @@
 <div align="center">
   <h3>🌐 Sélectionner la langue / Select Language</h3>
   <p>
+    <a href="https://github.com/lionel-hue/CuniApp" target="_blank">
+      <img src="https://img.shields.io/badge/GitHub-Source_Closed-FF0000?style=for-the-badge&logo=github&logoColor=white" alt="Closed Source">
+    </a>
+  </p>
+</div>
+
+> ⚠️ **NOTICE**: This software is **PROPRIETARY** and **CLOSED SOURCE**. See [LICENSE](./LICENSE) for terms. Unauthorized use, redistribution, or reproduction is strictly prohibited.
+
+---
+
+<div align="center">
+  <h3>🌐 Sélectionner la langue / Select Language</h3>
+  <p>
     <a href="#-cuniapp--gestion-d-élevage-cunicole-professionnel">🇫🇷 Français (Défaut)</a> | 
     <a href="#-cuniapp--professional-rabbit-breeding-management-system">🇺🇸 English</a>
   </p>
@@ -29,7 +42,7 @@
   [![Laravel 10](https://img.shields.io/badge/Laravel-10.x-FF2D20?logo=laravel&style=for-the-badge)](https://laravel.com)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&style=for-the-badge)](https://tailwindcss.com)
   [![PHP 8.2](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&style=for-the-badge)](https://php.net)
-  [![License MIT](https://img.shields.io/badge/License-MIT-4fb14f?style=for-the-badge)](LICENSE)
+  [![License Proprietary](https://img.shields.io/badge/License-Closed_Source-FF0000?style=for-the-badge)](LICENSE)
 </div>
 
 ---
