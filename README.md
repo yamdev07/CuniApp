@@ -120,9 +120,9 @@ npm run dev & php artisan serve
 
 | Nom | Rôle | Liens |
 | :--- | :--- | :--- |
-| **Lionel HUE** | **Lead Developer** | [GitHub](https://github.com/lionel-hue) • [Portfolio](https://lionel-hue.github.io/portfolio/) |
+| **Yoann ADIGBONON** | **Lead Developer** | [GitHub](https://github.com/yamdev07) • [LinkedIn](https://linkedin.com/in/yoann-adigbonon) |
+| **Lionel HUE** | **Main Collaborator** | [GitHub](https://github.com/lionel-hue) • [Portfolio](https://lionel-hue.github.io/portfolio/) |
 | **Nafissath** | **IT Collaborator** | [GitHub](https://github.com/Nafissath) |
-| **Yoann ADIGBONON** | **Product Owner** | [GitHub](https://github.com/yamdev07) • [LinkedIn](https://linkedin.com/in/yoann-adigbonon) |
 | **Bellox1** | **Collaborator** | [GitHub](https://github.com/Bellox1) |
 | **VODOUNON Majorelle** | **Collaborator** | [GitHub](https://github.com/VODOUNON-MAJORELLE) |
 
@@ -167,9 +167,9 @@ npm run dev & php artisan serve
 
 | Name | Role | Socials |
 | :--- | :--- | :--- |
-| **Lionel HUE** | **Lead Developer** | [GitHub](https://github.com/lionel-hue) • [Portfolio](https://lionel-hue.github.io/portfolio/) |
+| **Yoann ADIGBONON** | **Lead Developer** | [GitHub](https://github.com/yamdev07) • [LinkedIn](https://linkedin.com/in/yoann-adigbonon) |
+| **Lionel HUE** | **Main Collaborator** | [GitHub](https://github.com/lionel-hue) • [Portfolio](https://lionel-hue.github.io/portfolio/) |
 | **Nafissath** | **IT Collaborator** | [GitHub](https://github.com/Nafissath) |
-| **Yoann ADIGBONON** | **Product Owner** | [GitHub](https://github.com/yamdev07) • [LinkedIn](https://linkedin.com/in/yoann-adigbonon) |
 | **Bellox1** | **Collaborator** | [GitHub](https://github.com/Bellox1) |
 | **VODOUNON Majorelle** | **Collaborator** | [GitHub](https://github.com/VODOUNON-MAJORELLE) |
 
