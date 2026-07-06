@@ -480,7 +480,7 @@
                             @if ($plan->duration_months === 12)
                             <div class="pricing-popular-badge"><i class="bi bi-star-fill"></i> {{ __('Meilleure Offre') }}</div>
                             @endif
-                        <h3 class="pricing-name">{{ $plan->name }}</h3>
+                        <h3 class="pricing-name">{{ __($plan->name) }}</h3>
                         <div class="pricing-price">
                             <span class="pricing-amount">@if ($plan->price <= 0){{ __('Gratuit') }}@else{{ number_format($plan->price, 0, ',', ' ') }}@endif</span>
                             @if ($plan->price > 0)<span class="pricing-period">FCFA</span>@endif
@@ -493,7 +493,7 @@
                             @endif
                             <li class="pricing-feature"><i class="bi bi-check-circle-fill"></i><span>{{ __("Jusqu'à") }} {{ $plan->max_users ?? 5 }} {{ __('utilisateurs') }}</span></li>
                             @if (is_array($plan->features))
-                            @foreach (array_slice($plan->features, 0, 3) as $f)<li class="pricing-feature"><i class="bi bi-check-circle-fill"></i><span>{{ $f }}</span></li>
+                            @foreach (array_slice($plan->features, 0, 3) as $f)<li class="pricing-feature"><i class="bi bi-check-circle-fill"></i><span>{{ __($f) }}</span></li>
                             @endforeach
                             @endif
                         </ul>
