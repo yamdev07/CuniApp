@@ -1384,6 +1384,12 @@
 </head>
 
 <body>
+    <!-- Back Button -->
+    <a href="{{ route('home') }}" style="position:fixed;top:20px;left:20px;z-index:100;display:flex;align-items:center;gap:8px;padding:10px 18px;background:rgba(255,255,255,0.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(37,99,235,0.1);border-radius:100px;font-size:13px;font-weight:500;color:var(--gray-600);text-decoration:none;transition:all 0.3s ease;box-shadow:0 2px 8px rgba(0,0,0,0.06);" onmouseover="this.style.background='rgba(255,255,255,0.9)';this.style.color='var(--primary)'" onmouseout="this.style.background='rgba(255,255,255,0.7)';this.style.color='var(--gray-600)'">
+        <i class="bi bi-arrow-left"></i>
+        <span>Retour</span>
+    </a>
+
     <!-- Background Particles -->
     <div class="bg-particle"></div>
     <div class="bg-particle"></div>

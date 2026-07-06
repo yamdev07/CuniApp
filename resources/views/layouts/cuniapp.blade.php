@@ -3399,6 +3399,18 @@
                 </p>
             </div>
 
+            <div class="footer-toggles" style="display:flex;align-items:center;gap:12px;">
+                <div class="toggle-group" style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
+                    <button class="toggle-btn" onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème clair') }}"><i class="bi bi-sun"></i></button>
+                    <button class="toggle-btn" onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème sombre') }}"><i class="bi bi-moon"></i></button>
+                    <button class="toggle-btn" onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème du système') }}"><i class="bi bi-circle-half"></i></button>
+                </div>
+                <div class="toggle-group" style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
+                    <a href="{{ route('lang.switch', 'fr') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'fr' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'fr' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Changer de langue') }}">🇫🇷 FR</a>
+                    <a href="{{ route('lang.switch', 'en') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'en' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'en' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Changer de langue') }}">🇺🇸 EN</a>
+                </div>
+            </div>
+
             <div class="footer-legal">
                 <a href="{{ route('privacy') }}">
                     <i class="bi bi-shield-check"></i>
