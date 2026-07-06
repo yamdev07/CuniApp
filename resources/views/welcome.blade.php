@@ -302,6 +302,8 @@
 
         .auth-section {
             position: relative;
+            width: 100%;
+            flex-shrink: 0;
         }
 
         @keyframes slideInRight {
