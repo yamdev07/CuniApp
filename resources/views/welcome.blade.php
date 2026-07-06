@@ -180,7 +180,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 40px 24px;
         }
 
         .welcome-content {
@@ -362,7 +362,7 @@
         }
 
         .auth-forms {
-            padding: 32px 40px;
+            padding: 28px 24px;
         }
 
         .auth-form {
@@ -1484,11 +1484,13 @@
         <span>Retour</span>
     </a>
 
-    <!-- Background Particles -->
+        <!-- Background Particles -->
+    <div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;">
     <div class="bg-particle"></div>
     <div class="bg-particle"></div>
     <div class="bg-particle"></div>
     <div class="bg-particle"></div>
+    </div>
 
     <div class="welcome-container">
         <div class="welcome-content">
