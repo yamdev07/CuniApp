@@ -5,6 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'CuniApp') }} - {{ __('Gestion intelligente de votre cheptel') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/icon.png') }}">
+    <meta name="description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta property="og:title" content="CuniApp {{ __('Élevage') }}">
+    <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta property="og:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CuniApp {{ __('Élevage') }}">
+    <meta name="twitter:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta name="twitter:image" content="{{ asset('images/thumbnail.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -455,7 +465,7 @@
             <div class="features-grid">
                 <div class="feature-card"><div class="feature-icon"><i class="bi bi-egg-fried"></i></div><h3 class="feature-title">{{ __('Suivi des Reproductions') }}</h3><p class="feature-description">{{ __('Gérez les saillies, palpations et suivez les gestations en temps réel avec des alertes automatiques.') }}</p></div>
                 <div class="feature-card"><div class="feature-icon"><i class="bi bi-clipboard2-pulse"></i></div><h3 class="feature-title">{{ __('Gestion des Naissances') }}</h3><p class="feature-description">{{ __('Enregistrez les mises bas, suivez la mortalité et monitorer la croissance de vos lapereaux.') }}</p></div>
-                <div class="feature-card"><div class="feature-icon"><i class="bi bi-rabbit"></i></div><h3 class="feature-title">{{ __('Inventaire Complet') }}</h3><p class="feature-description">{{ __('Base de données détaillée de tous vos lapins avec codes uniques, photos et historique médical.') }}</p></div>
+                <div class="feature-card"><div class="feature-icon"><i class="bi bi-clipboard2-data"></i></div><h3 class="feature-title">{{ __('Inventaire Complet') }}</h3><p class="feature-description">{{ __('Base de données détaillée de tous vos lapins avec codes uniques, photos et historique médical.') }}</p></div>
                 <div class="feature-card"><div class="feature-icon"><i class="bi bi-bar-chart-line"></i></div><h3 class="feature-title">{{ __('Tableau de Bord Intelligent') }}</h3><p class="feature-description">{{ __('Statistiques en temps réel, graphiques de performance et indicateurs clés pour vos décisions.') }}</p></div>
                 <div class="feature-card"><div class="feature-icon"><i class="bi bi-currency-exchange"></i></div><h3 class="feature-title">{{ __('Gestion des Ventes') }}</h3><p class="feature-description">{{ __("Suivez vos ventes, générez des factures et gérez les paiements en un clin d'œil.") }}</p></div>
                 <div class="feature-card"><div class="feature-icon"><i class="bi bi-shield-lock"></i></div><h3 class="feature-title">{{ __('Sécurisé & Fiable') }}</h3><p class="feature-description">{{ __('Sécurité de niveau entreprise avec sauvegardes automatiques et vérification par email.') }}</p></div>

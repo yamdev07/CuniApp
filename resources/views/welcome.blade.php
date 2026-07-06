@@ -5,6 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'CuniApp Élevage') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/icon.png') }}">
+    <meta name="description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta property="og:title" content="CuniApp {{ __('Élevage') }}">
+    <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta property="og:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CuniApp {{ __('Élevage') }}">
+    <meta name="twitter:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
+    <meta name="twitter:image" content="{{ asset('images/thumbnail.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -1406,36 +1416,35 @@
                         <path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)" />
                     </svg>
                 </div>
-                <h1 class="brand-title">CuniApp <span>Élevage</span></h1>
-                <p class="brand-tagline">Gestion intelligente de votre cheptel lapin. Suivez vos reproductions,
-                    naissances et performances en toute simplicité.</p>
+                <h1 class="brand-title">CuniApp <span>{{ __("Élevage") }}</span></h1>
+                <p class="brand-tagline">{{ __("Gestion intelligente de votre cheptel lapin. Suivez vos reproductions, naissances et performances en toute simplicité.") }}</p>
                 <!-- 3 Step Illustration -->
                 <div class="steps-illustration">
                     <div class="step-item">
                         <div class="step-image-wrapper">
-                            <img src="{{ asset('images/step_1.png') }}" alt="Étape 1">
+                            <img src="{{ asset('images/step_1.png') }}" alt="{{ __("Étape 1") }}">
                         </div>
-                        <h4>1. Identifier</h4>
-                        <p>Suivi complet des lapins</p>
+                        <h4>1. {{ __("Identifier") }}</h4>
+                        <p>{{ __("Suivi complet des lapins") }}</p>
                     </div>
                     <div class="step-item">
                         <div class="step-image-wrapper">
-                            <img src="{{ asset('images/step_2.png') }}" alt="Étape 2">
+                            <img src="{{ asset('images/step_2.png') }}" alt="{{ __("Étape 2") }}">
                         </div>
-                        <h4>2. Reproduire</h4>
-                        <p>Gestion des saillies</p>
+                        <h4>2. {{ __("Reproduire") }}</h4>
+                        <p>{{ __("Gestion des saillies") }}</p>
                     </div>
                     <div class="step-item" style="position: relative;">
                         <div class="step-image-wrapper">
-                            <img src="{{ asset('images/step_3.png') }}" alt="Étape 3">
+                            <img src="{{ asset('images/step_3.png') }}" alt="{{ __("Étape 3") }}">
                         </div>
-                        <h4>3. Analyser</h4>
-                        <p>Tableau de bord intelligent</p>
+                        <h4>3. {{ __("Analyser") }}</h4>
+                        <p>{{ __("Tableau de bord intelligent") }}</p>
 
                         <!-- Rabbit Farmer Pop-out -->
                         <div class="farmer-popout">
-                            <img src="{{ asset('images/rabbit_farmer.png') }}" alt="Éleveur CuniApp" class="farmer-img">
-                            <div class="farmer-badge">Rejoignez-nous!</div>
+                            <img src="{{ asset('images/rabbit_farmer.png') }}" alt="{{ __("Éleveur CuniApp") }}" class="farmer-img">
+                            <div class="farmer-badge">{{ __("Rejoignez-nous!") }}</div>
                         </div>
                     </div>
                 </div>
@@ -1446,10 +1455,10 @@
                 <div class="auth-container">
                     <div class="auth-tabs">
                         <button type="button" class="auth-tab active" data-tab="login" id="tab-login">
-                            <i class="bi bi-box-arrow-in-right"></i> Connexion
+                            <i class="bi bi-box-arrow-in-right"></i> {{ __("Connexion") }}
                         </button>
                         <button type="button" class="auth-tab" data-tab="register" id="tab-register">
-                            <i class="bi bi-person-plus"></i> Inscription
+                            <i class="bi bi-person-plus"></i> {{ __("Inscription") }}
                         </button>
                     </div>
 
@@ -1457,7 +1466,7 @@
                         <!-- Network Status -->
                         <div class="network-status offline" id="networkStatus" style="display: none;">
                             <i class="bi bi-wifi-off"></i>
-                            <span>Aucune connexion réseau</span>
+                            <span>{{ __("Aucune connexion réseau") }}</span>
                         </div>
 
                         <!-- Success/Error Messages -->
@@ -1484,7 +1493,7 @@
                                 <div class="alert-box error" id="loginErrorAlert">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                     <div>
-                                        <strong>Erreur de connexion</strong>
+                                        <strong>{{ __("Erreur de connexion") }}</strong>
                                         <ul class="validation-summary-list">
                                             @if($errors->has('email'))
                                                 <li>
@@ -1509,11 +1518,11 @@
                                 </div>
                             @endif
 
-                            <h2 class="form-title">Bon retour !</h2>
-                            <p class="form-subtitle">Connectez-vous à votre compte</p>
+                            <h2 class="form-title">{{ __("Bon retour !") }}</h2>
+                            <p class="form-subtitle">{{ __("Connectez-vous à votre compte") }}</p>
 
                             <div class="form-group">
-                                <label class="form-label">Adresse email</label>
+                                <label class="form-label">{{ __("Adresse email") }}</label>
                                 <div class="form-input-wrapper">
                                     <input type="email" name="email"
                                         class="form-input @error('email') error @enderror" placeholder="votre@email.com"
@@ -1536,7 +1545,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Mot de passe</label>
+                                <label class="form-label">{{ __("Mot de passe") }}</label>
                                 <div class="form-input-wrapper">
                                     <input type="password" name="password"
                                         class="form-input @error('password') error @enderror" placeholder="••••••••"
@@ -1556,20 +1565,19 @@
                             <div class="form-options">
                                 <label class="remember-me">
                                     <input type="checkbox" name="remember">
-                                    <span>Se souvenir de moi</span>
+                                    <span>{{ __("Se souvenir de moi") }}</span>
                                 </label>
                                 @if (Route::has('password.request'))
-                                    <a class="forgot-password" href="{{ route('password.request') }}">Mot de passe
-                                        oublié ?</a>
+                                    <a class="forgot-password" href="{{ route('password.request') }}">{{ __("Mot de passe oublié ?") }}</a>
                                 @endif
                             </div>
 
                             <button type="submit" class="btn-submit">
-                                <span>Se connecter</span>
+                                <span>{{ __("Se connecter") }}</span>
                                 <i class="bi bi-arrow-right"></i>
                             </button>
 
-                            <div class="divider"><span>ou continuer avec</span></div>
+                            <div class="divider"><span>{{ __("ou continuer avec") }}</span></div>
 
                             <div class="social-login">
                                 <button type="button"
@@ -1589,7 +1597,7 @@
                                 <div class="alert-box error">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                     <div>
-                                        <strong>Erreurs de validation</strong>
+                                        <strong>{{ __("Erreurs de validation") }}</strong>
                                         <ul class="validation-summary-list">
                                             @foreach ($errors->all() as $error)
                                                 <li>
@@ -1611,7 +1619,7 @@
                                         style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
                                         1</div>
                                     <span
-                                        style="font-size: 13px; font-weight: 500; color: var(--text-primary);">Compte</span>
+                                        style="font-size: 13px; font-weight: 500; color: var(--text-primary);">{{ __("Compte") }}</span>
                                 </div>
                                 <div style="flex: 1; height: 2px; background: var(--gray-200);">
                                     <div class="step-progress"
@@ -1624,17 +1632,17 @@
                                         style="width: 32px; height: 32px; border-radius: 50%; background: var(--gray-200); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
                                         2</div>
                                     <span
-                                        style="font-size: 13px; font-weight: 500; color: var(--text-secondary);">Entreprise</span>
+                                        style="font-size: 13px; font-weight: 500; color: var(--text-secondary);">{{ __("Entreprise") }}</span>
                                 </div>
                             </div>
 
                             <!-- ✅ STEP 1: USER BIO DATA -->
                             <div class="form-step" data-step="1" style="display: block;">
-                                <h2 class="form-title">Créer votre compte</h2>
-                                <p class="form-subtitle">Commençons par vos informations personnelles</p>
+                                <h2 class="form-title">{{ __("Créer votre compte") }}</h2>
+                                <p class="form-subtitle">{{ __("Commençons par vos informations personnelles") }}</p>
 
                                 <div class="form-group">
-                                    <label class="form-label">Nom complet *</label>
+                                    <label class="form-label">{{ __("Nom complet *") }}</label>
                                     <div class="form-input-wrapper">
                                         <input type="text" name="name" class="form-input step1-required"
                                             placeholder="Jean Dupont" required autofocus value="{{ old('name') }}"
@@ -1651,7 +1659,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">Adresse email *</label>
+                                    <label class="form-label">{{ __("Adresse email *") }}</label>
                                     <div class="form-input-wrapper">
                                         <input type="email" name="email" class="form-input step1-required"
                                             placeholder="votre@email.com" required value="{{ old('email') }}"
@@ -1667,7 +1675,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">Mot de passe *</label>
+                                    <label class="form-label">{{ __("Mot de passe *") }}</label>
                                     <div class="form-input-wrapper">
                                         <input type="password" name="password" class="form-input step1-required"
                                             placeholder="••••••••" required id="registerPassword" minlength="8"
@@ -1680,38 +1688,38 @@
                                         <div class="password-strength-bar">
                                             <div class="password-strength-fill" id="passwordStrengthFill"></div>
                                         </div>
-                                        <div class="password-strength-text" id="passwordStrengthText">Faible</div>
+                                        <div class="password-strength-text" id="passwordStrengthText">{{ __("Faible") }}</div>
 
                                         <div class="password-requirements">
                                             <div class="password-requirements-title">
                                                 <i class="bi bi-shield-lock"
                                                     style="font-size: 14px; position: static; transform: none; display: inline; color: inherit;"></i>
-                                                Critères du mot de passe
+                                                {{ __("Critères du mot de passe") }}
                                             </div>
                                             <div class="password-requirement" id="req-length">
                                                 <i class="bi bi-x-circle"
                                                     style="position: static; transform: none; display: inline;"></i>
-                                                <span>Au moins 8 caractères</span>
+                                                <span>{{ __("Au moins 8 caractères") }}</span>
                                             </div>
                                             <div class="password-requirement" id="req-upper">
                                                 <i class="bi bi-x-circle"
                                                     style="position: static; transform: none; display: inline;"></i>
-                                                <span>Une majuscule</span>
+                                                <span>{{ __("Une majuscule") }}</span>
                                             </div>
                                             <div class="password-requirement" id="req-lower">
                                                 <i class="bi bi-x-circle"
                                                     style="position: static; transform: none; display: inline;"></i>
-                                                <span>Une minuscule</span>
+                                                <span>{{ __("Une minuscule") }}</span>
                                             </div>
                                             <div class="password-requirement" id="req-number">
                                                 <i class="bi bi-x-circle"
                                                     style="position: static; transform: none; display: inline;"></i>
-                                                <span>Un chiffre</span>
+                                                <span>{{ __("Un chiffre") }}</span>
                                             </div>
                                             <div class="password-requirement" id="req-special">
                                                 <i class="bi bi-x-circle"
                                                     style="position: static; transform: none; display: inline;"></i>
-                                                <span>Un caractère spécial (!@#$...)</span>
+                                                <span>{{ __("Un caractère spécial (!@#$...)") }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1724,7 +1732,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">Confirmer le mot de passe *</label>
+                                    <label class="form-label">{{ __("Confirmer le mot de passe *") }}</label>
                                     <div class="form-input-wrapper">
                                         <input type="password" name="password_confirmation"
                                             class="form-input step1-required" placeholder="••••••••" required
@@ -1745,7 +1753,7 @@
                                 <div style="display: flex; gap: 12px; margin-top: 32px;">
                                     <button type="button" class="btn-submit" onclick="nextStep(2)"
                                         style="flex: 1;">
-                                        <span>Suivant</span>
+                                        <span>{{ __("Suivant") }}</span>
                                         <i class="bi bi-arrow-right"></i>
                                     </button>
                                 </div>
@@ -1753,11 +1761,11 @@
 
                             <!-- ✅ STEP 2: FIRM DATA -->
                             <div class="form-step" data-step="2" style="display: none;">
-                                <h2 class="form-title">Informations de l'Entreprise</h2>
-                                <p class="form-subtitle">Configurez votre espace de travail</p>
+                                <h2 class="form-title">{{ __("Informations de l'Entreprise") }}</h2>
+                                <p class="form-subtitle">{{ __("Configurez votre espace de travail") }}</p>
 
                                 <div class="form-group">
-                                    <label class="form-label">Nom de l'entreprise *</label>
+                                    <label class="form-label">{{ __("Nom de l'entreprise *") }}</label>
                                     <div class="form-input-wrapper">
                                         <input type="text" name="firm_name" class="form-input step2-required"
                                             placeholder="Ex: Ferme Lapin d'Or" required
@@ -1773,9 +1781,9 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label">Description (optionnel)</label>
+                                    <label class="form-label">{{ __("Description (optionnel)") }}</label>
                                     <div class="form-input-wrapper">
-                                        <textarea name="firm_description" class="form-input" placeholder="Décrivez votre entreprise..." rows="3">{{ old('firm_description') }}</textarea>
+                                        <textarea name="firm_description" class="form-input" placeholder="{{ __("Décrivez votre entreprise...") }}" rows="3">{{ old('firm_description') }}</textarea>
                                         <i class="bi bi-card-text"></i>
                                     </div>
                                     <div class="char-counter" id="descriptionCharCounter">0/1000</div>
@@ -1792,16 +1800,16 @@
                                         <input type="checkbox" name="terms" required
                                             style="width: 16px; height: 16px; accent-color: var(--primary); margin-top: 2px;">
                                         <span style="font-size: 13px; color: var(--gray-600);">
-                                            J'accepte les
+                                            {{ __("J'accepte les") }}
                                             {{-- <a href="{{ route('terms') }}" target="_blank"
                                                 style="color: var(--primary);">
                                                 Conditions d'utilisation
                                             </a> --}}
-                                            <a href="{{ route('terms') }}?step={{ request('step', 1) }}" style="color: var(--primary);" target="_blank">Conditions d'utilisation</a>
-                                            et la
+                                            <a href="{{ route('terms') }}?step={{ request('step', 1) }}" style="color: var(--primary);" target="_blank">{{ __("Conditions d'utilisation") }}</a>
+                                            {{ __("et la") }}
                                             <a href="{{ route('privacy') }}" target="_blank"
                                                 style="color: var(--primary);">
-                                                Politique de confidentialité
+                                                {{ __("Politique de confidentialité") }}
                                             </a>
                                         </span>
                                     </label>
@@ -1818,16 +1826,16 @@
                                     <button type="button" class="btn-submit" onclick="previousStep(1)"
                                         style="flex: 1; background: var(--gray-200); color: var(--text-primary);">
                                         <i class="bi bi-arrow-left"></i>
-                                        <span>Retour</span>
+                                        <span>{{ __("Retour") }}</span>
                                     </button>
                                     <button type="submit" class="btn-submit" style="flex: 1;">
-                                        <span>Créer mon compte</span>
+                                        <span>{{ __("Créer mon compte") }}</span>
                                         <i class="bi bi-arrow-right"></i>
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="divider"><span>ou s'inscrire avec</span></div>
+                            <div class="divider"><span>{{ __("ou s'inscrire avec") }}</span></div>
                             <div class="social-login">
                                 <button type="button"
                                     onclick="window.location='{{ route('social-login.google.redirect') }}'"
@@ -1861,7 +1869,7 @@
                 <div class="verification-header">
                     <h3>
                         <i class="bi bi-shield-check"></i>
-                        Vérification Email
+                        {{ __("Vérification Email") }}
                     </h3>
                     <button type="button" class="modal-close" onclick="closeVerificationModal()">
                         <i class="bi bi-x-lg"></i>
@@ -1869,7 +1877,7 @@
                 </div>
                 <div class="verification-body">
                     <p class="verification-message">
-                        Un code de vérification a été envoyé à<br>
+                        {{ __("Un code de vérification a été envoyé à") }}<br>
                         <strong id="verificationEmailDisplay">{{ session('verification_email') }}</strong>
                     </p>
                     <form id="verificationForm" method="POST" action="{{ route('verification.code.verify') }}">
@@ -1901,11 +1909,11 @@
                         Code: <span id="codeDebugDisplay" style="font-family: monospace; letter-spacing: 4px; font-size: 16px; color: var(--primary); font-weight: 700;">______</span>
                     </div>
                     <div class="verification-info">
-                        <p>Vous n'avez pas reçu le code ? <a href="#" id="resendCode"
-                                onclick="resendVerificationCode(event)">Renvoyer</a></p>
+                        <p>{{ __("Vous n'avez pas reçu le code ?") }} <a href="#" id="resendCode"
+                                onclick="resendVerificationCode(event)">{{ __("Renvoyer") }}</a></p>
                     </div>
                     <div class="resend-timer disabled" id="resendTimer">
-                        Renvoyer dans <span id="timerCount">60</span>s
+                        {{ __("Renvoyer dans") }} <span id="timerCount">60</span>s
                     </div>
                     @if ($errors->has('code'))
                         <div class="alert-box error" style="margin-top: 16px;">
@@ -2064,7 +2072,7 @@ if (step && window.opener) {
                 if (!passwordStrengthFill || !passwordStrengthText) return;
 
                 const classes = ['weak', 'fair', 'good', 'strong'];
-                const labels = ['Faible', 'Moyen', 'Bon', 'Excellent'];
+                const labels = ['{{ __("Faible") }}', '{{ __("Moyen") }}', '{{ __("Bon") }}', '{{ __("Excellent") }}'];
                 const widths = ['25%', '50%', '75%', '100%'];
 
                 const index = Math.min(strength - 1, 3);
@@ -2142,7 +2150,7 @@ if (step && window.opener) {
                     const submitBtn = this.querySelector('.btn-submit');
                     if (submitBtn) {
                         submitBtn.classList.add('loading');
-                        submitBtn.querySelector('span').textContent = 'Chargement...';
+                        submitBtn.querySelector('span').textContent = '{{ __("Chargement...") }}';
                     }
                 });
             });
@@ -2469,8 +2477,8 @@ if (step && window.opener) {
                         if (!errorMsg) {
                             errorMsg = document.createElement('div');
                             errorMsg.className = 'validation-message error';
-                            errorMsg.innerHTML =
-                                '<i class="bi bi-exclamation-circle-fill"></i><span>Ce champ est obligatoire</span>';
+                                errorMsg.innerHTML =
+                                '<i class="bi bi-exclamation-circle-fill"></i><span>{{ __("Ce champ est obligatoire") }}</span>';
                             wrapper.appendChild(errorMsg);
                         }
                         errorMsg.style.display = 'flex';
@@ -2585,6 +2593,84 @@ if (step && window.opener) {
             }
         `;
                 document.head.appendChild(style);
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer style="background:var(--gray-50);border-top:1px solid var(--gray-200);position:relative;z-index:10;margin-top:40px;">
+        <div style="max-width:1280px;margin:0 auto;padding:48px 24px;">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1.5fr;gap:40px;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                        <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 40 40" fill="none" width="20" height="20"><path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/><path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/></svg></div>
+                        <div style="font-size:18px;font-weight:700;color:var(--gray-800);">CuniApp <span style="color:var(--primary);">{{ __("Élevage") }}</span></div>
+                    </div>
+                    <p style="font-size:13px;color:var(--gray-500);line-height:1.7;margin-bottom:20px;">{{ __("La solution complète pour la gestion intelligente de votre élevage de lapins.") }} {{ __("Suivez vos reproductions, naissances et performances en toute simplicité.") }}</p>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
+                        <div style="display:flex;align-items:center;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);" id="themeToggleFooter">
+                            <button onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--gray-500);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __("Thème clair") }}"><i class="bi bi-sun"></i></button>
+                            <button onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--gray-500);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __("Thème sombre") }}"><i class="bi bi-moon"></i></button>
+                            <button onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:var(--primary);color:white;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __("Thème du système") }}"><i class="bi bi-circle-half"></i></button>
+                        </div>
+                        <div style="display:flex;align-items:center;background:white;border:1px solid var(--gray-200);border-radius:var(--radius);">
+                            <a href="{{ route('lang.switch', 'fr') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'fr' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'fr' ? 'white' : 'var(--gray-500)' }};display:flex;align-items:center;gap:4px;">🇫🇷 FR</a>
+                            <a href="{{ route('lang.switch', 'en') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'en' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'en' ? 'white' : 'var(--gray-500)' }};display:flex;align-items:center;gap:4px;">🇺🇸 EN</a>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="font-size:14px;font-weight:600;color:var(--gray-800);margin-bottom:16px;">{{ __("Navigation") }}</h4>
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Fonctionnalités") }}</a></li>
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}#pricing" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Tarifs") }}</a></li>
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Commencer") }}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="font-size:14px;font-weight:600;color:var(--gray-800);margin-bottom:16px;"><i class="bi bi-briefcase"></i> {{ __("Gestion d'Élevage") }}</h4>
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}#features" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Suivi des Reproductions") }}</a></li>
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}#features" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Gestion des Naissances") }}</a></li>
+                        <li style="margin-bottom:8px;"><a href="{{ route('home') }}#features" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:8px;"><i class="bi bi-chevron-right" style="font-size:10px;color:var(--gray-400);"></i> {{ __("Inventaire Complet") }}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="font-size:14px;font-weight:600;color:var(--gray-800);margin-bottom:16px;"><i class="bi bi-envelope"></i> {{ __("Contact & Infos") }}</h4>
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><i class="bi bi-geo-alt-fill" style="color:var(--primary);font-size:16px;margin-top:2px;"></i><div><strong style="display:block;font-size:13px;color:var(--gray-800);margin-bottom:2px;">{{ __("Adresse") }}</strong><span style="font-size:12px;color:var(--gray-500);">Houé​yiho après le pont devant Volta United, Cotonou, Bénin</span></div></div>
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><i class="bi bi-whatsapp" style="color:var(--primary);font-size:16px;margin-top:2px;"></i><div><strong style="display:block;font-size:13px;color:var(--gray-800);margin-bottom:2px;">WhatsApp</strong><a href="https://wa.me/22901524152" target="_blank" style="font-size:12px;color:var(--gray-500);text-decoration:none;">+229 01 52 41 52 41</a></div></div>
+                    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><i class="bi bi-envelope-fill" style="color:var(--primary);font-size:16px;margin-top:2px;"></i><div><strong style="display:block;font-size:13px;color:var(--gray-800);margin-bottom:2px;">Email</strong><a href="mailto:contact@anyxtech.com" style="font-size:12px;color:var(--gray-500);text-decoration:none;">contact@anyxtech.com</a></div></div>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:24px;border-top:1px solid var(--gray-200);background:white;">
+            <div>
+                <p style="font-size:13px;color:var(--gray-500);">&copy; {{ date('Y') }} <a href="{{ route('home') }}" style="color:var(--primary);text-decoration:none;font-weight:600;">CuniApp {{ __("Élevage") }}</a>. {{ __("Tous droits réservés.") }}</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:20px;">
+                <a href="{{ route('privacy') }}" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:6px;"><i class="bi bi-shield-check"></i> {{ __("Confidentialité") }}</a>
+                <a href="{{ route('terms') }}" style="font-size:13px;color:var(--gray-500);text-decoration:none;display:flex;align-items:center;gap:6px;"><i class="bi bi-file-text"></i> {{ __("Conditions") }}</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dark Mode Support -->
+    <script>
+        function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+        function setTheme(theme) {
+            localStorage.setItem('cuniapp_theme', theme);
+            const isDark = theme === 'dark' || (theme === 'system' && getSystemTheme() === 'dark');
+            document.documentElement.classList.toggle('theme-dark', isDark);
+        }
+        (function() {
+            const savedTheme = localStorage.getItem('cuniapp_theme') || 'system';
+            const isDark = savedTheme === 'dark' || (savedTheme === 'system' && getSystemTheme() === 'dark');
+            if (isDark) document.documentElement.classList.add('theme-dark');
+        })();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+            const saved = localStorage.getItem('cuniapp_theme') || 'system';
+            if (saved === 'system') {
+                document.documentElement.classList.toggle('theme-dark', window.matchMedia('(prefers-color-scheme: dark)').matches);
             }
         });
     </script>
