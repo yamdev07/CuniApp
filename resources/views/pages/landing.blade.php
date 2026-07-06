@@ -61,10 +61,6 @@
         .landing-nav { position:sticky; top:0; z-index:50; transition:all 0.5s ease; }
         .landing-nav.scrolled { background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--surface-border); box-shadow:0 4px 30px rgba(37,99,235,0.06); }
         .nav-container { max-width:1280px; margin:0 auto; padding:0 24px; height:64px; display:flex; align-items:center; justify-content:space-between; }
-        .nav-back { display:flex; align-items:center; gap:8px; padding:8px 16px; background:transparent; border:1px solid var(--gray-200); border-radius:100px; font-size:13px; font-weight:500; color:var(--gray-600); text-decoration:none; transition:all 0.3s ease; flex-shrink:0; }
-        .nav-back:hover { color:var(--primary); border-color:rgba(37,99,235,0.3); background:var(--primary-subtle); }
-        .theme-dark .nav-back { border-color:var(--gray-700); color:var(--gray-400); }
-        .theme-dark .nav-back:hover { color:var(--primary); border-color:rgba(77,166,255,0.3); background:var(--primary-subtle); }
         .nav-brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
         .nav-logo { width:40px; height:40px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
         .nav-logo svg { width:22px; height:22px; }
@@ -272,10 +268,6 @@
     <!-- Navbar -->
     <nav class="landing-nav" id="landingNav">
         <div class="nav-container">
-            <a href="{{ route('home') }}" class="nav-back">
-                <i class="bi bi-arrow-left"></i>
-                <span>{{ __('Retour') }}</span>
-            </a>
             <a href="/" class="nav-brand">
                 <div class="nav-logo">
                     <svg viewBox="0 0 40 40" fill="none"><path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/><path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/></svg>
