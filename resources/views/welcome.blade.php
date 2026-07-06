@@ -100,14 +100,16 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 35%, #1d4ed8 65%, #0891b2 100%);
+            background: var(--gray-50);
+            color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
         }
 
         .theme-dark body {
-            background: linear-gradient(135deg, #030712 0%, #0a1628 35%, #0f172a 65%, #0c1220 100%);
+            background: var(--gray-50);
+            color: var(--text-primary);
         }
 
         .bg-particle {
@@ -319,21 +321,19 @@
         }
 
         .auth-container {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
             border-radius: var(--radius-xl);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             transition: box-shadow 0.3s ease;
             width: 100%;
         }
 
         .theme-dark .auth-container {
-            background: rgba(15, 23, 42, 0.85);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            background: var(--surface);
+            border-color: var(--surface-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .auth-container:hover {
@@ -342,12 +342,12 @@
 
         .auth-tabs {
             display: flex;
-            background: rgba(0, 0, 0, 0.06);
+            background: var(--gray-100);
             padding: 6px;
         }
 
         .theme-dark .auth-tabs {
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--gray-200);
         }
 
         .auth-tab {
@@ -549,36 +549,33 @@
             align-items: center;
             gap: 8px;
             padding: 10px 18px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
             border-radius: 100px;
             font-size: 13px;
             font-weight: 700;
-            color: #1a1a2e;
+            color: var(--text-primary);
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .back-btn:hover {
-            background: #ffffff;
             color: var(--primary);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
         }
 
         .theme-dark .back-btn {
-            background: rgba(20, 25, 40, 0.85);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+            background: var(--surface);
+            border-color: var(--surface-border);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .theme-dark .back-btn:hover {
-            background: rgba(30, 35, 50, 0.95);
             color: var(--primary);
+            border-color: var(--primary);
         }
 
         .theme-dark .bg-particle {
@@ -1531,58 +1528,61 @@
 
         <!-- Animated Background -->
     <div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;">
-        <!-- SVG Grid with glowing lines -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.12;">
+        <!-- Subtle blue gradient overlay (matching landing page) -->
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(6,182,212,0.05) 50%,rgba(59,130,246,0.08));"></div>
+        <div class="theme-dark" style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(6,182,212,0.08) 50%,rgba(59,130,246,0.12));display:none;"></div>
+        <!-- SVG Grid with animated glowing lines (matching landing page opacity) -->
+        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.08;">
             <defs>
-                <pattern id="connect-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/></pattern>
-                <pattern id="connect-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/></pattern>
+                <pattern id="connect-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="#2563EB" stroke-width="0.5"/></pattern>
+                <pattern id="connect-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="#2563EB" stroke-width="1"/></pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#connect-grid)"/>
             <rect width="100%" height="100%" fill="url(#connect-grid-lg)"/>
             <!-- Vertical glow lines -->
-            <line x1="20%" y1="-10%" x2="20%" y2="110%" stroke="#4da6ff" stroke-width="2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.6;0.6;0" dur="6s" repeatCount="indefinite"/>
+            <line x1="20%" y1="-10%" x2="20%" y2="110%" stroke="#2563EB" stroke-width="2" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="6s" repeatCount="indefinite"/>
                 <animate attributeName="y1" values="-10%;110%" dur="6s" repeatCount="indefinite"/>
                 <animate attributeName="y2" values="0%;120%" dur="6s" repeatCount="indefinite"/>
             </line>
-            <line x1="50%" y1="-10%" x2="50%" y2="110%" stroke="#38bdf8" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="8s" repeatCount="indefinite" begin="2s"/>
+            <line x1="50%" y1="-10%" x2="50%" y2="110%" stroke="#3B82F6" stroke-width="1.5" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="8s" repeatCount="indefinite" begin="2s"/>
                 <animate attributeName="y1" values="-10%;110%" dur="8s" repeatCount="indefinite" begin="2s"/>
                 <animate attributeName="y2" values="0%;120%" dur="8s" repeatCount="indefinite" begin="2s"/>
             </line>
-            <line x1="80%" y1="-10%" x2="80%" y2="110%" stroke="#4da6ff" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="9s" repeatCount="indefinite" begin="4s"/>
+            <line x1="80%" y1="-10%" x2="80%" y2="110%" stroke="#2563EB" stroke-width="1.2" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="9s" repeatCount="indefinite" begin="4s"/>
                 <animate attributeName="y1" values="110%;-10%" dur="9s" repeatCount="indefinite" begin="4s"/>
                 <animate attributeName="y2" values="120%;0%" dur="9s" repeatCount="indefinite" begin="4s"/>
             </line>
             <!-- Horizontal glow lines -->
-            <line x1="-10%" y1="30%" x2="110%" y2="30%" stroke="#4da6ff" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="7s" repeatCount="indefinite" begin="1s"/>
+            <line x1="-10%" y1="30%" x2="110%" y2="30%" stroke="#2563EB" stroke-width="1.5" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="7s" repeatCount="indefinite" begin="1s"/>
                 <animate attributeName="x1" values="-10%;110%" dur="7s" repeatCount="indefinite" begin="1s"/>
                 <animate attributeName="x2" values="0%;120%" dur="7s" repeatCount="indefinite" begin="1s"/>
             </line>
-            <line x1="-10%" y1="70%" x2="110%" y2="70%" stroke="#38bdf8" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="10s" repeatCount="indefinite" begin="5s"/>
+            <line x1="-10%" y1="70%" x2="110%" y2="70%" stroke="#3B82F6" stroke-width="1.2" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="10s" repeatCount="indefinite" begin="5s"/>
                 <animate attributeName="x1" values="110%;-10%" dur="10s" repeatCount="indefinite" begin="5s"/>
                 <animate attributeName="x2" values="120%;0%" dur="10s" repeatCount="indefinite" begin="5s"/>
             </line>
             <!-- Curve-following glow dot -->
-            <path id="c-curve1" d="M0,40% Q25%,35% 50%,42% T100%,38%" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-            <circle r="8" fill="#4da6ff" opacity="0"><animateMotion dur="8s" repeatCount="indefinite" rotate="auto"><mpath href="#c-curve1"/></animateMotion><animate attributeName="opacity" values="0;0.6;0.6;0" dur="8s" repeatCount="indefinite"/></circle>
+            <path id="c-curve1" d="M0,40% Q25%,35% 50%,42% T100%,38%" fill="none" stroke="#2563EB" stroke-width="0.8" opacity="0.2"/>
+            <circle r="8" fill="#2563EB" opacity="0"><animateMotion dur="8s" repeatCount="indefinite" rotate="auto"><mpath href="#c-curve1"/></animateMotion><animate attributeName="opacity" values="0;0.5;0.5;0" dur="8s" repeatCount="indefinite"/></circle>
             <!-- Pulsing dots -->
-            <circle cx="15%" cy="20%" r="3" fill="#4da6ff"><animate attributeName="opacity" values="0.1;0.5;0.1" dur="5s" repeatCount="indefinite"/></circle>
-            <circle cx="85%" cy="15%" r="3.5" fill="#38bdf8"><animate attributeName="opacity" values="0.08;0.4;0.08" dur="7s" repeatCount="indefinite" begin="1.5s"/></circle>
-            <circle cx="70%" cy="80%" r="2.5" fill="#4da6ff"><animate attributeName="opacity" values="0.1;0.45;0.1" dur="6s" repeatCount="indefinite" begin="3s"/></circle>
-            <circle cx="30%" cy="85%" r="2" fill="#38bdf8"><animate attributeName="opacity" values="0.05;0.35;0.05" dur="8s" repeatCount="indefinite" begin="2s"/></circle>
+            <circle cx="15%" cy="20%" r="3" fill="#2563EB"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="5s" repeatCount="indefinite"/></circle>
+            <circle cx="85%" cy="15%" r="3.5" fill="#3B82F6"><animate attributeName="opacity" values="0.08;0.35;0.08" dur="7s" repeatCount="indefinite" begin="1.5s"/></circle>
+            <circle cx="70%" cy="80%" r="2.5" fill="#2563EB"><animate attributeName="opacity" values="0.1;0.38;0.1" dur="6s" repeatCount="indefinite" begin="3s"/></circle>
+            <circle cx="30%" cy="85%" r="2" fill="#3B82F6"><animate attributeName="opacity" values="0.05;0.3;0.05" dur="8s" repeatCount="indefinite" begin="2s"/></circle>
         </svg>
-        <!-- Decorative blobs -->
-        <div style="position:absolute;top:-120px;right:-120px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(77,166,255,0.12) 0%,transparent 70%);"></div>
-        <div style="position:absolute;bottom:-80px;left:-80px;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,0.08) 0%,transparent 70%);"></div>
-        <div style="position:absolute;top:40%;left:60%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(77,166,255,0.06) 0%,transparent 70%);"></div>
-        <!-- Floating particles -->
-        <div style="position:absolute;width:200px;height:200px;top:10%;left:5%;border-radius:50%;background:rgba(255,255,255,0.04);animation:float 18s ease-in-out infinite;"></div>
-        <div style="position:absolute;width:150px;height:150px;bottom:15%;right:10%;border-radius:50%;background:rgba(255,255,255,0.03);animation:float 22s ease-in-out infinite;animation-delay:-8s;"></div>
-        <div style="position:absolute;width:100px;height:100px;top:60%;left:80%;border-radius:50%;background:rgba(255,255,255,0.04);animation:float 15s ease-in-out infinite;animation-delay:-4s;"></div>
+        <!-- Decorative blobs (matching landing page) -->
+        <div style="position:absolute;top:-128px;right:-128px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.08) 0%,transparent 70%);"></div>
+        <div style="position:absolute;bottom:-64px;left:0;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.05) 0%,transparent 70%);"></div>
+        <!-- Floating particles (matching landing page) -->
+        <div style="position:absolute;width:288px;height:288px;top:25%;left:-144px;border-radius:50%;background:rgba(37,99,235,0.08);animation:float 6s ease-in-out infinite;"></div>
+        <div style="position:absolute;width:384px;height:384px;top:-96px;right:25%;border-radius:50%;background:rgba(59,130,246,0.06);animation:float 6s ease-in-out infinite;animation-delay:-3s;"></div>
+        <div style="position:absolute;width:224px;height:224px;bottom:25%;right:33%;border-radius:50%;background:rgba(37,99,235,0.05);animation:float 6s ease-in-out infinite;"></div>
+        <div style="position:absolute;width:320px;height:320px;bottom:0;left:33%;border-radius:50%;background:rgba(59,130,246,0.04);animation:float 6s ease-in-out infinite;animation-delay:-3s;"></div>
     </div>
 
     <div class="welcome-container">
