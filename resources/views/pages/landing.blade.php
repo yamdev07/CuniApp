@@ -380,6 +380,11 @@
             <div class="nav-links">
                 <a href="#features" class="nav-link">{{ __('Fonctionnalités') }}</a>
                 <a href="#pricing" class="nav-link">{{ __('Tarifs') }}</a>
+                <a href="{{ route('guide') }}" class="nav-link" style="position:relative;">
+                    <i class="bi bi-book-half" style="font-size:14px;"></i>
+                    {{ __('Guide') }}
+                    <span style="position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--accent-green);border-radius:50%;box-shadow:0 0 6px var(--accent-green),0 0 12px rgba(16,185,129,0.4);animation:pulse 2s infinite;"></span>
+                </a>
             </div>
             <div class="nav-actions">
                 <a href="{{ route('connect') }}" class="btn-nav-login">{{ __('Connexion') }}</a>
