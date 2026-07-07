@@ -193,69 +193,6 @@
         .no-results { text-align:center; padding:60px 20px; color:var(--text-tertiary); }
         .no-results i { font-size:48px; margin-bottom:16px; display:block; opacity:0.4; }
 
-        /* Footer */
-        .guide-footer {
-            background:var(--surface-alt); border-top:1px solid var(--surface-border);
-            margin-left:var(--sidebar-w);
-        }
-        .guide-footer-inner {
-            max-width:1280px; margin:0 auto; padding:40px 24px 24px;
-        }
-        .guide-footer-grid {
-            display:grid; grid-template-columns:1.5fr 1fr 1fr 1.5fr; gap:40px; margin-bottom:32px;
-        }
-        .guide-footer-brand { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
-        .guide-footer-logo {
-            width:32px; height:32px; background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-            border-radius:var(--radius); display:flex; align-items:center; justify-content:center;
-        }
-        .guide-footer-logo svg { width:18px; height:18px; }
-        .guide-footer-brand-text { font-size:16px; font-weight:700; color:var(--text-primary); }
-        .guide-footer-brand-text span { color:var(--primary); }
-        .guide-footer-tagline { font-size:13px; color:var(--text-secondary); line-height:1.6; }
-        .guide-footer h4 {
-            font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:12px;
-            display:flex; align-items:center; gap:6px;
-        }
-        .guide-footer h4 i { color:var(--primary); font-size:14px; }
-        .guide-footer-links { list-style:none; padding:0; margin:0; }
-        .guide-footer-links li { margin-bottom:6px; }
-        .guide-footer-links a {
-            font-size:13px; color:var(--text-secondary); text-decoration:none;
-            display:flex; align-items:center; gap:6px; transition:color 0.2s;
-        }
-        .guide-footer-links a:hover { color:var(--primary); }
-        .guide-footer-links a i { font-size:10px; color:var(--text-tertiary); }
-        .guide-footer-contact { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
-        .guide-footer-contact i { color:var(--primary); font-size:14px; margin-top:2px; flex-shrink:0; }
-        .guide-footer-contact strong { display:block; font-size:12px; color:var(--text-primary); margin-bottom:1px; }
-        .guide-footer-contact span, .guide-footer-contact a {
-            font-size:12px; color:var(--text-secondary); text-decoration:none;
-        }
-        .guide-footer-contact a:hover { color:var(--primary); }
-        .guide-footer-bottom {
-            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
-            padding:16px 0; border-top:1px solid var(--surface-border);
-        }
-        .guide-footer-bottom p { font-size:12px; color:var(--text-tertiary); }
-        .guide-footer-bottom a { color:var(--primary); text-decoration:none; font-weight:500; }
-        .guide-footer-legal { display:flex; gap:16px; }
-        .guide-footer-legal a {
-            font-size:12px; color:var(--text-tertiary); text-decoration:none;
-            display:flex; align-items:center; gap:4px; transition:color 0.2s;
-        }
-        .guide-footer-legal a:hover { color:var(--primary); }
-        .guide-footer-legal a i { font-size:13px; }
-        @media(max-width:1024px) {
-            .guide-footer { margin-left:0; }
-            .guide-footer-grid { grid-template-columns:1fr 1fr; }
-        }
-        @media(max-width:640px) {
-            .guide-footer-grid { grid-template-columns:1fr; gap:24px; }
-            .guide-footer-bottom { flex-direction:column; text-align:center; }
-            .guide-footer-legal { justify-content:center; flex-wrap:wrap; }
-        }
-
         /* Back to top */
         .back-to-top {
             position:fixed; bottom:30px; right:30px; width:44px; height:44px; border-radius:50%;
@@ -996,59 +933,8 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="guide-footer">
-        <div class="guide-footer-inner">
-            <div class="guide-footer-grid">
-                <div>
-                    <div class="guide-footer-brand">
-                        <div class="guide-footer-logo">
-                            <svg viewBox="0 0 40 40" fill="none"><path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/><path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/></svg>
-                        </div>
-                        <div class="guide-footer-brand-text">CuniApp <span>{{ __('Élevage') }}</span></div>
-                    </div>
-                    <p class="guide-footer-tagline">{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}</p>
-                </div>
-                <div>
-                    <h4><i class="bi bi-compass"></i> {{ __('Navigation') }}</h4>
-                    <ul class="guide-footer-links">
-                        <li><a href="{{ route('home') }}#features"><i class="bi bi-chevron-right"></i> {{ __('Fonctionnalités') }}</a></li>
-                        <li><a href="{{ route('home') }}#pricing"><i class="bi bi-chevron-right"></i> {{ __('Tarifs') }}</a></li>
-                        <li><a href="{{ route('connect') }}"><i class="bi bi-chevron-right"></i> {{ __('Connexion') }}</a></li>
-                        <li><a href="{{ route('guide') }}"><i class="bi bi-chevron-right"></i> {{ __('Guide') }}</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4><i class="bi bi-book"></i> {{ __('Guide') }}</h4>
-                    <ul class="guide-footer-links">
-                        <li><a href="#introduction"><i class="bi bi-chevron-right"></i> {{ __('Introduction') }}</a></li>
-                        <li><a href="#getting-started"><i class="bi bi-chevron-right"></i> {{ __('Premiers pas') }}</a></li>
-                        <li><a href="#dashboard"><i class="bi bi-chevron-right"></i> {{ __('Tableau de bord') }}</a></li>
-                        <li><a href="#subscription"><i class="bi bi-chevron-right"></i> {{ __('Abonnement') }}</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4><i class="bi bi-envelope"></i> {{ __('Contact') }}</h4>
-                    <div class="guide-footer-contact">
-                        <i class="bi bi-whatsapp"></i>
-                        <div><strong>WhatsApp</strong><a href="https://wa.me/22901524152" target="_blank">+229 01 52 41 52 41</a></div>
-                    </div>
-                    <div class="guide-footer-contact">
-                        <i class="bi bi-envelope-fill"></i>
-                        <div><strong>Email</strong><a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="guide-footer-bottom">
-                <p>&copy; {{ date('Y') }} <a href="{{ route('home') }}">CuniApp {{ __('Élevage') }}</a>. {{ __('Tous droits réservés.') }}</p>
-                <div class="guide-footer-legal">
-                    <a href="{{ route('privacy') }}"><i class="bi bi-shield-check"></i> {{ __('Confidentialité') }}</a>
-                    <a href="{{ route('terms') }}"><i class="bi bi-file-text"></i> {{ __('Conditions') }}</a>
-                    <a href="{{ route('home') }}"><i class="bi bi-arrow-left"></i> {{ __('Retour à l\'accueil') }}</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer (full width, outside guide layout) -->
+    @include('components.public-footer')
 
     <!-- Back to Top -->
     <button id="backToTop" class="back-to-top" title="{{ __('Retour en haut') }}"><i class="bi bi-arrow-up-short"></i></button>
