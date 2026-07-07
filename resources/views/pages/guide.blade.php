@@ -32,7 +32,7 @@
             --gray-600: #A0AEC0; --gray-700: #CBD5E0; --gray-800: #E2E8F0; --gray-900: #F7FAFC;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x:hidden; }
         body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--gray-50); color:var(--text-primary); line-height:1.6; overflow-x:hidden; }
         .theme-dark body { background:var(--gray-50); color:var(--text-primary); }
 
@@ -100,6 +100,11 @@
             background:var(--surface); position:fixed; top:64px; left:0; bottom:0;
             overflow-y:auto; padding:24px 0; transition:transform 0.3s ease; z-index:50;
         }
+
+        /* Main Content + Footer wrapper */
+        .guide-body {
+            flex:1; min-width:0; margin-left:var(--sidebar-w);
+        }
         .sidebar-section { margin-bottom:8px; }
         .sidebar-section-title {
             font-size:11px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;
@@ -120,8 +125,7 @@
 
         /* Main Content */
         .guide-main {
-            flex:1; min-width:0; padding:40px 48px 80px; margin-left:var(--sidebar-w);
-            max-width:calc(100% - var(--sidebar-w));
+            flex:1; min-width:0; padding:40px 48px 80px;
         }
         .guide-hero {
             text-align:center; padding:48px 0 40px; border-bottom:1px solid var(--surface-border); margin-bottom:40px;
@@ -220,7 +224,8 @@
             }
             .guide-sidebar.open { transform:translateX(0); }
             .mobile-menu-btn { display:block; }
-            .guide-main { padding:24px 20px 60px; margin-left:0; max-width:100%; }
+            .guide-body { margin-left:0; }
+            .guide-main { padding:24px 20px 60px; }
             .guide-hero h1 { font-size:28px; }
             .search-kbd { display:none; }
         }
@@ -304,6 +309,8 @@
             </div>
         </aside>
 
+        <!-- Body (main content + footer) -->
+        <div class="guide-body">
         <!-- Main Content -->
         <main class="guide-main" id="guideContent">
             <!-- Hero -->
@@ -931,11 +938,10 @@
             </section>
 
         </main>
-    </div>
 
-    <!-- Footer (full width, outside guide layout, on top of sidebar) -->
-    <div style="position:relative;z-index:60;">
+        <!-- Footer (inside body wrapper, next to sidebar) -->
         @include('components.public-footer')
+        </div> <!-- end guide-body -->
     </div>
 
     <!-- Back to Top -->
