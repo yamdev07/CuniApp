@@ -557,13 +557,22 @@
 
         // Theme toggle
         const savedTheme = localStorage.getItem('cuniapp_theme') || 'system';
+        function setTheme(theme) {
+            localStorage.setItem('cuniapp_theme', theme);
+            applyTheme(theme);
+        }
         function applyTheme(theme) {
             const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             document.documentElement.classList.toggle('theme-dark', isDark);
             document.querySelectorAll('#themeToggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+            document.querySelectorAll('.footer-theme-btn').forEach(b => {
+                const isActive = b.dataset.theme === theme;
+                b.style.background = isActive ? 'var(--primary)' : 'transparent';
+                b.style.color = isActive ? 'white' : 'var(--text-tertiary)';
+            });
         }
         applyTheme(savedTheme);
-        document.querySelectorAll('#themeToggle .toggle-btn').forEach(btn => {
+        document.querySelectorAll('#themeToggle .toggle-btn, .footer-theme-btn').forEach(btn => {
             btn.addEventListener('click', () => { const t = btn.dataset.theme; localStorage.setItem('cuniapp_theme', t); applyTheme(t); });
         });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme(localStorage.getItem('cuniapp_theme') || 'system'));

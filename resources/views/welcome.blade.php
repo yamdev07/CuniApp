@@ -582,6 +582,29 @@
             background: rgba(77, 166, 255, 0.06);
         }
 
+        .conn-bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(6, 182, 212, 0.05) 50%, rgba(59, 130, 246, 0.08));
+        }
+
+        .theme-dark .conn-bg-gradient {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(6, 182, 212, 0.08) 50%, rgba(59, 130, 246, 0.12));
+        }
+
+        .conn-hero-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .theme-dark .conn-hero-svg {
+            opacity: 0.14;
+        }
+
         .validation-message {
             display: flex;
             align-items: center;
@@ -1528,10 +1551,10 @@
 
         <!-- Animated Background (exact copy of landing page hero background) -->
     <div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;">
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(6,182,212,0.05) 50%,rgba(59,130,246,0.08));"></div>
+        <div class="conn-bg-gradient"></div>
 
         <!-- Animated SVG Grid with Glowing Lines (identical to landing page) -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.08;pointer-events:none;mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);">
+        <svg class="conn-hero-svg" style="mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);">
             <defs>
                 <pattern id="conn-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="var(--primary)" stroke-width="0.5"/></pattern>
                 <pattern id="conn-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="var(--primary)" stroke-width="1"/></pattern>
