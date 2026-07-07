@@ -33,7 +33,7 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior: smooth; overflow-x:hidden; }
-        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--gray-50); color:var(--text-primary); line-height:1.6; overflow-x:hidden; }
+        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--gray-50); color:var(--text-primary); line-height:1.6; overflow-x:hidden; width:100%; }
         .theme-dark body { background:var(--gray-50); color:var(--text-primary); }
 
         /* Top Bar */
@@ -92,6 +92,18 @@
         /* Layout */
         .guide-layout {
             display:flex; min-height:calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .guide-sidebar {
+            width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--surface-border);
+            background:var(--surface); position:sticky; top:64px; height:calc(100vh - 64px);
+            overflow-y:auto; padding:24px 0; transition:transform 0.3s ease; z-index:50;
+        }
+
+        /* Main Content */
+        .guide-main {
+            flex:1; min-width:0; padding:40px 48px 80px;
         }
 
         /* Sidebar */
@@ -219,12 +231,11 @@
         @media(max-width:1024px) {
             .guide-sidebar {
                 position:fixed; top:64px; left:0; z-index:201;
-                transform:translateX(-100%);
+                transform:translateX(-100%); height:auto; bottom:0;
                 box-shadow:var(--shadow-lg);
             }
             .guide-sidebar.open { transform:translateX(0); }
             .mobile-menu-btn { display:block; }
-            .guide-body { margin-left:0; }
             .guide-main { padding:24px 20px 60px; }
             .guide-hero h1 { font-size:28px; }
             .search-kbd { display:none; }
@@ -309,8 +320,6 @@
             </div>
         </aside>
 
-        <!-- Body (main content + footer) -->
-        <div class="guide-body">
         <!-- Main Content -->
         <main class="guide-main" id="guideContent">
             <!-- Hero -->
@@ -938,11 +947,10 @@
             </section>
 
         </main>
-
-        <!-- Footer (inside body wrapper, next to sidebar) -->
-        @include('components.public-footer')
-        </div> <!-- end guide-body -->
     </div>
+
+    <!-- Footer (full width, below sidebar + content) -->
+    @include('components.public-footer')
 
     <!-- Back to Top -->
     <button id="backToTop" class="back-to-top" title="{{ __('Retour en haut') }}"><i class="bi bi-arrow-up-short"></i></button>
