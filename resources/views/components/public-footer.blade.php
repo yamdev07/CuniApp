@@ -1,7 +1,29 @@
-{{-- resources/views/components/public-footer.blade.php --}}
-<footer style="background:var(--surface-alt);border-top:1px solid var(--surface-border);position:relative;z-index:10;">
+<style>
+    .footer-container {
+        container-type: inline-size;
+        container-name: footer-container;
+    }
+    .footer-grid-container {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+        gap: 40px;
+    }
+    @container footer-container (max-width: 960px) {
+        .footer-grid-container {
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+    }
+    @container footer-container (max-width: 600px) {
+        .footer-grid-container {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+</style>
+<footer class="footer-container" style="background:var(--surface-alt);border-top:1px solid var(--surface-border);position:relative;z-index:10;">
     <div style="max-width:1280px;margin:0 auto;padding:48px 24px;">
-        <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1.5fr;gap:40px;">
+        <div class="footer-grid-container">
             <div>
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
                     <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;">

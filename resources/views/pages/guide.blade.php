@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="overflow-x:hidden;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,19 +31,19 @@
             --gray-200: #1A2335; --gray-300: #25324A; --gray-400: #4A5568; --gray-500: #718096;
             --gray-600: #A0AEC0; --gray-700: #CBD5E0; --gray-800: #E2E8F0; --gray-900: #F7FAFC;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior: smooth; overflow-x:hidden; }
-        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--gray-50); color:var(--text-primary); line-height:1.6; overflow-x:hidden; width:100%; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; overflow-x:hidden; }
+        body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--gray-50); color:var(--text-primary); line-height:1.6; padding-top:64px; }
         .theme-dark body { background:var(--gray-50); color:var(--text-primary); }
 
         /* Top Bar */
         .guide-topbar {
-            position:sticky; top:0; z-index:100;
+            position:fixed; top:0; left:0; right:0; z-index:100; height:64px;
             background:var(--surface); border-bottom:1px solid var(--surface-border);
             backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
         }
         .topbar-inner {
-            max-width:1400px; margin:0 auto; padding:0 24px; height:64px;
+            max-width:100%; margin:0 auto; padding:0 24px; height:64px;
             display:flex; align-items:center; justify-content:space-between; gap:20px;
         }
         .topbar-brand { display:flex; align-items:center; gap:12px; text-decoration:none; flex-shrink:0; }
@@ -91,32 +91,36 @@
 
         /* Layout */
         .guide-layout {
-            display:flex; min-height:calc(100vh - 64px);
+            box-sizing:border-box;
+            width:100%;
+            display:block;
+            min-height:calc(100vh - 64px);
+            padding-left:var(--sidebar-w);
         }
 
         /* Sidebar */
         .guide-sidebar {
-            width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--surface-border);
-            background:var(--surface); position:sticky; top:64px; height:calc(100vh - 64px);
-            overflow-y:auto; padding:24px 0; transition:transform 0.3s ease; z-index:50;
-        }
-
-        /* Main Content */
-        .guide-main {
-            flex:1; min-width:0; padding:40px 48px 80px;
-        }
-
-        /* Sidebar */
-        .guide-sidebar {
-            width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--surface-border);
-            background:var(--surface); position:fixed; top:64px; left:0; bottom:0;
-            overflow-y:auto; padding:24px 0; transition:transform 0.3s ease; z-index:50;
+            width:var(--sidebar-w);
+            border-right:1px solid var(--surface-border);
+            background:var(--surface);
+            position:fixed; top:64px; left:0; bottom:0;
+            overflow-x:hidden; overflow-y:auto;
+            padding:24px 0;
+            transition:transform 0.3s ease;
+            z-index:50;
         }
 
         /* Main Content + Footer wrapper */
         .guide-body {
-            flex:1; min-width:0; margin-left:var(--sidebar-w);
+            width:100%;
+            box-sizing:border-box;
         }
+
+        /* Main Content */
+        .guide-main {
+            padding:40px 48px 80px;
+        }
+
         .sidebar-section { margin-bottom:8px; }
         .sidebar-section-title {
             font-size:11px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;
@@ -133,11 +137,6 @@
         .sidebar-badge {
             font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
             background:rgba(16,185,129,0.12); color:var(--accent-green); margin-left:auto;
-        }
-
-        /* Main Content */
-        .guide-main {
-            flex:1; min-width:0; padding:40px 48px 80px;
         }
         .guide-hero {
             text-align:center; padding:48px 0 40px; border-bottom:1px solid var(--surface-border); margin-bottom:40px;
@@ -236,12 +235,16 @@
             }
             .guide-sidebar.open { transform:translateX(0); }
             .mobile-menu-btn { display:block; }
+            .guide-layout { padding-left:0; }
             .guide-main { padding:24px 20px 60px; }
             .guide-hero h1 { font-size:28px; }
             .search-kbd { display:none; }
         }
-        @media(max-width:640px) {
+        @media(max-width:768px) {
+            .topbar-link { display:none; }
             .topbar-brand-text { display:none; }
+        }
+        @media(max-width:640px) {
             .guide-hero h1 { font-size:24px; }
             .guide-hero p { font-size:14px; }
         }
@@ -320,8 +323,10 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="guide-main" id="guideContent">
+        <!-- Body (main content + footer) -->
+        <div class="guide-body">
+            <!-- Main Content -->
+            <main class="guide-main" id="guideContent">
             <!-- Hero -->
             <div class="guide-hero">
                 <div class="guide-hero-badge"><i class="bi bi-book-half"></i> {{ __('Documentation Officielle') }}</div>
@@ -947,10 +952,11 @@
             </section>
 
         </main>
-    </div>
 
-    <!-- Footer (full width, below sidebar + content) -->
-    @include('components.public-footer')
+        <!-- Footer (inside body wrapper, next to sidebar) -->
+        @include('components.public-footer')
+        </div> <!-- end guide-body -->
+    </div>
 
     <!-- Back to Top -->
     <button id="backToTop" class="back-to-top" title="{{ __('Retour en haut') }}"><i class="bi bi-arrow-up-short"></i></button>
