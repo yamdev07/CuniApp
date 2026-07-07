@@ -91,14 +91,14 @@
 
         /* Layout */
         .guide-layout {
-            display:flex; max-width:1400px; margin:0 auto; min-height:calc(100vh - 64px);
+            display:flex; min-height:calc(100vh - 64px);
         }
 
         /* Sidebar */
         .guide-sidebar {
             width:var(--sidebar-w); flex-shrink:0; border-right:1px solid var(--surface-border);
-            background:var(--surface); position:sticky; top:64px; height:calc(100vh - 64px);
-            overflow-y:auto; padding:24px 0; transition:transform 0.3s ease;
+            background:var(--surface); position:fixed; top:64px; left:0; bottom:0;
+            overflow-y:auto; padding:24px 0; transition:transform 0.3s ease; z-index:50;
         }
         .sidebar-section { margin-bottom:8px; }
         .sidebar-section-title {
@@ -120,7 +120,8 @@
 
         /* Main Content */
         .guide-main {
-            flex:1; min-width:0; padding:40px 48px 80px;
+            flex:1; min-width:0; padding:40px 48px 80px; margin-left:var(--sidebar-w);
+            max-width:calc(100% - var(--sidebar-w));
         }
         .guide-hero {
             text-align:center; padding:48px 0 40px; border-bottom:1px solid var(--surface-border); margin-bottom:40px;
@@ -192,6 +193,69 @@
         .no-results { text-align:center; padding:60px 20px; color:var(--text-tertiary); }
         .no-results i { font-size:48px; margin-bottom:16px; display:block; opacity:0.4; }
 
+        /* Footer */
+        .guide-footer {
+            background:var(--surface-alt); border-top:1px solid var(--surface-border);
+            margin-left:var(--sidebar-w);
+        }
+        .guide-footer-inner {
+            max-width:1280px; margin:0 auto; padding:40px 24px 24px;
+        }
+        .guide-footer-grid {
+            display:grid; grid-template-columns:1.5fr 1fr 1fr 1.5fr; gap:40px; margin-bottom:32px;
+        }
+        .guide-footer-brand { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .guide-footer-logo {
+            width:32px; height:32px; background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+            border-radius:var(--radius); display:flex; align-items:center; justify-content:center;
+        }
+        .guide-footer-logo svg { width:18px; height:18px; }
+        .guide-footer-brand-text { font-size:16px; font-weight:700; color:var(--text-primary); }
+        .guide-footer-brand-text span { color:var(--primary); }
+        .guide-footer-tagline { font-size:13px; color:var(--text-secondary); line-height:1.6; }
+        .guide-footer h4 {
+            font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:12px;
+            display:flex; align-items:center; gap:6px;
+        }
+        .guide-footer h4 i { color:var(--primary); font-size:14px; }
+        .guide-footer-links { list-style:none; padding:0; margin:0; }
+        .guide-footer-links li { margin-bottom:6px; }
+        .guide-footer-links a {
+            font-size:13px; color:var(--text-secondary); text-decoration:none;
+            display:flex; align-items:center; gap:6px; transition:color 0.2s;
+        }
+        .guide-footer-links a:hover { color:var(--primary); }
+        .guide-footer-links a i { font-size:10px; color:var(--text-tertiary); }
+        .guide-footer-contact { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+        .guide-footer-contact i { color:var(--primary); font-size:14px; margin-top:2px; flex-shrink:0; }
+        .guide-footer-contact strong { display:block; font-size:12px; color:var(--text-primary); margin-bottom:1px; }
+        .guide-footer-contact span, .guide-footer-contact a {
+            font-size:12px; color:var(--text-secondary); text-decoration:none;
+        }
+        .guide-footer-contact a:hover { color:var(--primary); }
+        .guide-footer-bottom {
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+            padding:16px 0; border-top:1px solid var(--surface-border);
+        }
+        .guide-footer-bottom p { font-size:12px; color:var(--text-tertiary); }
+        .guide-footer-bottom a { color:var(--primary); text-decoration:none; font-weight:500; }
+        .guide-footer-legal { display:flex; gap:16px; }
+        .guide-footer-legal a {
+            font-size:12px; color:var(--text-tertiary); text-decoration:none;
+            display:flex; align-items:center; gap:4px; transition:color 0.2s;
+        }
+        .guide-footer-legal a:hover { color:var(--primary); }
+        .guide-footer-legal a i { font-size:13px; }
+        @media(max-width:1024px) {
+            .guide-footer { margin-left:0; }
+            .guide-footer-grid { grid-template-columns:1fr 1fr; }
+        }
+        @media(max-width:640px) {
+            .guide-footer-grid { grid-template-columns:1fr; gap:24px; }
+            .guide-footer-bottom { flex-direction:column; text-align:center; }
+            .guide-footer-legal { justify-content:center; flex-wrap:wrap; }
+        }
+
         /* Back to top */
         .back-to-top {
             position:fixed; bottom:30px; right:30px; width:44px; height:44px; border-radius:50%;
@@ -214,12 +278,12 @@
         @media(max-width:1024px) {
             .guide-sidebar {
                 position:fixed; top:64px; left:0; z-index:201;
-                transform:translateX(-100%); height:calc(100vh - 64px);
+                transform:translateX(-100%);
                 box-shadow:var(--shadow-lg);
             }
             .guide-sidebar.open { transform:translateX(0); }
             .mobile-menu-btn { display:block; }
-            .guide-main { padding:24px 20px 60px; }
+            .guide-main { padding:24px 20px 60px; margin-left:0; max-width:100%; }
             .guide-hero h1 { font-size:28px; }
             .search-kbd { display:none; }
         }
@@ -514,6 +578,7 @@
                         <li><span class="step-num">•</span> <strong>{{ __('Basculer l\'état') }}</strong> — {{ __('Passez un mâle de "Reproducteur" à "Retiré" (ou inversement) selon son statut dans votre élevage.') }}</li>
                         <li><span class="step-num">•</span> {{ __('Supprimer un mâle (action irréversible).') }}</li>
                     </ul>
+                    <p>{{ __('Filtres disponibles : recherche par nom/code, filtre par état (Actif, Inactif, Malade, Vendu) et par origine (Interne, Achat).') }}</p>
                     <div class="guide-tip">
                         <i class="bi bi-info-circle"></i>
                         <div>{{ __('Les mâles retirés ne seront plus proposés dans les listes déroulantes lors de l\'enregistrement de nouvelles saillies.') }}</div>
@@ -544,6 +609,7 @@
                         <li><span class="step-num">•</span> <strong>{{ __('Historique reproductif') }}</strong> — {{ __('Toutes les saillies, palpations, naissances avec dates et résultats.') }}</li>
                         <li><span class="step-num">•</span> <strong>{{ __('Basculer l\'état') }}</strong> — {{ __('Même fonctionnalité que les mâles pour gérer le statut reproducteur.') }}</li>
                     </ul>
+                    <p>{{ __('Filtres disponibles : recherche par nom/code, filtre par état (Actif, Inactif, Gestante, Allaitante, Vide) et par origine.') }}</p>
                 </div>
             </section>
 
@@ -555,7 +621,14 @@
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-search"></i> {{ __('Vue d\'ensemble du cheptel') }}</h3>
-                    <p>{{ __('La section "Tous les Lapins" vous donne une vue complète de l\'ensemble de votre cheptel, mâles et femelles confondus. Vous pouvez filtrer par type, race, état et recherche par code ou nom.') }}</p>
+                    <p>{{ __('La section "Tous les Lapins" vous donne une vue complète de l\'ensemble de votre cheptel, mâles et femelles confondus.') }}</p>
+                    <p>{{ __('Barre de recherche et filtres avancés :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Recherche') }}</strong> — {{ __('Recherchez par nom, code ou race.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Type') }}</strong> — {{ __('Filtrez par mâles ou femelles.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('État') }}</strong> — {{ __('Filtrez par état : Actif, Inactif, Malade, Vendu, Gestante, Allaitante, Vide.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Origine') }}</strong> — {{ __('Filtrez par origine : Interne (né dans l\'élevage) ou Achat.') }}</li>
+                    </ul>
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-info-circle"></i> {{ __('Détails d\'un lapereau') }}</h3>
@@ -923,6 +996,60 @@
         </main>
     </div>
 
+    <!-- Footer -->
+    <footer class="guide-footer">
+        <div class="guide-footer-inner">
+            <div class="guide-footer-grid">
+                <div>
+                    <div class="guide-footer-brand">
+                        <div class="guide-footer-logo">
+                            <svg viewBox="0 0 40 40" fill="none"><path d="M20 5L35 15V25L20 35L5 25V15L20 5Z" fill="white"/><path d="M20 12L28 17V23L20 28L12 23V17L20 12Z" fill="rgba(255,255,255,0.8)"/></svg>
+                        </div>
+                        <div class="guide-footer-brand-text">CuniApp <span>{{ __('Élevage') }}</span></div>
+                    </div>
+                    <p class="guide-footer-tagline">{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}</p>
+                </div>
+                <div>
+                    <h4><i class="bi bi-compass"></i> {{ __('Navigation') }}</h4>
+                    <ul class="guide-footer-links">
+                        <li><a href="{{ route('home') }}#features"><i class="bi bi-chevron-right"></i> {{ __('Fonctionnalités') }}</a></li>
+                        <li><a href="{{ route('home') }}#pricing"><i class="bi bi-chevron-right"></i> {{ __('Tarifs') }}</a></li>
+                        <li><a href="{{ route('connect') }}"><i class="bi bi-chevron-right"></i> {{ __('Connexion') }}</a></li>
+                        <li><a href="{{ route('guide') }}"><i class="bi bi-chevron-right"></i> {{ __('Guide') }}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4><i class="bi bi-book"></i> {{ __('Guide') }}</h4>
+                    <ul class="guide-footer-links">
+                        <li><a href="#introduction"><i class="bi bi-chevron-right"></i> {{ __('Introduction') }}</a></li>
+                        <li><a href="#getting-started"><i class="bi bi-chevron-right"></i> {{ __('Premiers pas') }}</a></li>
+                        <li><a href="#dashboard"><i class="bi bi-chevron-right"></i> {{ __('Tableau de bord') }}</a></li>
+                        <li><a href="#subscription"><i class="bi bi-chevron-right"></i> {{ __('Abonnement') }}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4><i class="bi bi-envelope"></i> {{ __('Contact') }}</h4>
+                    <div class="guide-footer-contact">
+                        <i class="bi bi-whatsapp"></i>
+                        <div><strong>WhatsApp</strong><a href="https://wa.me/22901524152" target="_blank">+229 01 52 41 52 41</a></div>
+                    </div>
+                    <div class="guide-footer-contact">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div><strong>Email</strong><a href="mailto:contact@anyxtech.com">contact@anyxtech.com</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="guide-footer-bottom">
+                <p>&copy; {{ date('Y') }} <a href="{{ route('home') }}">CuniApp {{ __('Élevage') }}</a>. {{ __('Tous droits réservés.') }}</p>
+                <div class="guide-footer-legal">
+                    <a href="{{ route('privacy') }}"><i class="bi bi-shield-check"></i> {{ __('Confidentialité') }}</a>
+                    <a href="{{ route('terms') }}"><i class="bi bi-file-text"></i> {{ __('Conditions') }}</a>
+                    <a href="{{ route('home') }}"><i class="bi bi-arrow-left"></i> {{ __('Retour à l\'accueil') }}</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <!-- Back to Top -->
     <button id="backToTop" class="back-to-top" title="{{ __('Retour en haut') }}"><i class="bi bi-arrow-up-short"></i></button>
 
@@ -967,7 +1094,7 @@
             if (!hasResults) {
                 const noResults = document.createElement('div');
                 noResults.className = 'no-results';
-                noResults.innerHTML = '<i class="bi bi-search"></i><p style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Aucun résultat trouvé</p><p style="font-size:14px;">Essayez avec d\'autres mots-clés</p>';
+                noResults.innerHTML = '<i class="bi bi-search"></i><p style="font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">{{ __("Aucun résultat trouvé") }}</p><p style="font-size:14px;">{{ __("Essayez avec d\'autres mots-clés") }}</p>';
                 document.getElementById('guideContent').appendChild(noResults);
             }
         });
