@@ -56,6 +56,48 @@
         .topbar-brand-text { font-size:18px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; }
         .topbar-brand-text span { color:var(--primary); }
 
+        /* Search */
+        .search-wrapper {
+            flex:1; max-width:520px; position:relative;
+        }
+        .search-input {
+            width:100%; padding:10px 16px 10px 42px; font-size:14px; font-family:inherit;
+            border:2px solid var(--surface-border); border-radius:var(--radius-lg);
+            background:var(--surface-alt); color:var(--text-primary);
+            transition:all 0.3s ease; outline:none;
+        }
+        .search-input:focus { border-color:var(--primary); background:var(--surface); box-shadow:0 0 0 4px var(--primary-subtle); }
+        .search-input::placeholder { color:var(--text-tertiary); }
+        .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-tertiary); font-size:16px; pointer-events:none; }
+        .search-kbd {
+            position:absolute; right:12px; top:50%; transform:translateY(-50%);
+            font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--text-tertiary);
+            background:var(--surface); border:1px solid var(--surface-border); border-radius:4px;
+            padding:2px 6px; pointer-events:none;
+        }
+
+        .topbar-actions { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+        .topbar-link {
+            font-size:13px; font-weight:500; color:var(--text-secondary); text-decoration:none;
+            padding:8px 14px; border-radius:var(--radius); transition:all 0.2s ease;
+            display:flex; align-items:center; gap:6px;
+        }
+        .topbar-link:hover { color:var(--primary); background:var(--primary-subtle); }
+        .mobile-menu-btn {
+            display:none; background:none; border:none; font-size:22px; color:var(--text-secondary);
+            cursor:pointer; padding:8px; border-radius:var(--radius);
+        }
+        .mobile-menu-btn:hover { background:var(--gray-100); color:var(--primary); }
+
+        /* Layout */
+        .guide-layout {
+            box-sizing:border-box;
+            width:100%;
+            display:block;
+            min-height:calc(100vh - 64px);
+            padding-left:var(--sidebar-w);
+        }
+
         /* Sidebar */
         .guide-sidebar {
             width:var(--sidebar-w);
@@ -281,6 +323,8 @@
             </div>
         </aside>
 
+        <!-- Body (main content + footer) -->
+        <div class="guide-body">
             <!-- Main Content -->
             <main class="guide-main" id="guideContent">
             <!-- Hero -->
@@ -908,6 +952,10 @@
             </section>
 
         </main>
+
+        <!-- Footer (inside body wrapper, next to sidebar) -->
+        @include('components.public-footer')
+        </div> <!-- end guide-body -->
     </div>
 
     <!-- Back to Top -->
@@ -1006,23 +1054,11 @@
 
         // Theme
         const savedTheme = localStorage.getItem('cuniapp_theme') || 'system';
-        function setTheme(theme) {
-            localStorage.setItem('cuniapp_theme', theme);
-            applyTheme(theme);
-        }
         function applyTheme(theme) {
             const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             document.documentElement.classList.toggle('theme-dark', isDark);
-            document.querySelectorAll('.footer-theme-btn').forEach(btn => {
-                const isActive = btn.dataset.theme === theme;
-                btn.style.background = isActive ? 'var(--primary)' : 'transparent';
-                btn.style.color = isActive ? 'white' : 'var(--text-tertiary)';
-            });
         }
         applyTheme(savedTheme);
-        document.querySelectorAll('.footer-theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => { const t = btn.dataset.theme; localStorage.setItem('cuniapp_theme', t); applyTheme(t); });
-        });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             applyTheme(localStorage.getItem('cuniapp_theme') || 'system');
         });
