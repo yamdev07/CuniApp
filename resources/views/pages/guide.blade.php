@@ -470,6 +470,14 @@
                     <h3><i class="bi bi-shield-lock"></i> {{ __('Changement de mot de passe') }}</h3>
                     <p>{{ __('Si l\'administrateur vous a attribué un mot de passe temporaire, vous serez invité à le changer lors de votre première connexion. Le nouveau mot de passe doit contenir au moins 8 caractères.') }}</p>
                 </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-upc-scan"></i> {{ __('Codes uniques') }}</h3>
+                    <p>{{ __('Chaque lapin, mâle ou femelle doit avoir un code unique. Lors de la création, le système vérifie automatiquement que le code n\'est pas déjà utilisé. Si le code existe déjà, un message d\'erreur s\'affiche et vous devez en choisir un autre.') }}</p>
+                    <div class="guide-tip">
+                        <i class="bi bi-lightbulb"></i>
+                        <div><strong>{{ __('Astuce') }}:</strong> {{ __('Utilisez un format de code cohérent (ex: ML-001, FL-001) pour faciliter la recherche et l\'identification.') }}</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Males -->
@@ -486,6 +494,10 @@
                         <li><span class="step-num">3</span> {{ __('Remplissez les informations : code unique, nom, race, date de naissance, couleur, état de santé.') }}</li>
                         <li><span class="step-num">4</span> {{ __('Cliquez sur "Enregistrer" pour ajouter le mâle à votre cheptel.') }}</li>
                     </ol>
+                    <div class="guide-tip">
+                        <i class="bi bi-info-circle"></i>
+                        <div>{{ __('Vous pouvez également ajouter un lapin directement depuis la section "Tous les Lapins" via le bouton "Nouveau lapin".') }}</div>
+                    </div>
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-list-ul"></i> {{ __('Gérer vos mâles') }}</h3>
@@ -493,9 +505,13 @@
                     <ul class="guide-steps">
                         <li><span class="step-num">•</span> {{ __('Consulter les détails d\'un mâle en cliquant sur son nom.') }}</li>
                         <li><span class="step-num">•</span> {{ __('Modifier les informations d\'un mâle existant.') }}</li>
-                        <li><span class="step-num">•</span> {{ __('Basculer l\'état du mâle (actif/inactif) depuis le bouton d\'action.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Basculer l\'état') }}</strong> — {{ __('Passez un mâle de "Reproducteur" à "Retiré" (ou inversement) selon son statut dans votre élevage.') }}</li>
                         <li><span class="step-num">•</span> {{ __('Supprimer un mâle (action irréversible).') }}</li>
                     </ul>
+                    <div class="guide-tip">
+                        <i class="bi bi-info-circle"></i>
+                        <div>{{ __('Les mâles retirés ne seront plus proposés dans les listes déroulantes lors de l\'enregistrement de nouvelles saillies.') }}</div>
+                    </div>
                 </div>
             </section>
 
@@ -516,7 +532,12 @@
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-clipboard2-pulse"></i> {{ __('Suivi reproductif des femelles') }}</h3>
-                    <p>{{ __('Chaque femelle dispose d\'un historique reproductif complet montrant ses saillies, gestations, naissances et performances. Accédez-y en cliquant sur le nom d\'une femelle puis sur l\'onglet "Historique".') }}</p>
+                    <p>{{ __('Chaque femelle dispose d\'un historique reproductif complet montrant ses saillies, gestations, naissances et performances. Accédez-y en cliquant sur le nom d\'une femelle.') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Fiche détaillée') }}</strong> — {{ __('Code, nom, race, date de naissance, couleur, lignée, état.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Historique reproductif') }}</strong> — {{ __('Toutes les saillies, palpations, naissances avec dates et résultats.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Basculer l\'état') }}</strong> — {{ __('Même fonctionnalité que les mâles pour gérer le statut reproducteur.') }}</li>
+                    </ul>
                 </div>
             </section>
 
@@ -561,11 +582,26 @@
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-hand-index"></i> {{ __('Palpation') }}</h3>
-                    <p>{{ __('Après environ 14 jours, vous pouvez enregistrer le résultat de la palpation (vérification de la gestation) directement depuis la liste des saillies. Cliquez sur l\'icône de palpation à côté de la saillie concernée.') }}</p>
+                    <p>{{ __('Après environ 14 jours, vous pouvez enregistrer le résultat de la palpation (vérification de la gestation) directement depuis la liste des saillies ou depuis la page de détail de la saillie.') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">1</span> {{ __('Ouvrez le détail de la saillie concernée.') }}</li>
+                        <li><span class="step-num">2</span> {{ __('Indiquez la date de palpation et le résultat (Positif = Gestante, ou Négatif).') }}</li>
+                        <li><span class="step-num">3</span> {{ __('Si positif, la date de mise bas théorique sera automatiquement calculée (~31 jours après la saillie).') }}</li>
+                    </ul>
                     <div class="guide-tip">
                         <i class="bi bi-lightbulb"></i>
                         <div><strong>{{ __('Conseil') }}:</strong> {{ __('Effectuez la palpation entre le 12ème et le 15ème jour après la saillie pour un résultat fiable.') }}</div>
                     </div>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-clock-history"></i> {{ __('Timeline de reproduction') }}</h3>
+                    <p>{{ __('Chaque saillie dispose d\'une timeline visuelle montrant les étapes de la reproduction :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Saillie réalisée') }}</strong> — {{ __('Date et croisement (femelle × mâle).') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Palpation') }}</strong> — {{ __('Résultat positif ou négatif avec date.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Mise bas prévue') }}</strong> — {{ __('Date théorique calculée automatiquement.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Naissance') }}</strong> — {{ __('Lien vers la mise bas enregistrée si elle a eu lieu.') }}</li>
+                    </ul>
                 </div>
             </section>
 
@@ -617,7 +653,22 @@
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-list-check"></i> {{ __('Suivi des mises bas') }}</h3>
-                    <p>{{ __('La section "Mises Bas" affiche toutes les naissances enregistrées avec leurs détails : femelle, date, nombre de lapereaux, mortalité. Vous pouvez modifier ou supprimer une mise bas depuis cette section.') }}</p>
+                    <p>{{ __('La section "Mises Bas" affiche toutes les naissances enregistrées avec leurs détails. Chaque mise bas contient :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Informations principales') }}</strong> — {{ __('Femelle, date, nb vivants, morts-nés, total.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Date de sevrage') }}</strong> — {{ __('Date prévue ou passée du sevrage, avec compte à rebours.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Poids moyen au sevrage') }}</strong> — {{ __('Poids moyen des lapereaux au moment du sevrage.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-bar-chart"></i> {{ __('Statistiques de la portée') }}</h3>
+                    <p>{{ __('Chaque détail de mise bas affiche des statistiques en temps réel :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Vivants') }}</strong> — {{ __('Nombre de lapereaux vivants.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Morts-nés') }}</strong> — {{ __('Nombre de morts-nés.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Taux de survie') }}</strong> — {{ __('Pourcentage calculé automatiquement.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Jours d\'âge') }}</strong> — {{ __('Âge de la portée en jours depuis la naissance.') }}</li>
+                    </ul>
                 </div>
             </section>
 
@@ -663,13 +714,22 @@
                     <h2>{{ __('Factures') }}</h2>
                 </div>
                 <div class="guide-card" data-searchable>
-                    <h3><i class="bi bi-file-earmark-pdf"></i> {{ __('Gestion des factures') }}</h3>
-                    <p>{{ __('Les factures sont générées automatiquement pour chaque vente. Depuis la section "Mes Factures", vous pouvez :') }}</p>
+                    <h3><i class="bi bi-file-earmark-pdf"></i> {{ __('Détail d\'une facture') }}</h3>
+                    <p>{{ __('La page de détail d\'une facture affiche :') }}</p>
                     <ul class="guide-steps">
-                        <li><span class="step-num">•</span> {{ __('Consulter le détail de chaque facture.') }}</li>
-                        <li><span class="step-num">•</span> {{ __('Télécharger une facture au format PDF.') }}</li>
-                        <li><span class="step-num">•</span> {{ __('Régénérer une facture si nécessaire.') }}</li>
-                        <li><span class="step-num">•</span> {{ __('Envoyer une facture par email au client.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('En-tête') }}</strong> — {{ __('Numéro de facture, date d\'émission, statut (payée/en attente).') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Informations client') }}</strong> — {{ __('Nom, email, nom de la ferme.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Détail des prestations') }}</strong> — {{ __('Lignes de facture avec descriptions et montants.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Récapitulatif') }}</strong> — {{ __('Sous-total, taxes le cas échéant, total.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-gear"></i> {{ __('Actions sur une facture') }}</h3>
+                    <p>{{ __('Depuis le détail d\'une facture, vous pouvez :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Télécharger le PDF') }}</strong> — {{ __('Exportez la facture au format PDF pour impression ou archivage.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Régénérer le PDF') }}</strong> {{ __('— Recréez le fichier PDF si des modifications ont été apportées.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Envoyer par email') }}</strong> — {{ __('Envoyez la facture directement par email au client.') }}</li>
                     </ul>
                 </div>
             </section>
@@ -789,6 +849,14 @@
                     <h3><i class="bi bi-clock-history"></i> {{ __('Historique des paiements') }}</h3>
                     <p>{{ __('La page "Mon Abonnement" affiche l\'historique complet de vos paiements avec le statut (complété, en attente, échoué), la date, le montant et la méthode utilisée. Vous pouvez réessayer un paiement échoué directement depuis cette page.') }}</p>
                 </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-exclamation-triangle"></i> {{ __('Page d\'abonnement requis') }}</h3>
+                    <p>{{ __('Si vous essayez d\'accéder à une fonctionnalité nécessitant un abonnement actif (gestion du cheptel, ventes, etc.) sans abonnement, vous serez redirigé vers une page vous invitant à souscrire. Cette page s\'affiche également si votre abonnement a expiré.') }}</p>
+                    <div class="guide-tip">
+                        <i class="bi bi-lightbulb"></i>
+                        <div><strong>{{ __('Astuce') }}:</strong> {{ __('Vous pouvez quand même consulter votre profil, vos paramètres et vos notifications même sans abonnement actif.') }}</div>
+                    </div>
+                </div>
             </section>
 
             <!-- Firm -->
@@ -808,8 +876,14 @@
                     </ul>
                 </div>
                 <div class="guide-card" data-searchable>
-                    <h3><i class="bi bi-shield-check"></i> {{ __('Permissions') }}</h3>
-                    <p>{{ __('L\'administrateur de la ferme peut activer/désactiver les comptes employés et suivre leur activité. Seul l\'administrateur peut gérer les abonnements et les paramètres de l\'entreprise.') }}</p>
+                    <h3><i class="bi bi-shield-check"></i> {{ __('Permissions et gestion') }}</h3>
+                    <p>{{ __('L\'administrateur de la ferme peut :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Activer/Désactiver') }}</strong> — {{ __('Désactiver temporairement un compte employé sans le supprimer.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Supprimer') }}</strong> — {{ __('Supprimer définitivement un employé (action irréversible).') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Suivi d\'activité') }}</strong> — {{ __('Consultez le graphique d\'activité de chaque employé sur différentes périodes (7j, 30j, 90j).') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Statut en ligne') }}</strong> — {{ __('Voyez qui est actuellement en ligne et la dernière connexion de chaque employé.') }}</li>
+                    </ul>
                 </div>
             </section>
 
