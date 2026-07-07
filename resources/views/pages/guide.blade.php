@@ -265,8 +265,12 @@
     <div class="guide-layout">
         <!-- Sidebar -->
         <aside class="guide-sidebar" id="guideSidebar">
-            <div class="sidebar-section">
-                <div class="sidebar-section-title"><i class="bi bi-rocket-takeoff"></i> {{ __('Pour commencer') }}</div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title"><i class="bi bi-speedometer2"></i> {{ __('Tableau de bord') }}</div>
+                    <a href="#dashboard" class="sidebar-link" data-section="dashboard"><i class="bi bi-speedometer2"></i> {{ __('Vue d\'ensemble') }}</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title"><i class="bi bi-rocket-takeoff"></i> {{ __('Pour commencer') }}</div>
                 <a href="#introduction" class="sidebar-link active" data-section="introduction"><i class="bi bi-info-circle"></i> {{ __('Introduction') }}</a>
                 <a href="#getting-started" class="sidebar-link" data-section="getting-started"><i class="bi bi-play-circle"></i> {{ __('Premiers pas') }}</a>
                 <a href="#account-setup" class="sidebar-link" data-section="account-setup"><i class="bi bi-person-gear"></i> {{ __('Configuration du compte') }}</a>
@@ -308,6 +312,75 @@
                 <p>{{ __('Tout ce que vous devez savoir pour gérer efficacement votre élevage de lapins avec CuniApp.') }}</p>
             </div>
 
+            <!-- Dashboard -->
+            <section class="guide-section" id="dashboard" data-searchable>
+                <div class="guide-section-header">
+                    <div class="guide-section-icon"><i class="bi bi-speedometer2"></i></div>
+                    <h2>{{ __('Tableau de bord') }}</h2>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-graph-up"></i> {{ __('Métriques et indicateurs') }}</h3>
+                    <p>{{ __('Le tableau de bord affiche des cartes de métriques en haut de page avec les compteurs de votre cheptel et les tendances :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> {{ __('Total des lapins avec tendance (hausse/baisse).') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Nombre de mâles et femelles.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Nombre de saillies et portées.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Alertes en attente.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-lightning-charge"></i> {{ __('Actions rapides') }}</h3>
+                    <p>{{ __('La section "Actions Rapides" vous donne un accès direct aux opérations les plus courantes :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> {{ __('Enregistrer une saillie.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Déclarer une naissance.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Enregistrer une vente.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Ajouter un lapin.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-calendar3"></i> {{ __('Calendrier') }}</h3>
+                    <p>{{ __('Le calendrier du tableau de bord affiche les événements importants de votre élevage :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Saillies') }}</strong> — {{ __('Dates de saillies enregistrées.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Naissances') }}</strong> — {{ __('Dates de mises bas prévues ou passées.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Détermination du sexe') }}</strong> — {{ __('Rappel J+10 après naissance pour déterminer le sexe des lapereaux.') }}</li>
+                    </ul>
+                    <div class="guide-tip">
+                        <i class="bi bi-info-circle"></i>
+                        <div>{{ __('Naviguez entre les mois avec les flèches pour voir les événements à venir ou passés.') }}</div>
+                    </div>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-bar-chart-line"></i> {{ __('Graphiques et performances') }}</h3>
+                    <p>{{ __('Le tableau de bord inclut des graphiques pour visualiser :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Ventes annuelles') }}</strong> — {{ __('Évolution du chiffre d\'affaires sur l\'année en cours.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Saillies & Naissances') }}</strong> — {{ __('Comparaison du nombre de saillies et naissances.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Taux de survie') }}</strong> — {{ __('Pourcentage de lapereaux survivants par portée.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-bell"></i> {{ __('Widgets latéraux') }}</h3>
+                    <p>{{ __('La barre latérale du tableau de bord contient :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Derniers lapins') }}</strong> — {{ __('Les mâles et femelles récemment ajoutés.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Dernières ventes') }}</strong> — {{ __('Les ventes les plus récentes avec montant.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Activité récente') }}</strong> — {{ __('Timeline des dernières actions effectuées.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Notifications') }}</strong> — {{ __('Alertes et notifications non lues.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-building"></i> {{ __('Vue entreprise (administrateurs) }}</h3>
+                    <p>{{ __('Si vous êtes administrateur de ferme, le tableau de bord affiche également :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> {{ __('Revenus totaux de l\'entreprise.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Statut de l\'abonnement actuel.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Bouton d\'accès rapide à la gestion de l\'entreprise.') }}</li>
+                    </ul>
+                </div>
+            </section>
+
             <!-- Introduction -->
             <section class="guide-section" id="introduction" data-searchable>
                 <div class="guide-section-header">
@@ -342,7 +415,7 @@
                         <li><span class="step-num">1</span> {{ __('Rendez-vous sur la page d\'accueil et cliquez sur "Commencer".') }}</li>
                         <li><span class="step-num">2</span> {{ __('Remplissez le formulaire d\'inscription avec votre nom, email et mot de passe.') }}</li>
                         <li><span class="step-num">3</span> {{ __('Acceptez les conditions d\'utilisation et cliquez sur "Créer mon compte".') }}</li>
-                        <li><span class="step-num">4</span> {{ __('Vérifiez votre boîte email et entrez le code de vérification reçu.') }}</li>
+                        <li><span class="step-num">4</span> {{ __('Un code de vérification vous sera envoyé par email. Entrez-le dans le formulaire pour activer votre compte.') }}</li>
                         <li><span class="step-num">5</span> {{ __('Configurez votre ferme (nom, description) lors de la première connexion.') }}</li>
                     </ol>
                     <div class="guide-tip">
@@ -351,8 +424,27 @@
                     </div>
                 </div>
                 <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-key"></i> {{ __('Vérification par email') }}</h3>
+                    <p>{{ __('Après l\'inscription, un email contenant un code de vérification vous est envoyé. Ce code est valide pendant un temps limité. Si vous ne l\'avez pas reçu :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> {{ __('Vérifiez votre dossier spam / courriers indésirables.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Cliquez sur "Renvoyer le code" pour en recevoir un nouveau.') }}</li>
+                        <li><span class="step-num">•</span> {{ __('Vous pouvez aussi demander un nouveau lien de vérification depuis la page de connexion.') }}</li>
+                    </ul>
+                </div>
+                <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-google"></i> {{ __('Connexion avec Google') }}</h3>
                     <p>{{ __('Vous pouvez également vous connecter ou vous inscrire via votre compte Google en cliquant sur le bouton "Continuer avec Google" sur la page de connexion. Votre compte sera automatiquement créé avec vos informations Google.') }}</p>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-key"></i> {{ __('Mot de passe oublié') }}</h3>
+                    <p>{{ __('Si vous avez oublié votre mot de passe :') }}</p>
+                    <ol class="guide-steps">
+                        <li><span class="step-num">1</span> {{ __('Cliquez sur "Mot de passe oublié ?" sur la page de connexion.') }}</li>
+                        <li><span class="step-num">2</span> {{ __('Entrez votre adresse email.') }}</li>
+                        <li><span class="step-num">3</span> {{ __('Vous recevrez un lien de réinitialisation par email.') }}</li>
+                        <li><span class="step-num">4</span> {{ __('Cliquez sur le lien et créez un nouveau mot de passe.') }}</li>
+                    </ol>
                 </div>
             </section>
 
@@ -629,6 +721,15 @@
                     <h3><i class="bi bi-trash3"></i> {{ __('Vider le cache') }}</h3>
                     <p>{{ __('Si l\'application semble lente ou affiche des données obsolètes, vous pouvez vider le cache depuis les paramètres. Cela force le rechargement des données depuis le serveur.') }}</p>
                 </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-bell"></i> {{ __('Préférences de notification') }}</h3>
+                    <p>{{ __('L\'onglet "Notifications" des paramètres vous permet de choisir comment recevoir vos alertes :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('Notifications par email') }}</strong> — {{ __('Recevez des alertes par email (palpations, abonnements, etc.).') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Notifications du tableau de bord') }}</strong> — {{ __('Affichage des alertes visuelles dans l\'application.') }}</li>
+                    </ul>
+                    <p>{{ __('Vous pouvez activer ou désactiver chaque type de notification indépendamment.') }}</p>
+                </div>
             </section>
 
             <!-- Notifications -->
@@ -672,11 +773,21 @@
                 </div>
                 <div class="guide-card" data-searchable>
                     <h3><i class="bi bi-arrow-repeat"></i> {{ __('Renouvellement et paiement') }}</h3>
-                    <p>{{ __('Les abonnements payants sont renouvelés automatiquement. Les paiements sont sécurisés via FedaPay et acceptent Mobile Money (MoMo, Moov). Vous pouvez gérer votre abonnement depuis la section "Mon Abonnement".') }}</p>
+                    <p>{{ __('Les abonnements payants sont renouvelés automatiquement. Les paiements sont sécurisés via FedaPay et acceptent les moyens de paiement suivants :') }}</p>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">•</span> <strong>{{ __('MTN MoMo') }}</strong> — {{ __('Mobile Money MTN.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Celtis Cash') }}</strong> — {{ __('Mobile Money Celtis.') }}</li>
+                        <li><span class="step-num">•</span> <strong>{{ __('Moov Pay') }}</strong> — {{ __('Mobile Money Moov.') }}</li>
+                    </ul>
+                    <p>{{ __('Vous pouvez gérer votre abonnement depuis la section "Mon Abonnement".') }}</p>
                     <div class="guide-tip">
                         <i class="bi bi-lightbulb"></i>
                         <div><strong>{{ __('Astuce') }}:</strong> {{ __('Un badge orange s\'affiche sur le lien "Abonnement" si votre abonnement est expiré ou inactif.') }}</div>
                     </div>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-clock-history"></i> {{ __('Historique des paiements') }}</h3>
+                    <p>{{ __('La page "Mon Abonnement" affiche l\'historique complet de vos paiements avec le statut (complété, en attente, échoué), la date, le montant et la méthode utilisée. Vous pouvez réessayer un paiement échoué directement depuis cette page.') }}</p>
                 </div>
             </section>
 
