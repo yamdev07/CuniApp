@@ -51,6 +51,7 @@ class CuniAppSeeder extends Seeder
         $this->seedSubscriptionPlans();
         $this->seedSuperAdmin();
         $this->seedFirmsAndUsers();
+        $this->seedUserActivityTimestamps();
         $this->seedBreedingData();
         $this->seedSales();
         $this->seedNotifications();
@@ -102,6 +103,7 @@ class CuniAppSeeder extends Seeder
             'notifications',
             'pending_payments',
             'firm_audit_logs',
+            'user_daily_activities',
             // Parent tables
             'sales',
             'femelles',
@@ -411,6 +413,112 @@ class CuniAppSeeder extends Seeder
         }
 
         $this->command->info("  ✓ 10 firms created with admins and employees");
+    }
+
+    private function seedUserActivityTimestamps(): void
+    {
+        $this->command->info("🕐 Seeding realistic user activity timestamps...");
+
+        $firmAdmins = User::where('role', 'firm_admin')->get();
+        $employees = User::where('role', 'employee')->get();
+
+        // ── Activity profiles for firm admins (realistic mix) ──────────
+        $adminProfiles = [
+            // 2 firms: admin currently online (within last 2 min)
+            fn() => now()->subSeconds(rand(5, 120)),
+            // 1 firm: admin active within last 10 min
+            fn() => now()->subMinutes(rand(6, 10)),
+            // 2 firms: admin active within last hour
+            fn() => now()->subMinutes(rand(30, 60)),
+            // 1 firm: admin active earlier today (2-6h ago)
+            fn() => now()->subHours(rand(2, 6)),
+            // 1 firm: admin active yesterday
+            fn() => now()->subDay()->subHours(rand(1, 12)),
+            // 1 firm: admin active 3 days ago
+            fn() => now()->subDays(3)->subHours(rand(0, 12)),
+            // 1 firm: admin active 2 weeks ago
+            fn() => now()->subDays(rand(12, 18)),
+            // 1 firm: admin never logged in
+            fn() => null,
+        ];
+
+        shuffle($adminProfiles);
+
+        foreach ($firmAdmins as $idx => $admin) {
+            $lastSeen = $adminProfiles[$idx % count($adminProfiles)]();
+
+            // For online admins, also seed daily activity for today
+            if ($lastSeen && $lastSeen->isToday()) {
+                UserDailyActivity::updateOrCreate(
+                    ['user_id' => $admin->id, 'date' => now()->toDateString()],
+                    ['hits' => rand(10, 80)]
+                );
+            }
+
+            User::where('id', $admin->id)->update([
+                'last_seen_at' => $lastSeen,
+            ]);
+
+            $statusLabel = $lastSeen === null
+                ? 'jamais connecté'
+                : ($lastSeen->isToday() && $lastSeen->diffInMinutes(now()) <= 5
+                    ? '🟢 en ligne maintenant'
+                    : 'il y a ' . $lastSeen->diffForHumans(null, true));
+
+            $this->command->info("  ✓ Admin #{$admin->id} ({$admin->name}): {$statusLabel}");
+        }
+
+        // ── Activity profiles for employees (varied) ───────────────────
+        $employeeProfiles = [
+            // Online now
+            fn() => now()->subSeconds(rand(5, 180)),
+            // Online now (second one)
+            fn() => now()->subSeconds(rand(5, 180)),
+            // Active 20 min ago
+            fn() => now()->subMinutes(rand(15, 25)),
+            // Active 1h ago
+            fn() => now()->subMinutes(rand(40, 80)),
+            // Active today (3-8h ago)
+            fn() => now()->subHours(rand(3, 8)),
+            // Active yesterday
+            fn() => now()->subDay()->subHours(rand(1, 10)),
+            // Active 2-4 days ago
+            fn() => now()->subDays(rand(2, 4)),
+            // Active last week
+            fn() => now()->subDays(rand(7, 10)),
+            // Active 3 weeks ago
+            fn() => now()->subDays(rand(18, 25)),
+            // Never logged in
+            fn() => null,
+        ];
+
+        foreach ($employees as $emp) {
+            $profileFn = $employeeProfiles[array_rand($employeeProfiles)];
+            $lastSeen = $profileFn();
+
+            if ($lastSeen && $lastSeen->isToday()) {
+                UserDailyActivity::updateOrCreate(
+                    ['user_id' => $emp->id, 'date' => now()->toDateString()],
+                    ['hits' => rand(5, 50)]
+                );
+            }
+
+            User::where('id', $emp->id)->update([
+                'last_seen_at' => $lastSeen,
+            ]);
+        }
+
+        $onlineAdmins = User::where('role', 'firm_admin')
+            ->whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subMinutes(5))
+            ->count();
+        $onlineEmps = User::where('role', 'employee')
+            ->whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subMinutes(5))
+            ->count();
+
+        $this->command->info("  ✓ Activity timestamps set for {$firmAdmins->count()} admins + {$employees->count()} employees");
+        $this->command->info("  🟢 Currently online: {$onlineAdmins} admins, {$onlineEmps} employees");
     }
 
     private function seedEmployeeActivity(): void
