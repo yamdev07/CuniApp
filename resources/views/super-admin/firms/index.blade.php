@@ -30,7 +30,7 @@
 <div class="cuni-card" style="margin-bottom: 20px;">
     <div class="card-body" style="padding: 16px;">
         <form method="GET" action="{{ route('super.admin.firms') }}">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
                 <div>
                     <label class="form-label">{{ __('Recherche') }}</label>
                     <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="{{ __("Nom d'entreprise...") }}">
@@ -41,6 +41,22 @@
                         <option value="">{{ __('Tous') }}</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Actif') }}</option>
                         <option value="banned" {{ request('status') === 'banned' ? 'selected' : '' }}>{{ __('Banni') }}</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">{{ __('Activité') }}</label>
+                    <select name="activity" class="form-select">
+                        <option value="">{{ __('Toutes') }}</option>
+                        <option value="online" {{ request('activity') === 'online' ? 'selected' : '' }}>{{ __('En ligne') }}</option>
+                        <option value="recent" {{ request('activity') === 'recent' ? 'selected' : '' }}>{{ __('Actif (24h)') }}</option>
+                        <option value="inactive" {{ request('activity') === 'inactive' ? 'selected' : '' }}>{{ __('Inactif') }}</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">{{ __('Trier par') }}</label>
+                    <select name="sort" class="form-select">
+                        <option value="revenue" {{ request('sort', 'revenue') === 'revenue' ? 'selected' : '' }}>{{ __('Revenus') }}</option>
+                        <option value="activity" {{ request('sort') === 'activity' ? 'selected' : '' }}>{{ __('Dernière activité') }}</option>
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end;">
@@ -72,12 +88,18 @@
                         <th>{{ __('Administrateur') }}</th>
                         <th>{{ __('Abonnement') }}</th>
                         <th>{{ __('Revenus') }}</th>
+                        <th>{{ __('Activité') }}</th>
                         <th>{{ __('Statut') }}</th>
                         <th>{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($firms as $firm)
+                    @php
+                        $admin = $firm->users->first();
+                        $isOnline = $admin && $admin->isOnline();
+                        $lastSeen = $admin?->last_seen_at;
+                    @endphp
                     <tr>
                         <td>
                             <strong>{{ $firm->name }}</strong><br>
@@ -97,6 +119,20 @@
                         </td>
                         <td class="fw-bold" style="color: var(--primary);">
                             {{ number_format($firm->total_revenue ?? 0, 0, ',', ' ') }} FCFA
+                        </td>
+                        <td>
+                            @if($isOnline)
+                                <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: rgba(16, 185, 129, 0.1); color: #10B981; font-size: 12px; font-weight: 600;">
+                                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; animation: pulse-dot 2s infinite;"></span>
+                                    {{ __('En ligne') }}
+                                </span>
+                            @elseif($lastSeen)
+                                <span style="font-size: 12px; color: var(--text-tertiary);">
+                                    <i class="bi bi-clock"></i> {{ $lastSeen->diffForHumans() }}
+                                </span>
+                            @else
+                                <span style="font-size: 12px; color: var(--text-tertiary);">—</span>
+                            @endif
                         </td>
                         <td>
                             @if($firm->status === 'active')
@@ -147,4 +183,11 @@
         @endif
     </div>
 </div>
+
+<style>
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+</style>
 @endsection

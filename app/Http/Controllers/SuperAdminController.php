@@ -115,7 +115,15 @@ class SuperAdminController extends Controller
 
     public function firms(Request $request)
     {
-        $query = Firm::with(['owner', 'activeSubscription']);
+        $query = Firm::with(['owner', 'activeSubscription'])
+            ->withCount(['users as active_users_count' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->with(['users' => function ($q) {
+                $q->select('id', 'name', 'firm_id', 'role', 'status', 'last_seen_at')
+                    ->where('role', 'firm_admin')
+                    ->orderByDesc('last_seen_at');
+            }]);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -131,7 +139,43 @@ class SuperAdminController extends Controller
             });
         }
 
-        $firms = $query->orderByDesc('created_at')->paginate(20);
+        if ($request->filled('activity')) {
+            $activity = $request->activity;
+            if ($activity === 'online') {
+                $query->whereHas('users', function ($q) {
+                    $q->where('role', 'firm_admin')
+                        ->whereNotNull('last_seen_at')
+                        ->where('last_seen_at', '>=', now()->subMinutes(5));
+                });
+            } elseif ($activity === 'recent') {
+                $query->whereHas('users', function ($q) {
+                    $q->where('role', 'firm_admin')
+                        ->whereNotNull('last_seen_at')
+                        ->where('last_seen_at', '>=', now()->subHours(24));
+                });
+            } elseif ($activity === 'inactive') {
+                $query->where(function ($q) {
+                    $q->whereDoesntHave('users', function ($sq) {
+                        $sq->where('role', 'firm_admin')
+                            ->whereNotNull('last_seen_at')
+                            ->where('last_seen_at', '>=', now()->subHours(24));
+                    });
+                });
+            }
+        }
+
+        $sort = $request->get('sort', 'revenue');
+        if ($sort === 'activity') {
+            $query->withCount(['users as latest_admin_activity_raw' => function ($q) {
+                $q->where('role', 'firm_admin');
+            }])->orderByRaw('(SELECT MAX(last_seen_at) FROM users WHERE users.firm_id = firms.id AND users.role = \'firm_admin\') IS NOT NULL DESC, (SELECT MAX(last_seen_at) FROM users WHERE users.firm_id = firms.id AND users.role = \'firm_admin\') DESC');
+        } else {
+            $query->withSum(['sales as total_revenue' => function ($q) {
+                $q->where('payment_status', 'paid');
+            }], 'total_amount')->orderByDesc('total_revenue');
+        }
+
+        $firms = $query->paginate(20)->withQueryString();
 
         return view('super-admin.firms.index', compact('firms'));
     }
@@ -176,19 +220,53 @@ class SuperAdminController extends Controller
     // ✅ NEW: View Firm Details
     public function showFirm($id)
     {
-        $firm = Firm::with(['owner', 'activeSubscription.plan', 'users' => function($q) {
-            $q->where('role', 'firm_admin');
-        }])->findOrFail($id);
+        $firm = Firm::with(['owner', 'activeSubscription.plan'])->findOrFail($id);
+
+        $usersQuery = $firm->users()->orderByDesc('last_seen_at');
+
+        if (request('user_search')) {
+            $search = request('user_search');
+            $usersQuery->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if (request('user_role')) {
+            $usersQuery->where('role', request('user_role'));
+        }
+
+        if (request('user_status')) {
+            $usersQuery->where('status', request('user_status'));
+        }
+
+        if (request('user_activity') === 'online') {
+            $usersQuery->whereNotNull('last_seen_at')
+                ->where('last_seen_at', '>=', now()->subMinutes(5));
+        } elseif (request('user_activity') === 'recent') {
+            $usersQuery->whereNotNull('last_seen_at')
+                ->where('last_seen_at', '>=', now()->subHours(24));
+        } elseif (request('user_activity') === 'inactive') {
+            $usersQuery->where(function ($q) {
+                $q->whereNull('last_seen_at')
+                    ->orWhere('last_seen_at', '<', now()->subHours(24));
+            });
+        }
+
+        $users = $usersQuery->get();
+
+        $onlineCount = $users->filter(fn($u) => $u->isOnline())->count();
 
         $stats = [
             'total_males' => $firm->total_males,
             'total_femelles' => $firm->total_femelles,
             'total_sales' => $firm->sales()->count(),
             'total_revenue' => $firm->total_revenue,
-            'user_count' => $firm->users()->where('role', 'firm_admin')->count(),
+            'user_count' => $firm->users()->count(),
             'subscription_limit' => $firm->subscription_limit,
+            'online_count' => $onlineCount,
         ];
 
-        return view('super-admin.firms.show', compact('firm', 'stats'));
+        return view('super-admin.firms.show', compact('firm', 'users', 'stats'));
     }
 }
