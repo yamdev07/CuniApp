@@ -23,12 +23,15 @@ COPY composer.json composer.lock artisan ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 RUN composer dump-autoload --optimize --no-dev --no-scripts
 
-# ── Frontend build (cached layer) ──
+# ── Frontend dependencies (cached layer) ──
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts && npm run build
+RUN npm ci --ignore-scripts
 
 # ── Application code ──
 COPY . .
+
+# ── Frontend build ──
+RUN npm run build
 
 # Laravel setup
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} \
