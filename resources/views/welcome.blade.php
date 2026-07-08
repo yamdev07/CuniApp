@@ -188,13 +188,17 @@
         .welcome-content {
             display: flex;
             justify-content: center;
-            max-width: 640px;
+            max-width: 1100px;
             width: 100%;
             align-items: center;
+            gap: 60px;
         }
 
         .brand-section {
-            display: none;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
         }
 
         @keyframes slideInLeft {
@@ -305,6 +309,7 @@
         .auth-section {
             position: relative;
             width: 100%;
+            flex: 0 0 460px;
             flex-shrink: 0;
         }
 
@@ -989,14 +994,21 @@
         @media (max-width: 968px) {
             .welcome-content {
                 max-width: 100%;
+                flex-direction: column;
+                gap: 32px;
             }
 
             .brand-section {
-                display: none;
+                order: 1;
+                text-align: center;
+                align-items: center;
             }
 
             .auth-section {
-                order: 1;
+                order: 2;
+                flex: 0 0 auto;
+                max-width: 460px;
+                width: 100%;
             }
         }
 
@@ -1397,7 +1409,8 @@
             }
 
             .welcome-content {
-                max-width: 600px;
+                max-width: 100%;
+                flex-direction: column;
             }
 
             .brand-section {
@@ -1407,6 +1420,9 @@
 
             .auth-section {
                 order: 2;
+                flex: 0 0 auto;
+                max-width: 460px;
+                width: 100%;
             }
 
             .features-list {

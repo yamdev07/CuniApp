@@ -2523,6 +2523,12 @@
             padding: 20px;
         }
 
+        body.mobile-nav-open .cuni-main {
+            filter: blur(4px);
+            pointer-events: none;
+            transition: filter 0.3s ease;
+        }
+
         .mobile-nav-overlay.active {
             transform: translateX(0);
         }
@@ -3671,7 +3677,9 @@
 
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+                const isOpen = mobileNav.classList.contains('active');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+                document.body.classList.toggle('mobile-nav-open', isOpen);
             }
         }
 
@@ -3698,6 +3706,7 @@
                 !e.target.closest('.mobile-nav-overlay')) {
                 mobileNav.classList.remove('active');
                 document.body.style.overflow = '';
+                document.body.classList.remove('mobile-nav-open');
             }
         });
 
@@ -3730,7 +3739,9 @@
             if (moreDropdown) moreDropdown.classList.remove('show');
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+                const isOpen = mobileNav.classList.contains('active');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+                document.body.classList.toggle('mobile-nav-open', isOpen);
             }
         }
 
@@ -3780,6 +3791,7 @@
                 !e.target.closest('.mobile-nav-overlay')) {
                 mobileNav.classList.remove('active');
                 document.body.style.overflow = '';
+                document.body.classList.remove('mobile-nav-open');
             }
         });
 
