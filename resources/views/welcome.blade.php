@@ -195,10 +195,7 @@
         }
 
         .brand-section {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
+            display: none;
         }
 
         @keyframes slideInLeft {
@@ -995,17 +992,9 @@
             .welcome-content {
                 max-width: 100%;
                 flex-direction: column;
-                gap: 32px;
-            }
-
-            .brand-section {
-                order: 1;
-                text-align: center;
-                align-items: center;
             }
 
             .auth-section {
-                order: 2;
                 flex: 0 0 auto;
                 max-width: 460px;
                 width: 100%;
@@ -1413,13 +1402,7 @@
                 flex-direction: column;
             }
 
-            .brand-section {
-                order: 1;
-                text-align: center;
-            }
-
             .auth-section {
-                order: 2;
                 flex: 0 0 auto;
                 max-width: 460px;
                 width: 100%;
