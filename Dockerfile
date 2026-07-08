@@ -21,7 +21,7 @@ WORKDIR /var/www/html
 # ── PHP dependencies (cached layer) ──
 COPY composer.json composer.lock artisan ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
-RUN composer dump-autoload --optimize --no-dev
+RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ── Frontend build (cached layer) ──
 COPY package.json package-lock.json ./
