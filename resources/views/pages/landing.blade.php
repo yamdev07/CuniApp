@@ -73,7 +73,26 @@
         .btn-nav-login:hover { color:var(--primary); }
         .btn-nav-cta { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-size:14px; font-weight:600; color:var(--white); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:var(--radius); text-decoration:none; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
         .btn-nav-cta:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(37,99,235,0.4); }
-        @media(max-width:768px) { .nav-links{display:none;} }
+        @media(max-width:768px) {
+            .nav-links{display:none;}
+            .nav-actions{gap:6px;}
+            .btn-nav-login{font-size:0;padding:8px;border-radius:var(--radius);background:var(--surface-alt);border:1px solid var(--surface-border);}
+            .btn-nav-login:hover{background:var(--primary-subtle);border-color:rgba(37,99,235,0.3);}
+            .btn-nav-login::before{content:"\f4D2";font-family:"bootstrap-icons";font-size:18px;font-weight:400;color:var(--text-secondary);}
+            .btn-nav-login:hover::before{color:var(--primary);}
+            .btn-nav-cta{padding:8px 12px;font-size:0;gap:0;}
+            .btn-nav-cta i{font-size:18px;margin:0;}
+            .nav-guide-icon{display:flex;}
+        }
+        .nav-guide-icon{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--radius);background:var(--surface-alt);border:1px solid var(--primary);text-decoration:none;color:var(--primary);transition:all 0.3s ease;position:relative;box-shadow:0 0 8px rgba(37,99,235,0.3),0 0 16px rgba(37,99,235,0.15);animation:guideGlow 2s ease-in-out infinite;}
+        @keyframes guideGlow{0%,100%{box-shadow:0 0 8px rgba(37,99,235,0.3),0 0 16px rgba(37,99,235,0.15);}50%{box-shadow:0 0 12px rgba(37,99,235,0.5),0 0 24px rgba(37,99,235,0.25);}}
+        .nav-guide-icon:hover{background:var(--primary);color:white;box-shadow:0 0 16px rgba(37,99,235,0.5),0 0 32px rgba(37,99,235,0.3);}
+        .nav-guide-icon i{font-size:18px;}
+        .nav-guide-tooltip{display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--surface-border);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow-lg);white-space:nowrap;font-size:13px;color:var(--text-secondary);z-index:100;}
+        .nav-guide-tooltip::before{content:"";position:absolute;top:-6px;right:16px;width:12px;height:12px;background:var(--surface);border-top:1px solid var(--surface-border);border-left:1px solid var(--surface-border);transform:rotate(45deg);}
+        .nav-guide-icon:hover .nav-guide-tooltip{display:block;}
+        .nav-guide-tooltip span{display:block;font-weight:600;color:var(--text-primary);margin-bottom:4px;}
+        .nav-guide-tooltip a{color:var(--primary);text-decoration:none;font-weight:600;}
 
         /* Hero */
         .hero-section { position:relative; overflow:hidden; isolation:isolate; }
@@ -386,6 +405,14 @@
                     <span style="position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--accent-green);border-radius:50%;box-shadow:0 0 6px var(--accent-green),0 0 12px rgba(16,185,129,0.4);animation:pulse 2s infinite;"></span>
                 </a>
             </div>
+            <a href="{{ route('guide') }}" class="nav-guide-icon">
+                <i class="bi bi-book-half"></i>
+                <div class="nav-guide-tooltip">
+                    <span>{{ __('Guide') }}</span>
+                    <p style="margin:0 0 6px 0;font-size:12px;line-height:1.5;">{{ __('Découvrez comment utiliser CuniApp') }}</p>
+                    <a href="{{ route('guide') }}">{{ __('Consulter') }} →</a>
+                </div>
+            </a>
             <div class="nav-actions">
                 <a href="{{ route('connect') }}" class="btn-nav-login">{{ __('Connexion') }}</a>
                 <a href="{{ route('connect') }}#register" class="btn-nav-cta">
