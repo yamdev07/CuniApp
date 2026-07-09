@@ -76,10 +76,7 @@
         @media(max-width:768px) {
             .nav-links{display:none;}
             .nav-actions{gap:12px; display:flex; align-items:center;}
-            .btn-nav-login{font-size:0;padding:8px;border-radius:var(--radius);background:var(--surface-alt);border:1px solid var(--surface-border);flex-shrink:0;}
-            .btn-nav-login:hover{background:var(--primary-subtle);border-color:rgba(37,99,235,0.3);}
-            .btn-nav-login::before{content:"\f4D2";font-family:"bootstrap-icons";font-size:18px;font-weight:400;color:var(--text-secondary);}
-            .btn-nav-login:hover::before{color:var(--primary);}
+            .btn-nav-login{display:none !important;}
             .btn-nav-cta{padding:8px 12px;font-size:0;gap:0;flex-shrink:0;}
             .btn-nav-cta i{font-size:18px;margin:0;}
             .nav-guide-icon {
