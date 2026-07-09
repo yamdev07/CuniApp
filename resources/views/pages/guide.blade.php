@@ -338,6 +338,28 @@
                 <p>{{ __('Tout ce que vous devez savoir pour gérer efficacement votre élevage de lapins avec CuniApp.') }}</p>
             </div>
 
+            <!-- Introduction -->
+            <section class="guide-section" id="introduction" data-searchable>
+                <div class="guide-section-header">
+                    <div class="guide-section-icon"><i class="bi bi-info-circle"></i></div>
+                    <h2>{{ __('Introduction') }}</h2>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-book"></i> {{ __('Qu\'est-ce que CuniApp ?') }}</h3>
+                    <p>{{ __('CuniApp est une plateforme SaaS de gestion professionnelle d\'élevages cunicoles (lapins). Elle vous permet de suivre vos reproductions, gérer votre cheptel, émettre des factures et monitorer la performance de votre élevage depuis un tableau de bord unique.') }}</p>
+                </div>
+                <div class="guide-card" data-searchable>
+                    <h3><i class="bi bi-lightning"></i> {{ __('Fonctionnalités principales') }}</h3>
+                    <ul class="guide-steps">
+                        <li><span class="step-num">1</span> <div><strong>{{ __('Gestion du cheptel') }}</strong> — {{ __('Enregistrez et suivez tous vos lapins mâles et femelles avec leurs caractéristiques.') }}</div></li>
+                        <li><span class="step-num">2</span> <div><strong>{{ __('Suivi des reproductions') }}</strong> {{ __('— Enregistrez les saillies, palpations et suivez les gestations en temps réel.') }}</div></li>
+                        <li><span class="step-num">3</span> <div><strong>{{ __('Gestion des naissances') }}</strong> — {{ __('Enregistrez les mises bas, suivez la mortalité et monitorer la croissance.') }}</div></li>
+                        <li><span class="step-num">4</span> <div><strong>{{ __('Ventes & Facturation') }}</strong> — {{ __('Gérez vos ventes, émettez des factures PDF et suivez les paiements.') }}</div></li>
+                        <li><span class="step-num">5</span> <div><strong>{{ __('Tableau de bord') }}</strong> — {{ __('Visualisez les statistiques et indicateurs clés de votre élevage.') }}</div></li>
+                    </ul>
+                </div>
+            </section>
+
             <!-- Dashboard -->
             <section class="guide-section" id="dashboard" data-searchable>
                 <div class="guide-section-header">
@@ -403,28 +425,6 @@
                         <li><span class="step-num">•</span> {{ __('Revenus totaux de l\'entreprise.') }}</li>
                         <li><span class="step-num">•</span> {{ __('Statut de l\'abonnement actuel.') }}</li>
                         <li><span class="step-num">•</span> {{ __('Bouton d\'accès rapide à la gestion de l\'entreprise.') }}</li>
-                    </ul>
-                </div>
-            </section>
-
-            <!-- Introduction -->
-            <section class="guide-section" id="introduction" data-searchable>
-                <div class="guide-section-header">
-                    <div class="guide-section-icon"><i class="bi bi-info-circle"></i></div>
-                    <h2>{{ __('Introduction') }}</h2>
-                </div>
-                <div class="guide-card" data-searchable>
-                    <h3><i class="bi bi-book"></i> {{ __('Qu\'est-ce que CuniApp ?') }}</h3>
-                    <p>{{ __('CuniApp est une plateforme SaaS de gestion professionnelle d\'élevages cunicoles (lapins). Elle vous permet de suivre vos reproductions, gérer votre cheptel, émettre des factures et monitorer la performance de votre élevage depuis un tableau de bord unique.') }}</p>
-                </div>
-                <div class="guide-card" data-searchable>
-                    <h3><i class="bi bi-lightning"></i> {{ __('Fonctionnalités principales') }}</h3>
-                    <ul class="guide-steps">
-                        <li><span class="step-num">1</span> <div><strong>{{ __('Gestion du cheptel') }}</strong> — {{ __('Enregistrez et suivez tous vos lapins mâles et femelles avec leurs caractéristiques.') }}</div></li>
-                        <li><span class="step-num">2</span> <div><strong>{{ __('Suivi des reproductions') }}</strong> {{ __('— Enregistrez les saillies, palpations et suivez les gestations en temps réel.') }}</div></li>
-                        <li><span class="step-num">3</span> <div><strong>{{ __('Gestion des naissances') }}</strong> — {{ __('Enregistrez les mises bas, suivez la mortalité et monitorer la croissance.') }}</div></li>
-                        <li><span class="step-num">4</span> <div><strong>{{ __('Ventes & Facturation') }}</strong> — {{ __('Gérez vos ventes, émettez des factures PDF et suivez les paiements.') }}</div></li>
-                        <li><span class="step-num">5</span> <div><strong>{{ __('Tableau de bord') }}</strong> — {{ __('Visualisez les statistiques et indicateurs clés de votre élevage.') }}</div></li>
                     </ul>
                 </div>
             </section>
