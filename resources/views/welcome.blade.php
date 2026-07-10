@@ -11,6 +11,7 @@
     <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
     <meta property="og:image" content="{{ asset('images/thumbnail.png') }}">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CuniApp {{ __('Élevage') }}">
     <meta name="twitter:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
