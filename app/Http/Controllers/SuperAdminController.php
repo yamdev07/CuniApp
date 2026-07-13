@@ -164,16 +164,15 @@ class SuperAdminController extends Controller
             }
         }
 
+        $query->withSum(['sales as total_revenue' => function ($q) {
+            $q->where('payment_status', 'paid');
+        }], 'total_amount');
+
         $sort = $request->get('sort', 'revenue');
         if ($sort === 'activity') {
-            $query->orderByRaw('
-                CASE WHEN (SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = \'firm_admin\') IS NULL THEN 1 ELSE 0 END ASC,
-                (SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = \'firm_admin\') DESC
-            ');
+            $query->orderByRaw("COALESCE((SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = 'firm_admin'), '1970-01-01') DESC");
         } else {
-            $query->withSum(['sales as total_revenue' => function ($q) {
-                $q->where('payment_status', 'paid');
-            }], 'total_amount')->orderByDesc('total_revenue');
+            $query->orderByDesc('total_revenue');
         }
 
         $firms = $query->paginate(20)->withQueryString();
@@ -223,7 +222,10 @@ class SuperAdminController extends Controller
     {
         $firm = Firm::with(['owner', 'activeSubscription.plan'])->findOrFail($id);
 
-        $usersQuery = $firm->users()->orderByDesc('last_seen_at');
+        $usersQuery = $firm->users()->orderByRaw('
+            CASE WHEN last_seen_at IS NULL THEN 1 ELSE 0 END ASC,
+            last_seen_at DESC
+        ');
 
         if (request('user_search')) {
             $search = request('user_search');
