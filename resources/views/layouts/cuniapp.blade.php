@@ -6,6 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CuniApp Élevage')</title>
+
+    {{-- Open Graph --}}
+    <meta property="og:title" content="@yield('og_title', 'CuniApp Élevage')">
+    <meta property="og:description" content="@yield('og_description', 'La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos reproductions, naissances et performances en toute simplicité.')">
+    <meta property="og:image" content="{{ asset('og-image.png') }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="CuniApp Élevage">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', 'CuniApp Élevage')">
+    <meta name="twitter:description" content="@yield('og_description', 'La solution complète pour la gestion intelligente de votre élevage de lapins.')">
+    <meta name="twitter:image" content="{{ asset('og-image.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
