@@ -72,6 +72,8 @@ class SocialAuthController extends Controller
                 $request->session()->regenerate();
                 Auth::login($user, true);
 
+                $request->session()->forget('google_oauth_pending_user');
+
                 // Redirect based on role
                 if ($user->isSuperAdmin()) {
                     return redirect()->route('super.admin.dashboard');
@@ -220,6 +222,8 @@ class SocialAuthController extends Controller
                 'email'   => $user->email,
                 'firm_id' => $firm->id,
             ]);
+
+            $request->session()->forget('google_oauth_pending_user');
 
             return redirect()->route('connect')
                 ->with('success', 'Votre compte a été créé avec succès ! Cliquez sur le bouton Google à nouveau pour vous connecter.');
