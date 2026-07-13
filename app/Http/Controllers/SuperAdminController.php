@@ -170,7 +170,10 @@ class SuperAdminController extends Controller
 
         $sort = $request->get('sort', 'revenue');
         if ($sort === 'activity') {
-            $query->orderByRaw("COALESCE((SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = 'firm_admin'), '1970-01-01') DESC");
+            $query->withMax(['users as latest_activity' => function ($q) {
+                $q->where('role', 'firm_admin');
+            }], 'last_seen_at')
+            ->orderBy('latest_activity', 'DESC');
         } else {
             $query->orderByDesc('total_revenue');
         }

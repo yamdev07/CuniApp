@@ -74,16 +74,12 @@
                 {{ $firms->total() }} {{ __('entreprise(s)') }}
             </span>
             @php $currentSort = request('sort', 'revenue'); @endphp
-            <a href="{{ request()->fullUrlWithQuery(['sort' => 'revenue']) }}"
-               class="badge" style="text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;
-                   background: {{ $currentSort === 'revenue' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.1)' }};
-                   color: {{ $currentSort === 'revenue' ? '#10B981' : '#6B7280' }};">
+            <a href="{{ route('super.admin.firms', array_merge(request()->query(), ['sort' => 'revenue'])) }}"
+               class="btn-cuni sm {{ $currentSort === 'revenue' ? 'primary' : 'secondary' }}">
                 <i class="bi bi-currency-exchange"></i> {{ __('Revenus') }}
             </a>
-            <a href="{{ request()->fullUrlWithQuery(['sort' => 'activity']) }}"
-               class="badge" style="text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;
-                   background: {{ $currentSort === 'activity' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(107, 114, 128, 0.1)' }};
-                   color: {{ $currentSort === 'activity' ? '#3B82F6' : '#6B7280' }};">
+            <a href="{{ route('super.admin.firms', array_merge(request()->query(), ['sort' => 'activity'])) }}"
+               class="btn-cuni sm {{ $currentSort === 'activity' ? 'primary' : 'secondary' }}">
                 <i class="bi bi-clock-history"></i> {{ __('Activité') }}
             </a>
         </div>
