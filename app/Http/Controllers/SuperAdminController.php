@@ -166,9 +166,10 @@ class SuperAdminController extends Controller
 
         $sort = $request->get('sort', 'revenue');
         if ($sort === 'activity') {
-            $query->withCount(['users as latest_admin_activity_raw' => function ($q) {
-                $q->where('role', 'firm_admin');
-            }])->orderByRaw('(SELECT MAX(last_seen_at) FROM users WHERE users.firm_id = firms.id AND users.role = \'firm_admin\') IS NOT NULL DESC, (SELECT MAX(last_seen_at) FROM users WHERE users.firm_id = firms.id AND users.role = \'firm_admin\') DESC');
+            $query->orderByRaw('
+                CASE WHEN (SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = \'firm_admin\') IS NULL THEN 1 ELSE 0 END ASC,
+                (SELECT MAX(u.last_seen_at) FROM users u WHERE u.firm_id = firms.id AND u.role = \'firm_admin\') DESC
+            ');
         } else {
             $query->withSum(['sales as total_revenue' => function ($q) {
                 $q->where('payment_status', 'paid');

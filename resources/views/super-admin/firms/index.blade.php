@@ -30,6 +30,7 @@
 <div class="cuni-card" style="margin-bottom: 20px;">
     <div class="card-body" style="padding: 16px;">
         <form method="GET" action="{{ route('super.admin.firms') }}">
+            <input type="hidden" name="sort" value="{{ request('sort', 'revenue') }}">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
                 <div>
                     <label class="form-label">{{ __('Recherche') }}</label>
@@ -52,13 +53,6 @@
                         <option value="inactive" {{ request('activity') === 'inactive' ? 'selected' : '' }}>{{ __('Inactif') }}</option>
                     </select>
                 </div>
-                <div>
-                    <label class="form-label">{{ __('Trier par') }}</label>
-                    <select name="sort" class="form-select">
-                        <option value="revenue" {{ request('sort', 'revenue') === 'revenue' ? 'selected' : '' }}>{{ __('Revenus') }}</option>
-                        <option value="activity" {{ request('sort') === 'activity' ? 'selected' : '' }}>{{ __('Dernière activité') }}</option>
-                    </select>
-                </div>
                 <div style="display: flex; align-items: flex-end;">
                     <button type="submit" class="btn-cuni primary" style="flex: 1;">
                         <i class="bi bi-search"></i> {{ __('Filtrer') }}
@@ -75,9 +69,24 @@
         <h3 class="card-title">
             <i class="bi bi-list-ul"></i> {{ __('Liste des Entreprises') }}
         </h3>
-        <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
-            {{ $firms->total() }} {{ __('entreprise(s)') }}
-        </span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                {{ $firms->total() }} {{ __('entreprise(s)') }}
+            </span>
+            @php $currentSort = request('sort', 'revenue'); @endphp
+            <a href="{{ request()->fullUrlWithQuery(['sort' => 'revenue']) }}"
+               class="badge" style="text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+                   background: {{ $currentSort === 'revenue' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.1)' }};
+                   color: {{ $currentSort === 'revenue' ? '#10B981' : '#6B7280' }};">
+                <i class="bi bi-currency-exchange"></i> {{ __('Revenus') }}
+            </a>
+            <a href="{{ request()->fullUrlWithQuery(['sort' => 'activity']) }}"
+               class="badge" style="text-decoration: none; padding: 5px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+                   background: {{ $currentSort === 'activity' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(107, 114, 128, 0.1)' }};
+                   color: {{ $currentSort === 'activity' ? '#3B82F6' : '#6B7280' }};">
+                <i class="bi bi-clock-history"></i> {{ __('Activité') }}
+            </a>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
