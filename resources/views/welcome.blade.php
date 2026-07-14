@@ -11,8 +11,8 @@
     <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
     <meta property="og:image" content="{{ asset('images/thumbnail.jpg') }}">
     <meta property="og:image:type" content="image/jpeg">
-    <meta property="og:image:width" content="1893">
-    <meta property="og:image:height" content="867">
+    <meta property="og:image:width" content="1902">
+    <meta property="og:image:height" content="877">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/') }}">
     <meta name="twitter:card" content="summary_large_image">
