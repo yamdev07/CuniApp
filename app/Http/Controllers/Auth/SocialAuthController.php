@@ -72,6 +72,8 @@ class SocialAuthController extends Controller
                 $request->session()->regenerate();
                 Auth::login($user, true);
 
+                $request->session()->forget('google_oauth_pending_user');
+
                 // Redirect based on role
                 if ($user->isSuperAdmin()) {
                     return redirect()->route('super.admin.dashboard');
@@ -169,7 +171,7 @@ class SocialAuthController extends Controller
                 'role'                 => 'firm_admin',
                 'firm_id'              => $firm->id,
                 'theme'                => 'light',
-                'language'             => 'fr',
+                'language'             => session('locale') ?: ($request->getPreferredLanguage(['fr', 'en']) ?: 'fr'),
                 'status'               => 'active',
             ]);
 
@@ -221,8 +223,10 @@ class SocialAuthController extends Controller
                 'firm_id' => $firm->id,
             ]);
 
-            return redirect()->route('dashboard')
-                ->with('success', 'Bienvenue sur CuniApp ! Votre essai gratuit de 14 jours a démarré.');
+            $request->session()->forget('google_oauth_pending_user');
+
+            return redirect()->route('connect')
+                ->with('success', 'Votre compte a été créé avec succès ! Cliquez sur le bouton Google à nouveau pour vous connecter.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('❌ Échec inscription Google: ' . $e->getMessage());

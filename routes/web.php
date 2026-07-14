@@ -66,6 +66,10 @@ Route::get('/contact', function () {
     return view('pages.contact');
 })->name('contact');
 
+Route::get('/guide', function () {
+    return view('pages.guide');
+})->name('guide');
+
 
 
 // ========================================================================
@@ -149,7 +153,8 @@ Route::middleware('auth')->group(function () {
     // ====================================================================
     Route::middleware('verified')->group(function () {
         // Dashboard & Profile
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')
+            ->middleware('firm.required');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -324,7 +329,9 @@ Route::middleware('auth')->group(function () {
         Route::middleware(['verified', 'check.super.admin'])->prefix('super-admin')->name('super.admin.')->group(function () {
             Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
             Route::get('/firms', [SuperAdminController::class, 'firms'])->name('firms');
+            Route::get('/firms/activity', [SuperAdminController::class, 'firmsActivity'])->name('firms.activity');
             Route::get('/firms/{id}', [SuperAdminController::class, 'showFirm'])->name('firms.show');
+            Route::get('/firms/{id}/users-activity', [SuperAdminController::class, 'firmUsersActivity'])->name('firms.users.activity');
             Route::post('/firms/{id}/ban', [SuperAdminController::class, 'banFirm'])->name('firms.ban');
             Route::post('/firms/{id}/activate', [SuperAdminController::class, 'activateFirm'])->name('firms.activate');
         });
@@ -375,6 +382,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/lang/{locale}', function ($locale) {
         if (in_array($locale, ['fr', 'en'])) {
             session(['locale' => $locale]);
+            session(['locale_explicit' => true]);
             if (auth()->check()) {
                 auth()->user()->update(['language' => $locale]);
             }

@@ -15,16 +15,15 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Fixed to properly handle language setting
         if (Auth::check() && in_array(Auth::user()->language, ['fr', 'en'])) {
             App::setLocale(Auth::user()->language);
             view()->share('currentLocale', Auth::user()->language);
-            // Also set HTML lang attribute for proper accessibility
             $request->headers->set('Accept-Language', Auth::user()->language);
         } else {
-            $default = config('app.locale', 'fr');
-            App::setLocale($default);
-            view()->share('currentLocale', $default);
+            $browserLang = $request->getPreferredLanguage(['fr', 'en']);
+            $locale = $browserLang ?: config('app.locale', 'fr');
+            App::setLocale($locale);
+            view()->share('currentLocale', $locale);
         }
 
         return $next($request);

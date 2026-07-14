@@ -9,12 +9,16 @@
     <meta name="description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
     <meta property="og:title" content="CuniApp {{ __('Élevage') }}">
     <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
-    <meta property="og:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta property="og:image" content="{{ asset('images/thumbnail.jpg') }}">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1893">
+    <meta property="og:image:height" content="867">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CuniApp {{ __('Élevage') }}">
     <meta name="twitter:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
-    <meta name="twitter:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/thumbnail.jpg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -61,80 +65,250 @@
         .landing-nav { position:sticky; top:0; z-index:50; transition:all 0.5s ease; }
         .landing-nav.scrolled { background:var(--surface); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--surface-border); box-shadow:0 4px 30px rgba(37,99,235,0.06); }
         .nav-container { max-width:1280px; margin:0 auto; padding:0 24px; height:64px; display:flex; align-items:center; justify-content:space-between; }
-        .nav-brand { display:flex; align-items:center; gap:12px; text-decoration:none; }
-        .nav-logo { width:40px; height:40px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
+        .nav-brand { display:flex; align-items:center; gap:12px; text-decoration:none; flex-shrink:0; }
+        .nav-logo { width:40px; height:40px; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(37,99,235,0.3); flex-shrink:0; }
         .nav-logo svg { width:22px; height:22px; }
         .nav-brand-text { font-size:20px; font-weight:700; color:var(--text-primary); letter-spacing:-0.02em; }
-        .nav-links { display:flex; align-items:center; gap:4px; }
+        .nav-links { display:flex; align-items:center; gap:4px; flex-shrink:0; }
         .nav-link { font-size:14px; font-weight:500; color:var(--text-secondary); text-decoration:none; padding:8px 16px; border-radius:var(--radius); transition:all 0.3s ease; }
         .nav-link:hover { color:var(--primary); background:var(--primary-subtle); }
-        .nav-actions { display:flex; align-items:center; gap:12px; }
-        .btn-nav-login { font-size:14px; font-weight:500; color:var(--text-secondary); text-decoration:none; padding:8px 12px; transition:color 0.3s ease; }
+        .nav-actions { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+        .btn-nav-login { font-size:14px; font-weight:500; color:var(--text-secondary); text-decoration:none; padding:8px 12px; transition:color 0.3s ease; flex-shrink:0; }
         .btn-nav-login:hover { color:var(--primary); }
-        .btn-nav-cta { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-size:14px; font-weight:600; color:var(--white); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:var(--radius); text-decoration:none; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
+        .btn-nav-cta { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-size:14px; font-weight:600; color:var(--white); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:var(--radius); text-decoration:none; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px rgba(37,99,235,0.3); flex-shrink:0; }
         .btn-nav-cta:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(37,99,235,0.4); }
-        @media(max-width:768px) { .nav-links{display:none;} }
+        @media(max-width:768px) {
+            .nav-links{display:none;}
+            .nav-actions{gap:12px; display:flex; align-items:center;}
+            .btn-nav-login{display:none !important;}
+            .btn-nav-cta{padding:8px 12px;font-size:0;gap:0;flex-shrink:0;}
+            .btn-nav-cta i{font-size:18px;margin:0;}
+            .nav-guide-icon {
+                display: flex !important;
+                animation: guideGlow 2s ease-in-out infinite;
+                flex-shrink: 0;
+            }
+            .nav-guide-icon:active {
+                transform: scale(0.95);
+                background: var(--primary);
+                color: white !important;
+                border-color: var(--primary-dark);
+            }
+            .nav-guide-icon:active .nav-guide-dot {
+                background: white;
+                box-shadow: 0 0 8px white;
+            }
+        }
+        @keyframes guideGlow {
+            0%, 100% {
+                box-shadow: 0 0 6px rgba(37,99,235,0.2), 0 0 12px rgba(6,182,212,0.1), inset 0 0 0 1px rgba(37,99,235,0.25);
+                border-color: rgba(37,99,235,0.3);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(37,99,235,0.5), 0 0 30px rgba(6,182,212,0.3), inset 0 0 0 1px rgba(37,99,235,0.55);
+                border-color: rgba(37,99,235,0.6);
+            }
+        }
+        .nav-guide-icon {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 14px;
+            height: 36px;
+            border-radius: 100px;
+            background: var(--primary-subtle);
+            border: 1px solid rgba(37,99,235,0.25);
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.06);
+            flex-shrink: 0;
+        }
+        .theme-dark .nav-guide-icon {
+            background: rgba(77,166,255,0.12);
+            border-color: rgba(77,166,255,0.3);
+            color: var(--primary);
+        }
+        .nav-guide-icon i {
+            font-size: 15px;
+            transition: transform 0.3s ease;
+        }
+        .nav-guide-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent-green), 0 0 12px rgba(16,185,129,0.4);
+            animation: pulse 2s infinite;
+        }
 
-        /* Hero */
-        .hero-section { position:relative; overflow:hidden; isolation:isolate; }
-        .hero-bg { position:fixed; inset:0; z-index:-10; }
-        .hero-bg-gradient { width:100%; height:100%; background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(6,182,212,0.05) 50%,rgba(59,130,246,0.08)); }
-        .theme-dark .hero-bg-gradient { background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(6,182,212,0.08) 50%,rgba(59,130,246,0.12)); }
-        .hero-bg-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(37,99,235,0.12),transparent 50%,rgba(6,182,212,0.08)); }
-        .hero-particles { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-        .particle { position:absolute; border-radius:50%; opacity:0.15; pointer-events:none; }
-        .hero-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:0.08; }
-        .theme-dark .hero-svg { opacity:0.14; }
-        .hero-content { max-width:1280px; margin:0 auto; padding:80px 24px 120px; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
-        @media(max-width:1024px) { .hero-content{grid-template-columns:1fr;padding:60px 24px 80px;text-align:center;} }
-        .hero-left { transition:all 0.7s ease; transition-delay:200ms; }
-        .hero-badge { display:inline-flex; align-items:center; gap:8px; background:var(--primary-subtle); border:1px solid rgba(37,99,235,0.2); border-radius:100px; padding:8px 16px; margin-bottom:24px; backdrop-filter:blur(10px); }
-        .hero-badge-dot { width:8px; height:8px; background:var(--primary); border-radius:50%; animation:pulse 2s infinite; }
-        .hero-badge-text { font-size:12px; font-weight:600; color:var(--primary); }
-        .hero-title { font-size:56px; font-weight:700; color:var(--text-primary); line-height:1.1; letter-spacing:-0.02em; margin-bottom:20px; }
-        @media(max-width:768px) { .hero-title{font-size:36px;} }
-        .hero-gradient-text { background:linear-gradient(135deg,var(--primary),var(--accent-cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .hero-description { font-size:18px; color:var(--text-secondary); max-width:520px; line-height:1.7; margin-bottom:32px; }
-        @media(max-width:1024px) { .hero-description{margin:0 auto 32px;} }
-        .hero-buttons { display:flex; flex-wrap:wrap; gap:16px; }
-        @media(max-width:1024px) { .hero-buttons{justify-content:center;} }
-        .btn-hero-primary { display:inline-flex; align-items:center; gap:8px; padding:16px 28px; font-size:16px; font-weight:600; color:var(--white); background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none; border-radius:var(--radius-lg); text-decoration:none; cursor:pointer; transition:all 0.3s ease; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
-        .btn-hero-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,99,235,0.4); }
-        .btn-hero-primary i { transition:transform 0.3s ease; }
-        .btn-hero-primary:hover i { transform:translateX(4px); }
-        .btn-hero-secondary { display:inline-flex; align-items:center; gap:8px; padding:16px 28px; font-size:16px; font-weight:600; color:var(--gray-700); background:transparent; border:2px solid var(--gray-200); border-radius:var(--radius-lg); text-decoration:none; cursor:pointer; transition:all 0.3s ease; }
-        .theme-dark .btn-hero-secondary { color:var(--gray-700); border-color:var(--gray-200); }
-        .btn-hero-secondary:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-subtle); }
-        .hero-trust { display:flex; align-items:center; gap:24px; margin-top:32px; }
-        @media(max-width:1024px) { .hero-trust{justify-content:center;} }
-        .hero-trust-item { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text-secondary); }
-        .hero-trust-item i { font-size:16px; }
-
-        /* Hero Right - Slideshow */
-        .hero-right { position:relative; transition:all 0.7s ease; transition-delay:500ms; }
-        .hero-illustration { position:relative; }
-        .hero-illustration-bg { position:absolute; top:-40px; right:-40px; width:160px; height:160px; background:rgba(37,99,235,0.1); border-radius:50%; filter:blur(60px); }
-        .hero-illustration-bg-2 { position:absolute; bottom:-40px; left:-40px; width:192px; height:192px; background:rgba(59,130,246,0.1); border-radius:50%; filter:blur(60px); }
-        .hero-card { position:relative; background:var(--surface); border:1px solid var(--surface-border); border-radius:var(--radius-2xl); padding:8px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 12px 48px rgba(0,0,0,0.1),0 4px 16px rgba(37,99,235,0.08); overflow:hidden; }
-        .theme-dark .hero-card { background:var(--surface-alt); border-color:var(--surface-border); }
-        .hero-slideshow { position:relative; width:100%; aspect-ratio:4/3; border-radius:var(--radius-xl); overflow:hidden; }
-        .hero-slideshow img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1s ease-in-out; }
-        .hero-slideshow img.active { opacity:1; }
-        .hero-slideshow-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.4),transparent 40%); z-index:1; }
-        .hero-slideshow-text { position:absolute; bottom:20px; left:20px; right:20px; z-index:2; color:white; }
-        .hero-slideshow-text h3 { font-size:18px; font-weight:700; margin-bottom:4px; text-shadow:0 2px 8px rgba(0,0,0,0.3); }
-        .hero-slideshow-text p { font-size:13px; opacity:0.9; text-shadow:0 1px 4px rgba(0,0,0,0.3); }
-        .hero-float-stat { position:absolute; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-radius:var(--radius-lg); padding:16px; display:flex; align-items:center; gap:12px; border:1px solid var(--surface-border); background:var(--surface); box-shadow:0 12px 48px rgba(0,0,0,0.1); }
-        .hero-float-stat-left { left:-48px; top:25%; }
-        .hero-float-stat-right { right:-32px; bottom:25%; }
-        @media(max-width:1024px) { .hero-float-stat{display:none;} }
-        .float-stat-icon { width:40px; height:40px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; }
-        .float-stat-icon.green { background:rgba(16,185,129,0.15); }
-        .float-stat-icon.green i { color:var(--accent-green); font-size:20px; }
-        .float-stat-icon.blue { background:rgba(37,99,235,0.15); }
-        .float-stat-icon.blue i { color:var(--primary); font-size:20px; }
-        .float-stat-label { font-size:12px; color:var(--text-tertiary); }
-        .float-stat-value { font-size:18px; font-weight:700; color:var(--text-primary); }
+        /* Hero - Masthead */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-bg-slideshow {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-bg-slideshow img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+        .hero-bg-slideshow img.active {
+            opacity: 1;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 80px 24px;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 100px;
+            padding: 8px 16px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        .hero-badge-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+        }
+        .hero-title {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            max-width: 720px;
+        }
+        .hero-gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-description {
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            max-width: 560px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37,99,235,0.4);
+        }
+        .btn-hero-primary i {
+            transition: transform 0.3s ease;
+        }
+        .btn-hero-primary:hover i {
+            transform: translateX(4px);
+        }
+        .btn-hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .btn-hero-secondary:hover {
+            border-color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+        .hero-trust {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            justify-content: center;
+        }
+        .hero-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+        .hero-trust-item i {
+            font-size: 16px;
+        }
 
         /* Section Divider */
         .section-divider { display:flex; align-items:center; justify-content:center; padding:8px 0; }
@@ -253,7 +427,7 @@
         .section-reveal.visible { opacity:1; transform:translateY(0); }
 
         @media(max-width:640px) {
-            .hero-content{padding:40px 16px 60px;}
+            .hero-content{padding:60px 16px;}
             .hero-title{font-size:32px;}
             .hero-description{font-size:16px;}
             .hero-buttons{flex-direction:column;}
@@ -261,6 +435,109 @@
             .features-section,.pricing-section{padding:64px 16px;}
             .section-title{font-size:24px;}
         }
+
+        /* Guide CTA Section */
+        .guide-cta-section {
+            position: relative;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 80px 24px;
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--surface) 0%, rgba(37,99,235,0.04) 50%, var(--surface-alt) 100%);
+            border: 1px solid var(--surface-border);
+        }
+        .theme-dark .guide-cta-section {
+            background: linear-gradient(135deg, var(--surface-alt) 0%, rgba(37,99,235,0.08) 50%, var(--surface) 100%);
+        }
+        .guide-cta-glow {
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        .guide-cta-glow-2 {
+            top: auto;
+            right: auto;
+            bottom: -60px;
+            left: -60px;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%);
+            animation-delay: -2s;
+        }
+        .guide-cta-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .theme-dark .guide-cta-svg { opacity: 0.8; }
+        .guide-cta-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .guide-cta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-subtle);
+            border: 1px solid rgba(37,99,235,0.2);
+            border-radius: 100px;
+            padding: 8px 18px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        .guide-cta-badge i { font-size: 16px; }
+        .guide-cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        @media(max-width:768px) { .guide-cta-title { font-size: 24px; } }
+        .guide-cta-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+        .guide-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+        }
+        .guide-cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 28px rgba(37,99,235,0.45);
+        }
+        .guide-cta-btn i { transition: transform 0.3s ease; font-size: 18px; }
+        .guide-cta-btn:hover i { transform: translateX(4px); }
     </style>
 </head>
 
@@ -277,8 +554,18 @@
             <div class="nav-links">
                 <a href="#features" class="nav-link">{{ __('Fonctionnalités') }}</a>
                 <a href="#pricing" class="nav-link">{{ __('Tarifs') }}</a>
+                <a href="{{ route('guide') }}" class="nav-link" style="position:relative;">
+                    <i class="bi bi-book-half" style="font-size:14px;"></i>
+                    {{ __('Guide') }}
+                    <span style="position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--accent-green);border-radius:50%;box-shadow:0 0 6px var(--accent-green),0 0 12px rgba(16,185,129,0.4);animation:pulse 2s infinite;"></span>
+                </a>
             </div>
             <div class="nav-actions">
+                <a href="{{ route('guide') }}" class="nav-guide-icon">
+                    <i class="bi bi-book-half"></i>
+                    <span>{{ __('Guide') }}</span>
+                    <span class="nav-guide-dot"></span>
+                </a>
                 <a href="{{ route('connect') }}" class="btn-nav-login">{{ __('Connexion') }}</a>
                 <a href="{{ route('connect') }}#register" class="btn-nav-cta">
                     {{ __('Commencer') }}
@@ -290,156 +577,38 @@
 
     <!-- Hero -->
     <section class="hero-section">
-        <div class="hero-bg"><div class="hero-bg-gradient"></div><div class="hero-bg-overlay"></div></div>
-        <div class="hero-particles">
-            <div class="particle animate-float" style="width:288px;height:288px;background:rgba(37,99,235,0.08);top:25%;left:-144px;"></div>
-            <div class="particle animate-float-delayed" style="width:384px;height:384px;background:rgba(59,130,246,0.06);top:-96px;right:25%;"></div>
-            <div class="particle animate-float" style="width:224px;height:224px;background:rgba(37,99,235,0.05);bottom:25%;right:33%;"></div>
-            <div class="particle animate-float-delayed" style="width:320px;height:320px;background:rgba(59,130,246,0.04);bottom:0;left:33%;"></div>
+        <div class="hero-bg-slideshow" id="heroBgSlideshow">
+            <img src="{{ asset('images/rabbits_1.png') }}" alt="CuniApp" class="active">
+            <img src="{{ asset('images/rabbits_2.png') }}" alt="CuniApp">
+            <img src="{{ asset('images/rabbits_4.png') }}" alt="CuniApp">
+            <img src="{{ asset('images/rabbits_5.png') }}" alt="CuniApp">
+            <img src="{{ asset('images/rabbits_6.png') }}" alt="CuniApp">
+            <img src="{{ asset('images/rabbits_7.png') }}" alt="CuniApp">
+            <img src="{{ asset('images/rabbits_8.png') }}" alt="CuniApp">
         </div>
-
-        <!-- Animated SVG Grid with Glowing Lines -->
-        <svg class="hero-svg" style="mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);">
-            <defs>
-                <pattern id="hero-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="var(--primary)" stroke-width="0.5"/></pattern>
-                <pattern id="hero-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="var(--primary)" stroke-width="1"/></pattern>
-                <radialGradient id="dot-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary)" stop-opacity="1"/><stop offset="30%" stop-color="var(--primary)" stop-opacity="0.7"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></radialGradient>
-                <radialGradient id="dot-glow-light" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary-light)" stop-opacity="1"/><stop offset="30%" stop-color="var(--primary-light)" stop-opacity="0.7"/><stop offset="100%" stop-color="var(--primary-light)" stop-opacity="0"/></radialGradient>
-                <radialGradient id="dot-glow-strong" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary)" stop-opacity="1"/><stop offset="25%" stop-color="var(--primary)" stop-opacity="0.8"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></radialGradient>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-grid)"/>
-            <rect width="100%" height="100%" fill="url(#hero-grid-lg)"/>
-
-            <!-- Glowing line traversals - vertical -->
-            <line x1="120" y1="0" x2="120" y2="900" stroke="url(#dot-glow)" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="y1" values="0;900" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="y2" values="200;1100" dur="8s" repeatCount="indefinite"/>
-            </line>
-            <line x1="400" y1="0" x2="400" y2="900" stroke="url(#dot-glow-light)" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="10s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y1" values="0;900" dur="10s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y2" values="200;1100" dur="10s" repeatCount="indefinite" begin="2s"/>
-            </line>
-            <line x1="680" y1="0" x2="680" y2="900" stroke="url(#dot-glow)" stroke-width="1" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="12s" repeatCount="indefinite" begin="4s"/>
-                <animate attributeName="y1" values="0;900" dur="12s" repeatCount="indefinite" begin="4s"/>
-                <animate attributeName="y2" values="200;1100" dur="12s" repeatCount="indefinite" begin="4s"/>
-            </line>
-            <line x1="960" y1="0" x2="960" y2="900" stroke="url(#dot-glow-light)" stroke-width="1.3" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.3;0.3;0" dur="9s" repeatCount="indefinite" begin="6s"/>
-                <animate attributeName="y1" values="900;0" dur="9s" repeatCount="indefinite" begin="6s"/>
-                <animate attributeName="y2" values="1100;200" dur="9s" repeatCount="indefinite" begin="6s"/>
-            </line>
-            <line x1="1200" y1="0" x2="1200" y2="900" stroke="url(#dot-glow)" stroke-width="1.1" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.25;0.25;0" dur="11s" repeatCount="indefinite" begin="1s"/>
-                <animate attributeName="y1" values="0;900" dur="11s" repeatCount="indefinite" begin="1s"/>
-                <animate attributeName="y2" values="200;1100" dur="11s" repeatCount="indefinite" begin="1s"/>
-            </line>
-
-            <!-- Glowing line traversals - horizontal -->
-            <line x1="0" y1="80" x2="1600" y2="80" stroke="url(#dot-glow)" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="9s" repeatCount="indefinite"/>
-                <animate attributeName="x1" values="0;1600" dur="9s" repeatCount="indefinite"/>
-                <animate attributeName="x2" values="200;1800" dur="9s" repeatCount="indefinite"/>
-            </line>
-            <line x1="0" y1="200" x2="1600" y2="200" stroke="url(#dot-glow-light)" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="11s" repeatCount="indefinite" begin="3s"/>
-                <animate attributeName="x1" values="1600;0" dur="11s" repeatCount="indefinite" begin="3s"/>
-                <animate attributeName="x2" values="1800;200" dur="11s" repeatCount="indefinite" begin="3s"/>
-            </line>
-            <line x1="0" y1="340" x2="1600" y2="340" stroke="url(#dot-glow)" stroke-width="1" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.3;0.3;0" dur="13s" repeatCount="indefinite" begin="5s"/>
-                <animate attributeName="x1" values="0;1600" dur="13s" repeatCount="indefinite" begin="5s"/>
-                <animate attributeName="x2" values="200;1800" dur="13s" repeatCount="indefinite" begin="5s"/>
-            </line>
-
-            <!-- Glowing line traversals - diagonal -->
-            <line x1="0" y1="0" x2="1600" y2="900" stroke="url(#dot-glow)" stroke-width="0.8" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.2;0.2;0" dur="14s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="x1" values="0;1600" dur="14s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y1" values="0;900" dur="14s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="x2" values="200;1800" dur="14s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y2" values="200;1100" dur="14s" repeatCount="indefinite" begin="2s"/>
-            </line>
-            <line x1="1600" y1="0" x2="0" y2="900" stroke="url(#dot-glow-light)" stroke-width="0.8" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.18;0.18;0" dur="16s" repeatCount="indefinite" begin="7s"/>
-                <animate attributeName="x1" values="1600;0" dur="16s" repeatCount="indefinite" begin="7s"/>
-                <animate attributeName="y1" values="0;900" dur="16s" repeatCount="indefinite" begin="7s"/>
-                <animate attributeName="x2" values="1800;200" dur="16s" repeatCount="indefinite" begin="7s"/>
-                <animate attributeName="y2" values="200;1100" dur="16s" repeatCount="indefinite" begin="7s"/>
-            </line>
-
-            <!-- Curve-following glow dots -->
-            <path id="curve1" d="M0,100 Q200,60 400,120 T800,80 T1200,110 T1600,70" fill="none" stroke="var(--primary)" stroke-width="0.8" opacity="0.25"/>
-            <circle r="8" fill="url(#dot-glow-strong)" opacity="0.4"><animateMotion dur="10s" repeatCount="indefinite" rotate="auto"><mpath href="#curve1"/></animateMotion><animate attributeName="opacity" values="0;0.45;0.45;0" dur="10s" repeatCount="indefinite"/></circle>
-            <path id="curve2" d="M0,200 Q300,160 600,220 T1200,180 T1800,210" fill="none" stroke="var(--primary-light)" stroke-width="0.6" opacity="0.18"/>
-            <circle r="7" fill="url(#dot-glow-strong)" opacity="0.35"><animateMotion dur="13s" repeatCount="indefinite" rotate="auto" begin="3s"><mpath href="#curve2"/></animateMotion><animate attributeName="opacity" values="0;0.38;0.38;0" dur="13s" repeatCount="indefinite" begin="3s"/></circle>
-            <path id="curve3" d="M0,320 Q250,280 500,330 T1000,300 T1500,320" fill="none" stroke="var(--primary)" stroke-width="0.5" opacity="0.15"/>
-            <circle r="6.5" fill="url(#dot-glow-strong)" opacity="0.3"><animateMotion dur="15s" repeatCount="indefinite" rotate="auto" begin="6s"><mpath href="#curve3"/></animateMotion><animate attributeName="opacity" values="0;0.32;0.32;0" dur="15s" repeatCount="indefinite" begin="6s"/></circle>
-
-            <!-- Pulsing data-point dots -->
-            <circle cx="400" cy="100" r="2.5" fill="var(--primary)" opacity="0.3"><animate attributeName="opacity" values="0.1;0.35;0.1" dur="8s" repeatCount="indefinite"/></circle>
-            <circle cx="800" cy="60" r="3" fill="var(--primary-light)" opacity="0.25"><animate attributeName="opacity" values="0.1;0.3;0.1" dur="10s" repeatCount="indefinite" begin="2s"/></circle>
-            <circle cx="1200" cy="90" r="2" fill="var(--primary)" opacity="0.25"><animate attributeName="opacity" values="0.08;0.28;0.08" dur="9s" repeatCount="indefinite" begin="4s"/></circle>
-        </svg>
-
-        <!-- Decorative blobs -->
-        <div style="position:absolute;top:-128px;right:-128px;width:500px;height:500px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(37,99,235,0.08) 0%,transparent 70%);"></div>
-        <div style="position:absolute;bottom:-64px;left:0;width:400px;height:400px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(37,99,235,0.05) 0%,transparent 70%);"></div>
-
+        <div class="hero-overlay"></div>
         <div class="hero-content">
-            <div class="hero-left">
-                <div class="hero-badge">
-                    <div class="hero-badge-dot"></div>
-                    <span class="hero-badge-text">{{ __('Gestion de cheptel moderne') }}</span>
-                </div>
-                <h1 class="hero-title">
-                    {{ __('La plateforme complète de') }}
-                    <span class="hero-gradient-text">{{ __('gestion cunicole') }}</span>
-                </h1>
-                <p class="hero-description">
-                    {{ __('Gérez intelligemment votre cheptel lapin. Suivez vos reproductions, naissances, et performances en toute simplicité depuis un seul tableau de bord.') }}
-                </p>
-                <div class="hero-buttons">
-                    <a href="{{ route('connect') }}#register" class="btn-hero-primary">
-                        {{ __('Essai gratuit 14 jours') }}
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                    <a href="#features" class="btn-hero-secondary">{{ __('En savoir plus') }}</a>
-                </div>
-                <div class="hero-trust">
-                    <div class="hero-trust-item"><i class="bi bi-shield-check" style="color:var(--accent-green);"></i><span>{{ __('Essai 14 jours') }}</span></div>
-                    <div class="hero-trust-item"><i class="bi bi-lightning" style="color:var(--accent-orange);"></i><span>{{ __('Sans carte bancaire') }}</span></div>
-                </div>
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                <span class="hero-badge-text">{{ __('Gestion de cheptel moderne') }}</span>
             </div>
-
-            <div class="hero-right">
-                <div class="hero-illustration">
-                    <div class="hero-illustration-bg"></div>
-                    <div class="hero-illustration-bg-2"></div>
-                    <div class="hero-card">
-                        <div class="hero-slideshow" id="heroSlideshow">
-                            <img src="{{ asset('images/rabbits.png') }}" alt="CuniApp" class="active">
-                            <img src="{{ asset('images/rabbits_2.png') }}" alt="CuniApp">
-                            <img src="{{ asset('images/rabbits_3.png') }}" alt="CuniApp">
-                            <img src="{{ asset('images/rabbits_4.png') }}" alt="CuniApp">
-                            <div class="hero-slideshow-overlay"></div>
-                            <div class="hero-slideshow-text">
-                                <h3>{{ __("Votre Hub de Gestion d'Élevage") }}</h3>
-                                <p>{{ __('Gestion intelligente de votre cheptel') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="hero-float-stat hero-float-stat-left animate-float">
-                        <div class="float-stat-icon green"><i class="bi bi-people-fill"></i></div>
-                        <div><div class="float-stat-label">{{ __('Éleveurs actifs') }}</div><div class="float-stat-value">500+</div></div>
-                    </div>
-                    <div class="hero-float-stat hero-float-stat-right animate-float-delayed">
-                        <div class="float-stat-icon blue"><i class="bi bi-graph-up-arrow"></i></div>
-                        <div><div class="float-stat-label">{{ __('Satisfaction') }}</div><div class="float-stat-value">98%</div></div>
-                    </div>
-                </div>
+            <h1 class="hero-title">
+                {{ __('La plateforme complète de') }}
+                <span class="hero-gradient-text">{{ __('gestion cunicole') }}</span>
+            </h1>
+            <p class="hero-description">
+                {{ __('Gérez intelligemment votre cheptel lapin. Suivez vos reproductions, naissances, et performances en toute simplicité depuis un seul tableau de bord.') }}
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ route('connect') }}#register" class="btn-hero-primary">
+                    {{ __('Essai gratuit 14 jours') }}
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="#features" class="btn-hero-secondary">{{ __('En savoir plus') }}</a>
+            </div>
+            <div class="hero-trust">
+                <div class="hero-trust-item"><i class="bi bi-shield-check" style="color:var(--accent-green);"></i><span>{{ __('Essai 14 jours') }}</span></div>
+                <div class="hero-trust-item"><i class="bi bi-lightning" style="color:var(--accent-orange);"></i><span>{{ __('Sans carte bancaire') }}</span></div>
             </div>
         </div>
     </section>
@@ -514,6 +683,51 @@
 
     <div class="section-divider"><div class="section-divider-line"></div></div>
 
+    <!-- Guide CTA -->
+    <div class="section-reveal">
+        <div class="guide-cta-section">
+            <div class="guide-cta-glow"></div>
+            <div class="guide-cta-glow guide-cta-glow-2"></div>
+            <svg class="guide-cta-svg" viewBox="0 0 1200 300" fill="none" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="guide-line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="var(--primary)" stop-opacity="0"/>
+                        <stop offset="50%" stop-color="var(--primary)" stop-opacity="0.4"/>
+                        <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+                <line x1="0" y1="80" x2="1200" y2="80" stroke="url(#guide-line-grad)" stroke-width="1">
+                    <animate attributeName="x1" values="-200;1400" dur="6s" repeatCount="indefinite"/>
+                    <animate attributeName="x2" values="0;1600" dur="6s" repeatCount="indefinite"/>
+                </line>
+                <line x1="0" y1="150" x2="1200" y2="150" stroke="url(#guide-line-grad)" stroke-width="0.8">
+                    <animate attributeName="x1" values="1400;-200" dur="8s" repeatCount="indefinite"/>
+                    <animate attributeName="x2" values="1600;0" dur="8s" repeatCount="indefinite"/>
+                </line>
+                <line x1="0" y1="220" x2="1200" y2="220" stroke="url(#guide-line-grad)" stroke-width="0.6">
+                    <animate attributeName="x1" values="-300;1500" dur="7s" repeatCount="indefinite"/>
+                    <animate attributeName="x2" values="-100;1300" dur="7s" repeatCount="indefinite"/>
+                </line>
+                <circle r="3" fill="var(--primary)" opacity="0.3"><animate attributeName="cx" values="0;1200" dur="5s" repeatCount="indefinite"/><animate attributeName="cy" values="80;80" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0.5;0" dur="5s" repeatCount="indefinite"/></circle>
+                <circle r="2.5" fill="var(--accent-cyan)" opacity="0.25"><animate attributeName="cx" values="1200;0" dur="7s" repeatCount="indefinite"/><animate attributeName="cy" values="150;150" dur="7s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0.4;0" dur="7s" repeatCount="indefinite"/></circle>
+            </svg>
+            <div class="guide-cta-content">
+                <div class="guide-cta-badge">
+                    <i class="bi bi-book-half"></i>
+                    <span>{{ __('Documentation') }}</span>
+                </div>
+                <h2 class="guide-cta-title">{{ __('Besoin d\'aide ? Consultez notre guide') }}</h2>
+                <p class="guide-cta-desc">{{ __('Découvrez comment tirer le meilleur parti de CuniApp avec notre documentation complète. Tutoriels, guides pas à pas et conseils d\'utilisation.') }}</p>
+                <a href="{{ route('guide') }}" class="guide-cta-btn">
+                    <i class="bi bi-arrow-right-circle"></i>
+                    <span>{{ __('Accéder au Guide') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"><div class="section-divider-line"></div></div>
+
     <!-- CTA -->
     <div class="section-reveal">
         <div class="cta-section">
@@ -544,8 +758,8 @@
         const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, { threshold: 0.1 });
         document.querySelectorAll('.section-reveal').forEach(el => obs.observe(el));
 
-        // Slideshow
-        const slides = document.querySelectorAll('#heroSlideshow img');
+        // Background slideshow
+        const slides = document.querySelectorAll('#heroBgSlideshow img');
         let currentSlide = 0;
         if (slides.length > 0) {
             setInterval(() => {
@@ -557,13 +771,22 @@
 
         // Theme toggle
         const savedTheme = localStorage.getItem('cuniapp_theme') || 'system';
+        function setTheme(theme) {
+            localStorage.setItem('cuniapp_theme', theme);
+            applyTheme(theme);
+        }
         function applyTheme(theme) {
             const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
             document.documentElement.classList.toggle('theme-dark', isDark);
             document.querySelectorAll('#themeToggle .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+            document.querySelectorAll('.footer-theme-btn').forEach(b => {
+                const isActive = b.dataset.theme === theme;
+                b.style.background = isActive ? 'var(--primary)' : 'transparent';
+                b.style.color = isActive ? 'white' : 'var(--text-tertiary)';
+            });
         }
         applyTheme(savedTheme);
-        document.querySelectorAll('#themeToggle .toggle-btn').forEach(btn => {
+        document.querySelectorAll('#themeToggle .toggle-btn, .footer-theme-btn').forEach(btn => {
             btn.addEventListener('click', () => { const t = btn.dataset.theme; localStorage.setItem('cuniapp_theme', t); applyTheme(t); });
         });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => applyTheme(localStorage.getItem('cuniapp_theme') || 'system'));

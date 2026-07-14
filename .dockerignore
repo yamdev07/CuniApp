@@ -1,0 +1,16 @@
+node_modules
+vendor
+.env
+.git
+.gitignore
+Dockerfile
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*.php
+public/build
+*.md
+.vscode
+.idea
+tests

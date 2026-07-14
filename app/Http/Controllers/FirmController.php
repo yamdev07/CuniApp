@@ -118,7 +118,7 @@ class FirmController extends Controller
                 'email_verified_at' => now(), // ✅ Auto-verify employees
                 'must_change_password' => true, // ✅ Force password change on first login
                 'theme' => 'light',
-                'language' => 'fr',
+                'language' => app()->getLocale() ?: 'fr',
                 'status' => 'active',
             ]);
 

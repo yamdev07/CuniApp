@@ -1,7 +1,29 @@
-{{-- resources/views/components/public-footer.blade.php --}}
-<footer style="background:var(--surface-alt);border-top:1px solid var(--surface-border);position:relative;z-index:10;">
+<style>
+    .footer-container {
+        container-type: inline-size;
+        container-name: footer-container;
+    }
+    .footer-grid-container {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+        gap: 40px;
+    }
+    @container footer-container (max-width: 960px) {
+        .footer-grid-container {
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+    }
+    @container footer-container (max-width: 600px) {
+        .footer-grid-container {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+</style>
+<footer class="footer-container" style="background:var(--surface-alt);border-top:1px solid var(--surface-border);position:relative;z-index:10;">
     <div style="max-width:1280px;margin:0 auto;padding:48px 24px;">
-        <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1.5fr;gap:40px;">
+        <div class="footer-grid-container">
             <div>
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
                     <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius);display:flex;align-items:center;justify-content:center;">
@@ -11,12 +33,12 @@
                 </div>
                 <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:20px;">{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }} {{ __('Suivez vos reproductions, naissances et performances en toute simplicité.') }}</p>
                 <div style="display:flex;align-items:center;gap:12px;margin-top:16px;">
-                    <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--surface-border);border-radius:var(--radius);">
-                        <button onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __('Thème clair') }}"><i class="bi bi-sun"></i></button>
-                        <button onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __('Thème sombre') }}"><i class="bi bi-moon"></i></button>
-                        <button onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;" title="{{ __('Thème du système') }}"><i class="bi bi-circle-half"></i></button>
+                    <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
+                        <button class="footer-theme-btn" data-theme="light" onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;" title="{{ __('Thème clair') }}"><i class="bi bi-sun"></i></button>
+                        <button class="footer-theme-btn" data-theme="dark" onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;" title="{{ __('Thème sombre') }}"><i class="bi bi-moon"></i></button>
+                        <button class="footer-theme-btn" data-theme="system" onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.2s;" title="{{ __('Thème du système') }}"><i class="bi bi-circle-half"></i></button>
                     </div>
-                    <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--surface-border);border-radius:var(--radius);">
+                    <div style="display:flex;align-items:center;background:var(--surface);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
                         <a href="{{ route('lang.switch', 'fr') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'fr' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'fr' ? 'white' : 'var(--text-tertiary)' }};display:flex;align-items:center;gap:4px;transition:all 0.2s;">🇫🇷 FR</a>
                         <a href="{{ route('lang.switch', 'en') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'en' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'en' ? 'white' : 'var(--text-tertiary)' }};display:flex;align-items:center;gap:4px;transition:all 0.2s;">🇺🇸 EN</a>
                     </div>

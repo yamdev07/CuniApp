@@ -9,12 +9,16 @@
     <meta name="description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
     <meta property="og:title" content="CuniApp {{ __('Élevage') }}">
     <meta property="og:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
-    <meta property="og:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta property="og:image" content="{{ asset('images/thumbnail.jpg') }}">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1893">
+    <meta property="og:image:height" content="867">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url('/') }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="CuniApp {{ __('Élevage') }}">
     <meta name="twitter:description" content="{{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}">
-    <meta name="twitter:image" content="{{ asset('images/thumbnail.png') }}">
+    <meta name="twitter:image" content="{{ asset('images/thumbnail.jpg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -188,9 +192,10 @@
         .welcome-content {
             display: flex;
             justify-content: center;
-            max-width: 640px;
+            max-width: 1100px;
             width: 100%;
             align-items: center;
+            gap: 60px;
         }
 
         .brand-section {
@@ -305,6 +310,7 @@
         .auth-section {
             position: relative;
             width: 100%;
+            flex: 0 0 460px;
             flex-shrink: 0;
         }
 
@@ -580,6 +586,29 @@
 
         .theme-dark .bg-particle {
             background: rgba(77, 166, 255, 0.06);
+        }
+
+        .conn-bg-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(6, 182, 212, 0.05) 50%, rgba(59, 130, 246, 0.08));
+        }
+
+        .theme-dark .conn-bg-gradient {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(6, 182, 212, 0.08) 50%, rgba(59, 130, 246, 0.12));
+        }
+
+        .conn-hero-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+
+        .theme-dark .conn-hero-svg {
+            opacity: 0.14;
         }
 
         .validation-message {
@@ -966,14 +995,13 @@
         @media (max-width: 968px) {
             .welcome-content {
                 max-width: 100%;
-            }
-
-            .brand-section {
-                display: none;
+                flex-direction: column;
             }
 
             .auth-section {
-                order: 1;
+                flex: 0 0 auto;
+                max-width: 460px;
+                width: 100%;
             }
         }
 
@@ -1374,16 +1402,14 @@
             }
 
             .welcome-content {
-                max-width: 600px;
-            }
-
-            .brand-section {
-                order: 1;
-                text-align: center;
+                max-width: 100%;
+                flex-direction: column;
             }
 
             .auth-section {
-                order: 2;
+                flex: 0 0 auto;
+                max-width: 460px;
+                width: 100%;
             }
 
             .features-list {
@@ -1526,63 +1552,98 @@
         <span>{{ __('Retour') }}</span>
     </a>
 
-        <!-- Animated Background -->
+        <!-- Animated Background (exact copy of landing page hero background) -->
     <div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1;">
-        <!-- Subtle blue gradient overlay (matching landing page) -->
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(6,182,212,0.05) 50%,rgba(59,130,246,0.08));"></div>
-        <div class="theme-dark" style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(6,182,212,0.08) 50%,rgba(59,130,246,0.12));display:none;"></div>
-        <!-- SVG Grid with animated glowing lines (matching landing page opacity) -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.08;">
+        <div class="conn-bg-gradient"></div>
+
+        <!-- Animated SVG Grid with Glowing Lines (identical to landing page) -->
+        <svg class="conn-hero-svg" style="mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black 0%,black 60%,transparent 100%);">
             <defs>
-                <pattern id="connect-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="#2563EB" stroke-width="0.5"/></pattern>
-                <pattern id="connect-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="#2563EB" stroke-width="1"/></pattern>
+                <pattern id="conn-grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M 60 0 L 0 0 0 60" fill="none" stroke="var(--primary)" stroke-width="0.5"/></pattern>
+                <pattern id="conn-grid-lg" width="240" height="240" patternUnits="userSpaceOnUse"><path d="M 240 0 L 0 0 0 240" fill="none" stroke="var(--primary)" stroke-width="1"/></pattern>
+                <radialGradient id="conn-glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary)" stop-opacity="1"/><stop offset="30%" stop-color="var(--primary)" stop-opacity="0.7"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></radialGradient>
+                <radialGradient id="conn-glow-light" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary-light)" stop-opacity="1"/><stop offset="30%" stop-color="var(--primary-light)" stop-opacity="0.7"/><stop offset="100%" stop-color="var(--primary-light)" stop-opacity="0"/></radialGradient>
+                <radialGradient id="conn-glow-strong" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--primary)" stop-opacity="1"/><stop offset="25%" stop-color="var(--primary)" stop-opacity="0.8"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></radialGradient>
             </defs>
-            <rect width="100%" height="100%" fill="url(#connect-grid)"/>
-            <rect width="100%" height="100%" fill="url(#connect-grid-lg)"/>
-            <!-- Vertical glow lines -->
-            <line x1="20%" y1="-10%" x2="20%" y2="110%" stroke="#2563EB" stroke-width="2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="6s" repeatCount="indefinite"/>
-                <animate attributeName="y1" values="-10%;110%" dur="6s" repeatCount="indefinite"/>
-                <animate attributeName="y2" values="0%;120%" dur="6s" repeatCount="indefinite"/>
+            <rect width="100%" height="100%" fill="url(#conn-grid)"/>
+            <rect width="100%" height="100%" fill="url(#conn-grid-lg)"/>
+            <!-- Vertical glow traversals -->
+            <line x1="120" y1="0" x2="120" y2="900" stroke="url(#conn-glow)" stroke-width="1.5" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.5;0.5;0" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="y1" values="0;900" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="y2" values="200;1100" dur="8s" repeatCount="indefinite"/>
             </line>
-            <line x1="50%" y1="-10%" x2="50%" y2="110%" stroke="#3B82F6" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="8s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y1" values="-10%;110%" dur="8s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="y2" values="0%;120%" dur="8s" repeatCount="indefinite" begin="2s"/>
+            <line x1="400" y1="0" x2="400" y2="900" stroke="url(#conn-glow-light)" stroke-width="1.2" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="10s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="y1" values="0;900" dur="10s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="y2" values="200;1100" dur="10s" repeatCount="indefinite" begin="2s"/>
             </line>
-            <line x1="80%" y1="-10%" x2="80%" y2="110%" stroke="#2563EB" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="9s" repeatCount="indefinite" begin="4s"/>
-                <animate attributeName="y1" values="110%;-10%" dur="9s" repeatCount="indefinite" begin="4s"/>
-                <animate attributeName="y2" values="120%;0%" dur="9s" repeatCount="indefinite" begin="4s"/>
+            <line x1="680" y1="0" x2="680" y2="900" stroke="url(#conn-glow)" stroke-width="1" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="12s" repeatCount="indefinite" begin="4s"/>
+                <animate attributeName="y1" values="0;900" dur="12s" repeatCount="indefinite" begin="4s"/>
+                <animate attributeName="y2" values="200;1100" dur="12s" repeatCount="indefinite" begin="4s"/>
             </line>
-            <!-- Horizontal glow lines -->
-            <line x1="-10%" y1="30%" x2="110%" y2="30%" stroke="#2563EB" stroke-width="1.5" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="7s" repeatCount="indefinite" begin="1s"/>
-                <animate attributeName="x1" values="-10%;110%" dur="7s" repeatCount="indefinite" begin="1s"/>
-                <animate attributeName="x2" values="0%;120%" dur="7s" repeatCount="indefinite" begin="1s"/>
+            <line x1="960" y1="0" x2="960" y2="900" stroke="url(#conn-glow-light)" stroke-width="1.3" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.3;0.3;0" dur="9s" repeatCount="indefinite" begin="6s"/>
+                <animate attributeName="y1" values="900;0" dur="9s" repeatCount="indefinite" begin="6s"/>
+                <animate attributeName="y2" values="1100;200" dur="9s" repeatCount="indefinite" begin="6s"/>
             </line>
-            <line x1="-10%" y1="70%" x2="110%" y2="70%" stroke="#3B82F6" stroke-width="1.2" opacity="0">
-                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="10s" repeatCount="indefinite" begin="5s"/>
-                <animate attributeName="x1" values="110%;-10%" dur="10s" repeatCount="indefinite" begin="5s"/>
-                <animate attributeName="x2" values="120%;0%" dur="10s" repeatCount="indefinite" begin="5s"/>
+            <line x1="1200" y1="0" x2="1200" y2="900" stroke="url(#conn-glow)" stroke-width="1.1" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.25;0.25;0" dur="11s" repeatCount="indefinite" begin="1s"/>
+                <animate attributeName="y1" values="0;900" dur="11s" repeatCount="indefinite" begin="1s"/>
+                <animate attributeName="y2" values="200;1100" dur="11s" repeatCount="indefinite" begin="1s"/>
             </line>
-            <!-- Curve-following glow dot -->
-            <path id="c-curve1" d="M0,40% Q25%,35% 50%,42% T100%,38%" fill="none" stroke="#2563EB" stroke-width="0.8" opacity="0.2"/>
-            <circle r="8" fill="#2563EB" opacity="0"><animateMotion dur="8s" repeatCount="indefinite" rotate="auto"><mpath href="#c-curve1"/></animateMotion><animate attributeName="opacity" values="0;0.5;0.5;0" dur="8s" repeatCount="indefinite"/></circle>
-            <!-- Pulsing dots -->
-            <circle cx="15%" cy="20%" r="3" fill="#2563EB"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="5s" repeatCount="indefinite"/></circle>
-            <circle cx="85%" cy="15%" r="3.5" fill="#3B82F6"><animate attributeName="opacity" values="0.08;0.35;0.08" dur="7s" repeatCount="indefinite" begin="1.5s"/></circle>
-            <circle cx="70%" cy="80%" r="2.5" fill="#2563EB"><animate attributeName="opacity" values="0.1;0.38;0.1" dur="6s" repeatCount="indefinite" begin="3s"/></circle>
-            <circle cx="30%" cy="85%" r="2" fill="#3B82F6"><animate attributeName="opacity" values="0.05;0.3;0.05" dur="8s" repeatCount="indefinite" begin="2s"/></circle>
+            <!-- Horizontal glow traversals -->
+            <line x1="0" y1="80" x2="1600" y2="80" stroke="url(#conn-glow)" stroke-width="1.5" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.4;0.4;0" dur="9s" repeatCount="indefinite"/>
+                <animate attributeName="x1" values="0;1600" dur="9s" repeatCount="indefinite"/>
+                <animate attributeName="x2" values="200;1800" dur="9s" repeatCount="indefinite"/>
+            </line>
+            <line x1="0" y1="200" x2="1600" y2="200" stroke="url(#conn-glow-light)" stroke-width="1.2" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.35;0.35;0" dur="11s" repeatCount="indefinite" begin="3s"/>
+                <animate attributeName="x1" values="1600;0" dur="11s" repeatCount="indefinite" begin="3s"/>
+                <animate attributeName="x2" values="1800;200" dur="11s" repeatCount="indefinite" begin="3s"/>
+            </line>
+            <line x1="0" y1="340" x2="1600" y2="340" stroke="url(#conn-glow)" stroke-width="1" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.3;0.3;0" dur="13s" repeatCount="indefinite" begin="5s"/>
+                <animate attributeName="x1" values="0;1600" dur="13s" repeatCount="indefinite" begin="5s"/>
+                <animate attributeName="x2" values="200;1800" dur="13s" repeatCount="indefinite" begin="5s"/>
+            </line>
+            <!-- Diagonal glow traversals -->
+            <line x1="0" y1="0" x2="1600" y2="900" stroke="url(#conn-glow)" stroke-width="0.8" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.2;0.2;0" dur="14s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="x1" values="0;1600" dur="14s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="y1" values="0;900" dur="14s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="x2" values="200;1800" dur="14s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="y2" values="200;1100" dur="14s" repeatCount="indefinite" begin="2s"/>
+            </line>
+            <line x1="1600" y1="0" x2="0" y2="900" stroke="url(#conn-glow-light)" stroke-width="0.8" opacity="0">
+                <animate attributeName="opacity" values="0;0;0.18;0.18;0" dur="16s" repeatCount="indefinite" begin="7s"/>
+                <animate attributeName="x1" values="1600;0" dur="16s" repeatCount="indefinite" begin="7s"/>
+                <animate attributeName="y1" values="0;900" dur="16s" repeatCount="indefinite" begin="7s"/>
+                <animate attributeName="x2" values="1800;200" dur="16s" repeatCount="indefinite" begin="7s"/>
+                <animate attributeName="y2" values="200;1100" dur="16s" repeatCount="indefinite" begin="7s"/>
+            </line>
+            <!-- Curve-following glow dots -->
+            <path id="conn-curve1" d="M0,100 Q200,60 400,120 T800,80 T1200,110 T1600,70" fill="none" stroke="var(--primary)" stroke-width="0.8" opacity="0.25"/>
+            <circle r="8" fill="url(#conn-glow-strong)" opacity="0.4"><animateMotion dur="10s" repeatCount="indefinite" rotate="auto"><mpath href="#conn-curve1"/></animateMotion><animate attributeName="opacity" values="0;0.45;0.45;0" dur="10s" repeatCount="indefinite"/></circle>
+            <path id="conn-curve2" d="M0,200 Q300,160 600,220 T1200,180 T1800,210" fill="none" stroke="var(--primary-light)" stroke-width="0.6" opacity="0.18"/>
+            <circle r="7" fill="url(#conn-glow-strong)" opacity="0.35"><animateMotion dur="13s" repeatCount="indefinite" rotate="auto" begin="3s"><mpath href="#conn-curve2"/></animateMotion><animate attributeName="opacity" values="0;0.38;0.38;0" dur="13s" repeatCount="indefinite" begin="3s"/></circle>
+            <path id="conn-curve3" d="M0,320 Q250,280 500,330 T1000,300 T1500,320" fill="none" stroke="var(--primary)" stroke-width="0.5" opacity="0.15"/>
+            <circle r="6.5" fill="url(#conn-glow-strong)" opacity="0.3"><animateMotion dur="15s" repeatCount="indefinite" rotate="auto" begin="6s"><mpath href="#conn-curve3"/></animateMotion><animate attributeName="opacity" values="0;0.32;0.32;0" dur="15s" repeatCount="indefinite" begin="6s"/></circle>
+            <!-- Pulsing data-point dots -->
+            <circle cx="400" cy="100" r="2.5" fill="var(--primary)" opacity="0.3"><animate attributeName="opacity" values="0.1;0.35;0.1" dur="8s" repeatCount="indefinite"/></circle>
+            <circle cx="800" cy="60" r="3" fill="var(--primary-light)" opacity="0.25"><animate attributeName="opacity" values="0.1;0.3;0.1" dur="10s" repeatCount="indefinite" begin="2s"/></circle>
+            <circle cx="1200" cy="90" r="2" fill="var(--primary)" opacity="0.25"><animate attributeName="opacity" values="0.08;0.28;0.08" dur="9s" repeatCount="indefinite" begin="4s"/></circle>
         </svg>
-        <!-- Decorative blobs (matching landing page) -->
+        <!-- Decorative blobs -->
         <div style="position:absolute;top:-128px;right:-128px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.08) 0%,transparent 70%);"></div>
         <div style="position:absolute;bottom:-64px;left:0;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.05) 0%,transparent 70%);"></div>
-        <!-- Floating particles (matching landing page) -->
-        <div style="position:absolute;width:288px;height:288px;top:25%;left:-144px;border-radius:50%;background:rgba(37,99,235,0.08);animation:float 6s ease-in-out infinite;"></div>
-        <div style="position:absolute;width:384px;height:384px;top:-96px;right:25%;border-radius:50%;background:rgba(59,130,246,0.06);animation:float 6s ease-in-out infinite;animation-delay:-3s;"></div>
-        <div style="position:absolute;width:224px;height:224px;bottom:25%;right:33%;border-radius:50%;background:rgba(37,99,235,0.05);animation:float 6s ease-in-out infinite;"></div>
-        <div style="position:absolute;width:320px;height:320px;bottom:0;left:33%;border-radius:50%;background:rgba(59,130,246,0.04);animation:float 6s ease-in-out infinite;animation-delay:-3s;"></div>
+        <!-- Floating particles -->
+        <div style="position:absolute;width:288px;height:288px;top:25%;left:-144px;border-radius:50%;background:rgba(37,99,235,0.08);animation:float 6s ease-in-out infinite;opacity:0.15;"></div>
+        <div style="position:absolute;width:384px;height:384px;top:-96px;right:25%;border-radius:50%;background:rgba(59,130,246,0.06);animation:float 6s ease-in-out infinite;animation-delay:-3s;opacity:0.15;"></div>
+        <div style="position:absolute;width:224px;height:224px;bottom:25%;right:33%;border-radius:50%;background:rgba(37,99,235,0.05);animation:float 6s ease-in-out infinite;opacity:0.15;"></div>
+        <div style="position:absolute;width:320px;height:320px;bottom:0;left:33%;border-radius:50%;background:rgba(59,130,246,0.04);animation:float 6s ease-in-out infinite;animation-delay:-3s;opacity:0.15;"></div>
     </div>
 
     <div class="welcome-container">

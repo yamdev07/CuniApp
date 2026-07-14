@@ -6,6 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CuniApp Élevage')</title>
+
+    {{-- Open Graph --}}
+    <meta property="og:title" content="@yield('og_title', 'CuniApp Élevage')">
+    <meta property="og:description" content="@yield('og_description', 'La solution complète pour la gestion intelligente de votre élevage de lapins. Suivez vos reproductions, naissances et performances en toute simplicité.')">
+    <meta property="og:image" content="{{ asset('og-image.png') }}">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:site_name" content="CuniApp Élevage">
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', 'CuniApp Élevage')">
+    <meta name="twitter:description" content="@yield('og_description', 'La solution complète pour la gestion intelligente de votre élevage de lapins.')">
+    <meta name="twitter:image" content="{{ asset('og-image.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -2523,6 +2540,12 @@
             padding: 20px;
         }
 
+        body.mobile-nav-open .cuni-main {
+            filter: blur(4px);
+            pointer-events: none;
+            transition: filter 0.3s ease;
+        }
+
         .mobile-nav-overlay.active {
             transform: translateX(0);
         }
@@ -3188,6 +3211,17 @@
                         {{ __('La solution complète pour la gestion intelligente de votre élevage de lapins.') }}
                         {{ __('Suivez vos reproductions, naissances et performances en toute simplicité.') }}
                     </p>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+                        <div style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
+                            <button class="toggle-btn footer-theme-btn" data-theme="light" onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème clair') }}"><i class="bi bi-sun"></i></button>
+                            <button class="toggle-btn footer-theme-btn" data-theme="dark" onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème sombre') }}"><i class="bi bi-moon"></i></button>
+                            <button class="toggle-btn footer-theme-btn" data-theme="system" onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème du système') }}"><i class="bi bi-circle-half"></i></button>
+                        </div>
+                        <div style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
+                            <a href="{{ route('lang.switch', 'fr') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'fr' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'fr' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;">🇫🇷 FR</a>
+                            <a href="{{ route('lang.switch', 'en') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'en' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'en' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;">🇺🇸 EN</a>
+                        </div>
+                    </div>
 
                 </div>
 
@@ -3399,18 +3433,6 @@
                 </p>
             </div>
 
-            <div class="footer-toggles" style="display:flex;align-items:center;gap:12px;">
-                <div class="toggle-group" style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
-                    <button class="toggle-btn" onclick="setTheme('light')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème clair') }}"><i class="bi bi-sun"></i></button>
-                    <button class="toggle-btn" onclick="setTheme('dark')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème sombre') }}"><i class="bi bi-moon"></i></button>
-                    <button class="toggle-btn" onclick="setTheme('system')" style="padding:6px 10px;font-size:13px;border:none;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Thème du système') }}"><i class="bi bi-circle-half"></i></button>
-                </div>
-                <div class="toggle-group" style="display:flex;align-items:center;background:var(--surface-alt);border:1px solid var(--surface-border);border-radius:var(--radius);overflow:hidden;">
-                    <a href="{{ route('lang.switch', 'fr') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'fr' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'fr' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Changer de langue') }}">🇫🇷 FR</a>
-                    <a href="{{ route('lang.switch', 'en') }}" style="padding:6px 10px;font-size:13px;text-decoration:none;background:{{ app()->getLocale() === 'en' ? 'var(--primary)' : 'transparent' }};color:{{ app()->getLocale() === 'en' ? 'white' : 'var(--text-secondary)' }};transition:all 0.2s ease;display:flex;align-items:center;gap:4px;" title="{{ __('Changer de langue') }}">🇺🇸 EN</a>
-                </div>
-            </div>
-
             <div class="footer-legal">
                 <a href="{{ route('privacy') }}">
                     <i class="bi bi-shield-check"></i>
@@ -3483,6 +3505,11 @@
                         'Sombre');
                 }
             }
+            document.querySelectorAll('.footer-theme-btn').forEach(btn => {
+                const isActive = btn.dataset.theme === savedTheme;
+                btn.style.background = isActive ? 'var(--primary)' : 'transparent';
+                btn.style.color = isActive ? 'white' : 'var(--text-secondary)';
+            });
         }
 
         function setTheme(theme) {
@@ -3667,7 +3694,9 @@
 
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+                const isOpen = mobileNav.classList.contains('active');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+                document.body.classList.toggle('mobile-nav-open', isOpen);
             }
         }
 
@@ -3694,6 +3723,7 @@
                 !e.target.closest('.mobile-nav-overlay')) {
                 mobileNav.classList.remove('active');
                 document.body.style.overflow = '';
+                document.body.classList.remove('mobile-nav-open');
             }
         });
 
@@ -3726,7 +3756,9 @@
             if (moreDropdown) moreDropdown.classList.remove('show');
             if (mobileNav) {
                 mobileNav.classList.toggle('active');
-                document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+                const isOpen = mobileNav.classList.contains('active');
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+                document.body.classList.toggle('mobile-nav-open', isOpen);
             }
         }
 
@@ -3776,6 +3808,7 @@
                 !e.target.closest('.mobile-nav-overlay')) {
                 mobileNav.classList.remove('active');
                 document.body.style.overflow = '';
+                document.body.classList.remove('mobile-nav-open');
             }
         });
 

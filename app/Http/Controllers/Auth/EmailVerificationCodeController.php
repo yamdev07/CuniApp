@@ -83,7 +83,7 @@ class EmailVerificationCodeController extends Controller
         $pendingRegistration = Cache::get("registration_pending_{$email}");
 
         if ($pendingRegistration) {
-            // ✅ FIX: Check if user already exists before creating
+            // ✅ Check if user already exists before creating
             $existingUser = User::where('email', $pendingRegistration['email'])->first();
 
             if ($existingUser) {
@@ -114,26 +114,87 @@ class EmailVerificationCodeController extends Controller
                     ->with('success', '✅ Email vérifié avec succès ! Vous pouvez maintenant vous connecter.');
             }
 
-            // Create new user only if email doesn't exist
-            $user = User::create([
-                'name' => $pendingRegistration['name'],
-                'email' => $pendingRegistration['email'],
-                'password' => $pendingRegistration['password'],
-                'email_verified_at' => now(),
-                'role' => 'firm_admin',
-                'firm_id' => $pendingRegistration['firm_id'],
-                'theme' => 'light',
-                'language' => 'fr',
-            ]);
+            // ✅ Create Firm, User and Free Trial in transaction
+            \Illuminate\Support\Facades\DB::beginTransaction();
+            try {
+                // 1. Create the Firm
+                $firm = Firm::create([
+                    'name'        => $pendingRegistration['firm_name'],
+                    'description' => $pendingRegistration['firm_description'] ?? null,
+                    'status'      => 'active',
+                    'owner_id'    => null, // Will be set after user creation
+                ]);
 
-            // Update firm owner
-            $firm = Firm::find($pendingRegistration['firm_id']);
-            if ($firm) {
+                // 2. Create the User as firm_admin
+                $user = User::create([
+                    'name'              => $pendingRegistration['name'],
+                    'email'             => $pendingRegistration['email'],
+                    'password'          => $pendingRegistration['password'], // Already hashed in RegisteredUserController::store
+                    'email_verified_at' => now(),
+                    'role'              => 'firm_admin',
+                    'firm_id'           => $firm->id,
+                    'theme'             => 'light',
+                    'language'          => session('locale') ?: ($request->getPreferredLanguage(['fr', 'en']) ?: 'fr'),
+                    'status'            => 'active',
+                ]);
+
+                // 3. Link Firm Owner
                 $firm->update(['owner_id' => $user->id]);
-            }
 
-            Cache::forget("registration_pending_{$email}");
-            event(new Registered($user));
+                // 4. Create 14-day Free Trial Subscription
+                $trialPlan = \App\Models\SubscriptionPlan::where('name', 'Essai Gratuit')->first();
+                if (!$trialPlan) {
+                    Log::warning("Plan 'Essai Gratuit' introuvable. Création à la volée...");
+                    $trialPlan = \App\Models\SubscriptionPlan::create([
+                        'name'             => 'Essai Gratuit',
+                        'duration_months'  => 0,
+                        'price'            => 0,
+                        'is_active'        => true,
+                        'max_users'        => 5,
+                        'description'      => 'Période d\'essai automatique 14 jours',
+                        'features'         => json_encode(['Accès complet', 'Jusqu\'à 5 utilisateurs', 'Support de base']),
+                    ]);
+                }
+
+                $endDate = now()->addDays(14);
+                $subscription = \App\Models\Subscription::create([
+                    'user_id'              => $user->id,
+                    'firm_id'              => $firm->id,
+                    'subscription_plan_id' => $trialPlan->id,
+                    'status'               => 'active',
+                    'start_date'           => now(),
+                    'end_date'             => $endDate,
+                    'price'                => 0,
+                    'payment_method'       => 'manual',
+                    'payment_reference'    => 'TRIAL_AUTO_' . $user->id,
+                    'auto_renew'           => false,
+                ]);
+
+                // 5. Update user subscription metadata
+                $user->update([
+                    'subscription_status'  => 'active',
+                    'subscription_ends_at' => $endDate,
+                ]);
+
+                \Illuminate\Support\Facades\DB::commit();
+
+                Log::info('✅ Inscription complétée après vérification', [
+                    'user_id' => $user->id,
+                    'email'   => $user->email,
+                    'firm_id' => $firm->id,
+                ]);
+
+                Cache::forget("registration_pending_{$email}");
+                event(new Registered($user));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\DB::rollBack();
+                Log::error('❌ Échec création de compte lors de la vérification: ' . $e->getMessage());
+
+                return redirect()->route('connect')
+                    ->with('verification_pending', true)
+                    ->with('verification_email', $email)
+                    ->withErrors(['code' => 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.']);
+            }
         } else {
             $user = User::where('email', $email)->first();
             if ($user) {
