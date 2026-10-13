@@ -22,7 +22,7 @@
     }
 </style>
 <footer class="footer-container" style="background:var(--surface-alt);border-top:1px solid var(--surface-border);position:relative;z-index:10;">
-    <div style="max-width:1280px;margin:0 auto;padding:48px 24px;">
+    <div style="max-width:var(--page-max, 1280px);margin:0 auto;padding:48px var(--page-gutter, 24px);">
         <div class="footer-grid-container">
             <div>
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
